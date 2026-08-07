@@ -1,0 +1,84 @@
+name: ChatGPT usage monitor
+
+on:
+  schedule:
+    - cron: "7 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "state/**"
+      - "USAGE.md"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: chatgpt-usage-monitor
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Test collector and encrypted vault
+        run: node tests/run-tests.mjs
+
+      - name: Require encrypted bootstrap secret
+        env:
+          CODEX_AUTH_JSON: ${{ secrets.CODEX_AUTH_JSON }}
+        run: |
+          if [ -z "$CODEX_AUTH_JSON" ]; then
+            echo "CODEX_AUTH_JSON is missing" >&2
+            exit 1
+          fi
+
+      - name: Install Codex CLI
+        run: npm install --global @openai/codex@0.147.0
+
+      - name: Restore latest authentication
+        env:
+          CODEX_AUTH_JSON: ${{ secrets.CODEX_AUTH_JSON }}
+        run: node scripts/auth-vault.mjs restore state/auth.vault "$HOME/.codex/auth.json"
+
+      - name: Collect sanitized quota state
+        id: collect
+        continue-on-error: true
+        run: node scripts/read-usage.mjs state/usage.json USAGE.md
+
+      - name: Persist refreshed authentication securely
+        if: always()
+        env:
+          CODEX_AUTH_JSON: ${{ secrets.CODEX_AUTH_JSON }}
+        run: node scripts/auth-vault.mjs save state/auth.vault "$HOME/.codex/auth.json"
+
+      - name: Verify no credentials entered public state
+        if: always()
+        run: node scripts/verify-sanitized-state.mjs state/usage.json
+
+      - name: Commit current state
+        if: always()
+        run: |
+          git config user.name "chatgpt-usage-monitor[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/auth.vault state/usage.json USAGE.md
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "chore: refresh sanitized ChatGPT usage state"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Propagate collection failure
+        if: steps.collect.outcome != 'success'
+        run: exit 1
