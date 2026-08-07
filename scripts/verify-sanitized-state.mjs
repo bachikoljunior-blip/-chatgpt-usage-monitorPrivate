@@ -10,17 +10,31 @@ const forbiddenValues = /(sk-[A-Za-z0-9_-]{16,}|Bearer\s+[A-Za-z0-9._-]{16,})/i;
 
 walk(state, "$");
 
-if (state.schema_version !== 1 || !["ok", "error"].includes(state.status)) {
-  throw new Error("usage state has an invalid schema");
-}
-if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at)) {
-  throw new Error("usage state has no valid fetched_at timestamp");
-}
-if (!/^(normal|conserve|reserve)$/.test(state.recommended_mode)) {
-  throw new Error("usage state has no valid recommended_mode");
+if (state.schema_version !== 1) {
+  throw new Error("state has an invalid schema version");
 }
 
-console.log("Sanitized usage state passed credential-leak checks.");
+// Two shapes share this checker: collected usage state, and recorded ChatGPT answers.
+if (state.asked_at !== undefined) {
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(state.asked_at)) {
+    throw new Error("answer record has no valid asked_at timestamp");
+  }
+  if (typeof state.prompt !== "string" || typeof state.answer !== "string" || !state.answer) {
+    throw new Error("answer record is missing its prompt or answer");
+  }
+} else {
+  if (!["ok", "error"].includes(state.status)) {
+    throw new Error("usage state has an invalid schema");
+  }
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at)) {
+    throw new Error("usage state has no valid fetched_at timestamp");
+  }
+  if (!/^(normal|conserve|reserve)$/.test(state.recommended_mode)) {
+    throw new Error("usage state has no valid recommended_mode");
+  }
+}
+
+console.log("Sanitized state passed credential-leak checks.");
 
 function walk(value, path) {
   if (typeof value === "string" && forbiddenValues.test(value)) {
