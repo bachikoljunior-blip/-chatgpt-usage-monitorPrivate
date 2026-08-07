@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { spawnSync } from "node:child_process";
-import { chmod, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { chmod, copyFile, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -10,7 +10,8 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const temporary = await mkdtemp(join(tmpdir(), "usage-monitor-test-"));
 const jsonPath = join(temporary, "usage.json");
 const markdownPath = join(temporary, "USAGE.md");
-const mockCodex = join(root, "tests/mock-codex.mjs");
+const mockCodex = join(temporary, "mock-codex.mjs");
+await copyFile(join(root, "tests/mock-codex.mjs"), mockCodex);
 await chmod(mockCodex, 0o755);
 
 run(process.execPath, [join(root, "scripts/read-usage.mjs"), jsonPath, markdownPath], {
