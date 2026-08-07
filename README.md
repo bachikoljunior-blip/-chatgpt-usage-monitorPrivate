@@ -22,7 +22,7 @@ The workflow uses the longest quota window to recommend one of three modes:
 - Never paste, print, upload, or commit `~/.codex/auth.json`.
 - Never delete the `CODEX_AUTH_JSON` repository secret while the monitor is active.
 - `scripts/verify-sanitized-state.mjs` rejects credential-like keys and values before state is committed.
-- Pull requests run collection and security checks but never write generated state to `main`.
+- Pull requests write generated state only to their own branch; scheduled runs write it to `main`.
 
 ## Human-readable status
 
