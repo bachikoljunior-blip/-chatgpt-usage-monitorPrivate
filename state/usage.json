@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "status": "pending",
+  "source": "codex-app-server",
+  "fetched_at": null,
+  "fresh_until": null,
+  "recommended_mode": "conserve"
+}
