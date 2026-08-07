@@ -9,23 +9,29 @@ by hand.
 Check `state/usage.json` first. If `recommended_mode` is `reserve`, the weekly quota is nearly
 gone — ask the owner before spending it (`--force` / the `force` input overrides the guard).
 
-**Path A — in-session (fast, needs `CODEX_AUTH_JSON` in the environment):**
+**Default path — GitHub Actions.** Dispatch `.github/workflows/chatgpt-ask.yml` with a `prompt`
+input. It reuses the same secret as the usage monitor, shares its concurrency group so the vault
+is never written twice at once, and commits the reply to `state/answers/latest.md` (with
+`state/answers/latest.json` alongside it). Read the answer from that file, or from the workflow
+run summary. This is the path to use from a cloud session: the credential stays in GitHub's
+secret store and never enters the session VM.
+
+**Direct path — `scripts/ask-chatgpt.mjs`.** The same engine, runnable anywhere
+`CODEX_AUTH_JSON` is already legitimately present:
 
 ```bash
 node scripts/ask-chatgpt.mjs "your question"
 ```
 
-The runner installs the pinned Codex CLI if it is missing, decrypts `state/auth.vault` into a
-throwaway `CODEX_HOME`, runs `codex exec` in a read-only sandbox, prints the answer, and deletes
-the decrypted credentials. Exit code `2` means `CODEX_AUTH_JSON` is absent — use path B instead.
-Do not pass `--persist-vault` here: GitHub Actions owns the vault on `main`.
+It installs the pinned Codex CLI if missing, decrypts `state/auth.vault` into a throwaway
+`CODEX_HOME`, runs `codex exec` in a read-only sandbox, prints the answer, and deletes the
+decrypted credentials. Exit code `2` means `CODEX_AUTH_JSON` is absent — use the Actions path.
+Do not pass `--persist-vault` outside the workflow: GitHub Actions owns the vault on `main`.
 
-**Path B — GitHub Actions (no local setup, ~2 minutes):**
-
-Dispatch `.github/workflows/chatgpt-ask.yml` with a `prompt` input. It reuses the same secret as
-the usage monitor, shares its concurrency group so the vault is never written twice at once, and
-commits the reply to `state/answers/latest.md` (with `state/answers/latest.json` alongside it).
-Read the answer from that file, or from the workflow run summary.
+Do **not** get `CODEX_AUTH_JSON` into a cloud session by adding it to the cloud environment's
+variables. Cloud environments have no secrets store, the values are readable by anyone using the
+environment, and the Claude Code documentation says not to put credentials there. The Actions
+path exists precisely so that is never necessary.
 
 ## Rules that must not be broken
 
