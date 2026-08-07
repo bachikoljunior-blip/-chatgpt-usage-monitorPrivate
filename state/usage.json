@@ -1,8 +1,94 @@
 {
   "schema_version": 1,
-  "status": "pending",
+  "status": "ok",
   "source": "codex-app-server",
-  "fetched_at": null,
-  "fresh_until": null,
-  "recommended_mode": "conserve"
+  "fetched_at": "2026-08-07T12:08:16.191Z",
+  "fresh_until": "2026-08-07T14:08:16.191Z",
+  "plan_type": "pro",
+  "quota_windows": [
+    {
+      "limit_id": "codex",
+      "limit_name": null,
+      "slot": "primary",
+      "used_percent": 50,
+      "remaining_percent": 50,
+      "window_duration_minutes": 10080,
+      "resets_at": 1786163178,
+      "resets_at_iso": "2026-08-08T04:26:18.000Z",
+      "reached_type": null
+    },
+    {
+      "limit_id": "codex_bengalfox",
+      "limit_name": "GPT-5.3-Codex-Spark",
+      "slot": "primary",
+      "used_percent": 0,
+      "remaining_percent": 100,
+      "window_duration_minutes": 10080,
+      "resets_at": 1786709297,
+      "resets_at_iso": "2026-08-14T12:08:17.000Z",
+      "reached_type": null
+    }
+  ],
+  "governing_window": {
+    "limit_id": "codex",
+    "limit_name": null,
+    "slot": "primary",
+    "used_percent": 50,
+    "remaining_percent": 50,
+    "window_duration_minutes": 10080,
+    "resets_at": 1786163178,
+    "resets_at_iso": "2026-08-08T04:26:18.000Z",
+    "reached_type": null
+  },
+  "available_reset_credits": 0,
+  "token_usage_summary": {
+    "lifetime_tokens": 1861743992,
+    "peak_daily_tokens": 833349372,
+    "longest_running_turn_seconds": 16405,
+    "current_streak_days": 1,
+    "longest_streak_days": 4
+  },
+  "daily_usage_buckets": [
+    {
+      "start_date": "2026-07-13",
+      "tokens": 70875008
+    },
+    {
+      "start_date": "2026-07-23",
+      "tokens": 4107038
+    },
+    {
+      "start_date": "2026-07-24",
+      "tokens": 72263
+    },
+    {
+      "start_date": "2026-07-25",
+      "tokens": 316878
+    },
+    {
+      "start_date": "2026-07-26",
+      "tokens": 160599
+    },
+    {
+      "start_date": "2026-07-28",
+      "tokens": 2454821
+    },
+    {
+      "start_date": "2026-07-31",
+      "tokens": 733992541
+    },
+    {
+      "start_date": "2026-08-01",
+      "tokens": 833349372
+    },
+    {
+      "start_date": "2026-08-02",
+      "tokens": 111347904
+    },
+    {
+      "start_date": "2026-08-06",
+      "tokens": 105067568
+    }
+  ],
+  "recommended_mode": "normal"
 }
