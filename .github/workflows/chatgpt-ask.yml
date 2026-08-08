@@ -1,0 +1,104 @@
+name: Ask ChatGPT
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: "Question or instruction to send to ChatGPT"
+        required: true
+        type: string
+      model:
+        description: "Model override (blank uses the account default)"
+        required: false
+        default: ""
+        type: string
+      force:
+        description: "Run even when the quota mode is reserve"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+# Shared with the usage monitor so the encrypted vault is never written concurrently.
+concurrency:
+  group: chatgpt-usage-monitor
+  cancel-in-progress: false
+
+jobs:
+  ask:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Require encrypted bootstrap secret
+        env:
+          CODEX_AUTH_JSON: ${{ secrets.CODEX_AUTH_JSON }}
+        run: |
+          if [ -z "$CODEX_AUTH_JSON" ]; then
+            echo "CODEX_AUTH_JSON is missing" >&2
+            exit 1
+          fi
+
+      - name: Install Codex CLI
+        run: npm install --global @openai/codex@0.147.0
+
+      - name: Ask ChatGPT
+        env:
+          CODEX_AUTH_JSON: ${{ secrets.CODEX_AUTH_JSON }}
+          PROMPT: ${{ inputs.prompt }}
+          MODEL: ${{ inputs.model }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          mkdir -p state/answers
+          printf '%s' "$PROMPT" > "$RUNNER_TEMP/prompt.txt"
+          ARGS=(--file "$RUNNER_TEMP/prompt.txt"
+                --out state/answers/latest.md
+                --record state/answers/latest.json
+                --persist-vault)
+          if [ -n "$MODEL" ]; then ARGS+=(--model "$MODEL"); fi
+          if [ "$FORCE" = "true" ]; then ARGS+=(--force); fi
+          node scripts/ask-chatgpt.mjs "${ARGS[@]}" > "$RUNNER_TEMP/answer.txt"
+
+      - name: Publish the answer to the run summary
+        if: always()
+        run: |
+          {
+            echo "## ChatGPT answer"
+            echo
+            if [ -s "$RUNNER_TEMP/answer.txt" ]; then
+              cat "$RUNNER_TEMP/answer.txt"
+            else
+              echo "No answer was produced; see the step logs for the failure code."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Verify no credentials entered committed state
+        if: always()
+        run: |
+          if [ -f state/answers/latest.json ]; then
+            node scripts/verify-sanitized-state.mjs state/answers/latest.json
+          fi
+
+      - name: Commit the answer and refreshed authentication
+        if: always()
+        run: |
+          git config user.name "chatgpt-usage-monitor[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A state/auth.vault state/answers
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "chore: record ChatGPT answer"
+          git pull --rebase origin main
+          git push origin HEAD:main

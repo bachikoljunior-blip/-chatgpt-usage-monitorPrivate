@@ -1,0 +1,41 @@
+#!/usr/bin/env node
+
+// Stands in for `codex exec`: proves the runner restores authentication into a private
+// CODEX_HOME, forwards the prompt on stdin, and redacts whatever the model returns.
+
+import { readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+
+const args = process.argv.slice(2);
+if (args[0] !== "exec") {
+  console.error(`unexpected subcommand: ${args[0]}`);
+  process.exit(64);
+}
+
+const answerPath = args[args.indexOf("--output-last-message") + 1];
+if (!answerPath) {
+  console.error("missing --output-last-message");
+  process.exit(64);
+}
+
+const codexHome = process.env.CODEX_HOME;
+if (!codexHome) {
+  console.error("CODEX_HOME was not isolated for this run");
+  process.exit(65);
+}
+
+const auth = JSON.parse(readFileSync(join(codexHome, "auth.json"), "utf8"));
+if (!auth?.tokens?.access_token) {
+  console.error("restored authentication is unusable");
+  process.exit(66);
+}
+
+const prompt = readFileSync(0, "utf8").trim();
+const model = args.includes("--model") ? args[args.indexOf("--model") + 1] : "default";
+
+// The trailing secret-shaped string must never survive into the recorded answer.
+writeFileSync(
+  answerPath,
+  `mock answer for "${prompt}" via ${model} sk-abcdefghijklmnopqrstuvwxyz012345\n`,
+  "utf8",
+);

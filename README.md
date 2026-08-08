@@ -16,6 +16,21 @@ The workflow uses the longest quota window to recommend one of three modes:
 - `conserve`: 10–25% remaining, or data unavailable
 - `reserve`: 10% or less remaining
 
+## Asking ChatGPT through this repository
+
+The same encrypted authentication also lets an assistant send prompts to the account.
+
+- The `Ask ChatGPT` workflow is the normal route. It takes a `prompt` input, runs on GitHub
+  Actions with the existing secret, and writes the reply to `state/answers/latest.md` plus the run
+  summary. The credential never leaves GitHub's secret store.
+- `node scripts/ask-chatgpt.mjs "question"` is the same engine, runnable wherever
+  `CODEX_AUTH_JSON` is already legitimately present. It decrypts the vault into a throwaway
+  `CODEX_HOME`, runs `codex exec` in a read-only sandbox, redacts credential-shaped strings from
+  the reply, and deletes the decrypted file afterwards. Do not copy the credential into a Claude
+  Code cloud environment to enable it: those variables are not a secrets store.
+- Both paths refuse to run when `state/usage.json` reports `reserve` mode unless forced, so ad hoc
+  questions cannot silently drain the weekly quota the monitor is protecting.
+
 ## Security rules
 
 - Keep this repository private.
