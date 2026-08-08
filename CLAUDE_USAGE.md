@@ -1,7 +1,7 @@
 # Claude subscription usage
 
 - Status: **error**
-- Updated: `2026-08-08T04:29:48.489Z`
+- Updated: `2026-08-08T04:33:08.450Z`
 - Recommended mode: **conserve**
 
 Automatic collection needs attention. Machine-readable code: `token_missing`.
