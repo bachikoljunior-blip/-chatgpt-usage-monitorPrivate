@@ -3,7 +3,7 @@
 import { mkdir, rename, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 
-import { readVault } from "./token-vault.mjs";
+import { accessTokenFromVault } from "./claude-token.mjs";
 
 const jsonPath = process.argv[2] ?? "state/claude-usage.json";
 const markdownPath = process.argv[3] ?? "CLAUDE_USAGE.md";
@@ -56,15 +56,16 @@ async function readToken() {
 async function readTokenVault() {
   const path = process.env.CLAUDE_TOKEN_VAULT ?? "state/claude-token.vault";
   if (!process.env.CODEX_AUTH_JSON) throw usageError("token_missing");
-  let stored;
   try {
-    stored = await readVault(path);
+    return await accessTokenFromVault(path);
   } catch (error) {
-    throw usageError(error?.code === "ENOENT" ? "token_missing" : "token_unreadable");
+    if (error?.code === "ENOENT") throw usageError("token_missing");
+    // A refresh token the server no longer accepts needs a human, and saying so
+    // is more useful than a generic read failure.
+    throw usageError(error?.status === 400 || error?.status === 401
+      ? "reauthentication_required"
+      : "token_unreadable");
   }
-  const token = stored?.access_token;
-  if (typeof token !== "string" || !token) throw usageError("token_unreadable");
-  return token;
 }
 
 async function requestUsage(token) {

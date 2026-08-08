@@ -7,6 +7,26 @@ import { createServer } from "node:http";
 
 export function startMockAnthropic({ expectedToken = "test-oauth-token", status = 200 } = {}) {
   const server = createServer((request, response) => {
+    if (request.url.startsWith("/v1/oauth/token")) {
+      let body = "";
+      request.on("data", (chunk) => { body += chunk; });
+      request.on("end", () => {
+        const parsed = JSON.parse(body || "{}");
+        if (parsed.grant_type !== "refresh_token" || parsed.refresh_token !== "test-refresh-token") {
+          response.writeHead(400, { "Content-Type": "application/json" })
+            .end(JSON.stringify({ error: "invalid_grant" }));
+          return;
+        }
+        response.writeHead(200, { "Content-Type": "application/json" }).end(
+          JSON.stringify({
+            access_token: expectedToken,
+            refresh_token: "test-refresh-token-2",
+            expires_in: 3600,
+          }),
+        );
+      });
+      return;
+    }
     if (!request.url.startsWith("/api/oauth/usage")) {
       response.writeHead(404).end("{}");
       return;

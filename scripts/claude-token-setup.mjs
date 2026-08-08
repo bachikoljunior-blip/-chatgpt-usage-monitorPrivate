@@ -12,15 +12,15 @@ import { createHash, randomBytes } from "node:crypto";
 import { appendFileSync } from "node:fs";
 import { appendFile, rm } from "node:fs/promises";
 
+import {
+  AUTHORIZE_URL,
+  CLIENT_ID,
+  MANUAL_REDIRECT_URL,
+  SCOPES,
+  exchangeCode,
+  toVaultRecord,
+} from "./claude-token.mjs";
 import { readVault, writeVault } from "./token-vault.mjs";
-
-// These mirror the Claude Code CLI's own public OAuth client.
-const CLIENT_ID = "9d1c250a-e61b-44d9-88ed-5944d1962f5e";
-const AUTHORIZE_URL = "https://claude.ai/oauth/authorize";
-const TOKEN_URL = "https://platform.claude.com/v1/oauth/token";
-const MANUAL_REDIRECT_URL = "https://platform.claude.com/oauth/code/callback";
-const SCOPES = ["user:profile", "user:inference", "user:sessions:claude_code", "user:mcp_servers"];
-const ONE_YEAR_SECONDS = 31_536_000;
 
 const PENDING_VAULT = "state/claude-oauth-pending.vault";
 const TOKEN_VAULT = "state/claude-token.vault";
@@ -89,32 +89,24 @@ async function finish(pasted) {
   }
 
   const { code, returnedState } = parsePastedCode(trimmed);
-  const response = await fetch(TOKEN_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      grant_type: "authorization_code",
+
+  let payload;
+  try {
+    payload = await exchangeCode({
       code,
-      redirect_uri: MANUAL_REDIRECT_URL,
-      client_id: CLIENT_ID,
-      code_verifier: pending.verifier,
       state: returnedState || pending.state,
-      expires_in: ONE_YEAR_SECONDS,
-    }),
-  }).catch(() => null);
-
-  if (!response) failStep("認証サーバーに接続できませんでした。もう一度やり直してください。");
-  if (response.status === 401) {
-    failStep("コードが受け付けられませんでした。期限切れか、使用済みです。step 1 からやり直してください。");
+      verifier: pending.verifier,
+    });
+  } catch (error) {
+    if (error?.status === 401) {
+      failStep("コードが受け付けられませんでした。期限切れか、使用済みです。step 1 からやり直してください。");
+    }
+    failStep(`トークンの取得に失敗しました。${error?.message ?? "原因不明"}`);
   }
-  if (!response.ok) failStep(`トークンの取得に失敗しました (HTTP ${response.status})。`);
-
-  const payload = await response.json().catch(() => null);
-  const token = payload?.access_token;
-  if (typeof token !== "string" || !token) failStep("応答に access_token がありませんでした。");
+  const token = payload.access_token;
 
   const check = await checkUsage(token);
-  await writeVault(TOKEN_VAULT, { access_token: token, obtained_at: new Date().toISOString() });
+  await writeVault(TOKEN_VAULT, toVaultRecord(payload));
   await rm(PENDING_VAULT, { force: true });
 
   await summary([

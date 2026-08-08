@@ -64,7 +64,9 @@ jobs:
           TARGET_BRANCH="${{ github.event_name == 'pull_request' && github.head_ref || 'main' }}"
           git config user.name "claude-usage-monitor[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add state/claude-usage.json CLAUDE_USAGE.md
+          # -A over the directory: the vault is rewritten whenever the access
+          # token is refreshed, and it does not exist before setup runs.
+          git add -A state CLAUDE_USAGE.md
           if git diff --cached --quiet; then
             exit 0
           fi

@@ -6,7 +6,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { writeVault } from "../scripts/token-vault.mjs";
+import { readVault, writeVault } from "../scripts/token-vault.mjs";
 import { startMockAnthropic } from "./mock-anthropic.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -174,6 +174,51 @@ try {
   assert(
     !(await readFile(tokenVault, "utf8")).includes("test-oauth-token"),
     "token vault contains the plaintext token",
+  );
+
+  // An expired access token must be refreshed and the vault rewritten.
+  await writeVault(tokenVault, {
+    access_token: "stale-token",
+    refresh_token: "test-refresh-token",
+    expires_at: Date.now() - 1000,
+  });
+  await runAsync(process.execPath, [claudeCollector, claudeJsonPath, claudeMarkdownPath], {
+    CLAUDE_USAGE_API_BASE: mockApi.base,
+    CLAUDE_TOKEN_URL: `${mockApi.base}/v1/oauth/token`,
+    CLAUDE_CODE_OAUTH_TOKEN: "",
+    CLAUDE_TOKEN_VAULT: tokenVault,
+    CODEX_AUTH_JSON: fakeAuth,
+  });
+  assert(
+    JSON.parse(await readFile(claudeJsonPath, "utf8")).status === "ok",
+    "expired token was not refreshed",
+  );
+  const rotated = await readVault(tokenVault);
+  assert(rotated.access_token === "test-oauth-token", "refreshed token was not persisted");
+  assert(rotated.refresh_token === "test-refresh-token-2", "rotated refresh token was not persisted");
+
+  // A refresh the server rejects must ask for re-authentication, not a retry.
+  await writeVault(tokenVault, {
+    access_token: "stale-token",
+    refresh_token: "revoked-token",
+    expires_at: Date.now() - 1000,
+  });
+  const revoked = await runAsync(
+    process.execPath,
+    [claudeCollector, claudeJsonPath, claudeMarkdownPath],
+    {
+      CLAUDE_USAGE_API_BASE: mockApi.base,
+      CLAUDE_TOKEN_URL: `${mockApi.base}/v1/oauth/token`,
+      CLAUDE_CODE_OAUTH_TOKEN: "",
+      CLAUDE_TOKEN_VAULT: tokenVault,
+      CODEX_AUTH_JSON: fakeAuth,
+    },
+    { allowFailure: true },
+  );
+  assert(revoked.status === 1, "a revoked refresh token should fail the collector");
+  assert(
+    JSON.parse(await readFile(claudeJsonPath, "utf8")).error.code === "reauthentication_required",
+    "a revoked refresh token was not classified",
   );
 } finally {
   mockApi.close();
