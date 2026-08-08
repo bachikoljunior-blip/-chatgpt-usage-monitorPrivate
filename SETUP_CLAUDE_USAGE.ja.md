@@ -12,21 +12,29 @@ ChatGPT/Codex 側はすでに自動で動いています。ここでは Claude �
 
 1. スマホのブラウザで開く →
    <https://github.com/codespaces/new?repo=bachikoljunior-blip/-chatgpt-usage-monitorPrivate>
-   （**Create codespace** を押す。起動に2〜3分かかります）
-2. 起動すると下側のターミナルで**設定スクリプトが自動で始まります**。あとは画面の指示どおりに:
-   - 出てきた認証URLをタップ → 承認 → コードをコピー → ターミナルに長押しで貼り付け
-   - 表示された `sk-ant-oat01-...` をコピーして、聞かれたところに貼り付け
-3. スクリプトが GitHub のシークレットに自動登録します。権限不足で失敗した場合だけ、
-   表示されるリンクを開いて手で貼ってください（Name は入力済みで開きます）。
-4. 終わったら Codespace は削除してかまいません（<https://github.com/codespaces>）。
+   （**Create codespace** を押す。起動に1〜2分かかります）
+2. 起動すると下側のターミナルで**設定スクリプトが自動で始まります**。
+3. 表示された `https://claude.ai/oauth/authorize?...` を**長押しコピーして別タブで開く** → 承認
+4. 画面に出たコードをコピーして、ターミナルの `code:` に**長押しでペースト** → Enter
+5. スクリプトが使用量APIで動作確認し、そのまま GitHub のシークレットに登録します。
+   権限不足で登録できなかったときだけ、表示されるリンクを開いて手で貼ってください。
+6. 終わったら Codespace は削除してかまいません（<https://github.com/codespaces>）。
 
 自動で始まらなかったときは、ターミナルにこれだけ打ってください。
 
 ```sh
-bash scripts/setup-claude-token.sh
+node scripts/setup-claude-token.mjs
 ```
 
-> このスクリプトはトークンをファイルにもログにも書きません。入力も画面に表示されません。
+> **なぜ `claude setup-token` を使わないのか。** あのコマンドは認証コードを
+> `http://localhost:<port>/callback` でしか受け取りません。スマホのブラウザから見た
+> `localhost` はスマホ自身なので、Codespace の中で待っているサーバーには絶対に届かず、
+> 「サーバに接続できませんでした」で必ず止まります。このスクリプトは同じ公式の OAuth
+> クライアントを、**コードを画面に表示する方式**（`platform.claude.com/oauth/code/callback`）で
+> 使うので、localhost が一切登場しません。
+
+> このスクリプトはトークンをファイルにもログにも書きません。標準入力で `gh` に直接渡すので、
+> `ps` にも履歴にも残りません。
 
 以下はパソコンがある場合の手順です。
 

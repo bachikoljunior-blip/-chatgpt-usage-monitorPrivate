@@ -4,7 +4,5 @@
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
-  "postCreateCommand": "npm install -g @anthropic-ai/claude-code",
-  "postAttachCommand": "bash scripts/setup-claude-token.sh",
-  "waitFor": "postCreateCommand"
+  "postAttachCommand": "node scripts/setup-claude-token.mjs"
 }
