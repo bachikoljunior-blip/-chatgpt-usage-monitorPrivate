@@ -3,8 +3,8 @@
   "status": "error",
   "source": "anthropic-oauth-usage",
   "subscription": "claude",
-  "fetched_at": "2026-08-08T00:21:42.024Z",
-  "fresh_until": "2026-08-08T02:21:42.024Z",
+  "fetched_at": "2026-08-08T00:22:04.478Z",
+  "fresh_until": "2026-08-08T02:22:04.478Z",
   "error": {
     "code": "token_missing"
   },
