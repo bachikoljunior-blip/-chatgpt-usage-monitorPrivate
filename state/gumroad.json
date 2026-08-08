@@ -1,0 +1,20 @@
+{
+  "status": "ok",
+  "fetched_at": "2026-08-08T12:35:24.016Z",
+  "total_sales_count": 0,
+  "total_sales_usd_cents": 0,
+  "product_count": 1,
+  "published_count": 1,
+  "products": [
+    {
+      "id": "rMqZDCfZHOiaDJO5Iv0aHQ==",
+      "name": "放置クリッカー制作キット 商用ライセンス｜設定1枚で自社ブランドに",
+      "published": true,
+      "price_cents": 2500,
+      "currency": "usd",
+      "sales_count": 0,
+      "sales_usd_cents": 0,
+      "file_count": null
+    }
+  ]
+}
