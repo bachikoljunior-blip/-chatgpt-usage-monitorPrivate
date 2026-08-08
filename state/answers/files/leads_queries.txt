@@ -1,23 +1,3 @@
-<<<CODEX_FILE PROOF.txt>>>
-CLAUDE-WORK-PROOF-20260808T064652Z-a8b681b7
-GPT-5 Codex
-<<<CODEX_FILE_END>>>
-
-<<<CODEX_FILE outreach_dm.md>>>
-①VTuberの周年・誕生祭
-突然失礼します。周年・誕生祭の告知用ブラウザミニゲームを3万円・7日納品で制作します。ファン参加型の企画にいかがでしょうか？作例：{GAME_URL}
-
-②小規模ブランドの新商品発売
-突然失礼します。新商品の魅力を遊んで伝える告知用ブラウザミニゲームを、3万円・7日納品で制作します。SNSで拡散しやすい作例：{GAME_URL}
-
-③同人・イベント主催
-突然失礼します。新刊・イベントの告知用ブラウザミニゲームを3万円・7日納品で制作します。来場前から楽しめる企画です。作例：{GAME_URL}
-
-返信が来たときの次の1通
-ありがとうございます！告知内容・公開希望日・入れたい要素を伺えれば、無料でゲーム案を1案お送りします。まず概要だけでも教えていただけますか？
-<<<CODEX_FILE_END>>>
-
-<<<CODEX_FILE leads_queries.txt>>>
 ("周年記念" OR "周年配信") (VTuber OR Vライバー) min_faves:20 -filter:replies
 ("誕生日記念" OR "生誕祭") (VTuber OR Vライバー) min_faves:20 -filter:replies
 ("周年グッズ" OR "誕生日グッズ") VTuber min_faves:10 -filter:replies
@@ -33,4 +13,3 @@ GPT-5 Codex
 ("イベント開催" OR "開催決定") ("同人" OR "オンリー") min_faves:20 -filter:replies
 ("参加サークル募集" OR "出展者募集") ("即売会" OR "創作イベント") min_faves:10 -filter:replies
 ("頒布開始" OR "通販開始") ("新刊" OR "同人誌") min_faves:15 -filter:replies
-<<<CODEX_FILE_END>>>
