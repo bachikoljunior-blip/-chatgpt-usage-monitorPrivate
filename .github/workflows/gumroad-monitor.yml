@@ -52,8 +52,11 @@ jobs:
           GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
         run: node scripts/read-gumroad.mjs state/gumroad.json
 
+      # fail closed。2026-08-08、この検査が落ちているのにコミットが
+      # if: always() で走り、**検査に落ちた状態ファイルがそのまま main に載った。**
+      # 資格情報を守る検査が、守らないまま通過を許す形になっていた。
       - name: Verify no credentials entered committed state
-        if: always()
+        id: verify
         run: node scripts/verify-sanitized-state.mjs state/gumroad.json
 
       - name: Probe whether products can be created over REST
@@ -63,7 +66,7 @@ jobs:
         run: node scripts/probe-gumroad-create.mjs
 
       - name: Commit current state
-        if: always()
+        if: steps.collect.outcome == 'success' && steps.verify.outcome == 'success'
         env:
           GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
         run: |

@@ -53,6 +53,7 @@ try {
   }));
 
   payload = {
+    schema_version: 1,
     status: "ok",
     fetched_at: now,
     total_sales_count: products.reduce((n, p) => n + p.sales_count, 0),
@@ -65,6 +66,7 @@ try {
   // A failed read must never look like a measured zero. That distinction is the
   // whole point: "0 sales" and "could not measure" lead to different decisions.
   payload = {
+    schema_version: 1,
     status: "error",
     fetched_at: now,
     error: { message: String(err?.message ?? err).slice(0, 200) },
