@@ -81,6 +81,7 @@ jobs:
             node scripts/read-gumroad.mjs state/gumroad.json || exit 1
             node scripts/verify-sanitized-state.mjs state/gumroad.json || exit 1
             git add state/gumroad.json
+            git add state/gumroad-capabilities.json 2>/dev/null || true
             if git diff --cached --quiet; then
               echo "no change"
               exit 0

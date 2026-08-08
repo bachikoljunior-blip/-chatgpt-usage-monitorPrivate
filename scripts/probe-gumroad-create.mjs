@@ -52,3 +52,18 @@ if (res.status === 404 || res.status === 405) {
 console.log(`HTTP ${res.status}`);
 console.log(`verdict: ${verdict}`);
 console.log(`body: ${redacted}`);
+
+// 結果は state に残す。**ログの中にしか無い測定は、読み直すのが高くつくので読まれない。**
+// 2026-08-08、この答えを取り出すためだけにワークフローのログを取りに行くはめになった。
+const out = new URL("../state/gumroad-capabilities.json", import.meta.url);
+const { writeFile } = await import("node:fs/promises");
+await writeFile(out, JSON.stringify({
+  schema_version: 1,
+  status: "ok",
+  fetched_at: new Date().toISOString(),
+  probe: "POST /v2/products with no product fields (non-mutating)",
+  http_status: res.status,
+  verdict,
+  response_excerpt: redacted.slice(0, 200),
+}, null, 2) + "\n", "utf8");
+console.log(`wrote state/gumroad-capabilities.json`);
