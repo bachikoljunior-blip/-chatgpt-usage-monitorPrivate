@@ -17,6 +17,11 @@ on:
         required: false
         default: false
         type: boolean
+      collect_files:
+        description: "Let the run write files and commit what it produced to state/answers/files"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -59,6 +64,7 @@ jobs:
           PROMPT: ${{ inputs.prompt }}
           MODEL: ${{ inputs.model }}
           FORCE: ${{ inputs.force }}
+          COLLECT_FILES: ${{ inputs.collect_files }}
         run: |
           mkdir -p state/answers
           printf '%s' "$PROMPT" > "$RUNNER_TEMP/prompt.txt"
@@ -68,7 +74,33 @@ jobs:
                 --persist-vault)
           if [ -n "$MODEL" ]; then ARGS+=(--model "$MODEL"); fi
           if [ "$FORCE" = "true" ]; then ARGS+=(--force); fi
+          # The scratch workspace is outside the checkout, so a writable run still
+          # cannot reach the repository, the vault, or the runner's credentials.
+          if [ "$COLLECT_FILES" = "true" ]; then
+            mkdir -p "$RUNNER_TEMP/workspace"
+            ARGS+=(--sandbox workspace-write --cd "$RUNNER_TEMP/workspace")
+          fi
           node scripts/ask-chatgpt.mjs "${ARGS[@]}" > "$RUNNER_TEMP/answer.txt"
+
+      - name: Collect files the run produced
+        if: always() && inputs.collect_files
+        run: |
+          rm -rf state/answers/files
+          if [ -d "$RUNNER_TEMP/workspace" ]; then
+            mkdir -p state/answers/files
+            # Bounded on purpose: only small, plainly-named artefacts come back.
+            find "$RUNNER_TEMP/workspace" -type f -size -10M \
+              -exec cp --backup=numbered -t state/answers/files {} +
+            rmdir state/answers/files 2>/dev/null || true
+          fi
+          if [ -d state/answers/files ]; then
+            {
+              echo
+              echo "### Files produced"
+              echo
+              ls -la state/answers/files
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Publish the answer to the run summary
         if: always()
