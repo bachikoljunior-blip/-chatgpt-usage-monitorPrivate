@@ -1,0 +1,10 @@
+{
+  "name": "claude-token-setup",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "postCreateCommand": "npm install -g @anthropic-ai/claude-code",
+  "postAttachCommand": "bash scripts/setup-claude-token.sh",
+  "waitFor": "postCreateCommand"
+}
