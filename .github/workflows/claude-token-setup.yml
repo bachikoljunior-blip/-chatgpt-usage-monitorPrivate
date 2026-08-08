@@ -1,0 +1,90 @@
+name: Claude token setup
+
+# Phone-only setup. Nothing here needs a terminal: step 1 puts a tappable
+# authorization link in the run summary, step 2 takes the code in a text box.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "1 = 認証リンクを出す / 2 = コードを登録する"
+        required: true
+        type: choice
+        options: ["1", "2"]
+        default: "1"
+      code:
+        description: "step 2 のときだけ: 承認後に表示されたコード"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: claude-usage-monitor
+  cancel-in-progress: false
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Require the vault key
+        env:
+          CODEX_AUTH_JSON: ${{ secrets.CODEX_AUTH_JSON }}
+        run: |
+          if [ -z "$CODEX_AUTH_JSON" ]; then
+            echo "::error::CODEX_AUTH_JSON is missing; it is the vault's key material"
+            exit 1
+          fi
+
+      - name: Step 1 — build the authorization link
+        if: inputs.step == '1'
+        env:
+          CODEX_AUTH_JSON: ${{ secrets.CODEX_AUTH_JSON }}
+        run: node scripts/claude-token-setup.mjs begin
+
+      - name: Step 2 — exchange the code for a token
+        if: inputs.step == '2'
+        env:
+          CODEX_AUTH_JSON: ${{ secrets.CODEX_AUTH_JSON }}
+          PASTED_CODE: ${{ inputs.code }}
+        run: node scripts/claude-token-setup.mjs finish "$PASTED_CODE"
+
+      - name: Commit the encrypted vault
+        if: always()
+        run: |
+          git config user.name "claude-usage-monitor[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A state/claude-oauth-pending.vault state/claude-token.vault
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "chore: update encrypted Claude token vault"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Refresh usage immediately
+        if: inputs.step == '2'
+        env:
+          CODEX_AUTH_JSON: ${{ secrets.CODEX_AUTH_JSON }}
+        run: |
+          node scripts/read-claude-usage.mjs state/claude-usage.json CLAUDE_USAGE.md
+          node scripts/verify-sanitized-state.mjs state/claude-usage.json
+          git add state/claude-usage.json CLAUDE_USAGE.md
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "chore: refresh sanitized Claude usage state"
+          git pull --rebase origin main
+          git push origin HEAD:main

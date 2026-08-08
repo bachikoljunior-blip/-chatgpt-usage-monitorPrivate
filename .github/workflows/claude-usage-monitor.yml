@@ -42,8 +42,8 @@ jobs:
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
         run: |
-          if [ -z "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
-            echo "::warning::CLAUDE_CODE_OAUTH_TOKEN is not set; see SETUP_CLAUDE_USAGE.ja.md"
+          if [ -z "$CLAUDE_CODE_OAUTH_TOKEN" ] && [ ! -f state/claude-token.vault ]; then
+            echo "::warning::No Claude token yet; run the 'Claude token setup' workflow"
           fi
 
       - name: Collect sanitized Claude quota state
@@ -51,6 +51,7 @@ jobs:
         continue-on-error: true
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          CODEX_AUTH_JSON: ${{ secrets.CODEX_AUTH_JSON }}
         run: node scripts/read-claude-usage.mjs state/claude-usage.json CLAUDE_USAGE.md
 
       - name: Verify no credentials entered committed state

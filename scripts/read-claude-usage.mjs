@@ -3,6 +3,8 @@
 import { mkdir, rename, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 
+import { readVault } from "./token-vault.mjs";
+
 const jsonPath = process.argv[2] ?? "state/claude-usage.json";
 const markdownPath = process.argv[3] ?? "CLAUDE_USAGE.md";
 const apiBase = (process.env.CLAUDE_USAGE_API_BASE ?? "https://api.anthropic.com").replace(/\/+$/, "");
@@ -18,7 +20,7 @@ const WINDOWS = [
 ];
 
 try {
-  const token = readToken();
+  const token = await readToken();
   const payload = await requestUsage(token);
   const state = buildState(payload);
   await writeOutputs(state);
@@ -30,9 +32,9 @@ try {
   process.exitCode = code === "token_missing" ? 0 : 1;
 }
 
-function readToken() {
+async function readToken() {
   const raw = (process.env.CLAUDE_CODE_OAUTH_TOKEN ?? "").trim();
-  if (!raw) throw usageError("token_missing");
+  if (!raw) return readTokenVault();
 
   // Accept either a bare token or a paste of ~/.claude/.credentials.json.
   if (raw.startsWith("{")) {
@@ -47,6 +49,22 @@ function readToken() {
     return token;
   }
   return raw;
+}
+
+// Fallback for the Actions-only setup: the token is stored encrypted in the
+// repository, keyed off the CODEX_AUTH_JSON secret that already exists.
+async function readTokenVault() {
+  const path = process.env.CLAUDE_TOKEN_VAULT ?? "state/claude-token.vault";
+  if (!process.env.CODEX_AUTH_JSON) throw usageError("token_missing");
+  let stored;
+  try {
+    stored = await readVault(path);
+  } catch (error) {
+    throw usageError(error?.code === "ENOENT" ? "token_missing" : "token_unreadable");
+  }
+  const token = stored?.access_token;
+  if (typeof token !== "string" || !token) throw usageError("token_unreadable");
+  return token;
 }
 
 async function requestUsage(token) {

@@ -6,6 +6,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { writeVault } from "../scripts/token-vault.mjs";
 import { startMockAnthropic } from "./mock-anthropic.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -156,6 +157,23 @@ try {
   assert(
     JSON.parse(await readFile(claudeJsonPath, "utf8")).error.code === "token_missing",
     "missing secret was not classified",
+  );
+
+  // The Actions-only setup keeps the token in a vault instead of a secret.
+  const tokenVault = join(temporary, "claude-token.vault");
+  process.env.CODEX_AUTH_JSON = fakeAuth;
+  await writeVault(tokenVault, { access_token: "test-oauth-token" });
+  await runAsync(process.execPath, [claudeCollector, claudeJsonPath, claudeMarkdownPath], {
+    CLAUDE_USAGE_API_BASE: mockApi.base,
+    CLAUDE_CODE_OAUTH_TOKEN: "",
+    CLAUDE_TOKEN_VAULT: tokenVault,
+    CODEX_AUTH_JSON: fakeAuth,
+  });
+  const vaultState = JSON.parse(await readFile(claudeJsonPath, "utf8"));
+  assert(vaultState.status === "ok", "vault-stored token was not used");
+  assert(
+    !(await readFile(tokenVault, "utf8")).includes("test-oauth-token"),
+    "token vault contains the plaintext token",
   );
 } finally {
   mockApi.close();
