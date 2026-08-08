@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "37 * * * *"
   workflow_dispatch:
+    inputs:
+      probe_create:
+        description: "Also probe whether the API can create products (non-mutating)"
+        type: boolean
+        default: false
   push:
     branches: [main]
     paths:
@@ -63,6 +68,12 @@ jobs:
           git commit -m "chore: refresh sanitized Gumroad sales state"
           git pull --rebase origin main
           git push origin HEAD:main
+
+      - name: Probe whether products can be created over REST
+        if: inputs.probe_create
+        env:
+          GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
+        run: node scripts/probe-gumroad-create.mjs
 
       - name: Propagate collection failure
         if: steps.collect.outcome != 'success'
