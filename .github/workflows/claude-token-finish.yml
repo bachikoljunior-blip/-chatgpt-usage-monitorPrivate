@@ -1,10 +1,15 @@
-name: "Claude token 1: get the link"
+name: "Claude token 2: submit the code"
 
-# Phone-only setup, split across two workflows so there is no option to pick
-# wrong: this one takes no input and only produces the authorization link.
+# The other half of the phone-only setup. One input, so there is nothing to
+# choose wrong: paste the code from the authorization page and run.
 
 on:
   workflow_dispatch:
+    inputs:
+      code:
+        description: "承認後に表示されたコードを貼り付けてください"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -14,7 +19,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  setup:
+  finish:
     runs-on: ubuntu-latest
     timeout-minutes: 8
 
@@ -37,23 +42,27 @@ jobs:
             exit 1
           fi
 
-      - name: Build the authorization link
+      - name: Exchange the code for a token
         env:
           CODEX_AUTH_JSON: ${{ secrets.CODEX_AUTH_JSON }}
-        run: node scripts/claude-token-setup.mjs begin
+          PASTED_CODE: ${{ inputs.code }}
+        run: node scripts/claude-token-setup.mjs finish "$PASTED_CODE"
 
+      - name: Refresh usage with the new token
+        env:
+          CODEX_AUTH_JSON: ${{ secrets.CODEX_AUTH_JSON }}
+        run: |
+          node scripts/read-claude-usage.mjs state/claude-usage.json CLAUDE_USAGE.md
+          node scripts/verify-sanitized-state.mjs state/claude-usage.json
 
-      - name: Commit the encrypted vault
+      - name: Commit the encrypted vault and the refreshed state
         if: always()
         run: |
           git config user.name "claude-usage-monitor[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # -A over the directory: step 1 creates the pending vault and step 2
-          # deletes it, and naming a file that does not exist yet is fatal.
-          git add -A state
+          git add -A state CLAUDE_USAGE.md
           if git diff --cached --quiet; then
             exit 0
           fi
-          git commit -m "chore: update encrypted Claude token vault"
+          git commit -m "chore: store the Claude token and refresh usage"
           bash scripts/push-with-retry.sh
-
