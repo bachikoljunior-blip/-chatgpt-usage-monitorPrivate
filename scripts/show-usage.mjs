@@ -24,12 +24,31 @@ for (const { title, path } of sources) {
   }
 
   const ageMinutes = Math.round((now - new Date(state.fetched_at)) / 60_000);
-  const stale = !Number.isFinite(ageMinutes) || ageMinutes > 150;
+
+  // A window whose own reset time has already passed is expired no matter how
+  // young the file is. The percentage in it describes a window that no longer
+  // exists, and the real remaining figure is almost always higher — which makes
+  // this the dangerous direction: it reads as "less left than there is" and
+  // talks the reader out of work that was affordable.
+  //
+  // 2026-08-08: this printed "37% left (resets 09:20Z)" at 10:10Z as a current
+  // figure. 63 minutes old, well inside the 150-minute limit, and expired.
+  // Age alone never catches it, because the session window is shorter than the
+  // staleness limit was.
+  const expired = (state.quota_windows ?? []).filter((w) => {
+    const t = Date.parse(w.resets_at_iso ?? "");
+    return Number.isFinite(t) && t <= now;
+  });
+  const stale = !Number.isFinite(ageMinutes) || ageMinutes > 150 || expired.length > 0;
   if (stale) anyStale = true;
+
+  const why = [];
+  if (!Number.isFinite(ageMinutes) || ageMinutes > 150) why.push("古い");
+  if (expired.length) why.push(`${expired.length}枠がリセット済み`);
 
   const header = `${title}: ${state.status} · mode ${state.recommended_mode} · ${
     Number.isFinite(ageMinutes) ? `${ageMinutes} min old` : "age unknown"
-  }${stale ? " (STALE)" : ""}`;
+  }${stale ? ` (STALE: ${why.join(" / ")})` : ""}`;
   console.log(header);
 
   if (state.status !== "ok") {
@@ -39,7 +58,12 @@ for (const { title, path } of sources) {
   for (const window of state.quota_windows ?? []) {
     const name = window.window_name ?? window.limit_name ?? window.limit_id ?? "default";
     const reset = window.resets_at_iso ?? "unknown";
-    console.log(`  ${name}: ${window.remaining_percent}% left (resets ${reset})`);
+    const t = Date.parse(reset);
+    const gone = Number.isFinite(t) && t <= now;
+    console.log(
+      `  ${name}: ${window.remaining_percent}% left (resets ${reset})` +
+      (gone ? "  ← リセット済み。この数字は使わないこと" : "")
+    );
   }
   if (!(state.quota_windows ?? []).length) console.log("  no windows reported");
 }
