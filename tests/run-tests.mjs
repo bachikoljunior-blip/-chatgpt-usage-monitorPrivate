@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { chmod, copyFile, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { startMockAnthropic } from "./mock-anthropic.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const temporary = await mkdtemp(join(tmpdir(), "usage-monitor-test-"));
@@ -93,20 +95,110 @@ const missingCredentials = spawnSync(
   { cwd: root, encoding: "utf8", env: { ...process.env, CODEX_AUTH_JSON: "", CODEX_BIN: mockExec } },
 );
 assert(missingCredentials.status === 2, "runner did not refuse to start without credentials");
+const claudeCollector = join(root, "scripts/read-claude-usage.mjs");
+const claudeJsonPath = join(temporary, "claude-usage.json");
+const claudeMarkdownPath = join(temporary, "CLAUDE_USAGE.md");
+const mockApi = await startMockAnthropic({ expectedToken: "test-oauth-token" });
+
+try {
+  await runAsync(process.execPath, [claudeCollector, claudeJsonPath, claudeMarkdownPath], {
+    CLAUDE_USAGE_API_BASE: mockApi.base,
+    CLAUDE_CODE_OAUTH_TOKEN: "test-oauth-token",
+  });
+  run(process.execPath, [join(root, "scripts/verify-sanitized-state.mjs"), claudeJsonPath]);
+
+  const claudeState = JSON.parse(await readFile(claudeJsonPath, "utf8"));
+  assert(claudeState.status === "ok", "claude collector did not succeed");
+  assert(claudeState.quota_windows.length === 3, "claude windows were not mapped");
+  assert(claudeState.governing_window.window_id === "seven_day", "tightest claude window was not selected");
+  assert(claudeState.governing_window.remaining_percent === 19, "claude remaining percent was not calculated");
+  assert(claudeState.recommended_mode === "conserve", "claude usage mode was not selected");
+  assert(claudeState.extra_usage_present === true, "extra usage presence was not recorded");
+  assert(
+    !JSON.stringify(claudeState).includes("test-oauth-token"),
+    "claude state contains the bearer token",
+  );
+
+  // A credentials.json paste must work as well as a bare token.
+  await runAsync(process.execPath, [claudeCollector, claudeJsonPath, claudeMarkdownPath], {
+    CLAUDE_USAGE_API_BASE: mockApi.base,
+    CLAUDE_CODE_OAUTH_TOKEN: JSON.stringify({ claudeAiOauth: { accessToken: "test-oauth-token" } }),
+  });
+  assert(
+    JSON.parse(await readFile(claudeJsonPath, "utf8")).status === "ok",
+    "credentials json paste was not accepted",
+  );
+
+  // A wrong token must fail closed, without writing anything credential-like.
+  const rejected = await runAsync(
+    process.execPath,
+    [claudeCollector, claudeJsonPath, claudeMarkdownPath],
+    { CLAUDE_USAGE_API_BASE: mockApi.base, CLAUDE_CODE_OAUTH_TOKEN: "wrong-token" },
+    { allowFailure: true },
+  );
+  assert(rejected.status === 1, "rejected token did not fail the collector");
+  const rejectedState = JSON.parse(await readFile(claudeJsonPath, "utf8"));
+  assert(rejectedState.status === "error", "rejected token did not produce an error state");
+  assert(
+    rejectedState.error.code === "reauthentication_required",
+    "rejected token was not classified as reauthentication",
+  );
+  run(process.execPath, [join(root, "scripts/verify-sanitized-state.mjs"), claudeJsonPath]);
+
+  // A missing secret must stay quiet: the state records it, the run stays green.
+  const unconfigured = await runAsync(
+    process.execPath,
+    [claudeCollector, claudeJsonPath, claudeMarkdownPath],
+    { CLAUDE_USAGE_API_BASE: mockApi.base, CLAUDE_CODE_OAUTH_TOKEN: "" },
+    { allowFailure: true },
+  );
+  assert(unconfigured.status === 0, "missing secret should not fail the workflow");
+  assert(
+    JSON.parse(await readFile(claudeJsonPath, "utf8")).error.code === "token_missing",
+    "missing secret was not classified",
+  );
+} finally {
+  mockApi.close();
+}
+
+run(process.execPath, [join(root, "scripts/show-usage.mjs"), claudeJsonPath, jsonPath]);
 
 console.log("All usage monitor tests passed.");
 
-function run(command, args, extraEnv = {}) {
+function run(command, args, extraEnv = {}, { allowFailure = false } = {}) {
   const result = spawnSync(command, args, {
     cwd: root,
     encoding: "utf8",
     env: { ...process.env, ...extraEnv },
   });
-  if (result.status !== 0) {
+  if (result.status !== 0 && !allowFailure) {
     process.stderr.write(result.stdout ?? "");
     process.stderr.write(result.stderr ?? "");
     throw new Error(`${command} exited with ${result.status}`);
   }
+  return result;
+}
+
+// The mock API lives in this process, so anything that talks to it must not
+// block the event loop the way spawnSync does.
+function runAsync(command, args, extraEnv = {}, { allowFailure = false } = {}) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      cwd: root,
+      env: { ...process.env, ...extraEnv },
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    child.stdout.resume();
+    child.stderr.resume();
+    child.on("error", reject);
+    child.on("close", (status) => {
+      if (status !== 0 && !allowFailure) {
+        reject(new Error(`${command} exited with ${status}`));
+        return;
+      }
+      resolve({ status });
+    });
+  });
 }
 
 function assert(condition, message) {

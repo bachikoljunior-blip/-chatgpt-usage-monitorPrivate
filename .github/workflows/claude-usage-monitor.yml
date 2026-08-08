@@ -1,0 +1,76 @@
+name: Claude usage monitor
+
+on:
+  schedule:
+    - cron: "22 * * * *"
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    paths-ignore:
+      - "state/**"
+      - "USAGE.md"
+      - "CLAUDE_USAGE.md"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: claude-usage-monitor
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Test collectors
+        run: node tests/run-tests.mjs
+
+      - name: Warn when the subscription token is not configured yet
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          if [ -z "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
+            echo "::warning::CLAUDE_CODE_OAUTH_TOKEN is not set; see SETUP_CLAUDE_USAGE.ja.md"
+          fi
+
+      - name: Collect sanitized Claude quota state
+        id: collect
+        continue-on-error: true
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: node scripts/read-claude-usage.mjs state/claude-usage.json CLAUDE_USAGE.md
+
+      - name: Verify no credentials entered committed state
+        if: always()
+        run: node scripts/verify-sanitized-state.mjs state/claude-usage.json
+
+      - name: Commit current state
+        if: always()
+        run: |
+          TARGET_BRANCH="${{ github.event_name == 'pull_request' && github.head_ref || 'main' }}"
+          git config user.name "claude-usage-monitor[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/claude-usage.json CLAUDE_USAGE.md
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "chore: refresh sanitized Claude usage state"
+          git pull --rebase origin "$TARGET_BRANCH"
+          git push origin HEAD:"$TARGET_BRANCH"
+
+      - name: Propagate collection failure
+        if: steps.collect.outcome != 'success'
+        run: exit 1

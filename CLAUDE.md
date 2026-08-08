@@ -4,6 +4,28 @@ This repository holds the signed-in ChatGPT (Codex) account's credentials in enc
 so Claude can send prompts to that ChatGPT account without the account owner relaying anything
 by hand.
 
+## Checking subscription usage
+
+Never ask the owner to read a dashboard. Both subscriptions are collected hourly and committed
+here. One command prints both, with remaining percentages, reset times, and a `STALE` marker when
+the data is older than 150 minutes:
+
+```bash
+node scripts/show-usage.mjs
+```
+
+From a session that does not have this repository checked out, read `state/claude-usage.json` and
+`state/usage.json` through the GitHub MCP tools (`get_file_contents` on `main`).
+
+When the data is stale, dispatch the workflow instead of waiting for the next hour —
+`claude-usage-monitor.yml` (Claude, minute 22) and `usage-monitor.yml` (Codex, minute 7) both
+accept `workflow_dispatch`. Wait for the run, then re-read the state file.
+
+`recommended_mode` comes from the tightest window. Treat `reserve` as a reason to defer expensive
+work, not as a failure. If `state/claude-usage.json` reports `error.code: token_missing` or
+`reauthentication_required`, point the owner at `SETUP_CLAUDE_USAGE.ja.md` — that is the only step
+that needs a human, and the owner is on a phone, so lead with the Codespaces path in that file.
+
 ## Asking ChatGPT something
 
 Check `state/usage.json` first. If `recommended_mode` is `reserve`, the weekly quota is nearly
@@ -36,7 +58,9 @@ path exists precisely so that is never necessary.
 ## Rules that must not be broken
 
 - Never print, commit, or copy decrypted `auth.json` contents. Only `state/auth.vault` is committed.
-- Never remove the `CODEX_AUTH_JSON` repository secret; it is the vault's key material.
+- Never remove the `CODEX_AUTH_JSON` or `CLAUDE_CODE_OAUTH_TOKEN` repository secrets.
+- Never print, echo, log, or commit the Claude subscription token. Only percentages, window
+  lengths, and reset times belong in `state/claude-usage.json`.
 - Anything written under `state/` must pass `scripts/verify-sanitized-state.mjs`.
 - `scripts/ask-chatgpt.mjs` redacts credential-shaped strings out of model output before writing
   or printing it — keep that behaviour when editing the script.
