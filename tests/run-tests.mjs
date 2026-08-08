@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn, spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import { chmod, copyFile, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -89,6 +90,38 @@ assert(record.answer.includes("mock answer"), "answer was not captured");
 assert(record.answer.includes("[redacted]"), "credential-shaped output was not redacted");
 assert(!record.answer.includes("sk-abcdefghij"), "credential-shaped output leaked into the record");
 assert((await readFile(answerPath, "utf8")).includes("[redacted]"), "answer file was not redacted");
+
+// Files ride back inside the answer, because the Codex sandbox cannot be made writable on a
+// GitHub Actions runner. Traversal paths must be dropped rather than written.
+const emitDirectory = join(temporary, "emitted");
+const emitRecordPath = join(temporary, "emitted.json");
+run(
+  process.execPath,
+  [
+    join(root, "scripts/ask-chatgpt.mjs"),
+    "--vault", askVault,
+    "--record", emitRecordPath,
+    "--emit-files", emitDirectory,
+    "--force",
+    "make the files",
+  ],
+  { CODEX_AUTH_JSON: fakeAuth, CODEX_BIN: mockExec },
+);
+run(process.execPath, [join(root, "scripts/verify-sanitized-state.mjs"), emitRecordPath]);
+
+const emitRecord = JSON.parse(await readFile(emitRecordPath, "utf8"));
+assert(emitRecord.prompt === "make the files", "the manifest instructions leaked into the record");
+assert(
+  JSON.stringify(emitRecord.files) === JSON.stringify(["notes/plan.md"]),
+  "emitted file list was not recorded, or the traversal path was accepted",
+);
+const emittedBody = await readFile(join(emitDirectory, "notes/plan.md"), "utf8");
+assert(emittedBody.startsWith("# plan\n"), "emitted file body was not written verbatim");
+assert(emittedBody.includes("[redacted]"), "emitted file body was not redacted");
+assert(
+  !existsSync(join(temporary, "escaped.md")),
+  "a traversal path escaped the collection directory",
+);
 
 const missingCredentials = spawnSync(
   process.execPath,

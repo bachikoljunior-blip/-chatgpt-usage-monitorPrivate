@@ -8,6 +8,31 @@ import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const codexVersion = "0.147.0";
+
+const FILE_BEGIN = "<<<CODEX_FILE";
+const FILE_END = "<<<CODEX_FILE_END>>>";
+
+// Written into the prompt so the answer itself carries the files. Kept blunt on purpose: the
+// parser is strict, and a near-miss silently produces no files.
+const FILE_MANIFEST_INSTRUCTIONS = [
+  "---",
+  "出力形式の指示（必ず従うこと）:",
+  "ファイルを作る指示があっても、ディスクには書き込まないでください（サンドボックスは読み取り専用です）。",
+  "代わりに、最終回答の中に次の形式でファイル本文をそのまま埋め込んでください。",
+  "",
+  `${FILE_BEGIN} 相対パス>>>`,
+  "（ファイルの中身をそのまま）",
+  FILE_END,
+  "",
+  "規則:",
+  "- 相対パスは英数字・ドット・ハイフン・アンダースコア・スラッシュのみ。`..` と先頭の `/` は禁止。",
+  "- マーカー行の前後に説明を書いてよいが、マーカー行そのものは1行に単独で置くこと。",
+  "- ファイル本文はコードフェンスで囲まないこと（マーカーが境界です）。",
+].join("\n");
+
+// Deliberately narrow: everything lands in one collected directory, never above it.
+const SAFE_RELATIVE_PATH = /^(?!.*(^|\/)\.\.(\/|$))[A-Za-z0-9._/-]{1,120}$/;
+
 const options = parseArguments(process.argv.slice(2));
 
 if (options.help) {
@@ -33,6 +58,10 @@ if (!prompt.trim()) {
   console.error("An empty prompt was provided; nothing was sent to ChatGPT.");
   process.exit(2);
 }
+// Files come back inside the answer rather than out of the sandbox: the Codex sandbox cannot
+// unshare a network namespace on a GitHub Actions runner, so `--sandbox workspace-write` dies
+// with `bwrap: loopback: Failed RTM_NEWADDR`. Emitting a manifest keeps the run read-only.
+const sentPrompt = options.emitFiles ? `${prompt.trimEnd()}\n\n${FILE_MANIFEST_INSTRUCTIONS}` : prompt;
 
 const quota = await readQuota();
 if (quota.recommended_mode === "reserve" && !options.force) {
@@ -73,10 +102,12 @@ try {
   if (options.model) args.push("--model", options.model);
   args.push("-");
 
-  await runCodex(codexBin, args, prompt, codexHome);
+  await runCodex(codexBin, args, sentPrompt, codexHome);
 
   const answer = redact(await readFile(answerPath, "utf8")).trim();
   if (!answer) throw new Error("ChatGPT returned an empty answer");
+
+  const emitted = options.emitFiles ? await writeEmittedFiles(answer, options.emitFiles) : null;
 
   if (options.persistVault) {
     runNode([join(root, "scripts/auth-vault.mjs"), "save", options.vault, join(codexHome, "auth.json")]);
@@ -91,6 +122,7 @@ try {
     prompt,
     answer,
   };
+  if (emitted) record.files = emitted;
 
   if (options.out) {
     await mkdir(dirname(options.out), { recursive: true });
@@ -108,6 +140,38 @@ try {
 } finally {
   await rm(codexHome, { recursive: true, force: true });
   if (!options.cd) await rm(workspace, { recursive: true, force: true });
+}
+
+async function writeEmittedFiles(answer, targetDirectory) {
+  const directory = resolve(targetDirectory);
+  const pattern = new RegExp(
+    `^${escapeRegExp(FILE_BEGIN)}[ \\t]+(.+?)>>>[ \\t]*\\r?$\\n([\\s\\S]*?)^${escapeRegExp(FILE_END)}[ \\t]*\\r?$`,
+    "gm",
+  );
+  const written = [];
+
+  for (const match of answer.matchAll(pattern)) {
+    const relative = match[1].trim();
+    if (!SAFE_RELATIVE_PATH.test(relative)) {
+      console.error(`Skipped an emitted file with an unusable path: ${summarize(relative)}`);
+      continue;
+    }
+    const destination = resolve(directory, relative);
+    if (destination !== directory && !destination.startsWith(`${directory}/`)) {
+      console.error(`Skipped an emitted file that escaped the collection directory: ${relative}`);
+      continue;
+    }
+    await mkdir(dirname(destination), { recursive: true });
+    // The answer is already redacted; writing match[2] keeps that guarantee.
+    await writeFile(destination, match[2], "utf8");
+    written.push(relative);
+  }
+
+  return written;
+}
+
+function escapeRegExp(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function runCodex(command, args, input, codexHome) {
@@ -222,6 +286,7 @@ function parseArguments(argv) {
       case "-o":
       case "--out": parsed.out = next(); break;
       case "--record": parsed.record = next(); break;
+      case "--emit-files": parsed.emitFiles = next(); break;
       case "--sandbox": parsed.sandbox = next(); break;
       case "--cd": parsed.cd = resolve(next()); break;
       case "--vault": parsed.vault = next(); break;
@@ -249,6 +314,7 @@ function printUsage() {
       "  -f, --file <path>    read the prompt from a file",
       "  -o, --out <path>     also write the answer to a file",
       "      --record <path>  write a JSON record of the exchange",
+      "      --emit-files <dir>  ask for files inside the answer and write them under <dir>",
       "      --sandbox <mode> read-only | workspace-write | danger-full-access",
       "      --cd <dir>       working root for the run (default: throwaway temp dir)",
       "      --persist-vault  re-encrypt refreshed authentication into the vault",

@@ -33,6 +33,27 @@ if (!auth?.tokens?.access_token) {
 const prompt = readFileSync(0, "utf8").trim();
 const model = args.includes("--model") ? args[args.indexOf("--model") + 1] : "default";
 
+// When the runner asked for a file manifest, answer with one — including a path that tries to
+// climb out of the collection directory, which the runner must refuse to write.
+if (prompt.includes("<<<CODEX_FILE")) {
+  writeFileSync(
+    answerPath,
+    [
+      "作りました。",
+      "<<<CODEX_FILE notes/plan.md>>>",
+      "# plan",
+      "line two sk-abcdefghijklmnopqrstuvwxyz012345",
+      "<<<CODEX_FILE_END>>>",
+      "<<<CODEX_FILE ../escaped.md>>>",
+      "should never be written",
+      "<<<CODEX_FILE_END>>>",
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+  process.exit(0);
+}
+
 // The trailing secret-shaped string must never survive into the recorded answer.
 writeFileSync(
   answerPath,

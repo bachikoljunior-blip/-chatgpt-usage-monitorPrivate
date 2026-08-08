@@ -37,10 +37,13 @@ jobs:
     timeout-minutes: 20
 
     steps:
+      # The dispatched ref is used, not a pinned `main`, so a change to this workflow or to
+      # scripts/ask-chatgpt.mjs can be exercised on a branch before it reaches main. The
+      # answer is committed back to whichever ref was dispatched.
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: main
+          ref: ${{ github.ref_name }}
 
       - uses: actions/setup-node@v4
         with:
@@ -74,25 +77,18 @@ jobs:
                 --persist-vault)
           if [ -n "$MODEL" ]; then ARGS+=(--model "$MODEL"); fi
           if [ "$FORCE" = "true" ]; then ARGS+=(--force); fi
-          # The scratch workspace is outside the checkout, so a writable run still
-          # cannot reach the repository, the vault, or the runner's credentials.
+          # The run stays read-only. Codex cannot unshare a network namespace on a hosted
+          # runner (`bwrap: loopback: Failed RTM_NEWADDR`), so a writable sandbox never
+          # starts; the files ride back inside the answer instead and the runner writes them.
           if [ "$COLLECT_FILES" = "true" ]; then
-            mkdir -p "$RUNNER_TEMP/workspace"
-            ARGS+=(--sandbox workspace-write --cd "$RUNNER_TEMP/workspace")
+            rm -rf state/answers/files
+            ARGS+=(--emit-files state/answers/files)
           fi
           node scripts/ask-chatgpt.mjs "${ARGS[@]}" > "$RUNNER_TEMP/answer.txt"
 
-      - name: Collect files the run produced
+      - name: Summarize the files the run produced
         if: always() && inputs.collect_files
         run: |
-          rm -rf state/answers/files
-          if [ -d "$RUNNER_TEMP/workspace" ]; then
-            mkdir -p state/answers/files
-            # Bounded on purpose: only small, plainly-named artefacts come back.
-            find "$RUNNER_TEMP/workspace" -type f -size -10M \
-              -exec cp --backup=numbered -t state/answers/files {} +
-            rmdir state/answers/files 2>/dev/null || true
-          fi
           if [ -d state/answers/files ]; then
             {
               echo
@@ -118,6 +114,11 @@ jobs:
       - name: Verify no credentials entered committed state
         if: always()
         run: |
+          # Emitted files are carved out of the already-redacted answer, so this is a backstop.
+          if [ -d state/answers/files ] && grep -rIlE 'sk-[A-Za-z0-9_-]{16,}|Bearer[[:space:]]+[A-Za-z0-9._-]{16,}' state/answers/files; then
+            echo "credential-shaped text reached an emitted file" >&2
+            exit 1
+          fi
           if [ -f state/answers/latest.json ]; then
             node scripts/verify-sanitized-state.mjs state/answers/latest.json
           fi
@@ -132,5 +133,5 @@ jobs:
             exit 0
           fi
           git commit -m "chore: record ChatGPT answer"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin HEAD:"$GITHUB_REF_NAME"

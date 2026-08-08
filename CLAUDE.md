@@ -107,6 +107,19 @@ is never written twice at once, and commits the reply to `state/answers/latest.m
 run summary. This is the path to use from a cloud session: the credential stays in GitHub's
 secret store and never enters the session VM.
 
+The workflow checks out and commits back to whichever ref was dispatched, so a change to it or
+to `scripts/ask-chatgpt.mjs` can be tested on a branch before it reaches `main`.
+
+**Getting files, not just prose.** Set the `collect_files` input (or pass
+`--emit-files <dir>` directly). Codex never writes to disk for this — a writable sandbox cannot
+start on a hosted runner, because Codex cannot unshare a network namespace there
+(`bwrap: loopback: Failed RTM_NEWADDR`). Instead the runner appends a format instruction to the
+prompt, Codex embeds each file between `<<<CODEX_FILE path>>>` and `<<<CODEX_FILE_END>>>` markers
+in its answer, and the runner writes them under `state/answers/files/`. Paths that are not plain
+relative paths are dropped, and the bodies inherit the answer's redaction. Do not "fix" this by
+switching the sandbox to `workspace-write` or `danger-full-access`: the first does not run, and
+the second would put the decrypted vault within reach of a networked model.
+
 **Direct path — `scripts/ask-chatgpt.mjs`.** The same engine, runnable anywhere
 `CODEX_AUTH_JSON` is already legitimately present:
 
