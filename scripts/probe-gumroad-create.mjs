@@ -38,8 +38,18 @@ const text = await res.text();
 // The body can echo submitted parameters; never print it raw.
 const redacted = text.split(token).join("[REDACTED]").slice(0, 400);
 
+// Gumroad returns HTTP 200 for validation failures and signals the outcome in the
+// body instead. Reading only the status code called a clear "you forgot the price"
+// an "unexpected success" — measured 2026-08-08.
+let body = {};
+try { body = JSON.parse(text); } catch { /* not JSON */ }
+const apiSaidNo = body?.success === false;
+
 let verdict;
-if (res.status === 404 || res.status === 405) {
+if (res.status === 200 && apiSaidNo && /price|name|required/i.test(body.message ?? "")) {
+  verdict = "creation IS supported over REST — it only rejected the empty input "
+          + `(${body.message}). The pinned official CLI is not required.`;
+} else if (res.status === 404 || res.status === 405) {
   verdict = "creation NOT supported over REST — the official CLI is the only path";
 } else if (res.status === 401 || res.status === 403) {
   verdict = "authentication rejected — the token, not the endpoint, is the problem";
