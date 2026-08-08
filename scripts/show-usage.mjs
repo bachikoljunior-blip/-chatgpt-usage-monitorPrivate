@@ -4,11 +4,25 @@
 // answer "how much quota is left?" with one command and no credentials.
 
 import { readFile } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+// Resolve the state files against this script, not the caller's directory.
+//
+// 2026-08-08: run as `node /home/user/-chatgpt-usage-monitorPrivate/scripts/show-usage.mjs`
+// from another repository, this printed "no state file" for both subscriptions —
+// which reads as "the monitor is broken" rather than "you called it from elsewhere".
+// A watchdog that reports missing data when the data is present is worse than no
+// watchdog: the scheduled runs are told to call it by absolute path, so every one
+// of them would have concluded the usage figures were unavailable.
+const HERE = dirname(fileURLToPath(import.meta.url));
+const REPO = resolve(HERE, "..");
+const fromRepo = (p) => (p.startsWith("/") ? p : resolve(REPO, p));
 
 const now = new Date();
 const sources = [
-  { title: "Claude", path: process.argv[2] ?? "state/claude-usage.json" },
-  { title: "ChatGPT / Codex", path: process.argv[3] ?? "state/usage.json" },
+  { title: "Claude", path: fromRepo(process.argv[2] ?? "state/claude-usage.json") },
+  { title: "ChatGPT / Codex", path: fromRepo(process.argv[3] ?? "state/usage.json") },
 ];
 
 let anyStale = false;
