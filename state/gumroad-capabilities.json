@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-08T12:51:22.996Z",
+  "probe": "POST /v2/products with no product fields (non-mutating)",
+  "http_status": 200,
+  "verdict": "unexpected success on an empty POST — inspect before assuming anything",
+  "response_excerpt": "{\"success\":false,\"message\":\"New products should be created with a price\"}"
+}
