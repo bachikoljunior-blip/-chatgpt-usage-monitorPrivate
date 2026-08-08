@@ -3,16 +3,16 @@
   "status": "ok",
   "source": "anthropic-oauth-usage",
   "subscription": "claude",
-  "fetched_at": "2026-08-08T12:35:34.029Z",
-  "fresh_until": "2026-08-08T14:35:34.029Z",
+  "fetched_at": "2026-08-08T12:40:52.577Z",
+  "fresh_until": "2026-08-08T14:40:52.577Z",
   "quota_windows": [
     {
       "window_id": "five_hour",
       "window_name": "Current session",
-      "used_percent": 54,
-      "remaining_percent": 46,
+      "used_percent": 55,
+      "remaining_percent": 45,
       "window_duration_minutes": 300,
-      "resets_at_iso": "2026-08-08T14:19:59.339Z"
+      "resets_at_iso": "2026-08-08T14:20:00.947Z"
     },
     {
       "window_id": "seven_day",
@@ -20,16 +20,16 @@
       "used_percent": 25,
       "remaining_percent": 75,
       "window_duration_minutes": 10080,
-      "resets_at_iso": "2026-08-14T21:59:59.339Z"
+      "resets_at_iso": "2026-08-14T22:00:00.947Z"
     }
   ],
   "governing_window": {
     "window_id": "five_hour",
     "window_name": "Current session",
-    "used_percent": 54,
-    "remaining_percent": 46,
+    "used_percent": 55,
+    "remaining_percent": 45,
     "window_duration_minutes": 300,
-    "resets_at_iso": "2026-08-08T14:19:59.339Z"
+    "resets_at_iso": "2026-08-08T14:20:00.947Z"
   },
   "extra_usage_present": true,
   "extra_usage_used_percent": 0,
