@@ -81,6 +81,10 @@ export function applyRouteElection(candidates, election, prerequisiteMeasured = 
           : "the elected route does not cover this candidate; it is ranked on its own merits.",
       prerequisite: isElected ? election.prerequisite ?? null : null,
       prerequisite_measured: isElected ? prerequisiteMeasured ?? null : null,
+      // Carried on the candidate rather than left in the venue file, because the
+      // decision it bears on — whether to spend the one post on this artifact — is
+      // taken from the candidate list and nowhere else.
+      language_mismatches: isElected ? prerequisiteMeasured?.language_mismatches ?? null : null,
     };
     if (isElected) aligned.push(c.id);
     if (isAbandoned) onAbandoned.push(c.id);

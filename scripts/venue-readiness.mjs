@@ -34,6 +34,7 @@ import { readFile, stat } from "node:fs/promises";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { PREDICATES } from "./unlock-condition.mjs";
+import { FREE_ARTIFACT_PATH, declaredLanguage } from "./check-free-artifact.mjs";
 
 // The third half, added 2026-08-09T21:2xZ. The election in state/zerobase.json names
 // STANDING as the prerequisite of the only route it kept, and says standing ACCRUES —
@@ -183,6 +184,7 @@ export function prerequisiteCheck(election, result) {
     instrument: election?.prerequisite_measured_by ?? null,
     counts,
     venues_on_the_named_term: term && counts[term] !== undefined ? counts[term] : null,
+    language_mismatches: result?.language_mismatches ?? [],
   };
   if (!election?.route) return { ...base, ok: true, problem: null };
   if (!term) {
@@ -218,7 +220,7 @@ export function prerequisiteCheck(election, result) {
 // Pure so it can be tested without a repository. `venues` is the per_venue array;
 // `evidence` maps a state-file path to its parsed contents (or null if unreadable);
 // `repoFiles` maps a checkout-relative path to whether it exists.
-export function venueReadiness(venues, evidence = {}, repoFiles = {}) {
+export function venueReadiness(venues, evidence = {}, repoFiles = {}, artifactLanguage = undefined) {
   const rows = (Array.isArray(venues) ? venues : []).map((v) => {
     const account = v?.account;
     if (account === undefined) {
@@ -258,6 +260,36 @@ export function venueReadiness(venues, evidence = {}, repoFiles = {}) {
       problem = `postable_today is carried with no reader: ${blocker.reason}`;
     }
 
+    // Who reads this venue, in which language. A fact about the venue like rule_quoted,
+    // and like every other fact about a venue it has to be SAID: null means nobody
+    // looked, omitting it means nobody noticed there was a question. Found on
+    // 2026-08-09 by opening the artifact this route will post — it declares lang="ja"
+    // and its whole UI is Japanese, while r/gamedev reads English. Six surveys, three
+    // rows and four laps on this route, and no field described the reader.
+    //
+    // It never shuts a row. The venue's rule says nothing about language, so a
+    // mismatch is not a refusal — it decides whether the one post this route exists
+    // to make lands on people who can read it, which is a different question and is
+    // carried as a different field.
+    const audience = Object.prototype.hasOwnProperty.call(v ?? {}, "audience_language")
+      ? v.audience_language ?? null
+      : undefined;
+    // Required only once there is an artifact to compare against — which there is, and
+    // has been since 2026-08-09T17:45Z. Before one exists the question is premature,
+    // and a rule that fires on rows nobody could yet answer teaches people to fill the
+    // field in with anything. `artifactLanguage` undefined means the caller is not
+    // asking the language question at all; null means it asked and the file is absent.
+    if (artifactLanguage !== undefined && audience === undefined && !problem) {
+      problem =
+        "no audience_language field. Say who reads this venue and in what language — null is a " +
+        "legitimate answer and means nobody looked; leaving it out is how a route came to be " +
+        "aimed at an audience nobody had described.";
+    }
+    const languageFit =
+      audience === undefined || audience === null || artifactLanguage === undefined || artifactLanguage === null
+        ? null
+        : audience === artifactLanguage;
+
     const computed = andKleene(exists, blocker.holds);
     const stored = Object.prototype.hasOwnProperty.call(v ?? {}, "postable_today") ? v.postable_today : undefined;
     if (stored === undefined) {
@@ -282,6 +314,9 @@ export function venueReadiness(venues, evidence = {}, repoFiles = {}) {
       // wrong; collapsing them into one boolean is what made it invisible.
       venue_blocker: blocker.holds,
       binding: bindingCause(exists, blocker.holds, computed),
+      audience_language: audience ?? null,
+      artifact_language: artifactLanguage ?? null,
+      language_fit: languageFit,
       postable_today: computed,
       postable_declared: stored ?? null,
       postable_reason: blocker.reason,
@@ -301,6 +336,9 @@ export function venueReadiness(venues, evidence = {}, repoFiles = {}) {
     // "nobody has looked" is a true answer and the file is allowed to say it.
     ok: rows.every((r) => r.declared && !r.problem),
     postable_with_a_measured_account: rows.filter((r) => r.account_exists === true).length,
+    // Counted, not just printed. A route can be open at a venue whose readers cannot
+    // read what it posts, and that combination is worth a number of its own.
+    language_mismatches: rows.filter((r) => r.language_fit === false).map((r) => r.venue),
     // Derived, so the survey's stored count can be checked against it instead of
     // being believed. Counts settled yeses only: unknown is not a route.
     postable_today_count: rows.filter((r) => r.postable_today === true).length,
@@ -312,7 +350,7 @@ export function venueReadiness(venues, evidence = {}, repoFiles = {}) {
 // origin/main. Both readers are injected for exactly that reason: this script reads the
 // checkout, compute-eta reads the published state, and neither hard-codes the other's
 // source. Duplicating the loader is how the two would drift into disagreeing.
-export async function loadVenueRows(constraints, readJson, fileExists) {
+export async function loadVenueRows(constraints, readJson, fileExists, readText = null) {
   const standing = (constraints?.constraints ?? []).find((c) => c.id === "no_standing_where_buyers_gather");
   const venues = standing?.venue_survey?.per_venue ?? [];
 
@@ -337,7 +375,16 @@ export async function loadVenueRows(constraints, readJson, fileExists) {
   const repoFiles = {};
   for (const path of wanted) repoFiles[path] = await fileExists(path);
 
-  return { standing, venues, result: venueReadiness(venues, evidence, repoFiles) };
+  // Derived from the artifact itself rather than read off a row, for the same reason
+  // postable_today is derived: a hand-written language would drift from the file the
+  // moment somebody edited one and not the other.
+  let artifactLanguage;
+  if (readText) {
+    const html = await readText(FREE_ARTIFACT_PATH);
+    artifactLanguage = html === null || html === undefined ? null : declaredLanguage(html);
+  }
+
+  return { standing, venues, result: venueReadiness(venues, evidence, repoFiles, artifactLanguage) };
 }
 
 const isMain = process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url));
@@ -351,16 +398,23 @@ if (isMain) {
     }
   };
   const fileExists = (rel) => stat(resolve(root, rel)).then(() => true, () => false);
+  const readText = (rel) => readFile(resolve(root, rel), "utf8").then((t) => t, () => null);
 
   const constraints = await readJson("state/constraints.json");
   const zerobase = await readJson("state/zerobase.json");
-  const { standing, venues, result } = await loadVenueRows(constraints, readJson, fileExists);
+  const { standing, venues, result } = await loadVenueRows(constraints, readJson, fileExists, readText);
   console.log(`venue readiness: ${venues.length} surveyed · ${result.postable_with_a_measured_account} with a measured account · ${result.postable_today_count} postable today`);
   for (const r of result.rows) {
     const mark = r.account_exists === true ? "account" : r.account_exists === false ? "none" : "UNKNOWN";
     const post = r.postable_today === true ? "POSTABLE" : r.postable_today === false ? "shut" : "unknown";
     console.log(`  [${mark}/${post}] ${r.venue} — ${r.blocked_on}`);
     console.log(`      binding: ${r.binding} · postable_when: ${r.postable_reason}`);
+    if (r.language_fit === false) {
+      console.log(
+        `      LANGUAGE MISMATCH: this venue reads ${r.audience_language}, the artifact declares ${r.artifact_language}. ` +
+          "Not a rule breach and not a blocker — it decides whether the post lands on people who can read it.",
+      );
+    }
     if (r.problem) console.log(`      PROBLEM: ${r.problem}`);
   }
 

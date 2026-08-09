@@ -489,6 +489,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T21:38:48.882Z",
+      "candidate": "honest_post_where_buyers_gather",
+      "kind": "prerequisite",
+      "mechanism": "The artifact this route will spend its one post on declares lang=ja and its whole UI is Japanese; r/gamedev reads English. No row measures the language of the thing being posted, so the route reads open on an artifact its audience cannot read. That does not break the venue rule, so it must not shut the row — but it decides whether the post converts, and the post is the single measurement this route exists to take. Declaring both languages as data and deriving the artifact's from the file makes the mismatch visible to the picker before the owner action is spent rather than after.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

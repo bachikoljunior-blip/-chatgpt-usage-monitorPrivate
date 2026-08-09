@@ -19,7 +19,7 @@
 //
 //   node scripts/compute-eta.mjs [--write]
 
-import { stat, writeFile } from "node:fs/promises";
+import { readFile, stat, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { readStateJson, REPO } from "./state-source.mjs";
 import { applyRepricings, applyRouteElection } from "./repricing.mjs";
@@ -650,6 +650,7 @@ const { result: venueResult } = await loadVenueRows(
   constraints,
   async (rel) => (await readStateJson(rel, { preferLocal })).value,
   (rel) => stat(resolve(REPO, rel)).then(() => true, () => false),
+  (rel) => readFile(resolve(REPO, rel), "utf8").then((t) => t, () => null),
 );
 const prerequisiteMeasured = prerequisiteCheck(zerobase?.elected_distribution_route ?? null, venueResult);
 const routeElection = applyRouteElection(
@@ -836,6 +837,14 @@ for (const c of candidates) {
         .join(" ");
       console.log(`      prerequisite MEASURED (${m.instrument?.script ?? "no instrument named"}): term=${m.term ?? "PROSE ONLY"} · ${counts}`);
       if (m.problem) console.log(`      PREREQUISITE PROBLEM: ${m.problem}`);
+    }
+    const mismatches = c.route_alignment.language_mismatches;
+    if (mismatches?.length) {
+      console.log(
+        `      LANGUAGE MISMATCH at ${mismatches.length} venue(s): ${mismatches.join(", ")}. ` +
+          "The artifact this route posts is not in the language its readers read. Breaks no rule, " +
+          "shuts no row — decides whether the one post lands.",
+      );
     }
   }
   // Printed, not just written into state/eta.json: a lap picking work reads this

@@ -136,7 +136,26 @@ export function checkFreeArtifact(html) {
     }
   }
 
-  return { present: true, ok: violations.length === 0, violations, note: null };
+  return {
+    present: true,
+    ok: violations.length === 0,
+    violations,
+    note: null,
+    // Reported as a fact, never as a violation. The venue's rule says nothing about
+    // language, so a Japanese artifact breaks no rule and this must not shut the row.
+    // It decides something else — whether the one post this route exists to make can
+    // be read by the people it is made to. Nothing measured that until 2026-08-09,
+    // and the row would have gone to POSTABLE the moment an account existed.
+    declared_language: declaredLanguage(html),
+  };
+}
+
+// From <html lang>, which is the artifact's own claim about itself. Deliberately not
+// a guess from the text: a heuristic that disagreed with the attribute would leave two
+// numbers and no way to tell which is the artifact's intent.
+export function declaredLanguage(html) {
+  const match = String(html ?? "").match(/<html[^>]*\slang\s*=\s*["']?([a-z]{2,3})/i);
+  return match ? match[1].toLowerCase() : null;
 }
 
 const isMain = process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url));
@@ -156,7 +175,10 @@ if (isMain) {
     process.exit(0);
   }
   if (result.ok) {
-    console.log(`free artifact check: ${FREE_ARTIFACT_PATH} is free, unwalled and self-contained`);
+    console.log(
+      `free artifact check: ${FREE_ARTIFACT_PATH} is free, unwalled and self-contained ` +
+        `· declared language: ${result.declared_language ?? "none declared"}`,
+    );
     process.exit(0);
   }
   console.error(`free artifact check FAILED for ${FREE_ARTIFACT_PATH}:`);

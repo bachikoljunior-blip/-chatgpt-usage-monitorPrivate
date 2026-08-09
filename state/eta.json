@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T21:34:58.360Z",
+  "fetched_at": "2026-08-09T21:44:17.947Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -237,7 +237,8 @@
         "elected_at": "2026-08-09T21:15:00Z",
         "why": "Route 2's evidence was refuted by task .h — Datanyze lost 95.46% of organic traffic with exactly what this route proposes (genuine per-entity data per page), and Stripe Fee Auditor ran the premise directly for three months to 5 clicks and zero revenue. On 2026-08-09T21:08Z the route was also measured to have no starting point HERE: our ten pages return nothing from a controlled search, and github.com/bachikoljunior-blip returns nothing either, so the surface an inbound link would come from is not in the index. Refuted in general and unstartable in particular.",
         "prerequisite": null,
-        "prerequisite_measured": null
+        "prerequisite_measured": null,
+        "language_mismatches": null
       }
     },
     {
@@ -287,7 +288,8 @@
         "elected_at": "2026-08-09T21:15:00Z",
         "why": "Route 2's evidence was refuted by task .h — Datanyze lost 95.46% of organic traffic with exactly what this route proposes (genuine per-entity data per page), and Stripe Fee Auditor ran the premise directly for three months to 5 clicks and zero revenue. On 2026-08-09T21:08Z the route was also measured to have no starting point HERE: our ten pages return nothing from a controlled search, and github.com/bachikoljunior-blip returns nothing either, so the surface an inbound link would come from is not in the index. Refuted in general and unstartable in particular.",
         "prerequisite": null,
-        "prerequisite_measured": null
+        "prerequisite_measured": null,
+        "language_mismatches": null
       }
     },
     {
@@ -361,9 +363,19 @@
             "account": 1
           },
           "venues_on_the_named_term": 1,
+          "language_mismatches": [
+            "itch.io — Release Announcements",
+            "r/gamedev",
+            "GameDev.net — Your Announcements"
+          ],
           "ok": true,
           "problem": null
-        }
+        },
+        "language_mismatches": [
+          "itch.io — Release Announcements",
+          "r/gamedev",
+          "GameDev.net — Your Announcements"
+        ]
       },
       "blocked_on_rechecked": {
         "at": "2026-08-09T11:28:00.123Z",

@@ -782,7 +782,30 @@
         "Same session, one lap earlier: codex/INBOX.md task .r asks which venues accept a GitHub or Google account we already hold. If it returns venues, the r/gamedev route stops being the only priced door — which does not falsify this, but does change what the owner action is worth.",
         "Not this lap: no venue row's rule, eligibility or account field was edited. Only a new request was added."
       ],
+      "amended_2026-08-09T21:45Z": "The next lap in the same session found something on this row and did NOT add it as a postable_when member, which is worth stating so the judge does not read the amendment as a dodge. The artifact declares lang=\"ja\" and every surveyed venue reads English. That breaks no rule — r/gamedev's rule is about payment and signup walls — so it must not shut the row, and adding it to postable_when would have been wrong rather than merely inconvenient. It is carried as audience_language / language_fit instead. This prediction is about blockers on POSTABILITY and stands; a separate one covers whether the post lands.",
       "falsified_if": "A lap adds a third postable_when member to the r/gamedev row for a condition that was already true and knowable on 2026-08-09 — that would mean the row was carrying a blocker nobody had thought of, for the third time. Also falsified, more usefully, if the account is created and a post is auto-removed for karma: the request itself says the venue's karma threshold is NOT established, and a removal on that ground would be the first measured case of reputation binding anything here, which needs a fifth member in BINDING_CAUSES rather than a different word in the election. What this does NOT claim: that a post produces a buyer. It claims only that nothing else on our side stands between here and being able to try.",
+      "outcome": null
+    },
+    {
+      "id": "2026-08-09.the-artifact-does-not-speak-the-venue",
+      "made_at": "2026-08-09T21:48:00Z",
+      "claim": "The demo this route will post declares lang=\"ja\" and its entire UI is Japanese. All three surveyed venues read English. Four laps treated the artifact as satisfying r/gamedev — which it does, the rule is about payment and signup walls — and no field on any venue row described the reader, so nothing could notice. The claim is that this is a real term and not a quibble: with the artifact left in Japanese, a post into an English venue does not produce the measurement this whole route exists to take, because the readers cannot tell what they are looking at. Registered before the fix so that the fix cannot be credited retroactively.",
+      "metric": "scripts/venue-readiness.mjs language_mismatches, read from origin/main: today ['itch.io — Release Announcements', 'r/gamedev', 'GameDev.net — Your Announcements']. The artifact side is derived from <html lang> in assets/free-demo/index.html and never asserted on a row, so a row cannot be edited to make the mismatch disappear. Judged together with whether an English version was actually commissioned: codex/INBOX.md task ids after .r and the corresponding codex/outbox file.",
+      "baseline": {
+        "measured_at": "2026-08-09T21:43:00Z",
+        "artifact_declared_language": "ja",
+        "venues_declaring_audience_language": 3,
+        "language_mismatches": 3,
+        "laps_on_this_route_before_anyone_opened_the_artifact": 4
+      },
+      "judge_on": "2026-08-16",
+      "judge_deadline": "2026-08-30",
+      "concurrent_changes": [
+        "Same lap and inseparable: audience_language became a required field on every venue row once an artifact exists, language_fit is derived, and both compute-eta and venue-readiness print the mismatch. Those are the mechanism.",
+        "Same session: the Reddit account request (2026-08-09.reddit-account-create) was filed one lap earlier. If the owner acts and a post is made in Japanese before an English version exists, that post is the measurement and this prediction is judged on it directly rather than on the counts.",
+        "codex/INBOX.md still holds task .r (venues accepting an existing GitHub/Google account). The English version of the demo is the next INBOX slot, not this one — .r can remove the owner action entirely and the 48-hour clock has not started, so it is ahead in sequence."
+      ],
+      "falsified_if": "An English version is produced and posted and the post performs no better than a Japanese one would have — which is only measurable if both are tried, and probably will not be. The honest falsification available here is narrower and worth more: if a lap posts the Japanese artifact into an English venue and it draws real engagement anyway, the language term was not binding and this row should stop carrying it. What this does NOT claim: that language was the reason for ¥0. Nothing has been posted anywhere yet, so language has never yet cost anything — it is a term on a post that has not happened.",
       "outcome": null
     }
   ]

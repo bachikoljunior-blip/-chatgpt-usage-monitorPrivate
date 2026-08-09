@@ -26,7 +26,7 @@ import { decideVerdict, KINDS } from "../scripts/gate-verdict.mjs";
 import { blockedByDirective, directiveBlockers } from "../scripts/directive-block.mjs";
 import { constraintDue } from "../scripts/constraint-due.mjs";
 import { evaluateUnlock } from "../scripts/unlock-condition.mjs";
-import { checkFreeArtifact } from "../scripts/check-free-artifact.mjs";
+import { checkFreeArtifact, declaredLanguage } from "../scripts/check-free-artifact.mjs";
 import { publishedDemoVerdict } from "../scripts/check-published-demo.mjs";
 import { findableSurfaceVerdict, inboundSurfaceVerdict } from "../scripts/measure-findable-surface.mjs";
 import { prerequisiteCheck, venueReadiness } from "../scripts/venue-readiness.mjs";
@@ -1976,12 +1976,14 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     postable_today: false,
     postable_when: shut,
     account: { exists: true, evidence_state_file: "state/itch.json" },
+    audience_language: "en",
   };
   const reddit = {
     venue: "r/gamedev",
     postable_today: false,
     postable_when: { repo_file: "assets/free-demo/index.html" },
     account: { exists: null, evidence_state_file: null },
+    audience_language: "en",
   };
   const evidence = { "state/itch.json": { status: "ok", game_count: 0, profile: { username: "someone" } } };
   const repoFiles = { "assets/free-demo/index.html": false };
@@ -2182,6 +2184,46 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     "the measured prerequisite never reached the candidate",
   );
   assert(stamped[0].route_alignment.prerequisite === "words", "the prose prerequisite was dropped instead of kept beside the measurement");
+
+  // --- and who reads the venue, in what language -------------------------------
+  //
+  // Found by opening the artifact this route will post: it declares lang="ja" and its
+  // whole UI is Japanese, while every surveyed venue reads English. Four laps had
+  // treated the artifact as satisfying r/gamedev's rule — which it does — without any
+  // field describing the reader. A mismatch must NEVER shut a row: the rule is about
+  // payment and signup walls, so a Japanese demo breaks nothing. It is carried as a
+  // separate fact because it decides a separate thing.
+  // postable_today null because with the artifact present and the account unknown the
+  // row derives unknown; the stale-verdict rule is a different check and firing it
+  // here would hide what this case is about.
+  const enVenue = { ...reddit, postable_today: null };
+  const mismatch = venueReadiness([enVenue], evidence, { "assets/free-demo/index.html": true }, "ja");
+  assert(mismatch.rows[0].language_fit === false, "a Japanese artifact at an English venue was not reported as a mismatch");
+  assert(mismatch.rows[0].postable_today !== false || mismatch.ok === true, "a language mismatch was allowed to shut the row");
+  assert(mismatch.ok === true, `a declared mismatch was treated as a defect: ${mismatch.rows[0].problem}`);
+  assert(mismatch.language_mismatches.length === 1, "the mismatch was not counted");
+
+  const fits = venueReadiness([enVenue], evidence, { "assets/free-demo/index.html": true }, "en");
+  assert(fits.rows[0].language_fit === true, "a matching language was not reported as a fit");
+  assert(fits.language_mismatches.length === 0, "a matching language was counted as a mismatch");
+
+  // Unmeasured is a legitimate answer and must not read as a mismatch — otherwise
+  // "nobody looked" and "the reader cannot read it" become the same value, which is
+  // the defect the account field was added to fix.
+  const unknownLang = venueReadiness([{ ...reddit, audience_language: null }], evidence, repoFiles, "ja");
+  assert(unknownLang.rows[0].language_fit === null, "an unmeasured audience produced a verdict");
+  assert(unknownLang.ok === true, "a declared-null audience was rejected");
+
+  // Omission is not. Same rule as the account field, for the same reason.
+  const withoutLang = { ...reddit };
+  delete withoutLang.audience_language;
+  const noLang = venueReadiness([withoutLang], evidence, repoFiles, "ja");
+  assert(noLang.ok === false, "a venue with no audience_language field was accepted");
+  assert(noLang.rows[0].problem.includes("audience_language"), `the missing field was not named: ${noLang.rows[0].problem}`);
+
+  // The artifact's language is derived from the file, never asserted on a row.
+  assert(declaredLanguage('<!doctype html>\n<html lang="ja">') === "ja", "the declared language was not read from <html lang>");
+  assert(declaredLanguage("<html>") === null, "an undeclared language was invented");
 
   // And the real rows pass, which is what keeps this honest as venues are added.
   // The CLI also checks the survey's stored count against the derived one, so the
