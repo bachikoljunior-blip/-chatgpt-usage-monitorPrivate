@@ -1,15 +1,16 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T06:40:00.000Z",
+  "fetched_at": "2026-08-09T06:52:00.000Z",
   "decision": "hand_off",
   "reason": "context_exhausted_not_quota",
-  "detail": "Three laps in one session. The gate said continue every time — weekly quota is 44% with 5.67 days left, so quota was never the limit. What ran out was context, which the gate does not measure. Continuing here would keep the numbers healthy while the judgement degraded, which is the A12 failure exactly.",
-  "not_a_stop": "The hourly Routine picks the loop up. Handing off is the loop continuing in a place where it can think, not the loop ending.",
+  "detail": "Trigger fired at 06:50Z. Gate returned continue (43% weekly, 5.63 days left, 13.0% discretionary, 1.39% lap budget), so quota was not the limit. RUNBOOK 6.5 applies instead: this session has run well past three laps, so the thinking was handed to a fresh child.",
+  "not_a_stop": "The child does the lap. Handing off is the loop continuing where it can think clearly.",
   "gate_at_handoff": {
-    "weekly_remaining_percent": 44,
-    "days_to_reset": 5.67,
-    "discretionary_percent": 14.0,
+    "weekly_remaining_percent": 43,
+    "days_to_reset": 5.63,
+    "discretionary_percent": 13.0,
+    "lap_budget_percent": 1.39,
     "decision": "continue"
   },
   "laps_this_session": [
@@ -26,5 +27,6 @@
       "did": "added the handoff rule the gate was missing"
     }
   ],
-  "next_lap_should": "Read state/eta.json. The top candidates are now the zero-base options. Their days-to-first-yen is the falsifiable claim — pick one and measure that, rather than treating the month figures as observations."
+  "next_lap_should": "Retry the Gumroad create/read/delete lifecycle once the 10-per-day creation cap resets — it is the one pending measurement that changes the ranking of the zero-base options. Decide from the run's own message whether the cap is still in force; do not assume.",
+  "child_session_id": "session_01AFhFETmkGvs9vkgaVqyTUS"
 }
