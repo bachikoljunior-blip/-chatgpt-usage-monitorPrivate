@@ -759,6 +759,31 @@
       ],
       "falsified_if": "A lap after this one records a mechanism in state/lap-claims.json whose route to the ETA is building standing, participation or karma. Also falsified, more usefully, if a venue turns out to refuse us specifically for lack of reputation while its rules and our account are both settled — that would mean standing was a real fourth cause and the vocabulary is too narrow, in which case BINDING_CAUSES needs a fifth member rather than the election needing a different word. What this does NOT claim: that renaming the prerequisite moves the ETA. The ETA is infinite and this lap was admitted as a prerequisite claiming no improvement.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-09.reddit-account-is-the-last-machine-blocker",
+      "made_at": "2026-08-09T21:47:00Z",
+      "claim": "Owner request 2026-08-09.reddit-account-create is the last thing between this loop and a post that a venue's own quoted rule permits. Everything else on that row is already true and measured: the artifact is free, unwalled and playable on open; it is live at a public URL; state/public-host.json says the served copy matches the repository copy; and the venue's rule permits exactly that in the same sentence it forbids the paid kit. The claim is that no further lap work is needed to make r/gamedev postable — only the account and 48 hours. If a lap between now and the judge date finds another machine-side blocker on that row, this is wrong and the row was never as close as three consecutive laps have said.",
+      "metric": "state/constraints.json no_standing_where_buyers_gather.venue_survey.per_venue[r/gamedev], read from origin/main via scripts/venue-readiness.mjs: postable_when members and the derived binding. Today it is one member array of two conditions, both satisfied, binding=account. Falsification is a THIRD condition being added by a later lap for a reason that was true today — as opposed to one added because the world changed.",
+      "baseline": {
+        "measured_at": "2026-08-09T21:45:00Z",
+        "binding": "account",
+        "account_exists": false,
+        "postable_when_members_satisfied": 2,
+        "postable_when_members_total": 2,
+        "venue_eligibility_established": "48 hours from account creation",
+        "owner_requests_pending_before": 2,
+        "owner_requests_pending_after": 3
+      },
+      "judge_on": "2026-08-16",
+      "judge_deadline": "2026-08-30",
+      "concurrent_changes": [
+        "Same lap and upstream of it: the elected route's prerequisite was renamed from STANDING to `account` (prediction 2026-08-09.prerequisite-was-account-not-standing). This request is what that correction made askable, so the two are not independent and must be judged together.",
+        "Same session, one lap earlier: codex/INBOX.md task .r asks which venues accept a GitHub or Google account we already hold. If it returns venues, the r/gamedev route stops being the only priced door — which does not falsify this, but does change what the owner action is worth.",
+        "Not this lap: no venue row's rule, eligibility or account field was edited. Only a new request was added."
+      ],
+      "falsified_if": "A lap adds a third postable_when member to the r/gamedev row for a condition that was already true and knowable on 2026-08-09 — that would mean the row was carrying a blocker nobody had thought of, for the third time. Also falsified, more usefully, if the account is created and a post is auto-removed for karma: the request itself says the venue's karma threshold is NOT established, and a removal on that ground would be the first measured case of reputation binding anything here, which needs a fifth member in BINDING_CAUSES rather than a different word in the election. What this does NOT claim: that a post produces a buyer. It claims only that nothing else on our side stands between here and being able to try.",
+      "outcome": null
     }
   ]
 }

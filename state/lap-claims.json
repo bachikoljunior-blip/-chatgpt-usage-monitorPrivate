@@ -473,6 +473,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T21:33:53.825Z",
+      "candidate": "honest_post_where_buyers_gather",
+      "kind": "prerequisite",
+      "mechanism": "The elected route's binding term is now measured as account, and it is settled false at the one venue whose rules already permit exactly what we have live. Nothing but an owner action can change that value, and the venue's stated eligibility is 48 hours from account creation — so the earliest possible post date moves one day later for every day this is not asked. Asking today starts a clock that cannot be started any other way; it does not by itself make the ETA finite, which is why no improvement is claimed.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

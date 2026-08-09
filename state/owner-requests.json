@@ -212,6 +212,48 @@
       "answered_at": "2026-08-09T21:20:00Z",
       "answer": "No Reddit account. Owner answered in chat.",
       "outcome": "The success test asked for exists to stop being null; it is now false. Recorded in state/constraints.json no_standing_where_buyers_gather.venue_survey.per_venue[r/gamedev].account. Whether to fold r/gamedev or ask for an account is the next lap's call — this request deliberately did not bundle the account creation, so that a \"no\" could not drag an unnecessary second action with it."
+    },
+    {
+      "id": "2026-08-09.reddit-account-create",
+      "created_at": "2026-08-09T21:45:00Z",
+      "status": "pending",
+      "candidate_id": "honest_post_where_buyers_gather",
+      "owner_actions": 1,
+      "estimated_owner_minutes": 3,
+      "one_line": "Reddit のアカウントを1つ作ってください。作るだけで、投稿はまだしません。48時間の待ち時間が先に必要なので、早いほど投稿できる日が早まります。",
+      "owner_typing_and_judgement_count": "打ち込む文字：ユーザー名1つ・パスワード1つ。判断する箇所：0（ユーザー名の候補はこちらで用意してあります。気に入らなければ何でも構いません）。0にできない理由は minimised.not_reducible_further にあります。",
+      "why_now": {
+        "the_previous_answer_created_this": "2026-08-09.reddit-account-username にオーナーが「無い」と答えました。それで r/gamedev の account.exists は null から false になり、この venue の詰まりは**測定済みの1点**になりました。オーナー操作以外にこの値を変えるものはありません。",
+        "the_venue_is_the_one_that_already_fits": "r/gamedev の規約は有料アセットの宣伝を禁じ、**同じ文で**「完全に無料で、サインアップやメール登録の壁の後ろに無いもの」の共有を許しています。こちらが投稿するものは既にその条件を満たして公開されています —— https://bachikoljunior-blip.github.io/O/hoshikuzu/ 、無料・登録不要・開いた瞬間に遊べる単一ファイル。**規約を満たすために変えるものは何もありません。**",
+        "the_clock_is_the_reason_for_today": "この venue の投稿資格は「アカウント作成から48時間」で、6件調べた venue のうち**数値で分かっている唯一の資格**です。作成が1日遅れれば、投稿できる最短日も1日遅れます。作成と投稿を分けて頼んでいるのはそのためで、まとめて頼むと48時間ぶん遅くなります。"
+      },
+      "the_ask": {
+        "step_1": {
+          "what": "https://www.reddit.com/register を開いて、アカウントを1つ作る",
+          "email": "bachikoljunior@gmail.com（既に分かっているので、こちらから訊くことはありません）",
+          "username_suggestion": "hoshikuzu_kobo",
+          "username_note": "候補です。使われていたら末尾に数字を足すなり、まったく別のものにするなり、好きにしてください。**こちらは何でも動きます。**決まったユーザー名だけ、あとで一言教えてください。",
+          "nothing_else": "投稿はしないでください。プロフィールも空のままで構いません。今回は作るところまでです。"
+        },
+        "step_2": {
+          "what": "作ったユーザー名を一言教えてください",
+          "why": "こちらから reddit.com は 403 で届かないので、作成されたことを観測できません。ユーザー名が分かれば、経過時間の計算はこちらでできます。"
+        }
+      },
+      "what_this_does_not_promise": {
+        "48_hours_is_necessary_not_sufficient": "48時間はこの venue が公表している唯一の数値であって、投稿が残る保証ではありません。",
+        "the_measured_failure_mode": "調査に載っている実例では、2026-03-20 に投稿が**自動削除**されています。理由はアカウント年齢ではなく、そのコミュニティでの comment karma が10未満だったことでした。**r/gamedev がその閾値を持つとは確認できていません**——確認できているのは48時間だけです。だから作成を頼むこの依頼は、投稿が通ることを約束しません。約束するのは、**通るかどうかを試せる状態になること**です。",
+        "why_that_is_still_worth_one_action": "いま試すことすらできません。0か1かの違いで、その1が唯一の測定手段です。もし karma で弾かれたなら、それは**この loop が初めて実測した「評判が本当に効いた事例」**になり、venue-readiness の分類（postable / venue_rule / venue_unsettled / account）に5つ目が要るという答えになります。弾かれても情報が返ります。"
+      },
+      "success_test": "r/gamedev に、無料デモへのリンクを含む投稿が存在し、24時間後にまだ残っていること。投稿URLと、その時点で削除されていないことで測ります。アカウントができたことでは測りません。",
+      "not_success": "アカウントが存在すること。それは前提であって結果ではありません。state/constraints.json の r/gamedev 行が postable_today true に変わっただけでも成功ではありません——その行は投稿が残ったかどうかを見ていません。",
+      "judge_by": "2026-08-16",
+      "minimised": {
+        "removed": "投稿文の作成も、実際の投稿も、この依頼には入れていません。48時間が先に要るので、いま一緒に頼んでも待ち時間は縮まらず、頼む量だけが増えます。投稿文はこちらで用意して、48時間が経ってから別の依頼として出します。",
+        "not_reducible_further": "打ち込む文字を0にはできません。アカウント作成は本人しかできず、reddit.com はこの環境から 403 で、資格情報も持っていません。ユーザー名の判断は候補を1つ用意することで0にしてあります。",
+        "why_a_third_pending_request_is_acceptable": "他の2件（itch ページ、Gumroad の画像）と競合しません。別のプラットフォーム・別の画面・3分。そして**これだけが時計を持っています**——他の2件は遅れてもその日から始まりますが、これは遅れた日数がそのまま投稿日に足されます。"
+      },
+      "source": "state/constraints.json no_standing_where_buyers_gather.venue_survey.per_venue[r/gamedev]（規約原文・48時間・自動削除の実例）、state/public-host.json（デモが公開され、リポジトリの写しと一致していること）、state/zerobase.json elected_distribution_route.prerequisite_correction（この経路の前提条件が account であること）"
     }
   ]
 }

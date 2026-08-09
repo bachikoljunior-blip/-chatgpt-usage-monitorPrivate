@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T21:31:19.347Z",
+  "fetched_at": "2026-08-09T21:34:58.360Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -34,6 +34,13 @@
       "created_at": "2026-08-09T16:10:00Z",
       "judge_by": "2026-08-16",
       "one_line": "Gumroad の商品ページに、画像を1枚アップロードしてください。ファイルはこちらで作ってあります。選ぶだけです。"
+    },
+    {
+      "id": "2026-08-09.reddit-account-create",
+      "candidate_id": "honest_post_where_buyers_gather",
+      "created_at": "2026-08-09T21:45:00Z",
+      "judge_by": "2026-08-16",
+      "one_line": "Reddit のアカウントを1つ作ってください。作るだけで、投稿はまだしません。48時間の待ち時間が先に必要なので、早いほど投稿できる日が早まります。"
     }
   ],
   "target_yen_per_month": 200000,
@@ -45,11 +52,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.12
+      "days_unchanged": 0.13
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.12
+      "days_unchanged": 0.13
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -256,7 +263,7 @@
         "published_count": 10,
         "pages_found_by_search": 0,
         "verdict": "published_but_not_findable",
-        "measured_at": "2026-08-09T21:18:42.482Z",
+        "measured_at": "2026-08-09T21:31:21.004Z",
         "what_it_settles": "Not a shortage of pages. Ten serve 200 and a search index returned none of them, so page COUNT is not the binding term — the missing step is an inbound path from a surface that is already crawled. Building more pages buys nothing until that step exists.",
         "inbound_surface": {
           "verdict": "no_crawled_surface_found",
@@ -303,6 +310,18 @@
         "what_it_leaves": "Five of the seven checked options are now refuted, and the term that keeps failing has moved. It is no longer 'unattended discovery does not work' (that was 2026-08-09.h) but 'a standing start does not work'. The blocker the evidence actually names is STANDING, not recurring posting: prior participation in the community, or several venues hit at once, or an existing following. That distinction matters because the constraint this loop excluded route 1 on was 'recurring owner actions', and standing is not a recurring action — it is a prerequisite that accrues before the post. Invoker is the one case with zero audience, both dates, and a first sale on day zero, and it substituted breadth (three venues at once) for standing. Recording this is not a proposal: per 2026-08-09.h, a lap should take this deliberately rather than fill the gap with an eighth candidate."
       },
       "measured_surface": null,
+      "owner_request": {
+        "id": "2026-08-09.reddit-account-create",
+        "status": "pending",
+        "created_at": "2026-08-09T21:45:00Z",
+        "one_line": "Reddit のアカウントを1つ作ってください。作るだけで、投稿はまだしません。48時間の待ち時間が先に必要なので、早いほど投稿できる日が早まります。",
+        "owner_actions": 1,
+        "estimated_owner_minutes": 3,
+        "judge_by": "2026-08-16",
+        "source": "state/constraints.json no_standing_where_buyers_gather.venue_survey.per_venue[r/gamedev]（規約原文・48時間・自動削除の実例）、state/public-host.json（デモが公開され、リポジトリの写しと一致していること）、state/zerobase.json elected_distribution_route.prerequisite_correction（この経路の前提条件が account であること）",
+        "where": "state/owner-requests.json",
+        "read_this_before_acting": "The request is prepared. Do not prepare it again, and do not treat this candidate as work a lap can do — it waits on the owner. If it has been pending past judge_by with nothing happening, that is a finding about the request channel, not a reason to rewrite the request."
+      },
       "actionable_now": true,
       "eta_effect_days": null,
       "recurring_owner_actions_per_month": 0,
