@@ -242,7 +242,35 @@ for (const c of candidates) {
         : "no comparable estimate recorded";
 }
 
+// Efficiency work cannot shorten an infinite ETA. Doubling the rate of travel
+// along a road that never arrives still never arrives, so while every path is at
+// infinity, making laps cheaper buys exactly zero days — and it looks free,
+// because nothing shows movement either way.
+//
+// Measured 2026-08-09: sixteen consecutive laps chose efficiency and machinery.
+// Discretionary budget went 13.0% -> 24.86%, which is real. idle_eta stayed at
+// infinity and revenue stayed at zero. The loop was accelerating along a road
+// with no destination.
+//
+// This is not a quota on categories — a quota would be arbitrary. It falls out of
+// the arithmetic: any finite path, however slow, beats infinity, so anything that
+// could make a path finite outranks anything that merely makes travel faster.
+// The moment one path is finite, efficiency starts buying real days again and
+// this demotion lifts by itself.
+const etaIsInfinite = idlePortfolio === null;
+for (const c of candidates) {
+  if (c.kind === "efficiency" && etaIsInfinite) {
+    c.deprioritised_while_eta_infinite = true;
+    c.eta_effect_basis =
+      "buys no days while every path is at infinity: a faster rate along a road that " +
+      "never arrives still never arrives. Ranks above nothing until one path is finite.";
+  }
+}
+
 candidates.sort((a, b) => {
+  const aDead = a.kind === "efficiency" && etaIsInfinite;
+  const bDead = b.kind === "efficiency" && etaIsInfinite;
+  if (aDead !== bDead) return aDead ? 1 : -1;
   if (a.actionable_now !== b.actionable_now) return a.actionable_now ? -1 : 1;
   const ad = a.eta_effect_days ?? Infinity;
   const bd = b.eta_effect_days ?? Infinity;

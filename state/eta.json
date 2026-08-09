@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T09:10:20.879Z",
+  "fetched_at": "2026-08-09T09:21:03.952Z",
   "ranking": "candidates are sorted by estimated days to first yen (conservative end), actionable ones first",
   "target_yen_per_month": 200000,
   "idle_eta_days": null,
@@ -9,7 +9,7 @@
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-09T07:37:56.232Z",
+      "measured_at": "2026-08-09T09:20:48.307Z",
       "monthly_yen_now": 0,
       "lifetime_sales": 0,
       "lifetime_usd_cents": 0,
@@ -100,16 +100,6 @@
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 60 days at the conservative end (estimate, not measured)"
     },
     {
-      "kind": "efficiency",
-      "id": "reduce_lap_cost",
-      "why": "more laps per week from the same quota means more attempts at every other candidate",
-      "owner_actions": 0,
-      "note": "move work to the non-scarce pool; stop loading the full directive into every session in 14 repos",
-      "actionable_now": true,
-      "eta_effect_days": null,
-      "eta_effect_basis": "does not shorten the ETA directly; raises laps per week, which raises attempts at everything else"
-    },
-    {
       "kind": "channel_unblock",
       "id": "itch",
       "why": "turns an infinite path finite",
@@ -129,6 +119,17 @@
       "not_actionable_reason": "waits on an event: first game published",
       "eta_effect_days": null,
       "eta_effect_basis": "no comparable estimate recorded"
+    },
+    {
+      "kind": "efficiency",
+      "id": "reduce_lap_cost",
+      "why": "more laps per week from the same quota means more attempts at every other candidate",
+      "owner_actions": 0,
+      "note": "move work to the non-scarce pool; stop loading the full directive into every session in 14 repos",
+      "actionable_now": true,
+      "eta_effect_days": null,
+      "eta_effect_basis": "buys no days while every path is at infinity: a faster rate along a road that never arrives still never arrives. Ranks above nothing until one path is finite.",
+      "deprioritised_while_eta_infinite": true
     }
   ],
   "measured_current_monthly_yen": 0
