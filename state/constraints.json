@@ -50,13 +50,25 @@
       "eta_effect_if_lifted": "medium: would make form-only surfaces reachable, though credentials would still be required"
     },
     {
-      "id": "chatgpt_reach_from_automation",
-      "claim": "UNMEASURED: whether the automated ChatGPT path (chatgpt-ask.yml, codex exec in a read-only sandbox) can read our repositories.",
-      "evidence": "Owner confirmed ChatGPT can reach GitHub when they operate it. The automated path has never been tested.",
-      "measured_at": null,
-      "recheck_after": "2026-08-09",
-      "blocks": ["delegating_review_and_eta_work"],
-      "eta_effect_if_lifted": "large: Claude is the scarce pool and ChatGPT is not; moving review/audit/ETA work there raises laps per week"
+      "id": "chatgpt_readonly_sandbox_cannot_start",
+      "claim": "MEASURED: with the default read-only sandbox, the automated ChatGPT path executes no commands at all. The model answers from the prompt text alone.",
+      "evidence": "2026-08-09 capability probe returned untested for all four checks with 'bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted'. Unprivileged user namespaces are restricted on the GitHub runner. The failure is silent from the caller's side, so earlier answers may have looked researched while nothing was ever read.",
+      "measured_at": "2026-08-09",
+      "recheck_after": "2026-09-09",
+      "blocks": ["delegating_any_tool_work_to_chatgpt"],
+      "eta_effect_if_lifted": "large: Claude is the scarce pool and ChatGPT is not.",
+      "resolved_by": "sandbox input added 2026-08-09; with danger-full-access the same probe returned read_cwd=yes network=yes other_repo=yes write=yes",
+      "note": "This never blocked the zero-base blind step. That step wants a mind that cannot read our state."
+    },
+    {
+      "id": "chatgpt_cannot_see_our_private_repos",
+      "claim": "MEASURED: the automated ChatGPT path executes commands and reaches the internet, but cannot read our private repositories, and its working directory is an empty scratch dir rather than the checkout.",
+      "evidence": "2026-08-09 with --sandbox danger-full-access: api.github.com returned 200, api.github.com/repos/bachikoljunior-blip/note returned 404 (the unauthenticated response for a private repo), /tmp write succeeded, and `ls` in the working directory was empty because --cd is only set when collect_files is used.",
+      "measured_at": "2026-08-09",
+      "recheck_after": "2026-09-09",
+      "blocks": ["chatgpt_code_review_of_our_repos"],
+      "eta_effect_if_lifted": "medium: would let the non-scarce pool take review and audit work off Claude. Two routes exist and neither has been tried: point --cd at the checkout, or pass file contents in the prompt.",
+      "note": "Suits the blind step exactly as it stands. Delegating research and market work needs no repo access either, so this is not blocking today's candidates."
     },
     {
       "id": "itch_profile_games_fields",
