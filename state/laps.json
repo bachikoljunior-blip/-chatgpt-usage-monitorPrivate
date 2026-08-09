@@ -1,6 +1,13 @@
 {
   "schema_version": 1,
-  "open": {},
+  "open": {
+    "revenue-loop-child-0752": {
+      "at": "2026-08-09T07:52:49.286Z",
+      "usage_fetched_at": "2026-08-09T07:18:37.527Z",
+      "remaining_percent": 43,
+      "resets_at": "2026-08-14T22:00:00.895Z"
+    }
+  },
   "samples": [
     {
       "id": "revenue-loop",
@@ -51,21 +58,20 @@
       "reason": "no_new_usage_reading"
     },
     {
-<<<<<<< Updated upstream
       "id": "revenue-loop",
       "started_at": "2026-08-09T06:58:39.481Z",
       "ended_at": "2026-08-09T06:59:35.981Z",
       "cost_percent": null,
       "usable": false,
       "reason": "below_measurement_resolution"
-=======
+    },
+    {
       "id": "eta-loop",
       "started_at": "2026-08-09T07:51:41.425Z",
       "ended_at": "2026-08-09T07:52:24.636Z",
       "cost_percent": null,
       "usable": false,
       "reason": "no_new_usage_reading"
->>>>>>> Stashed changes
     }
   ],
   "pending_verification": {

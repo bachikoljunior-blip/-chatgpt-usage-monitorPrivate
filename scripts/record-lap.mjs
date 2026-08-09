@@ -25,6 +25,7 @@ import { writeFile, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { readStateJson, REPO } from "./state-source.mjs";
 import { windowDidRoll } from "./window-roll.mjs";
+import { parseStateFile } from "./state-file.mjs";
 
 const flags = new Map(
   process.argv
@@ -47,11 +48,26 @@ const LAPS = resolve(REPO, "state/laps.json");
 const REGISTRY = resolve(REPO, "state/automations.json");
 const MAX_SAMPLES = 20;
 
+// A file that is missing and a file that is damaged are not the same event, and
+// collapsing them is how the lap history nearly deleted itself — see
+// scripts/state-file.mjs for the incident. Missing gets the fallback; damaged
+// stops the run, because the very next thing this script does is write the
+// returned object back over the file.
 async function readLocalJson(path, fallback) {
+  let text;
   try {
-    return JSON.parse(await readFile(path, "utf8"));
-  } catch {
-    return fallback;
+    text = await readFile(path, "utf8");
+  } catch (error) {
+    if (error.code === "ENOENT") return fallback;
+    throw error;
+  }
+  try {
+    return parseStateFile(text, path);
+  } catch (error) {
+    console.error(`cannot record lap: ${error.message}`);
+    console.error("refusing to continue: writing now would replace the measurement history with an empty one");
+    console.error("repair the file (it is committed state) and re-run.");
+    process.exit(5);
   }
 }
 

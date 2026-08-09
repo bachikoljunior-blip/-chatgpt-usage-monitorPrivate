@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 import { readVault, writeVault } from "../scripts/token-vault.mjs";
 import { startMockAnthropic } from "./mock-anthropic.mjs";
 import { windowDidRoll } from "../scripts/window-roll.mjs";
+import { hasConflictMarkers, parseStateFile } from "../scripts/state-file.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const temporary = await mkdtemp(join(tmpdir(), "usage-monitor-test-"));
@@ -264,6 +265,51 @@ assert(
 // Missing or unparseable values fall back to exact comparison rather than guessing.
 assert(!windowDidRoll(undefined, undefined), "identical unparseable values should not roll");
 assert(windowDidRoll(undefined, "2026-08-14T22:00:00.314Z"), "unparseable vs parseable should roll");
+
+// A damaged state file must never be mistaken for a missing one. record-lap.mjs
+// writes back whatever it reads, so a fallback-to-empty on a parse error erases
+// the measurement history and commits the erasure. This happened: dc27015 put
+// git conflict markers into state/laps.json, and the old reader turned seven
+// samples into zero while exiting 0.
+const corruptLaps = `{
+  "schema_version": 1,
+  "samples": [
+<<<<<<< Updated upstream
+    { "id": "revenue-loop", "usable": false }
+=======
+    { "id": "eta-loop", "usable": false }
+>>>>>>> Stashed changes
+  ]
+}
+`;
+assert(hasConflictMarkers(corruptLaps), "conflict markers were not detected");
+assert(!hasConflictMarkers('{"samples": []}'), "clean JSON reported as conflicted");
+// A string that merely contains the characters must not trip it — only markers
+// at the start of a line, the way git writes them.
+assert(!hasConflictMarkers('{"note": "a <<<<<<< b ======= c"}'), "inline text read as markers");
+
+let threw = null;
+try {
+  parseStateFile(corruptLaps, "state/laps.json");
+} catch (error) {
+  threw = error;
+}
+assert(threw !== null, "a file with conflict markers parsed without error");
+assert(threw.name === "CorruptStateFileError", `unexpected error type: ${threw?.name}`);
+assert(threw.conflictMarkers === true, "conflict markers were not reported on the error");
+assert(
+  threw.message.includes("state/laps.json") && threw.message.includes("conflict markers"),
+  `error message does not name the file and the cause: ${threw.message}`,
+);
+// Valid state still parses unchanged, or the guard would break every lap.
+assert(parseStateFile('{"samples": [1, 2]}', "x").samples.length === 2, "valid state failed to parse");
+
+// The committed lap history must itself be parseable. This is the assertion that
+// would have caught dc27015 before it shipped.
+const committedLaps = await readFile(join(root, "state/laps.json"), "utf8");
+assert(!hasConflictMarkers(committedLaps), "state/laps.json contains unresolved conflict markers");
+const parsedLaps = parseStateFile(committedLaps, "state/laps.json");
+assert(Array.isArray(parsedLaps.samples), "state/laps.json has no samples array");
 
 console.log("All usage monitor tests passed.");
 
