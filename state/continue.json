@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "fetched_at": "2026-08-09T09:03:24.061Z",
+  "fetched_at": "2026-08-09T09:04:42.085Z",
   "decision": "handoff_after_three_laps",
   "reason": "RUNBOOK 6.5: three laps in one session. Not a stop — the successor continues from the gate. Context, not quota, is the limit the gate cannot see.",
   "did": "Lap 3 replaced the invented 0.5%-per-run reservation with a bound measured from data the repo already held: the git history of state/claude-usage.json joined with the lap timestamps in state/laps.json (scripts/derive-lap-cost.mjs). Reading it back caught a second problem and it was fixed in the same lap.",
@@ -20,5 +20,7 @@
     "session_01AFhFETmkGvs9vkgaVqyTUS",
     "session_0129rDwWoueon8Es9RTnG2Gx"
   ],
-  "status": "ok"
+  "status": "ok",
+  "successor_session_id": "session_01DHNxsr958RGRUuqwGypJKX",
+  "successor_spawned_at": "2026-08-09T09:04:42.083Z"
 }
