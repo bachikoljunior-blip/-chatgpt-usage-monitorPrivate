@@ -22,7 +22,7 @@
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { readStateJson, REPO } from "./state-source.mjs";
-import { applyRepricings } from "./repricing.mjs";
+import { applyRepricings, applyRouteElection } from "./repricing.mjs";
 import { daysToTarget } from "./revenue-rate.mjs";
 import { constraintDue } from "./constraint-due.mjs";
 import { evaluateUnlock } from "./unlock-condition.mjs";
@@ -270,6 +270,10 @@ if (zerobase?.verdict === "adopt_for_next_test") {
       kind: "zero_base_option",
       id: o.id,
       why: o.why ?? "from the blind round",
+      // Which distribution route this option serves, declared on the option itself
+      // so applyRouteElection can align it. Options that declare nothing are left
+      // alone rather than assumed off-route.
+      serves_route: o.serves_route ?? null,
       owner_actions: o.owner_actions ?? "unknown",
       days_to_first_yen_estimate: o.days_to_first_yen ?? null,
       estimate_not_measurement: true,
@@ -628,6 +632,14 @@ const { unmatched: unmatchedRepricings } = applyRepricings(candidates, [
   ...constraintRepricings,
 ]);
 
+// Which distribution route is elected. distribution_answer chose one on
+// 2026-08-09T10:19Z in a field called route_2_is_the_one_that_survives, and nothing
+// read it — so when its evidence was refuted, when its own route_1 exclusion was
+// withdrawn in the same file, and when a lap measured that the route has no
+// starting point here, the ranking went on exactly as before. Three findings, no
+// movement, because the election was a sentence. Reasoning in scripts/repricing.mjs.
+const routeElection = applyRouteElection(candidates, zerobase?.elected_distribution_route ?? null);
+
 // A blocker that was never checked reads exactly like a blocker that was checked
 // and found solid. honest_post_where_buyers_gather carried blocked_on "there is
 // nothing to post about yet" from the hour it was written, and no lap had opened
@@ -730,6 +742,11 @@ const report = {
   // by ETA forever while nobody notices the number has never once changed — which
   // is exactly what happened between the first computation and now.
   movement: movement,
+  // Which distribution route is elected, and which candidates it covers. Carried in
+  // the report rather than only on the candidates so that "nothing is elected" is
+  // visible as its own state — an election that quietly matched no candidate would
+  // otherwise read identically to no election at all.
+  route_election: routeElection,
   channels,
   candidates,
   measured_current_monthly_yen: channels.reduce((n, c) => n + (c.monthly_yen_now ?? 0), 0),
@@ -783,6 +800,15 @@ for (const c of channels) {
 console.log("candidates:");
 for (const c of candidates) {
   console.log(`  [${c.kind}] ${c.id} (owner actions: ${c.owner_actions}) — ${c.why}`);
+  // Printed immediately under the candidate, before its estimates. A candidate on
+  // an abandoned route that reads well is exactly what this loop kept picking.
+  if (c.route_alignment) {
+    console.log(`      ROUTE: ${c.route_alignment.status} (${c.route_alignment.serves_route})`);
+    console.log(`      ${c.route_alignment.why}`);
+    if (c.route_alignment.prerequisite) {
+      console.log(`      prerequisite: ${c.route_alignment.prerequisite}`);
+    }
+  }
   // Printed, not just written into state/eta.json: a lap picking work reads this
   // list, and a measurement the picker never sees changes nothing.
   if (c.measured_surface) {

@@ -441,6 +441,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T21:05:16.589Z",
+      "candidate": "elected_distribution_route",
+      "kind": "route_change",
+      "mechanism": "zerobase.distribution_answer elected route 2 (unattended findable pages) in the field route_2_is_the_one_that_survives, and NO SCRIPT READS THAT FIELD. Its evidence was refuted by task .h, its own route_1 exclusion was corrected in the same file and the election never revisited, and the previous lap measured that route 2 has no starting point here — neither our pages nor the surface a link would come from are in the index. Abandoning route 2 and electing route 1 with standing named as the accruable prerequisite, and giving the election a reader in compute-eta so it reaches the picker instead of sitting in prose.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

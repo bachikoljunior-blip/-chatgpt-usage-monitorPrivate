@@ -17,7 +17,7 @@ import {
 } from "../scripts/derive-lap-cost.mjs";
 import { classify, resolveLastSeen } from "../scripts/check-heartbeats.mjs";
 import { buildLaneRecord, LANE_STATE_PATH } from "../scripts/record-lane-run.mjs";
-import { applyRepricings } from "../scripts/repricing.mjs";
+import { applyRepricings, applyRouteElection } from "../scripts/repricing.mjs";
 import {
   ATTACHMENTS, buildPrompt, decide, markerEarned, parseInboxHeader,
 } from "../scripts/inbox-task.mjs";
@@ -817,6 +817,100 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(
     orphaned.length === 0,
     `constraints reprice candidates that do not exist: ${orphaned.join(", ")}`,
+  );
+}
+
+// --- the elected route has to reach the candidates ----------------------------
+//
+// state/zerobase.json chose a distribution route at 2026-08-09T10:19Z in a field
+// named route_2_is_the_one_that_survives. Nothing read it. Three separate findings
+// then landed on that choice and none of them moved the ranking: task .h refuted
+// route 2's evidence, route_1_exclusion_corrected withdrew the ground route 1 was
+// excluded on IN THE SAME FILE, and a lap measured that route 2 has no starting
+// point here at all. The loop kept ranking route-2 candidates for eleven hours
+// because a choice with no reader is not a choice, it is a note.
+//
+// The three-valued status is the part most likely to be "simplified" later. A
+// candidate on neither the elected nor an abandoned route must come out as
+// not_on_an_elected_route, NOT as off-route: collapsing those demotes everything
+// the election never considered, which is most of the board.
+{
+  const election = {
+    route: "r1",
+    elected_at: "2026-08-09T21:15:00Z",
+    abandoned: ["r2"],
+    why: "elected because",
+    abandoned_because: "abandoned because",
+    prerequisite: "standing",
+  };
+  const candidates = [
+    { id: "on_elected", serves_route: "r1" },
+    { id: "on_abandoned", serves_route: "r2" },
+    { id: "on_neither", serves_route: "r3" },
+    { id: "declares_nothing" },
+  ];
+  const result = applyRouteElection(candidates, election);
+
+  assert(
+    candidates[0].route_alignment.status === "elected" &&
+      candidates[0].route_alignment.prerequisite === "standing",
+    "the elected route did not reach the candidate that serves it, or dropped its prerequisite",
+  );
+  assert(
+    candidates[1].route_alignment.status === "on_abandoned_route" &&
+      candidates[1].route_alignment.why === "abandoned because",
+    "a candidate on an abandoned route was not marked, or was marked without the reason",
+  );
+  assert(
+    candidates[2].route_alignment.status === "not_on_an_elected_route",
+    "a candidate on an unconsidered route was collapsed into the abandoned bucket",
+  );
+  assert(
+    candidates[3].route_alignment === undefined,
+    "a candidate declaring no route was given an alignment it cannot have earned",
+  );
+  assert(
+    candidates[1].route_alignment.prerequisite === null,
+    "an abandoned candidate inherited the elected route's prerequisite",
+  );
+  assert(
+    result.aligned.join() === "on_elected" && result.on_abandoned_route.join() === "on_abandoned",
+    "the election summary did not report which candidates it covered",
+  );
+
+  // No election must be inert rather than an error, and must not silently mark
+  // everything off-route.
+  const untouched = [{ id: "x", serves_route: "r1" }];
+  const none = applyRouteElection(untouched, null);
+  assert(
+    none.elected === null && untouched[0].route_alignment === undefined,
+    "an absent election was not treated as no election",
+  );
+
+  // The live state has to keep carrying an election that actually covers something.
+  // An election matching no candidate reads, in the report, exactly like no
+  // election — and that is the failure mode this whole block exists for.
+  const zb = JSON.parse(await readFile(join(root, "state/zerobase.json"), "utf8"));
+  const live = zb.elected_distribution_route;
+  assert(live?.route, "state/zerobase.json carries no elected_distribution_route");
+  assert(
+    Array.isArray(live.abandoned) && live.abandoned.length > 0,
+    "the election abandons nothing, so it cannot demote the route it replaced",
+  );
+  const served = new Set((zb.options ?? []).map((o) => o.serves_route).filter(Boolean));
+  assert(
+    served.has(live.route),
+    `the elected route ${live.route} is served by no option, so the election reaches no candidate`,
+  );
+  for (const gone of live.abandoned) {
+    assert(served.has(gone), `the election abandons ${gone}, which no option serves`);
+  }
+  // And the superseded prose field must still be present. Deleting it would erase
+  // the record of what was believed and why it changed, which is the thing that
+  // makes the next election checkable.
+  assert(
+    zb.distribution_answer?.route_2_is_the_one_that_survives,
+    "the superseded election was deleted instead of superseded",
   );
 }
 

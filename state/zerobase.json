@@ -5,6 +5,20 @@
   "last_round_at": "2026-08-09T06:20:00.000Z",
   "cadence_days": 7,
   "note": "Zero-base round: options produced without sight of the current portfolio, then compared against the measured ETA. The proposal passed scripts/check-blind.mjs, so no name of ours appears in it.",
+  "elected_distribution_route": {
+    "route": "route_1_post_where_buyers_gather",
+    "elected_at": "2026-08-09T21:15:00Z",
+    "elected_by": "a lap admitted under --kind=route_change after the prerequisite lane closed 3/3 with the ETA unmoved",
+    "supersedes": "distribution_answer.route_2_is_the_one_that_survives (2026-08-09T10:19Z)",
+    "abandoned": ["route_2_unattended_findable_pages"],
+    "why": "Every near-success in six surveys had a third party with reach point at the thing, or several venues on the same day. Route 1 is also the fastest thing on the board by a wide margin — three of the recorded cases reached first revenue within 0-1 days of publishing, against zero cases anywhere of unattended discovery producing a first buyer. It is elected on being the only route with a case behind it, not on being easy.",
+    "abandoned_because": "Route 2's evidence was refuted by task .h — Datanyze lost 95.46% of organic traffic with exactly what this route proposes (genuine per-entity data per page), and Stripe Fee Auditor ran the premise directly for three months to 5 clicks and zero revenue. On 2026-08-09T21:08Z the route was also measured to have no starting point HERE: our ten pages return nothing from a controlled search, and github.com/bachikoljunior-blip returns nothing either, so the surface an inbound link would come from is not in the index. Refuted in general and unstartable in particular.",
+    "prerequisite": "STANDING in the venue — prior participation, or breadth (several venues the same day) substituting for it. Named as the prerequisite rather than as a blocker because it ACCRUES: it is the one thing on this route that a lap can build a little of at a time, and state/constraints.json no_standing_where_buyers_gather already measures 0 of 3 surveyed venues postable today.",
+    "why_the_original_exclusion_does_not_apply": "distribution_answer excluded route 1 for requiring 'repeated human posting', and its own route_1_exclusion_corrected withdrew that ground the same morning: the evidence describes ONE post plus a few hours of replies, not a recurring operation. The no-recurring-owner-actions constraint therefore never covered this route. That correction has sat in the same file as the election it contradicts for eleven hours without moving anything, because both were prose.",
+    "what_this_does_not_claim": "That route 1 is executable today. It is not — 0 of 3 surveyed venues are postable from a standing start, and whether a Reddit account exists is still a pending owner request. Electing it says the loop stops spending laps on unattended discovery and starts spending them on standing and breadth. A route that is blocked on an accruable prerequisite is a different thing from a route that is refuted, and the ranking should not treat them alike.",
+    "how_to_falsify_this_election": "Show one case of a first buyer arriving unattended with both calendar dates confirmed, or measure any writable surface of ours into a search index. Either reopens route 2. state/findable-surface.json inbound_surface is the live instrument and goes stale in 14 days, so this is checked rather than remembered.",
+    "read_by": "scripts/repricing.mjs applyRouteElection, called from scripts/compute-eta.mjs, which stamps route_alignment onto every candidate declaring serves_route. Written this way because the field it replaces had no reader for eleven hours and three separate findings failed to move it."
+  },
   "route": "chatgpt-ask.yml with danger-full-access; the account cannot read our private repos (measured 404), so it is blind to the portfolio while still able to research",
   "transcript": "state/blind/2026-08-09.md",
   "incumbent_idle_eta_days": null,
@@ -76,6 +90,7 @@
     },
     {
       "id": "high_intent_tool_site",
+      "serves_route": "route_2_unattended_findable_pages",
       "days_to_first_yen": "14-60",
       "months_to_target": "4-9",
       "owner_actions": "1 initial",
@@ -93,6 +108,7 @@
     },
     {
       "id": "findable_surface_at_scale",
+      "serves_route": "route_2_unattended_findable_pages",
       "days_to_first_yen": "unmeasured",
       "months_to_target": "unmeasured",
       "owner_actions": "0 recurring",
@@ -115,6 +131,7 @@
     },
     {
       "id": "honest_post_where_buyers_gather",
+      "serves_route": "route_1_post_where_buyers_gather",
       "days_to_first_yen": "unmeasured",
       "months_to_target": "unmeasured",
       "owner_actions": "1 initial + several hours of replies the same day, per attempt, not recurring",

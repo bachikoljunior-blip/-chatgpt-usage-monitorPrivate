@@ -5,6 +5,28 @@
   "note": "Every change made because it was claimed to shorten the ETA. judge_on is set when the change lands, not when it is convenient. concurrent_changes is what else was in flight, so a later reader can tell a clean attribution from a confounded one.",
   "predictions": [
     {
+      "id": "2026-08-09.the-elected-route-gets-a-reader",
+      "made_at": "2026-08-09T21:20:00Z",
+      "claim": "The distribution route was elected on 2026-08-09T10:19Z in zerobase.distribution_answer.route_2_is_the_one_that_survives, and no script read that field. Three findings then landed on it and none moved the ranking: task .h refuted route 2's evidence; route_1_exclusion_corrected withdrew the ground route 1 was excluded on, in the same file, twenty-six minutes later; and a lap measured that route 2 has no starting point here. The claim registered is that giving the election a READER changes which candidates laps pick — not that route 1 is right. Specifically: laps after this one stop spending themselves on unattended-discovery work (more pages, inbound links, findability instruments) and spend themselves on standing or breadth instead.",
+      "metric": "state/eta.json route_election.aligned and route_election.on_abandoned_route, read from origin/main; and which candidate each following lap selects, read from state/lap-claims.json ids and state/continue.json.",
+      "baseline": {
+        "measured_at": "2026-08-09T21:09:00Z",
+        "elected": "route_1_post_where_buyers_gather",
+        "aligned": ["honest_post_where_buyers_gather"],
+        "on_abandoned_route": ["high_intent_tool_site", "findable_surface_at_scale"],
+        "laps_spent_on_route_2_work_before_this": "the last three laps: a custom-domain distribution surface, the findability instrument's control, and the inbound-surface premise. All three are route 2.",
+        "prerequisite_streak_at_election": "3 of 3, which is why this lane was open at all"
+      },
+      "judge_on": "2026-08-16",
+      "judge_deadline": "2026-08-30",
+      "concurrent_changes": [
+        "Same lap, earlier commit 18c8930: the inbound-surface measurement that supplied half the reason for abandoning route 2. It is a cause of this change, not an independent change — but it is also the thing that would make route 2 look bad even with no election, so at judging do not credit the election for a lap that avoided route 2 while citing only the inbound measurement.",
+        "Nothing else on this lap. No candidate was added or removed; only serves_route was declared on three existing options."
+      ],
+      "falsified_if": "A lap after this one selects a route-2 candidate — or does route-2 work under another name, which is the likelier shape: more pages, README links, sitemaps, another findability instrument — without first recording that it read route_alignment and disagrees. Disagreeing on the record is not a falsification; not seeing it is. ALSO falsified, usefully, if every following lap simply stops choosing anything because the elected route is blocked on standing that no lap can accrue: an election that redirects work into paralysis is worse than the note it replaced, and the honest response would be to elect breadth instead of standing.",
+      "outcome": null
+    },
+    {
       "id": "2026-08-09.inbound-surface-has-no-starting-point",
       "made_at": "2026-08-09T21:10:00Z",
       "claim": "published_but_not_findable tells every lap that the missing step is 'an inbound path from a surface that is already crawled'. That sentence names a crawled surface and nobody had checked one exists. Measured now with a control: github.com/bachikoljunior-blip returns nothing on a bare account-name query, while the same query shape returns rank 1 for boyyutapone-blip — an obscure personal account taken out of our own zero's result list. So the repository pages are not indexed either. The claim registered is about CONSEQUENCE, not about the number: with this printed on the candidate, no lap adds the live url to the seven READMEs that lack it, because doing so links one uncrawled host from another. That work was explicitly named by the previous handoff as the obvious next move, so this is a real prediction about behaviour and not a safe one.",
