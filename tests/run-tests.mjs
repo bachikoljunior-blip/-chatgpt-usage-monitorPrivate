@@ -11,6 +11,9 @@ import { startMockAnthropic } from "./mock-anthropic.mjs";
 import { windowDidRoll } from "../scripts/window-roll.mjs";
 import { hasConflictMarkers, parseStateFile } from "../scripts/state-file.mjs";
 import { describeFields, probeUsageFields, safeNumber } from "../scripts/usage-fields.mjs";
+import {
+  deriveFromSegment, readingsFromHistory, segmentsWithoutRoll,
+} from "../scripts/derive-lap-cost.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const temporary = await mkdtemp(join(tmpdir(), "usage-monitor-test-"));
@@ -391,6 +394,58 @@ assert(safeNumber(null) === null && safeNumber({}) === null, "non-value was acce
   assert(quiet === null, "probe wrote a record for a response with no unread fields");
 }
 assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null payload");
+
+// Derived lap cost. This is the measurement that replaced eleven consecutive
+// unusable samples, so the ways it could quietly lie are worth pinning.
+{
+  const load = (sha) => ({
+    a: '{"status":"ok","fetched_at":"2026-08-09T06:00:00Z","quota_windows":[{"window_id":"seven_day","remaining_percent":44,"resets_at_iso":"2026-08-14T22:00:00.100Z"}]}',
+    b: '{"status":"ok","fetched_at":"2026-08-09T09:00:00Z","quota_windows":[{"window_id":"seven_day","remaining_percent":43,"resets_at_iso":"2026-08-14T21:59:59.900Z"}]}',
+    damaged: "<<<<<<< HEAD\n{}",
+    failed: '{"status":"error","fetched_at":"2026-08-09T07:00:00Z"}',
+    rolled: '{"status":"ok","fetched_at":"2026-08-09T12:00:00Z","quota_windows":[{"window_id":"seven_day","remaining_percent":100,"resets_at_iso":"2026-08-21T22:00:00.000Z"}]}',
+  })[sha];
+
+  const readings = readingsFromHistory(["a", "damaged", "failed", "b", "rolled"], load);
+  assert(readings.length === 3, `damaged and failed revisions were not skipped: ${readings.length}`);
+  assert(readings[0].at < readings[1].at, "readings were not ordered oldest first");
+
+  // Sub-second jitter on resets_at must not split the series — that is the same
+  // mistake that discarded every direct sample for a day.
+  const segments = segmentsWithoutRoll(readings);
+  assert(segments.length === 1, `jitter or a roll split the series wrongly: ${segments.length}`);
+  assert(segments[0].length === 2, "the rolled reading was not cut from the segment");
+
+  const samples = [
+    { id: "eta-loop", started_at: "2026-08-09T06:30:00Z", ended_at: "2026-08-09T06:40:00Z" },
+    { id: "eta-loop", started_at: "2026-08-09T07:30:00Z", ended_at: "2026-08-09T07:40:00Z" },
+    // Straddles the end of the interval: its cost is partly outside what we
+    // measured, so counting it would understate cost per lap.
+    { id: "revenue-loop", started_at: "2026-08-09T08:55:00Z", ended_at: "2026-08-09T09:30:00Z" },
+    { id: "revenue-loop", started_at: "bad", ended_at: "worse" },
+  ];
+  const derived = deriveFromSegment(segments[0], samples);
+  assert(derived.laps_inside === 2, `laps outside the interval were counted: ${derived.laps_inside}`);
+  assert(derived.drop_percent === 1, "drop was not computed from the segment ends");
+  assert(derived.upper_bound_percent_per_lap === 0.5, `bound is wrong: ${derived.upper_bound_percent_per_lap}`);
+  assert(derived.burn_percent_per_day === 8, `burn rate is wrong: ${derived.burn_percent_per_day}`);
+
+  // No laps inside means no bound — never a zero, which would tell pacing the
+  // automation is free and let it eat the pool unaccounted.
+  assert(
+    deriveFromSegment(segments[0], []).upper_bound_percent_per_lap === null,
+    "a bound was produced with nothing to divide by",
+  );
+  // No drop means the interval is below resolution, not free.
+  const flat = [
+    { at: "2026-08-09T06:00:00Z", remaining: 43, resets_at: "2026-08-14T22:00:00Z" },
+    { at: "2026-08-09T09:00:00Z", remaining: 43, resets_at: "2026-08-14T22:00:00Z" },
+  ];
+  assert(
+    deriveFromSegment(flat, samples).upper_bound_percent_per_lap === null,
+    "a zero drop was recorded as a zero cost",
+  );
+}
 
 console.log("All usage monitor tests passed.");
 
