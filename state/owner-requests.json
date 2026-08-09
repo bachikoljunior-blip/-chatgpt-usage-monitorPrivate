@@ -176,7 +176,7 @@
     {
       "id": "2026-08-09.reddit-account-username",
       "created_at": "2026-08-09T17:30:00Z",
-      "status": "pending",
+      "status": "done",
       "candidate_id": "free_artifact_door",
       "owner_actions": 1,
       "estimated_owner_minutes": 1,
@@ -208,7 +208,10 @@
         "not_reducible_further": "打ち込む文字を0にはできません。オーナーの Reddit ユーザー名は、この環境から観測できる場所に存在しないからです（上の2観測）。RUNBOOK 6 関門④は0文字を要求しているのではなく、0でないなら減らせない理由を書けと言っています。これがその理由です。",
         "why_a_third_pending_request_is_acceptable": "他の2件と競合しません。1分・別のプラットフォーム・別の画面。そして性格が違います：他の2件は経路を進める依頼で、これは経路を殺せる依頼です。「無い」という答えは、この loop が r/gamedev に周を使い続けるのを止めます。"
       },
-      "source": "state/constraints.json free_artifact_door.the_artifact_arrived と no_standing_where_buyers_gather.venue_survey.per_venue[r/gamedev].account.how_to_measure"
+      "source": "state/constraints.json free_artifact_door.the_artifact_arrived と no_standing_where_buyers_gather.venue_survey.per_venue[r/gamedev].account.how_to_measure",
+      "answered_at": "2026-08-09T21:20:00Z",
+      "answer": "No Reddit account. Owner answered in chat.",
+      "outcome": "The success test asked for exists to stop being null; it is now false. Recorded in state/constraints.json no_standing_where_buyers_gather.venue_survey.per_venue[r/gamedev].account. Whether to fold r/gamedev or ask for an account is the next lap's call — this request deliberately did not bundle the account creation, so that a \"no\" could not drag an unnecessary second action with it."
     }
   ]
 }
