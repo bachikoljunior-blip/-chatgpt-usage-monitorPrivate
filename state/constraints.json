@@ -80,6 +80,26 @@
       "eta_effect_if_lifted": "medium: decides whether the three funnel stages (found / opened / bought) can be separated at all. Cannot be resolved by testing — only by publishing a game."
     },
     {
+      "id": "trigger_new_session_mode_does_not_fire",
+      "claim": "MEASURED: a Routine created with create_new_session_on_fire never fires. create_session called from inside a running session does work.",
+      "evidence": "2026-08-09: a one-shot Routine set for 04:26:00Z produced nothing by 04:35Z. Three independent observations — a poller checking origin every 20s for 14 minutes, a direct git ls-remote showing zero probe branches, and list_sessions showing no session created at that time (newest was from the previous day). The same listing shows sessions carrying parent_session_id created via claude_code_mcp_seed, which is the create_session path working.",
+      "measured_at": "2026-08-09",
+      "recheck_after": "2026-10-09",
+      "blocks": ["fresh_session_per_fire"],
+      "eta_effect_if_lifted": "small: create_session from a live session already gives a clean context, so this would only remove one hop",
+      "note": "A tombstone Routine from 2026-08-08 recorded the same result. Confirmed rather than assumed."
+    },
+    {
+      "id": "mcp_absent_in_some_fired_runs",
+      "claim": "Fired runs sometimes have no MCP tools. Trigger creation warns that fired sessions run without connector tools, and a note from a previous session recorded a scheduled run with no MCP.",
+      "evidence": "Warning returned by create_trigger on 2026-08-09; a 2026-08-08 trigger body states MCP was unavailable in its runs while another states it was available.",
+      "measured_at": "2026-08-09",
+      "recheck_after": "2026-08-16",
+      "blocks": ["laps_that_depend_on_mcp"],
+      "eta_effect_if_lifted": "small: the lap is written to complete with git and node alone, so MCP is a bonus rather than a dependency",
+      "note": "Do not design a lap that fails without MCP. That turns an intermittent condition into an intermittent outage."
+    },
+    {
       "id": "simple_main_frozen",
       "claim": "The main branch of Simple-browser-cookie-clicker-game must not be modified.",
       "evidence": "Permanent directive A2.",
