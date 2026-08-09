@@ -54,7 +54,20 @@
           "title_to_paste": "設定1枚で自社ブランドになる放置クリッカーのキットを出しました",
           "body_to_paste": "店舗サイトや配信者のリンク集に置ける、小さな放置クリッカーのキットを公開しました。\n\nbrand.config.json を1枚書き換えるだけで、題名・配色・数えるものの名前・増やすもの・強化・到達メッセージ・誘導ボタンまで全部変わります。ビルド不要、外部ライブラリなし、通信なし。フォルダを置くだけで動きます。\n\n設定を作るフォーム（generator.html）と、設定の誤りを日本語で指摘する検査、実ブラウザで20項目を回す自動検査を同梱しています。\n\nページはこちら： https://bachikoljunior-blip.itch.io/idle-clicker-kit\n\n感想でも、動かなかった報告でも助かります。",
           "rule_that_permits_this": "'The Release announcements board is our designated place for creators to announce and show off their own work.'（itch.io Quality guidelines）",
-          "rule_that_forbids_doing_it_elsewhere": "'Comments and communities are not for advertisement or self-promotion unless explicitly specified.'（itch.io Community rules）。だから他の板には出さないでください。"
+          "rule_that_forbids_doing_it_elsewhere": "'Comments and communities are not for advertisement or self-promotion unless explicitly specified.'（itch.io Community rules）。だから他の板には出さないでください。",
+          "corrected_at": "2026-08-09T15:20:00Z",
+          "what_the_correction_is": "ADDED A REQUIRED ELEMENT THIS REQUEST WAS MISSING. The post as prepared carried a link and a summary and no image. The board's own posting rule, quoted for the first time by codex/outbox/2026-08-09.o.md, requires all three — and the sentence beside it says posts that are just links are locked and removed. The rule quoted here before came from itch.io's Quality guidelines, which says the board is FOR announcing your own work. That is permission to post, not the shape the post has to take. Two different rules, and only the first had been read.",
+          "board_rule_quoted": "Each topic should include: A link to the page on itch.io / A quick summary of the game / At least one embedded image or video",
+          "board_rule_that_removes_posts": "Release posts that show little to no effort, or are just links, will be locked and removed.",
+          "board_rule_on_frequency": "Please keep self promotion to a reasonable level.",
+          "eligibility": "MEASURED AS NONE STATED. No karma threshold, no account-age threshold, no post-count threshold and no day-of-week restriction appears in the public rules. This request previously said eligibility could not be confirmed, which was a reason to hesitate; it has now been checked. Evidence the board is not dormant: an asset pack (CBORN Character Pack 01) was posted there on 2026-08-09, the day of the survey.",
+          "image_step": {
+            "what": "投稿本文に画像を1枚入れてください。**新しく作る必要はありません。** step_1 でプロジェクトページの cover に上げたのと同じ画像を、そのまま使ってください。",
+            "how": "投稿フォームの画像ボタン（insert image）を押して、step_1 で選んだのと同じファイルを選ぶだけです。スマホなら「最近の項目」の先頭にあります。",
+            "why_it_is_not_optional": "板の規約が「A link to the page on itch.io / A quick summary of the game / At least one embedded image or video」の3点を求めていて、隣の行に「just links は lock して削除する」と書いてあります。画像の無い投稿は、規約どおりに消される形です。",
+            "the_file_if_it_is_needed_again": "assets/itch-cover.png（このリポジトリ内。630x500、scripts/render-cover.mjs が生成したもの）。オーナーが作るものは何もありません。"
+          },
+          "owner_typing_and_judgement_count": "打ち込む文字：0（題名と本文は貼るだけ）。判断する箇所：0（画像は step_1 で上げたものと同じ1枚を選ぶだけ）。増えた操作：画像ボタンを1回押して、ファイルを1つ選ぶ。"
         }
       },
       "what_this_lap_could_not_do_and_why": {
@@ -98,6 +111,13 @@
         "page_url_decided_in_advance": "https://bachikoljunior-blip.itch.io/idle-clicker-kit",
         "project_url_slug_to_type": "idle-clicker-kit",
         "how_the_page_url_is_known_before_it_exists": "itch page URLs are <username>.itch.io/<slug>, and the slug is chosen on the create form. username came from state/itch.json profile.username, read via itch.io/api/1/KEY/me (api.itch.io/me answers 404 for this key type). So the announcement carries the final link and the owner substitutes nothing."
+      },
+      "venue_selection_now_measured": {
+        "at": "2026-08-09T15:20:00Z",
+        "what": "6 venues surveyed across codex/outbox/2026-08-09.o.md and 2026-08-09.p.md, 0 postable today. This request is no longer one option among several. It is the only door found.",
+        "why_the_others_failed": "r/gamedev forbids paid-asset promotion by written rule — a fact about the product's form, not the account's history. GameDev.net, Blender Artists, r/SideProject and Indie Hackers all failed on the same term: posting eligibility could not be established from public rules, and an unverified threshold is exactly the condition under which the auto-removals already on record happened. Not one venue refused for lack of standing.",
+        "what_that_changes_for_the_owner": "Nothing about the work being asked for, which is unchanged and still two steps. It changes what follows from not doing it: there is no second venue waiting behind this one.",
+        "what_it_does_not_claim": "That the post will sell anything. The success test below is unchanged and still measures a first sale, not a published page or an accepted post."
       }
     }
   ]

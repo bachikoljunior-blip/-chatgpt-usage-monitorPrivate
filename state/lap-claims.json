@@ -177,6 +177,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T15:17:30.311Z",
+      "candidate": "no_standing_where_buyers_gather",
+      "kind": "route_change",
+      "mechanism": "Breadth has now been measured twice and returned the same answer: 6 venues surveyed across .o and .p, 0 postable today, and in the second batch all three failed on the SAME term - eligibility that cannot be established from public rules, because platforms do not publish those numbers. That is a finding about the method, not about venues, so a seventh survey buys nothing. The route changes from breadth-across-venues to one venue all-in: itch.io Release Announcements is the only surveyed venue that quotes permission for paid assets, states its eligibility as explicitly none, and shows a dated live slot. Its blocker is a single owner action that is already written and pending. So laps stop looking for alternatives and start removing every remaining reason that action can fail - beginning with the image the venue rules require in so many words.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
