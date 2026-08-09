@@ -1,9 +1,18 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-08T12:51:22.996Z",
-  "probe": "POST /v2/products with no product fields (non-mutating)",
+  "fetched_at": "2026-08-09T06:39:54.889Z",
+  "probe": "POST /v2/products then GET then DELETE (creates a draft and removes it in the same run)",
   "http_status": 200,
-  "verdict": "unexpected success on an empty POST — inspect before assuming anything",
-  "response_excerpt": "{\"success\":false,\"message\":\"New products should be created with a price\"}"
+  "verdict": "create_refused",
+  "response_excerpt": "The API would not create a product. Listing still needs a person.",
+  "steps": [
+    {
+      "step": "create",
+      "http_status": 200,
+      "success": false,
+      "got_id": false,
+      "message": "Sorry, you can only create 10 products per day."
+    }
+  ]
 }
