@@ -153,6 +153,26 @@
         "cookiestrateger_site_changes"
       ],
       "eta_effect_if_lifted": "not applicable: this is a standing owner instruction, not an environmental limit. Never schedule a recheck against it."
+    },
+    {
+      "id": "product_form_vs_addressed_buyer",
+      "claim": "MEASURED FROM OUTSIDE, DECISION NOT YET TAKEN: the priced product's FORM does not match the buyer class its own description addresses. The description addresses shops, cafes, salons, streamers and campaign pages, and asks them to drop an HTML folder on their own site and edit a config file. Every purchase actually confirmed for that class was a monthly SaaS with a browser admin panel, hosting or an instant URL, and setup help. Not one buy-once, self-installed kit purchase was found for that class. The price is NOT the blocker: USD 25 is below one month of every comparable found.",
+      "evidence": "codex/outbox/2026-08-09.l.md, commissioned specifically to re-ask the buyer question after state/portfolio.json recorded that task .k had asked about developers instead. Paid cases: Le Petit Comptoir, a 40-seat Lyon restaurant, EUR 29/month for a QR spin-wheel, owner quoted 'I signed up that same day. 29 EUR/month'; an Italian ecommerce operator with no prior contact with the developer, USD 29/month, from a public revenue report. Comparables: MemberSathi NPR 200-1000/month, whose top tier is written 'built and managed for you'; Japan's ピピットガチャ from JPY 85,000 including hardware rental and operation. All four sell an operated service. The survey states plainly: buy-once kit purchases by this class — none found; commissioned-build prices for this class — none found.",
+      "measured_at": "2026-08-09T11:47:00Z",
+      "recheck_after": "2026-08-09",
+      "why_recheck_is_today": "The outside is measured; what is unmeasured is OUR choice between the two branches below. It is set due immediately so it reaches the candidate list on the next compute-eta run, because state/eta.json is generated and a finding recorded anywhere else is not read by the side that picks work. That is the failure this repository keeps rediscovering.",
+      "blocks": [
+        "first_buyer_from_zero_audience"
+      ],
+      "eta_effect_if_lifted": "large, and it is the first finding that constrains the PRODUCT rather than a proposed shape. Seven surveys refuted candidate shapes; this one refutes the thing that already exists and already has a price. Until the branch below is chosen, every distribution route is aimed at a class that was not observed buying this form, which is why no venue work can fix it.",
+      "the_branch_it_forces": {
+        "a_keep_the_form_change_the_addressee": "A config-file kit with a commercial licence IS a form that has confirmed buyers — developers and agencies. codex/outbox/2026-08-09.k.md found them, named itch Game Assets with 38 clicker listings sold as top sellers, and put our USD 25 inside the observed band. This branch needs no build: it needs the description re-aimed. Cheapest by a wide margin. Note that agencies and freelancers build sites FOR shops and salons, so the end user in the current copy survives — only the payer changes.",
+        "b_keep_the_addressee_change_the_form": "Hosted instance, or an embed snippet, or an install-for-you service, plus a form-based settings panel. This matches what the observed buyers actually paid for, and it is the branch the survey's own conclusion points at. It is also a real build with recurring hosting, and nothing here has established that we can operate a paid service.",
+        "what_is_not_the_branch": "lowering the price. The survey says explicitly that USD 25 is not high and that there is no basis for a discount fixing this. Cutting the price would also destroy the ability to tell a pricing failure from a routing failure later."
+      },
+      "bearing_on_the_pending_owner_request": "state/owner-requests.json 2026-08-09.itch-page-for-the-kit is NOT invalidated by this and has NOT been rewritten — the request forbids that, and it is with the owner. itch Game Assets is a branch-A venue where the form matches, which this finding supports rather than undermines. What it does flag: the description_body_to_paste in that request is the shop-facing copy, so branch A would want it re-aimed at the developer or agency buying a licence. That is a decision for a later lap or for the owner, not a silent edit to a request already in flight.",
+      "not_established": "that branch A sells either. .k found that developers buy kits of this genre; it did not find anyone buying OURS. The form matching a market is necessary, not sufficient — the same distinction state/eta.json already draws on the itch candidate under not_success.",
+      "note": "The venue half of .l is real but belongs to the class in branch B: r/smallbusiness permits same-day zero-standing posting inside its weekly Promote-your-business thread, with the rule quoted and no karma or age numbers in the public rules. Do not carry that venue into branch A — it is where the class that was NOT observed buying this form gathers. r/Entrepreneur (10 comment karma, promotion banned) and r/shopify (30-day age, 20+20 karma, links banned) were both checked and both exclude us."
     }
   ]
 }

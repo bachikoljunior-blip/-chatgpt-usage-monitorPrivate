@@ -242,6 +242,32 @@
       ],
       "falsified_if": "the venues .l names are substantially the same developer venues .k already named, which would mean the buyer-class correction changed the question's wording but not its answer, and the lap bought nothing. Also falsified if .l comes back with no venue carrying a quoted rule, since that is the one output shape .k proved this channel can produce.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-09.product-form-refuted-reaches-the-picker",
+      "made_at": "2026-08-09T11:50:00Z",
+      "claim": "codex/outbox/2026-08-09.l.md is the first outward survey to return 落ちる about the product that already exists rather than about a proposed shape, and what it refutes is the FORM: a buy-once, self-installed, config-file kit sold to non-technical small operators. Every confirmed purchase by that class was an operated monthly service. Recorded as constraint product_form_vs_addressed_buyer so it reaches the side that picks work. The claim is that the next laps stop doing venue work aimed at the addressed class and instead choose a branch — A, re-aim the description at developers and agencies where the form already matches, or B, change the form to hosted or embedded.",
+      "metric": "state/eta.json read back from origin/main after a bot recompute no lap performed: a candidate with kind constraint_recheck and id product_form_vs_addressed_buyer, ranked above the refuted zero_base_options. Then state/continue.json and commit subjects for the following laps: whether any lap states which branch it took and why, versus continuing to hunt venues for a class whose form mismatch is now recorded.",
+      "baseline": {
+        "outward_surveys_run": 9,
+        "surveys_refuting_a_proposed_shape": 7,
+        "surveys_refuting_the_existing_product": 1,
+        "confirmed_buy_once_kit_purchases_by_the_addressed_class": 0,
+        "confirmed_monthly_saas_purchases_by_the_addressed_class": 2,
+        "price_usd": 25,
+        "cheapest_comparable_monthly_usd_equivalent": 29,
+        "lifetime_sales": 0,
+        "branch_chosen": null,
+        "consecutive_prerequisite_laps_at_time_of_writing": 3
+      },
+      "judge_on": "2026-08-12",
+      "concurrent_changes": [
+        "the same lap's ETA gate call was prerequisite 3 of 3, so the prerequisite budget is exhausted and the next lap is forced by machinery to make a direct claim. Any branch choice after this is therefore over-determined: the constraint and the exhausted counter push the same way, and a later reading cannot attribute the choice to this record alone.",
+        "state/owner-requests.json 2026-08-09.itch-page-for-the-kit is pending with the owner over the same window. It is a branch-A venue, so if the owner acts, branch A gets taken partly by the owner's hand rather than by a lap's decision.",
+        "2026-08-09.buyer-class-corrected-outward judges the same .l answer on the same date and should be judged alongside this one."
+      ],
+      "falsified_if": "a later lap does venue or announcement work aimed at shops, salons or streamers without addressing the form mismatch, or the candidate fails to appear in the bot-written eta.json at all. Presence in constraints.json is not the claim — being read by the picker and changing what a lap does is.",
+      "outcome": null
     }
   ]
 }

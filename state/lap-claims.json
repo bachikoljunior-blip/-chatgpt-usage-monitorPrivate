@@ -33,6 +33,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T11:47:50.519Z",
+      "candidate": "product_form_vs_addressed_buyer",
+      "kind": "prerequisite",
+      "mechanism": "codex/outbox/2026-08-09.l.md is the first survey to come back 落ちる about the PRODUCT rather than about a candidate shape. Every confirmed purchase by the class the description addresses was a monthly SaaS carrying an admin panel, hosting and setup help; no buy-once config-file kit purchase was found at all. Price is not the problem — USD 25 is under one month of every comparable. This has to reach the picker as a constraint, because eta.json is generated and a finding written anywhere else is not read. It forces a branch: re-aim the description at the class whose form already matches (developers/agencies, where the itch route is already prepared), or change the form to hosted. Recording it cannot itself make the ETA finite, so it is prerequisite — and it is the third, which closes the prerequisite budget and forces the next lap to make a direct claim. That is the intended behaviour, not a problem to route around.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
