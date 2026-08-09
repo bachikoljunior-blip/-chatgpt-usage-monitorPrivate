@@ -207,6 +207,28 @@
       "what_the_existing_checks_do_and_do_not_cover": "check-wiring, the sanitizers, check-predictions and check-zerobase catch structural defects: something unreferenced, a shape that lies, a judgement never made. They cannot catch 'asserted a value without reading it', because the assertion is well-formed. That class has no machine behind it.",
       "the_fix_is_already_in_the_design_and_is_not_being_applied": "RUNBOOK 0 says thinking happens in fresh context and the parent only gates and spawns. Laps follow that. Design work does not — it keeps happening in the parent because that is where the owner talks. That is the hole, and it is not fixable by adding another check to the thing being checked.",
       "how_to_measure": "Count corrections per session and record who caught each one. A session where the owner catches more than the machines is a session that was too long."
+    },
+    {
+      "id": "eta_effect_inheritance_via_unblocks",
+      "claim": "A candidate that unblocks another should inherit its days rather than report null. Machinery work is unanswerable in days today only because candidates are a flat list with no dependency edges.",
+      "evidence": "2026-08-09: every candidate in the top six reported eta_effect_days null, so the ranking's primary key was null for all of them and 'take the top one' was decided by arrival order. The ones that do carry numbers are the zero-base options, whose numbers are marked discredited_by_siblings after three of three were refuted.",
+      "measured_at": null,
+      "recheck_after": "waits on: any channel in state/eta.json reports revenue_rate_derivable true",
+      "measure_via": "here",
+      "eta_effect_if_lifted": "high for ranking quality: it is what lets design and machinery work answer 'how many days' at all, by deriving the answer from what they unblock instead of estimating it.",
+      "do_not_start_before": "A tree whose leaves are all null yields null however it is traversed. Inheritance is worth building the moment one real number exists to inherit, and is worth nothing before that.",
+      "how_to_measure": "Add unblocks: <candidate_id> to candidates and derive eta_effect_days from the target. Check by confirming a machinery candidate stops reporting null."
+    },
+    {
+      "id": "lap_throughput_to_days_calibration",
+      "claim": "Halving lap cost doubles attempts, but attempts only convert to days once the number of laps per ETA-moving finding is known. That rate is what makes efficiency work priceable.",
+      "evidence": "state/laps.json holds 22 samples of which 0 are usable, and state/eta-history.json holds a single row, so neither the cost per lap nor the findings per lap has ever been measured. Efficiency is currently demoted to last while the ETA is infinite, which is correct but is a stand-in for a number, not the number.",
+      "measured_at": null,
+      "recheck_after": "waits on: any channel in state/eta.json reports revenue_rate_derivable true",
+      "measure_via": "here",
+      "eta_effect_if_lifted": "medium: it prices the whole efficiency category, which is otherwise either last by rule or admitted on a hunch.",
+      "do_not_start_before": "The rate needs at least one ETA movement to calibrate against. With the history at one row there is nothing to divide by, and a calibration invented before the first movement is an estimate wearing a measurement's clothes.",
+      "how_to_measure": "Once the ETA has moved at least once, count laps between movements from state/eta-history.json and state/lap-claims.json."
     }
   ]
 }
