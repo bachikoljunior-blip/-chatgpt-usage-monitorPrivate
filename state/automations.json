@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-09T04:00:00.000Z",
+  "note": "Live automations and their measured cost per run. pacing.mjs reserves each one's expected consumption before the reset, so a lap plans with what is genuinely spare rather than with the whole pool. avg_cost_percent is filled in by scripts/record-lap.mjs from real start/end readings; null means never measured and is reserved at a high default.",
+  "automations": [
+    {
+      "id": "revenue-loop",
+      "label": "売上と集客と監視",
+      "kind": "claude-trigger",
+      "pool": "claude_week",
+      "cadence_minutes": 240,
+      "enabled": true,
+      "avg_cost_percent": null,
+      "samples": 0,
+      "last_seen": null
+    },
+    {
+      "id": "youtube-loop",
+      "label": "YouTube",
+      "kind": "claude-trigger",
+      "pool": "claude_week",
+      "cadence_minutes": 360,
+      "enabled": true,
+      "avg_cost_percent": null,
+      "samples": 0,
+      "last_seen": null
+    },
+    {
+      "id": "cookie-daily",
+      "label": "クッキーストラテジャー運転",
+      "kind": "claude-trigger",
+      "pool": "claude_week",
+      "cadence_minutes": 1440,
+      "enabled": true,
+      "avg_cost_percent": null,
+      "samples": 0,
+      "last_seen": null
+    },
+    {
+      "id": "eldria-loop",
+      "label": "ELDRIA品質向上ループ",
+      "kind": "claude-trigger",
+      "pool": "claude_week",
+      "cadence_minutes": 60,
+      "enabled": false,
+      "disabled_at": "2026-08-08",
+      "disabled_by": "owner",
+      "note": "Owner stopped this. Do not re-enable without an explicit instruction.",
+      "avg_cost_percent": null,
+      "samples": 0,
+      "last_seen": null
+    },
+    {
+      "id": "usage-monitor",
+      "label": "ChatGPT usage collector",
+      "kind": "github-actions",
+      "pool": "none",
+      "cadence_minutes": 60,
+      "enabled": true,
+      "avg_cost_percent": 0,
+      "samples": 0,
+      "note": "Actions minutes, not Claude quota."
+    },
+    {
+      "id": "claude-usage-monitor",
+      "label": "Claude usage collector",
+      "kind": "github-actions",
+      "pool": "none",
+      "cadence_minutes": 60,
+      "enabled": true,
+      "avg_cost_percent": 0,
+      "samples": 0
+    },
+    {
+      "id": "gumroad-monitor",
+      "label": "Gumroad sales collector",
+      "kind": "github-actions",
+      "pool": "none",
+      "cadence_minutes": 60,
+      "enabled": true,
+      "avg_cost_percent": 0,
+      "samples": 0
+    }
+  ]
+}

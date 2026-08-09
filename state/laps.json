@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "open": {},
+  "samples": [
+    {
+      "id": "revenue-loop",
+      "started_at": "2026-08-09T03:52:18.631Z",
+      "ended_at": "2026-08-09T03:52:19.443Z",
+      "cost_percent": null,
+      "usable": false,
+      "reason": "no_new_usage_reading"
+    }
+  ]
+}

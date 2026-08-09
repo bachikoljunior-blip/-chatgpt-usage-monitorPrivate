@@ -3,11 +3,9 @@
 // Prints both subscriptions from the committed state files, so an agent can
 // answer "how much quota is left?" with one command and no credentials.
 
-import { readFile } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { readStateJson, fetchDidFail } from "./state-source.mjs";
 
-// Resolve the state files against this script, not the caller's directory.
+// Paths resolve against this script, not the caller's directory.
 //
 // 2026-08-08: run as `node /home/user/-chatgpt-usage-monitorPrivate/scripts/show-usage.mjs`
 // from another repository, this printed "no state file" for both subscriptions —
@@ -15,27 +13,32 @@ import { fileURLToPath } from "node:url";
 // A watchdog that reports missing data when the data is present is worse than no
 // watchdog: the scheduled runs are told to call it by absolute path, so every one
 // of them would have concluded the usage figures were unavailable.
-const HERE = dirname(fileURLToPath(import.meta.url));
-const REPO = resolve(HERE, "..");
-const fromRepo = (p) => (p.startsWith("/") ? p : resolve(REPO, p));
+// (state-source.mjs owns that resolution now, along with reading origin/main.)
+const flags = new Set(process.argv.slice(2).filter((a) => a.startsWith("--")));
+const positional = process.argv.slice(2).filter((a) => !a.startsWith("--"));
+const preferLocal = flags.has("--local");
 
 const now = new Date();
 const sources = [
-  { title: "Claude", path: fromRepo(process.argv[2] ?? "state/claude-usage.json") },
-  { title: "ChatGPT / Codex", path: fromRepo(process.argv[3] ?? "state/usage.json") },
+  { title: "Claude", path: positional[0] ?? "state/claude-usage.json" },
+  { title: "ChatGPT / Codex", path: positional[1] ?? "state/usage.json" },
 ];
 
 let anyStale = false;
+let anyFallback = false;
 
 for (const { title, path } of sources) {
-  let state;
-  try {
-    state = JSON.parse(await readFile(path, "utf8"));
-  } catch {
-    console.log(`${title}: no state file (${path}).`);
+  const { value: state, via } = await readStateJson(path, { preferLocal });
+  if (via.startsWith("working tree (FALLBACK)")) {
+    anyFallback = true;
+    anyStale = true;
+  }
+  if (state === null) {
+    console.log(`${title}: no usable state (${path}, via ${via}).`);
     anyStale = true;
     continue;
   }
+  console.log(`[source: ${via}]`);
 
   const ageMinutes = Math.round((now - new Date(state.fetched_at)) / 60_000);
 
@@ -80,6 +83,15 @@ for (const { title, path } of sources) {
     );
   }
   if (!(state.quota_windows ?? []).length) console.log("  no windows reported");
+}
+
+if (anyFallback) {
+  console.log("");
+  console.log(
+    "WARNING: read from the working tree because origin/main was unreachable" +
+    (fetchDidFail() ? " (git fetch failed)" : "") + "."
+  );
+  console.log("Treat these numbers as unverified. Do not decide spending on them.");
 }
 
 if (anyStale) {

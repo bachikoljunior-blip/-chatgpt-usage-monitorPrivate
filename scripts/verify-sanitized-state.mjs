@@ -48,6 +48,58 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
   if (typeof state.prompt !== "string" || typeof state.answer !== "string" || !state.answer) {
     throw new Error("answer record is missing its prompt or answer");
   }
+} else if (Array.isArray(state.samples) && state.open !== undefined) {
+  // Lap cost samples. cost_percent is null exactly when usable is false, and that
+  // pairing is the point: an unusable lap must not carry a number, because a
+  // recorded 0 would make a real automation look free to the pacing reservation.
+  for (const s of state.samples) {
+    if (typeof s.id !== "string" || !s.id) throw new Error("lap sample has no id");
+    if (s.usable === true && !Number.isFinite(Number(s.cost_percent))) {
+      throw new Error(`lap sample for ${s.id} is usable but has no numeric cost`);
+    }
+    if (s.usable !== true && s.cost_percent !== null) {
+      throw new Error(`lap sample for ${s.id} is unusable but still carries a cost`);
+    }
+  }
+} else if (Array.isArray(state.automations)) {
+  // The automation registry. Added 2026-08-09 so pacing can reserve what the other
+  // scheduled runs will consume before the weekly reset instead of letting every
+  // loop read the whole pool as its own.
+  //
+  // avg_cost_percent is allowed to be null and that is load-bearing: null means
+  // "never measured" and is reserved at a high default, while 0 means "measured
+  // and free". Coercing null to 0 here would make an unmeasured automation look
+  // costless and let it starve the pool silently.
+  for (const a of state.automations) {
+    if (typeof a.id !== "string" || !a.id) {
+      throw new Error("automation entry has no id");
+    }
+    if (a.avg_cost_percent !== null && !Number.isFinite(Number(a.avg_cost_percent))) {
+      throw new Error(`automation ${a.id} has a non-numeric avg_cost_percent`);
+    }
+    if (a.cadence_minutes !== undefined && !Number.isFinite(Number(a.cadence_minutes))) {
+      throw new Error(`automation ${a.id} has a non-numeric cadence_minutes`);
+    }
+  }
+} else if (state.game_count !== undefined || Array.isArray(state.games)) {
+  // itch.io game stats. Separate branch for the same reason as sales: there are no
+  // quota windows and no recommended_mode here, and inventing them to satisfy a
+  // checker would make the checker meaningless for every shape it covers.
+  if (!["ok", "error"].includes(state.status)) {
+    throw new Error("itch state has an invalid status");
+  }
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at)) {
+    throw new Error("itch state has no valid fetched_at timestamp");
+  }
+  if (state.status === "ok") {
+    if (!Array.isArray(state.games)) {
+      throw new Error("itch state reports ok without a games array");
+    }
+  } else if (state.game_count !== null) {
+    // As with sales: a failed read must not carry a count. "0 views" and "could not
+    // measure" lead to different decisions, and one of them is not a diagnosis.
+    throw new Error("itch state reports error but still carries a game_count");
+  }
 } else {
   if (!["ok", "error"].includes(state.status)) {
     throw new Error("usage state has an invalid schema");
