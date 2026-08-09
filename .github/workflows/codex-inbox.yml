@@ -80,9 +80,12 @@ jobs:
           CODEX_AUTH_JSON: ${{ secrets.CODEX_AUTH_JSON }}
         run: |
           mkdir -p state/answers
-          # The only instruction. Everything else is in the file it names.
-          printf '%s' 'codex/INBOX.md をこのリポジトリから読んで、そこに書かれている指示に従ってください。あなたの回答はワークフローが自動でコミットします。git push は試さないでください（サンドボックスからリポジトリには届きません）。完了マーカーもワークフローが置きます。' \
-            > "$RUNNER_TEMP/prompt.txt"
+          # The prompt carries the INBOX and the state files it references,
+          # assembled here from the checkout. codex runs outside the checkout on
+          # purpose, so "go read the file" reaches nothing — the first live run
+          # proved it by answering "the working directory is empty". Read fresh
+          # every run, so nothing attached can be staler than the run.
+          node scripts/inbox-task.mjs --prompt-out "$RUNNER_TEMP/prompt.txt"
           # danger-full-access: the default read-only sandbox cannot start on this
           # runner (bwrap "loopback: Failed RTM_NEWADDR"), and a model that cannot
           # run a command answers from the prompt alone — which for a task that is
@@ -100,12 +103,19 @@ jobs:
         env:
           MARKER: ${{ steps.task.outputs.done_marker }}
         run: |
-          # Written from the committed answer, so the marker cannot claim a run
-          # that produced nothing. No answer means no marker means tomorrow tries
-          # again — the failure that repeats is the cheap one.
-          if [ -n "$MARKER" ] && [ -s state/answers/latest.md ]; then
+          # "Non-empty" is not "done". The first live run answered in one sentence
+          # that it could not find the INBOX, and that sentence was non-empty
+          # enough to earn a marker that would have suppressed every run until
+          # valid_until. The task declares done_signal; the answer has to carry it.
+          if [ -z "$MARKER" ]; then
+            echo "no done_marker declared; not marking" >> "$GITHUB_STEP_SUMMARY"
+          elif node scripts/inbox-task.mjs --earned state/answers/latest.md; then
             mkdir -p "$(dirname "$MARKER")"
             cp state/answers/latest.md "$MARKER"
+            echo "marker written: $MARKER" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "answer did not carry the task's done_signal; no marker, so this task runs again" \
+              >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Publish the answer to the run summary

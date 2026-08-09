@@ -15,7 +15,9 @@ import {
   deriveFromSegment, readingsFromHistory, segmentsWithoutRoll,
 } from "../scripts/derive-lap-cost.mjs";
 import { classify, resolveLastSeen } from "../scripts/check-heartbeats.mjs";
-import { decide, parseInboxHeader } from "../scripts/inbox-task.mjs";
+import {
+  ATTACHMENTS, buildPrompt, decide, markerEarned, parseInboxHeader,
+} from "../scripts/inbox-task.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const temporary = await mkdtemp(join(tmpdir(), "usage-monitor-test-"));
@@ -588,6 +590,59 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(
     !/git push/.test(inbox),
     "the INBOX still asks ChatGPT to push, which this transport cannot do",
+  );
+
+  // The first live run committed a marker off "the answer file is not empty".
+  // Codex had run in an empty scratch dir, could not find the INBOX, and said so
+  // in one sentence — non-empty, no work done, and every run until valid_until
+  // would have been skipped. These are the assertions that failure bought.
+  const realFailure =
+    "作業ディレクトリ `/tmp/chatgpt-ask-work-LRrvFM` が空で、`codex/INBOX.md` や " +
+    "Git リポジトリが存在しませんでした。リポジトリを配置したうえで再実行してください。";
+  assert(!markerEarned(header, realFailure), "the observed failure answer still earns a marker");
+  assert(!markerEarned(header, ""), "an empty answer earns a marker");
+  assert(!markerEarned(header, undefined), "a missing answer earns a marker");
+  assert(
+    markerEarned(header, `## 見つかった不満\n...\n${header.done_signal}\n見合わない。`),
+    "a real answer carrying the done_signal was refused",
+  );
+  assert(
+    !markerEarned({ error: "broken" }, `anything ${header.done_signal}`),
+    "an unparseable header earned a marker",
+  );
+  // The signal has to be something the task's own output format guarantees, or
+  // the transport waits for a string that never arrives. Checked against the
+  // required-output block specifically: the header line that declares the signal
+  // is itself in the file, so a whole-file match would pass on its own
+  // declaration. The quoted form is why — done_signal is "## 判定", and until the
+  // parser stripped those quotes it looked present everywhere and matched nothing.
+  const outputFormat = inbox.slice(inbox.indexOf("### 出力の形"));
+  assert(outputFormat.length > 0, "the INBOX no longer specifies an output format");
+  assert(
+    outputFormat.includes(header.done_signal),
+    `done_signal ${header.done_signal} is not in the output format the INBOX asks for`,
+  );
+  assert(
+    !/^["']|["']$/.test(header.done_signal),
+    "done_signal kept its yaml quotes, so it can never match an answer",
+  );
+  assert(
+    parseInboxHeader('```yaml\ntask_id: a # c\nvalid_until: b\ndone_marker: m\ndone_signal: "## x"\n```')
+      .task_id === "a",
+    "an unquoted value kept its trailing comment",
+  );
+
+  // The prompt has to carry what the INBOX tells the reader to consult, because
+  // the reader cannot reach the repository.
+  const attached = ATTACHMENTS.map((p) => [p, `{"marker":"${p}"}`]);
+  const prompt = buildPrompt(inbox, attached);
+  for (const p of ATTACHMENTS) {
+    assert(prompt.includes(`{"marker":"${p}"}`), `${p} did not travel with the prompt`);
+  }
+  assert(prompt.includes(header.task_id), "the prompt lost the INBOX body");
+  assert(
+    buildPrompt(inbox, [["state/eta.json", null]]).includes("読めませんでした"),
+    "an unreadable attachment was passed off as content",
   );
 }
 
