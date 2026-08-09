@@ -129,6 +129,15 @@ if (source) {
       username: typeof me.body?.user?.username === "string" ? me.body.user.username : null,
       url: typeof me.body?.user?.url === "string" ? me.body.user.url : null,
       read_from: "api.itch.io/me",
+      // A null with no reason beside it is not a diagnosis. The first version of
+      // this block produced exactly that, and the run afterwards could not say
+      // whether the endpoint 404'd, refused the key, or answered in another shape —
+      // three problems with three different fixes. Status and key names only; the
+      // response carries an account email and no value from it is recorded.
+      http_status: me.http_status,
+      top_level_keys: shapeOf(me.body),
+      user_keys: shapeOf(me.body?.user),
+      error: me.error ?? null,
     },
     game_count: games.length,
     total_views: games.reduce((n, g) => n + (g.views_count ?? 0), 0),
