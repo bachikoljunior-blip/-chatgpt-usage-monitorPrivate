@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T10:38:49.941Z",
+  "fetched_at": "2026-08-09T10:41:28.093Z",
   "last_round_at": "2026-08-09T06:20:00.000Z",
   "cadence_days": 7,
   "note": "Zero-base round: options produced without sight of the current portfolio, then compared against the measured ETA. The proposal passed scripts/check-blind.mjs, so no name of ours appears in it.",
@@ -92,6 +92,20 @@
         "not_refuted": "that many search surfaces can work as a long-term acquisition play, and that per-page substance matters. What was refuted is this candidate's role: a route that reaches a FIRST buyer unattended. Note the survey answered the sub-question too — no case supports 'one computed value per page is enough'. The near-successes carried a page that could be acted on by itself (BuiltWith's technology list, IPinfo's IP metadata, Tunebat's key/BPM), and even those cannot be attributed to search for the first sale.",
         "what_it_leaves": "Four candidates have now been refuted by outside evidence and every one of them failed on the same term. In each near-success the first buyer arrived through a third party with reach posting about the thing — an X account, Hacker News, Product Hunt, Stack Overflow answers — and never through discovery working unattended. distribution_answer already elected route 2 (findable surfaces) over route 1 (post where the buyers already gather) not on evidence but on our own constraint that recurring owner actions are excluded; it said so plainly. This survey removes the evidence route 2 was resting on, so what remains is a constraint with no surviving route under it. That is a decision for a lap to take deliberately, not a gap to fill by proposing a sixth build candidate."
       }
+    },
+    {
+      "id": "honest_post_where_buyers_gather",
+      "days_to_first_yen": "unmeasured",
+      "months_to_target": "unmeasured",
+      "owner_actions": "1 initial + several hours of replies the same day, per attempt, not recurring",
+      "why": "the one route in the evidence where a first buyer actually arrived from something we could do: a single honest post into the specific community the buyers are in, with the poster answering replies that day",
+      "added_at": "2026-08-09T10:45:00Z",
+      "added_because": "route 1 was excluded on the ground that it needs repeated posting. The evidence in the same block describes a single post. See distribution_answer.route_1_exclusion_corrected. Route 2 was chosen over it and has since been refuted by 2026-08-09.h, so the constraint that did the excluding now has no surviving route under it.",
+      "estimate_deliberately_absent": "No days-to-first-yen. Every number in this round was produced the same way and four of the four checked were refuted on exactly those numbers. Writing one here would repeat the error.",
+      "blocked_on": "there is nothing to post about yet. This route reaches buyers for something that exists; it does not create it. Whether any of the 28 existing artifacts qualifies has never been examined.",
+      "must_face_the_same_gauntlet": "This was proposed from inside the loop, like findable_surface_at_scale, and that one fell. It gets the same outside survey, aimed at breaking it: how often a single honest post into a buyer community produced a first sale, and what the accounts that tried it and failed had in common.",
+      "known_failure_mode": "posting widely, or posting promotionally, produced one to six months at zero on record. The one case that worked posted about the outcome and the product's limits honestly, in one relevant community, and answered comments for hours.",
+      "refuted": null
     }
   ],
   "ranked_last_by_blind_model": {
@@ -134,6 +148,16 @@
         "success_test": "someone who was not told about the page finds it and refers it, or arrives from itch's own search or browse. Measured from state/itch.json views and from any referral that can be traced, not from the page's existence.",
         "not_success": "the page exists and is well made. That is the pattern the portfolio already ran 28 times: 28 published artifacts, no route to a buyer, ¥0 in eight months. Publishing and waiting was checked against outside evidence and produced one to six months at zero every time, and signup counts do not substitute — about 1,200 accounts and still no revenue in the clearest case on record."
       }
-    ]
+    ],
+    "route_1_exclusion_corrected": {
+      "at": "2026-08-09T10:45:00Z",
+      "disagrees_with": "route_1_is_excluded_for_us_and_why",
+      "what_it_says": "route 1 requires an account and REPEATED human posting, so it is excluded by the no-recurring-owner-actions constraint.",
+      "why_that_ground_does_not_hold": "The same block's own finding, two fields above, describes route 1 as 'a single honest post inside the community where the buyers already gather — one case sold the next morning'. Single, not repeated. Checked against the source rather than the summary: codex/outbox/2026-08-09.g.md records one post to a relevant subreddit, about 31,000 impressions, a dozen or so site visits, one purchase the next morning. codex/outbox/2026-08-09.h.md adds an independent instance of the same shape — Hacker News sent more real users in three hours than three months of search did. Neither case is recurring posting. The exclusion rules out a cost that the evidence for this route does not contain.",
+      "what_the_honest_cost_actually_is": "One post, plus several hours of a human answering comments the same day, on an account with enough standing in that community to post at all. That is a real cost and it is larger than the web-form action the plan's one-action-a-week budget assumes. It is not, however, a recurring cost, and the constraint that excluded it was about recurring costs.",
+      "what_survives_of_the_exclusion": "Automating the posting to avoid the human hours would destroy the account it depends on — that part stands and is not being reversed. So the route needs a human present for a few hours, once, per attempt.",
+      "what_is_still_weak_about_the_route": "g.md called its one route-1 case a single self-report with the product name, launch date and purchase record withheld, and rated the evidence weak. The same survey found broad or low-effort community posting produced one to six months at zero. The distinction the evidence draws is between an honest post into the specific community that has the buyers, with the poster present for the replies, and posting widely and waiting. Only the first has a case behind it, and only one.",
+      "what_it_does_not_supply": "Something to post about. Route 1 is a way of reaching buyers for a thing that exists and is worth their attention; it does not produce the thing. The portfolio's 28 artifacts were never checked for whether any of them is worth an honest post to a community that has buyers in it. Nobody has looked, which is different from having looked and found nothing."
+    }
   }
 }
