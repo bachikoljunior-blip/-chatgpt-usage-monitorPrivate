@@ -73,6 +73,14 @@
       "cost_percent": null,
       "usable": false,
       "reason": "no_new_usage_reading"
+    },
+    {
+      "id": "revenue-loop",
+      "started_at": "2026-08-09T08:39:34.425Z",
+      "ended_at": "2026-08-09T08:49:18.413Z",
+      "cost_percent": null,
+      "usable": false,
+      "reason": "below_measurement_resolution"
     }
   ],
   "pending_verification": {
