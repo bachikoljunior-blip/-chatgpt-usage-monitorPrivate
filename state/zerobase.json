@@ -14,7 +14,16 @@
       "days_to_first_yen": "7-21",
       "months_to_target": "2-4",
       "owner_actions": "1 initial + 0-1 monthly",
-      "why": "borrows the plugin directory's existing search traffic; free version funnels to a paid Pro"
+      "why": "borrows the plugin directory's existing search traffic; free version funnels to a paid Pro",
+      "refuted": {
+        "at": "2026-08-09T09:51:55Z",
+        "by": "codex-loop (codex/outbox/2026-08-09.e.md)",
+        "claim_tested": "first yen within 7-21 days, borrowing the WordPress plugin directory's search traffic",
+        "finding": "The complaint is real and sourced — a weekly production cap shared across several products, resetting automatically — with three independent posts (WordPress.org support thread, r/Wordpress 2020-10-05, r/woocommerce 2020-02-24), and WooCommerce core does not provide it. But it is already occupied: Order Limit for WooCommerce ships the free version at 800+ active installs (4.2, 13 reviews, updated 2 months ago) and puts the store-wide weekly cap with automatic reset in its Pro at USD 49/year, and WPC Shared Stock (50+ installs, updated 7 days ago) already covers the shared-stock half. Monetisation is real and confirmed with sources (Order Limit Pro USD 49/yr; Independent Analytics Pro USD 49-199/yr, licence keys). What could not be found is any case of first yen reached on new directory traffic alone: the one same-day sale on record (Independent Analytics) launched to an existing user base and an announcement post, and the counter-example (Gato GraphQL) took about 2.5 months.",
+        "verdict": "does not meet the 7-21 day claim as stated",
+        "sources_in": "codex/outbox/2026-08-09.e.md",
+        "not_refuted": "that WordPress plugins can be sold, or that this complaint exists. Only this candidate's speed from a standing start with no list."
+      }
     },
     {
       "id": "vscode_extension_pro",
@@ -64,6 +73,13 @@
   "verdict": "adopt_for_next_test",
   "verdict_reason": "Measured incumbent idle ETA is infinite on every channel. These are estimates rather than measurements, but any finite path beats infinity, and the capability they need (writing and shipping software) is the one thing this operation has demonstrated repeatedly.",
   "caution": "The month-count figures are the model's estimates, not observations. Treat first-yen as the falsifiable claim and measure it; do not carry the month figures forward as if measured.",
-  "outcome_reviewed_at": "2026-08-09T09:33:00Z",
-  "outcome_note": "The first option to be checked against the outside world failed the check. The round produced five options and adopted all five on the strength of the model's own estimates; one survey refuted the top one. The other four rest on the same kind of estimate and have not been checked."
+  "outcome_reviewed_at": "2026-08-09T09:51:55Z",
+  "outcome_note": "Two of the five options have now been checked against the outside world, and both failed — vscode_extension_pro on 3-14 days, wordpress_plugin_pro on 7-21. Neither was refuted on whether the product can be sold; both were refuted on speed, and both for the same reason. The remaining three rest on the same kind of estimate and are unchecked.",
+  "premise_under_strain": {
+    "premise": "structural_insight above: the fast options are fast because they borrow an existing marketplace's search demand instead of building an audience.",
+    "what_two_surveys_found": "Borrowed demand came with an occupant. In both markets the specific complaint the estimate rested on was already served — by the platform itself plus free extensions (VS Code), and by a free plugin at 800+ installs whose paid tier is exactly the missing feature (WordPress). Monetisation was confirmed real in both. Speed was not: neither survey could find a single case of first yen from directory traffic alone without a pre-existing list, and the one same-day sale on record had a mailing list behind it.",
+    "implication_if_it_holds": "'Borrows existing search demand' and 'reaches a buyer within weeks from zero' may not be satisfiable together — a marketplace with enough traffic to borrow has had time to grow an incumbent for any complaint specific enough to charge for. If the third survey lands the same way, the next zero-base round should be told this axis failed twice rather than being allowed to rediscover it.",
+    "status": "two of two checked; not yet enough to call. npm_pypi_cli_pro is the next test of the same axis.",
+    "decide_after": "the third survey"
+  }
 }
