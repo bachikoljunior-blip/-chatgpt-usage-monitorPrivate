@@ -22,6 +22,7 @@ import {
 import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/revenue-rate.mjs";
 import { decideVerdict } from "../scripts/gate-verdict.mjs";
 import { constraintDue } from "../scripts/constraint-due.mjs";
+import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import { checkAddressee, copyChanged, diffListing, readRepoListing } from "../scripts/sync-listing.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -850,6 +851,78 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
         consecutivePrerequisites: 3,
       }).verdict === "reject",
       `${kind} admitted a claim that makes the ETA worse`,
+    );
+  }
+}
+
+// --- A browser that cannot reach the internet must say WHY ------------------
+// 2026-08-09: state/constraints.json playwright_cannot_reach_external had held
+// since 2026-08-08 on one symptom, "ERR_CONNECTION_RESET". Re-measured with
+// controls, the error PAGE still says exactly that, and the transport
+// underneath says -202 (ERR_CERT_AUTHORITY_INVALID). Those are different
+// blockers with different fixes: one is "no route to the internet", the other
+// is "the route is there and the browser will not trust its CA". The verdict
+// function is held here because the difference is the whole finding, and a
+// classifier that reads only the error page silently loses it.
+{
+  const ok = { local: { jsRan: true } };
+
+  assert(
+    browserReachVerdict({
+      ...ok,
+      target: { marker: false, errorCode: "ERR_CONNECTION_RESET" },
+      control: { marker: false, errorCode: "ERR_CONNECTION_RESET" },
+      netErrors: [-101, CERT_AUTHORITY_INVALID],
+    }).verdict === "blocked_by_ca_trust",
+    "a certificate-authority rejection under a reset error page was not identified",
+  );
+
+  // The control that makes the one above mean something: same page-level error,
+  // no -202 underneath, and it must NOT be called a trust problem.
+  assert(
+    browserReachVerdict({
+      ...ok,
+      target: { marker: false, errorCode: "ERR_CONNECTION_RESET" },
+      control: { marker: false, errorCode: "ERR_CONNECTION_RESET" },
+      netErrors: [-101],
+    }).verdict === "blocked_before_content",
+    "a plain transport failure was reported as a trust failure",
+  );
+
+  assert(
+    browserReachVerdict({
+      ...ok,
+      target: { marker: true, errorCode: null },
+      control: { marker: false, errorCode: "ERR_HTTP_RESPONSE_CODE_FAILURE" },
+      netErrors: [],
+    }).reaches_external === true,
+    "a target that rendered against a failing fabricated control was not called reachable",
+  );
+
+  // A fabricated URL cannot carry the target's marker. If it does, the marker
+  // is measuring nothing — the same failure shape as a 200 that a UUID which
+  // cannot exist also returns.
+  assert(
+    browserReachVerdict({
+      ...ok,
+      target: { marker: true, errorCode: null },
+      control: { marker: true, errorCode: null },
+      netErrors: [],
+    }).verdict === "instrument_broken",
+    "a marker present on the fabricated control was accepted as evidence of reach",
+  );
+
+  // Nothing about the network can be concluded from a browser that did not run.
+  for (const netErrors of [[], [CERT_AUTHORITY_INVALID]]) {
+    const v = browserReachVerdict({
+      local: { jsRan: false },
+      target: { marker: false, errorCode: "ERR_CONNECTION_RESET" },
+      control: { marker: false, errorCode: "ERR_CONNECTION_RESET" },
+      netErrors,
+    });
+    assert(
+      v.verdict === "browser_unusable" && v.reaches_external === null,
+      "a dead browser was read as a network verdict",
     );
   }
 }

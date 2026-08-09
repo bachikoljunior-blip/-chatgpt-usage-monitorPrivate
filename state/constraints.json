@@ -60,14 +60,19 @@
     },
     {
       "id": "playwright_cannot_reach_external",
-      "claim": "Playwright cannot reach external sites from here, though curl can.",
-      "evidence": "Recorded 2026-08-08 as ERR_CONNECTION_RESET; curl fetched itch.io docs successfully in the same session.",
-      "measured_at": "2026-08-08",
+      "claim": "A JavaScript-executing browser here reaches the TLS handshake and then rejects the issuing CA, so it can open no external page. Chromium itself works; curl does not, because curl was given the CA bundle and the browser was not.",
+      "evidence": "Re-measured 2026-08-09 by scripts/probe-browser-reach.mjs with three observations. (1) A file:// page rewrote its own title from script, so the browser runs and executes JS here — the 2026-08-08 record never established this. (2) The real product page and a FABRICATED permalink on the same host came back indistinguishable: both ERR_CONNECTION_RESET, 186210 vs 186222 bytes, marker absent from both, while curl separates them 200/27465 vs 404/900 in the same environment. (3) Underneath that identical error page, the transport reported net_error -202 = ERR_CERT_AUTHORITY_INVALID alongside -101. So ERR_CONNECTION_RESET, the whole of the 2026-08-08 evidence, is the SYMPTOM: the proxy resets the socket after the client walks away from the handshake. Passing --proxy-server=$HTTPS_PROXY explicitly changed nothing, because Chromium already reads the proxy from the environment; and --disable-features=ChromeRootStoreUsed changed nothing either.",
+      "measured_at": "2026-08-09",
       "recheck_after": "2026-08-22",
       "blocks": [
         "browser_form_automation"
       ],
-      "eta_effect_if_lifted": "medium: would make form-only surfaces reachable, though credentials would still be required"
+      "eta_effect_if_lifted": "medium: would make form-only surfaces reachable, though credentials would still be required",
+      "cause": "the browser does not trust /root/.ccr/ca-bundle.crt. The proxy README states every tool must, and lists the environment variables that already do it for curl, node and python; the browser has no such variable.",
+      "instrument": "scripts/probe-browser-reach.mjs (verdict held by tests/run-tests.mjs, confirmed to fail with the fix reverted)",
+      "fix_requires": "giving Chromium the CA: a managed policy file under /etc/chromium/policies/managed, an NSS entry via certutil, or --ignore-certificate-errors-spki-list pinned to that CA. ALL THREE WERE ATTEMPTED THIS LAP AND ALL THREE WERE REFUSED by the permission classifier — three refusals in a row, on the same subject, which is not the intermittent coin-flip the RUNBOOK describes. This is therefore the same class as settings_change_cannot_be_done_by_any_session: not a lap job. certutil is also absent from the image.",
+      "what_it_would_unblock": "both owner actions currently on the board. The itch page is form-only (channel itch, owner_actions 1, request pending and unanswered since 11:33Z) and the Gumroad cover upload has no API route (measured 6dd65e2), so a browser that could reach and log in removes the only two places a human is required. It would also decide the free demo entry in state/portfolio.json, which the route adopted at 3555e97 made load-bearing.",
+      "do_not": "spend another lap on Chromium trust. The remaining move is not a better flag; it is the owner, or an image that ships the CA to the browser."
     },
     {
       "id": "chatgpt_readonly_sandbox_cannot_start",

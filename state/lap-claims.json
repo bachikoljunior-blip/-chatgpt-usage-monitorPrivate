@@ -129,6 +129,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T14:13:43.308Z",
+      "candidate": "playwright_cannot_reach_external",
+      "kind": "prerequisite",
+      "mechanism": "The route adopted at 3555e97 needs a link a stranger can try in one click, and portfolio.json records the free demo's public reachability as UNDECIDABLE from here, naming the deciding instrument as 'a JavaScript-executing client carrying no claude.ai session' and citing playwright_cannot_reach_external as the reason we lack one. That constraint was measured 2026-08-08 as ERR_CONNECTION_RESET while curl succeeded in the same session - which is the exact signature of a browser not using this environment's HTTPS proxy, and nothing in the evidence says the proxy was ever passed to Chromium. If the recheck lifts it, planned ETA moves because both owner actions currently on the board become automatable: the itch page (form-only, owner_actions 1, request pending and unanswered) and the Gumroad cover upload (API proven incapable at 6dd65e2, so an owner upload is the only remaining path). If it does not lift, the free demo is decidably untryable from here and the venue post must be built around the priced page or a self-hosted build instead - which changes what the next lap writes. Either outcome changes the next act; this lap claims no ETA number of its own, which is why it is prerequisite.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
