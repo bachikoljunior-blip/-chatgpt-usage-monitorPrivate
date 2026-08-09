@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T03:59:40.275Z",
+  "fetched_at": "2026-08-09T04:01:33.474Z",
   "target_yen_per_month": 200000,
   "idle_eta_days": null,
   "idle_eta_note": "every measurable channel is infinite: zero revenue, zero growth, or blocked behind an owner action. This is the real baseline, not a measurement failure.",
@@ -48,9 +48,9 @@
     {
       "kind": "constraint_recheck",
       "id": "itch_profile_games_fields",
-      "why": "medium: decides whether the three funnel stages can be separated at all",
+      "why": "medium: decides whether the three funnel stages (found / opened / bought) can be separated at all. Cannot be resolved by testing — only by publishing a game.",
       "owner_actions": 0,
-      "note": "UNMEASURED: which fields itch.io actually returns for our account (views, downloads, purchases)."
+      "note": "PARTLY MEASURED: api.itch.io/profile/games authenticates and returns a games collection. Which per-game fields it carries is still unknown, because the account currently has zero games."
     },
     {
       "kind": "channel_unblock",
