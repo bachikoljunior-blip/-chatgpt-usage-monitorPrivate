@@ -32,5 +32,7 @@
   "archived_this_session": [
     "session_018QRAUKYXV7DmU9uwfJ2mdV"
   ],
-  "status": "ok"
+  "status": "ok",
+  "successor_session_id": "session_013shpQEB42AJi9ykxrEj75t",
+  "successor_spawned_at": "2026-08-09T09:46:00Z"
 }
