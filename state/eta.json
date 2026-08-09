@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T23:16:37.630Z",
+  "fetched_at": "2026-08-09T23:19:01.531Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -21,13 +21,6 @@
     "what_would_settle_it": "publish state/external-metrics.json from the repository that holds the YouTube credentials, or have whoever wrote 8eca5b1 name what was counted. Until then, treat 28 as an assertion, not an observation."
   },
   "owner_requests_pending": [
-    {
-      "id": "2026-08-09.itch-page-for-the-kit",
-      "candidate_id": "itch",
-      "created_at": "2026-08-09T11:33:00Z",
-      "judge_by": "2026-08-23",
-      "one_line": "itch.io に、有料キットの販売ページを1つ作ってください。フォームを埋めるだけです。あとは自動で回せます。"
-    },
     {
       "id": "2026-08-09.gumroad-cover-upload",
       "candidate_id": "listing_has_no_cover_image",
@@ -119,18 +112,6 @@
       "why": "turns an infinite path finite",
       "owner_actions": 1,
       "note": "create one game page (form only); butler automates everything after",
-      "owner_request": {
-        "id": "2026-08-09.itch-page-for-the-kit",
-        "status": "pending",
-        "created_at": "2026-08-09T11:33:00Z",
-        "one_line": "itch.io に、有料キットの販売ページを1つ作ってください。フォームを埋めるだけです。あとは自動で回せます。",
-        "owner_actions": 1,
-        "estimated_owner_minutes": 10,
-        "judge_by": "2026-08-23",
-        "source": "codex/outbox/2026-08-09.k.md（規約原文・先例・比較価格の出典URLはすべてそこにある）",
-        "where": "state/owner-requests.json",
-        "read_this_before_acting": "The request is prepared. Do not prepare it again, and do not treat this candidate as work a lap can do — it waits on the owner. If it has been pending past judge_by with nothing happening, that is a finding about the request channel, not a reason to rewrite the request."
-      },
       "actionable_now": true,
       "eta_effect_days": null,
       "eta_effect_basis": "no comparable estimate recorded",
@@ -266,7 +247,7 @@
         "published_count": 10,
         "pages_found_by_search": 0,
         "verdict": "published_but_not_findable",
-        "measured_at": "2026-08-09T22:35:44.428Z",
+        "measured_at": "2026-08-09T23:16:38.886Z",
         "what_it_settles": "Not a shortage of pages. Ten serve 200 and a search index returned none of them, so page COUNT is not the binding term — the missing step is an inbound path from a surface that is already crawled. Building more pages buys nothing until that step exists.",
         "inbound_surface": {
           "verdict": "no_crawled_surface_found",
