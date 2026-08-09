@@ -409,6 +409,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T20:38:42.928Z",
+      "candidate": "findable_surface_at_scale",
+      "kind": "prerequisite",
+      "mechanism": "Ten pages serve 200 and a search index returned none of them. The registry concludes the missing step is an inbound path from an already-crawled surface, but that is an inference from a zero, and a zero has several causes: a noindex header or meta tag, a disallowing robots.txt, no inbound link, or pages too new to be crawled. Each implies a different next move and one of them is fixable here with no owner action. Measuring which cause holds decides whether the loop builds inbound links or removes a block, and stops it from building pages that a directive or a header would keep out of the index anyway.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

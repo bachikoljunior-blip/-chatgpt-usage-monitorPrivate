@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T20:37:33.150Z",
+  "fetched_at": "2026-08-09T20:46:20.799Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -241,7 +241,7 @@
         "published_count": 10,
         "pages_found_by_search": 0,
         "verdict": "published_but_not_findable",
-        "measured_at": "2026-08-09T20:22:52.950Z",
+        "measured_at": "2026-08-09T20:44:35.547Z",
         "what_it_settles": "Not a shortage of pages. Ten serve 200 and a search index returned none of them, so page COUNT is not the binding term — the missing step is an inbound path from a surface that is already crawled. Building more pages buys nothing until that step exists.",
         "source": "state/findable-surface.json"
       },

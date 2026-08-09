@@ -676,8 +676,10 @@
         "readmes_linking_their_own_page": 3,
         "owner_root_http_status": 404,
         "custom_domains_known_before_today": 0,
-        "custom_domains_known_now": 1
+        "custom_domains_known_now": 1,
+        "corrected_2026-08-09T20:44Z_search_queries_run_was_not_4": "TWO, not four. The baseline above was taken 30 minutes before anyone controlled the instrument. site:bachikoljunior-blip.github.io was then shown to carry no information at all — site:pytorch.github.io returns nothing either, and that domain is certainly indexed — and the Japanese-title and WILDBOUND rows have no control. Re-run with allowed_domains, which two controls show filters correctly at subdomain granularity, our surface still returns 0 across two queries. The metric is unchanged at 0 and the claim stands; the EVIDENCE BASE behind it halved. Recorded because judging this in two weeks against 'four queries' would compare a controlled number to an uncontrolled one and call the difference a result."
       },
+      "judging_note_added_2026-08-09T20:44Z": "Judge with allowed_domains, never with site:. The metric is now computed only from observations carrying control.passed === true, so re-running the old queries verbatim will leave pages_found_by_search at null (UNKNOWN) rather than 0 — and null is not a falsification, it is a reminder to run the control.",
       "judge_on": "2026-08-23",
       "judge_deadline": "2026-09-06",
       "concurrent_changes": [

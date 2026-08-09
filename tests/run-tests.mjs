@@ -1642,6 +1642,10 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   const now = new Date("2026-08-09T20:00:00Z");
   const tenServing = Array.from({ length: 10 }, (_, i) => ({ repo: `r${i}`, serving: true }));
 
+  // Every observation below carries a PASSING control, because as of 2026-08-09 an
+  // uncontrolled one is not counted. See the block after this one for why.
+  const controlled = (row) => ({ ...row, control: { passed: true } });
+
   const neverLooked = findableSurfaceVerdict({ pages: tenServing, searchObservations: [], now });
   assert(
     neverLooked.pages_found_by_search === null,
@@ -1651,7 +1655,7 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
 
   const measuredZero = findableSurfaceVerdict({
     pages: tenServing,
-    searchObservations: [{ observed_at: "2026-08-09T19:00:00Z", hits_on_our_surface: 0 }],
+    searchObservations: [controlled({ observed_at: "2026-08-09T19:00:00Z", hits_on_our_surface: 0 })],
     now,
   });
   assert(
@@ -1668,7 +1672,7 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
 
   const stale = findableSurfaceVerdict({
     pages: tenServing,
-    searchObservations: [{ observed_at: "2026-06-01T00:00:00Z", hits_on_our_surface: 0 }],
+    searchObservations: [controlled({ observed_at: "2026-06-01T00:00:00Z", hits_on_our_surface: 0 })],
     now,
   });
   assert(stale.verdict === "observation_stale", "a months-old search reading still counted as current");
@@ -1676,7 +1680,7 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
 
   const down = findableSurfaceVerdict({
     pages: [...tenServing.slice(1), { repo: "r0", serving: false }],
-    searchObservations: [{ observed_at: "2026-08-09T19:00:00Z", hits_on_our_surface: 0 }],
+    searchObservations: [controlled({ observed_at: "2026-08-09T19:00:00Z", hits_on_our_surface: 0 })],
     now,
   });
   assert(down.verdict === "page_stopped_serving", "a page that stopped serving was not reported");
@@ -1684,10 +1688,90 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
 
   const found = findableSurfaceVerdict({
     pages: tenServing,
-    searchObservations: [{ observed_at: "2026-08-09T19:00:00Z", hits_on_our_surface: 3 }],
+    searchObservations: [controlled({ observed_at: "2026-08-09T19:00:00Z", hits_on_our_surface: 3 })],
     now,
   });
   assert(found.verdict === "findable", "search hits on our own pages were not recognised");
+}
+
+// --- a zero from an uncontrolled instrument is not a zero ---------------------
+// 2026-08-09T20:40Z. The enumeration query this file's verdict rested on was
+// `site:bachikoljunior-blip.github.io`, recorded with hits 0 and described as "the
+// one query that could return a page nobody here had thought of". Controlled:
+// `site:pytorch.github.io` also returns nothing, and pytorch.github.io is certainly
+// indexed. The operator is not honoured, so the row was never about our pages.
+//
+// The consequence is what makes this worth a guard rather than a note. That zero
+// produced published_but_not_findable, which is the verdict telling the loop that
+// "building more pages buys nothing" — it SUPPRESSES the only route on the board
+// needing no owner action. An uncontrolled instrument was closing a route.
+//
+// Re-run properly with allowed_domains (which the controls show does filter at
+// subdomain granularity), our surface still returns nothing — so the verdict was
+// right. It was right by luck, and this holds the difference.
+{
+  const now = new Date("2026-08-09T21:00:00Z");
+  const tenServing = Array.from({ length: 10 }, (_, i) => ({ repo: `r${i}`, serving: true }));
+  const at = "2026-08-09T20:41:00Z";
+
+  const uncontrolledOnly = findableSurfaceVerdict({
+    pages: tenServing,
+    searchObservations: [
+      { observed_at: at, hits_on_our_surface: 0 },
+      { observed_at: at, hits_on_our_surface: 0, control: { passed: false } },
+    ],
+    now,
+  });
+  assert(
+    uncontrolledOnly.pages_found_by_search === null,
+    "a zero from an instrument never shown able to return a hit was counted as a measured zero",
+  );
+  assert(
+    uncontrolledOnly.verdict === "never_looked",
+    "uncontrolled observations were treated as having looked",
+  );
+  assert(
+    uncontrolledOnly.uncontrolled_observations === 2,
+    "the uncontrolled rows were dropped silently instead of being reported as present-but-uncounted",
+  );
+
+  // A passing control restores the row's standing, and mixed evidence counts only
+  // the controlled half.
+  const mixed = findableSurfaceVerdict({
+    pages: tenServing,
+    searchObservations: [
+      { observed_at: at, hits_on_our_surface: 7 },
+      { observed_at: at, hits_on_our_surface: 0, control: { passed: true } },
+    ],
+    now,
+  });
+  assert(
+    mixed.pages_found_by_search === 0 && mixed.verdict === "published_but_not_findable",
+    "an uncontrolled row claiming 7 hits outvoted the controlled zero",
+  );
+
+  // Truthy-but-not-true must not pass. `control: {}` is what a half-finished row
+  // looks like, and it is the shape most likely to be written by a lap in a hurry.
+  for (const control of [{}, { passed: "yes" }, { passed: 1 }, null]) {
+    assert(
+      findableSurfaceVerdict({
+        pages: tenServing,
+        searchObservations: [{ observed_at: at, hits_on_our_surface: 0, control }],
+        now,
+      }).pages_found_by_search === null,
+      `a control of ${JSON.stringify(control)} was accepted as a passing control`,
+    );
+  }
+
+  // And the live file must keep at least one controlled row, or the verdict it
+  // publishes is once again resting on an instrument nobody checked.
+  const liveObservations = JSON.parse(
+    readFileSync(join(root, "state/findable-surface.json"), "utf8"),
+  ).search_index_observations;
+  assert(
+    liveObservations.some((o) => o?.control?.passed === true),
+    "state/findable-surface.json carries no controlled search observation, so its verdict is uncounted",
+  );
 }
 
 // --- a venue is not a route until we can post from it -------------------------

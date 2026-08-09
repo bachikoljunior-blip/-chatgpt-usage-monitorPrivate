@@ -91,11 +91,30 @@ const isFresh = (iso, now, maxAgeDays = OBSERVATION_MAX_AGE_DAYS) => {
 export function findableSurfaceVerdict(o) {
   const served = o.pages.filter((p) => p.serving);
   const notServing = o.pages.filter((p) => !p.serving).map((p) => p.repo);
-  const fresh = (o.searchObservations ?? []).filter((s) => isFresh(s.observed_at, o.now));
-  const everLooked = (o.searchObservations ?? []).length > 0;
+
+  // A zero only counts if the same instrument, on the same run, was shown able to
+  // return a hit. Without that, "nothing came back" and "the query does not work"
+  // are the same observation, and this file exists to keep exactly that pair apart.
+  //
+  // Not a hypothetical. The first enumeration query recorded here was
+  // `site:bachikoljunior-blip.github.io`, hits 0 — described in its own caveat as
+  // "the one query that could return a page nobody here had thought of". On
+  // 2026-08-09T20:40Z it was controlled: `site:pytorch.github.io` returns 0 from the
+  // same tool, and pytorch.github.io is certainly indexed. The operator is not
+  // honoured at all, so that row was never evidence about our pages. The verdict it
+  // fed — published_but_not_findable — is what tells the loop that building more
+  // pages buys nothing, which makes it the most expensive kind of row to get wrong.
+  //
+  // Uncontrolled observations are kept rather than deleted. They are simply not
+  // counted, because the honest reading of them is "nobody looked", and that is
+  // already a verdict here with the right consequence: UNKNOWN, not zero.
+  const controlled = (o.searchObservations ?? []).filter((s) => s?.control?.passed === true);
+  const uncontrolled = (o.searchObservations ?? []).length - controlled.length;
+  const fresh = controlled.filter((s) => isFresh(s.observed_at, o.now));
+  const everLooked = controlled.length > 0;
 
   const pagesFoundBySearch = everLooked
-    ? Math.max(0, ...o.searchObservations.map((s) => Number(s.hits_on_our_surface) || 0))
+    ? Math.max(0, ...controlled.map((s) => Number(s.hits_on_our_surface) || 0))
     : null;
 
   if (notServing.length) {
@@ -115,10 +134,16 @@ export function findableSurfaceVerdict(o) {
       ok: false,
       published_count: served.length,
       pages_found_by_search: null,
+      uncontrolled_observations: uncontrolled,
       why:
-        `${served.length} pages are published and no search observation exists, so the ` +
-        "realized findable surface is UNKNOWN rather than zero. A script cannot close " +
-        "this: it needs a lap to run a search tool and record what came back.",
+        `${served.length} pages are published and no CONTROLLED search observation exists` +
+        (uncontrolled
+          ? ` (${uncontrolled} uncontrolled one(s) are on file and deliberately not counted — ` +
+            "an instrument that was never shown able to return a hit cannot report a zero)"
+          : "") +
+        ", so the realized findable surface is UNKNOWN rather than zero. A script cannot close " +
+        "this: it needs a lap to run a search tool, run a control against a page that is " +
+        "certainly indexed, and record both.",
     };
   }
   if (!fresh.length) {
@@ -142,9 +167,11 @@ export function findableSurfaceVerdict(o) {
       ok: true,
       published_count: served.length,
       pages_found_by_search: 0,
+      uncontrolled_observations: uncontrolled,
       why:
         `${served.length} pages serve 200 and a search index returned none of them across ` +
-        `${o.searchObservations.length} recorded quer${o.searchObservations.length === 1 ? "y" : "ies"}. ` +
+        `${controlled.length} CONTROLLED quer${controlled.length === 1 ? "y" : "ies"} ` +
+        `(${uncontrolled} uncontrolled row(s) present and not counted). ` +
         "Publishing is not distribution here, measured on our own assets rather than " +
         "inferred from someone else's case study.",
     };
@@ -261,7 +288,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         "Run a search tool from a lap, then append a row here and re-run this script with " +
         "--write; it preserves this array and never regenerates it. Record the query VERBATIM " +
         "and the caveat that limits it — a zero from an instrument pointed the wrong way is " +
-        "not a finding.",
+        "not a finding. A row WITHOUT control.passed === true is kept but NOT COUNTED: run the " +
+        "same query shape against something certainly indexed, in the same session, and record " +
+        "that query and what came back in `control`. The first row here failed exactly this " +
+        "test — site: returns nothing even for pytorch.github.io — and it was the row the " +
+        "route-suppressing verdict rested on.",
       what_a_zero_here_does_and_does_not_mean:
         previous?.what_a_zero_here_does_and_does_not_mean ??
         "Set by the lap that recorded the observations: what the zero covers and what it does not.",
