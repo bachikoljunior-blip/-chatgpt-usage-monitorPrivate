@@ -195,6 +195,18 @@
       "how_to_measure": "Ask the lane for an image through codex/INBOX.md and see what comes back. An SVG is text and would arrive through the existing answer file; a raster image would not, and that difference is itself the finding.",
       "measure_via": "codex_lane",
       "why_that_matters": "Answering this costs one write to codex/INBOX.md and then runs on the Codex weekly pool, which was sitting at 100% unused while the Claude pool was the binding constraint. It does not compete with the candidates above it for the scarce resource, so making it queue behind them spends nothing and buys nothing."
+    },
+    {
+      "id": "long_parent_session_judgement_degrades",
+      "claim": "Loss is solved; judgement is not. Nothing is lost if this session ends — everything is pushed, the checks run hourly on Actions, and the chain has a live successor. What is not solved is that a long session reasons worse, and no check here detects it.",
+      "evidence": "Counted on 2026-08-09 in the parent session itself: nine errors. Guessed a board id that returned HTTP 200 and was still wrong; guessed a workflow run id and got 404; read grep's exit status as node's and reported a check as firing when it had not; ran compute-eta twice without --write and drew conclusions from the stale file; reused pacing's exit code 10 in the ETA gate so it could end a lap; left a URL substitution in a request called paste-only; shipped a null with no reason beside it; and the wiring check itself had three false-positive bugs while being built. THREE of these were caught only because the owner pushed back. No machine caught them.",
+      "measured_at": "2026-08-09",
+      "recheck_after": "2026-08-16",
+      "measure_via": "here",
+      "eta_effect_if_lifted": "medium and indirect: none of these nine cost revenue directly, but two were design defects that would have shaped every later lap — a gate that ends laps, and a request the owner cannot complete without extra steps.",
+      "what_the_existing_checks_do_and_do_not_cover": "check-wiring, the sanitizers, check-predictions and check-zerobase catch structural defects: something unreferenced, a shape that lies, a judgement never made. They cannot catch 'asserted a value without reading it', because the assertion is well-formed. That class has no machine behind it.",
+      "the_fix_is_already_in_the_design_and_is_not_being_applied": "RUNBOOK 0 says thinking happens in fresh context and the parent only gates and spawns. Laps follow that. Design work does not — it keeps happening in the parent because that is where the owner talks. That is the hole, and it is not fixable by adding another check to the thing being checked.",
+      "how_to_measure": "Count corrections per session and record who caught each one. A session where the owner catches more than the machines is a session that was too long."
     }
   ]
 }
