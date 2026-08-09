@@ -158,6 +158,35 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
       throw new Error(`heartbeat row ${a.id} has an invalid status`);
     }
   }
+} else if (Array.isArray(state.requests)) {
+  // Owner requests. This shape was added by a lap and had no branch, so it fell
+  // through to the usage-state check and failed outright — meaning a file under
+  // state/ was exempt from the credential scan in practice while the rule said
+  // otherwise. Same defect gumroad-capabilities.json had.
+  //
+  // success_test and judge_by are mandatory because the failure this file is meant
+  // to prevent is asking the owner for something whose result nobody ever checks.
+  // "the page exists" is not a result.
+  for (const r of state.requests) {
+    if (typeof r.id !== "string" || !r.id) throw new Error("owner request has no id");
+    if (!["pending", "done", "withdrawn", "superseded"].includes(r.status)) {
+      throw new Error(`owner request ${r.id} has an invalid status`);
+    }
+    if (!Number.isFinite(Number(r.owner_actions))) {
+      throw new Error(`owner request ${r.id} has a non-numeric owner_actions`);
+    }
+    if (typeof r.one_line !== "string" || !r.one_line) {
+      throw new Error(`owner request ${r.id} has no one_line the owner can read first`);
+    }
+    if (r.status === "pending") {
+      if (typeof r.success_test !== "string" || !r.success_test) {
+        throw new Error(`owner request ${r.id} has no success_test, so it can never be judged`);
+      }
+      if (!/^\d{4}-\d{2}-\d{2}/.test(r.judge_by ?? "")) {
+        throw new Error(`owner request ${r.id} has no judge_by date`);
+      }
+    }
+  }
 } else if (Array.isArray(state.claims)) {
   // Lap claims. The before/after pair is the whole record, and null must survive in
   // both: a claim of "still never" is a real claim, and coercing it to a number
