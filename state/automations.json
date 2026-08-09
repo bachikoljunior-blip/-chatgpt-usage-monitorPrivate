@@ -5,9 +5,24 @@
   "note": "Live automations and their measured cost per run. pacing.mjs reserves each one's expected consumption before the reset, so a lap plans with what is genuinely spare rather than with the whole pool. avg_cost_percent is filled in by scripts/record-lap.mjs from real start/end readings; null means never measured and is reserved at a high default.",
   "automations": [
     {
+      "id": "eta-loop",
+      "label": "ETA改善ループ",
+      "kind": "claude-trigger",
+      "trigger_id": "trig_01HKmX99VZRkuBjMbjqdqHE3",
+      "cron": "19 */4 * * *",
+      "pool": "claude_week",
+      "cadence_minutes": 240,
+      "enabled": true,
+      "note": "Body points at RUNBOOK.md and states no facts of its own. Created 2026-08-09.",
+      "avg_cost_percent": null,
+      "samples": 0,
+      "last_seen": null
+    },
+    {
       "id": "revenue-loop",
       "label": "売上と集客と監視",
       "kind": "claude-trigger",
+      "trigger_id": "trig_01R88mf8nXVEY7pCSXZDyXr1",
       "pool": "claude_week",
       "cadence_minutes": 240,
       "enabled": true,
