@@ -106,7 +106,10 @@
       "measured_at": "2026-08-09",
       "recheck_after": "first game published",
       "unlocks_when": {
-        "any_channel": { "field": "games", "is": "positive" },
+        "any_channel": {
+          "field": "games",
+          "is": "positive"
+        },
         "stated": "the itch channel in state/eta.json reports games > 0, which is what 'first game published' means where a machine can see it",
         "why_changed": "It was prose, and prose in recheck_after was never read by anything — see scripts/unlock-condition.mjs. This one turned out to be settleable without asking anyone: state/itch.json already carries the game count and compute-eta.mjs already copies it onto the channel, so the condition had a reader all along and only lacked a way to say so."
       },
@@ -152,14 +155,14 @@
       "two_ways_it_lifts": "Acquire standing — participation that accrues over time, an owner action that repeats, and therefore genuinely expensive under this loop's constraints. Or substitute breadth, which is what the one zero-audience case on record did: several venues on the same day. Breadth is a single bounded act, so it does not fall foul of the recurring-actions constraint at all. Breadth is the cheaper test and has never been tried.",
       "prerequisite_the_evidence_adds": "UPGRADED FROM INFERENCE TO A QUOTED RULE 2026-08-09. It was: in every fast case what was posted was a finished artifact the reader could try immediately, and no case was found where a bare announcement sufficed. That was a pattern across case studies, which a reader could discount. It is now also a written venue rule — r/gamedev: \"If you want to share assets make sure they are entirely free and not locked behind anything such as requiring account sign ups or emails\", and itch.io: \"Release posts that show little to no effort, or are just links, will be locked and removed.\" A link to a paid Gumroad page fails both as written, not as interpreted.",
       "note": "measured_at is null on purpose: it records that OUR side is unmeasured, which is what makes this actionable now rather than a scheduled recheck. Do not backfill it with the survey dates — those are in evidence, and confusing the two would turn 'we never looked' into 'we looked and found nothing'.",
-  "our_side_is_now_partly_measured": {
-   "measured_at": "2026-08-09T16:51:00Z",
-   "found": "One of the three surveyed venues has a measured account and it is not the one the loop changed route toward. state/itch.json returns HTTP 200 from itch.io/api/1/KEY/me with username bachikoljunior-blip, so itch.io — the venue whose eligibility threshold is an explicit none — is the single place where BOTH the venue's permission and our own ability to post are settled. Nothing in this repository records a Reddit account: no username, no state file, no owner request asking for one.",
-   "why_it_was_invisible": "Every field on a venue row described the VENUE — rule_quoted, eligibility_threshold, live_slot_evidence, postable_today. No field described us, so two rows looked equally researched when one rested on a measured account and the other on nothing. Six surveys asked whether they would permit us and none asked whether we could post at all.",
-   "the_machine": "scripts/venue-readiness.mjs. Every per_venue row must declare account: { exists, evidence_state_file, note }. exists:null is a legitimate answer and means nobody has looked; OMITTING the field is not, because a missing field and an unmeasured account are indistinguishable when the field is optional. A row claiming exists:true must name a state file that reads and reports ok, so standing cannot be asserted. Run by tests/run-tests.mjs with its negative cases and hourly by pulse.yml.",
-   "what_it_does_to_the_ranking": "It does not close the free-artifact route and does not reopen the itch one. It stops them being compared as if alike: the r/gamedev route needs an account nobody has established, and the cheapest way to establish it is one owner question — does a Reddit account exist, and what is the username — after which the codex lane can read the public profile for age and karma as ordinary outside research. That question has NOT been asked yet and is deliberately not being bundled into either pending request.",
-   "still_unmeasured": "Everything else the claim above says. Whether the owner holds standing anywhere in the sense of participation or following, and whether any of the 28 published artifacts is worth posting. Account existence is the floor beneath standing, not standing itself."
-  },
+      "our_side_is_now_partly_measured": {
+        "measured_at": "2026-08-09T16:51:00Z",
+        "found": "One of the three surveyed venues has a measured account and it is not the one the loop changed route toward. state/itch.json returns HTTP 200 from itch.io/api/1/KEY/me with username bachikoljunior-blip, so itch.io — the venue whose eligibility threshold is an explicit none — is the single place where BOTH the venue's permission and our own ability to post are settled. Nothing in this repository records a Reddit account: no username, no state file, no owner request asking for one.",
+        "why_it_was_invisible": "Every field on a venue row described the VENUE — rule_quoted, eligibility_threshold, live_slot_evidence, postable_today. No field described us, so two rows looked equally researched when one rested on a measured account and the other on nothing. Six surveys asked whether they would permit us and none asked whether we could post at all.",
+        "the_machine": "scripts/venue-readiness.mjs. Every per_venue row must declare account: { exists, evidence_state_file, note }. exists:null is a legitimate answer and means nobody has looked; OMITTING the field is not, because a missing field and an unmeasured account are indistinguishable when the field is optional. A row claiming exists:true must name a state file that reads and reports ok, so standing cannot be asserted. Run by tests/run-tests.mjs with its negative cases and hourly by pulse.yml.",
+        "what_it_does_to_the_ranking": "It does not close the free-artifact route and does not reopen the itch one. It stops them being compared as if alike: the r/gamedev route needs an account nobody has established, and the cheapest way to establish it is one owner question — does a Reddit account exist, and what is the username — after which the codex lane can read the public profile for age and karma as ordinary outside research. That question has NOT been asked yet and is deliberately not being bundled into either pending request.",
+        "still_unmeasured": "Everything else the claim above says. Whether the owner holds standing anywhere in the sense of participation or following, and whether any of the 28 published artifacts is worth posting. Account existence is the floor beneath standing, not standing itself."
+      },
       "lift_mechanism_chosen": {
         "chosen_at": "2026-08-09T14:05:00Z",
         "mechanism": "substitute breadth",
@@ -207,7 +210,7 @@
             "rule_quoted": "promoting paid assets (even on sale or in a giveaway) is forbidden on r/gamedev. / If you want to share assets make sure they are entirely free and not locked behind anything such as requiring account sign ups or emails.",
             "eligibility_threshold": "48 hours minimum account age, observed in a 2026 auto-removal notice",
             "live_slot_evidence": null,
-            "postable_today": false,
+            "postable_today": null,
             "postable_when": {
               "repo_file": "assets/free-demo/index.html"
             },
@@ -220,6 +223,12 @@
               "measured_at": null,
               "note": "NOBODY HAS LOOKED, and the loop changed route toward this venue on 2026-08-09 without looking. Nothing in this repository records a Reddit account: no username, no state file, no owner request asking for one. The venue's rule and its 48-hour eligibility threshold are both established, and both are facts about the venue rather than about us. If no account exists, the eligibility number is the cheapest part to satisfy — 48 hours — and that is worth knowing before more laps are spent here.",
               "how_to_measure": "One owner question: does a Reddit account exist, and what is the username. With a username the codex lane can read the public profile for age and karma, which is ordinary outside research rather than the eligibility question six surveys could not settle. Without one, the answer is the answer."
+            },
+            "postable_today_changed_from_false_to_null": {
+              "at": "2026-08-09T17:28:00Z",
+              "what_moved": "The artifact arrived. postable_today read false because a paid kit is forbidden here; that reason is spent, because what would be posted is now a free unwalled demo the venue's own sentence permits. The remaining blocker is the account, which has never been established — so the honest value is unknown, not false.",
+              "who_said_so": "scripts/venue-readiness.mjs, not a reader noticing. It exited 1 with 'postable_today says false but the evidence says null (account_exists=null, blocker: assets/free-demo/index.html exists)'. The reader was added earlier the same session, BEFORE the artifact landed, and this is it firing on the case it was written for — inside one session rather than after a handoff, which is the part that was not expected this fast.",
+              "what_it_means_for_the_route": "r/gamedev is no longer blocked on anything this loop can build. It is blocked on one owner fact. That is the whole change of shape: the free-artifact route's two unknowns are down to one, and the survivor is not a venue question."
             }
           },
           {
@@ -363,7 +372,10 @@
       "measured_at": null,
       "recheck_after": "waits on: some channel in state/eta.json carries a non-null idle_eta_days",
       "unlocks_when": {
-        "any_channel": { "field": "idle_eta_days", "is": "non_null" },
+        "any_channel": {
+          "field": "idle_eta_days",
+          "is": "non_null"
+        },
         "stated": "some channel in state/eta.json carries a measured idle_eta_days that is not null — one real number of days, which is the thing this constraint inherits from",
         "was": "any channel reports revenue_rate_derivable true",
         "why_changed": "Two defects, found together on 2026-08-09 and both proved by seeding the second gumroad reading the 18:37Z run would append. (1) NOTHING EVALUATED THE OLD SENTENCE. compute-eta.mjs decided availability with Number.isNaN(Date.parse(recheck_after)) alone, so a condition written as prose was permanently not-actionable however true it became; the probe flipped revenue_rate_derivable to true and this candidate stayed shut, quoting the sentence back. (2) THE OLD CONDITION DID NOT MEAN WHAT RUNBOOK 3 CLAIMED. Two readings of ¥0 make revenue_rate_derivable true while monthly_yen_now is 0 and idle_eta_days is null, so the goal would have reported achieved with no measured days in existence — and days are exactly what do_not_start_before says must exist first. The new predicate is the RUNBOOK's own stated intent, in a form a machine settles."
@@ -380,7 +392,10 @@
       "measured_at": null,
       "recheck_after": "waits on: some channel in state/eta.json carries a non-null idle_eta_days",
       "unlocks_when": {
-        "any_channel": { "field": "idle_eta_days", "is": "non_null" },
+        "any_channel": {
+          "field": "idle_eta_days",
+          "is": "non_null"
+        },
         "stated": "some channel in state/eta.json carries a measured idle_eta_days that is not null — the ETA movement this calibration divides by",
         "was": "any channel reports revenue_rate_derivable true",
         "why_changed": "Same pair of defects as eta_effect_inheritance_via_unblocks; read the why_changed there. It bites harder here: do_not_start_before requires at least one ETA MOVEMENT to calibrate against, and revenue_rate_derivable true from two ¥0 readings is not a movement — the ETA is still ∞ on both sides of it."
@@ -492,7 +507,7 @@
       "id": "free_artifact_door",
       "claim": "SCOPED FOR THE FIRST TIME, NOT YET MEASURED: there is exactly one venue on record whose door opens with NO owner action, and it opens to a different PRODUCT FORM rather than to a better account. r/gamedev forbids promoting paid assets and permits free ones not locked behind a signup, in the same sentence. Six venue surveys never counted this as a candidate because the recorded blocker was that the kit source is not in this repository, so there is nothing here to make free. That is a fact about the KIT, not about the DOOR. A small original demo written from scratch opens it just as well, needs no owner, no browser, and no external site.",
       "evidence": "codex/outbox/2026-08-09.o.md quoted the r/gamedev rule with both halves in one sentence. git ls-tree on origin/main shows only the monitor, so the kit is genuinely absent. codex/outbox/2026-08-09.m.md measured that this lane writes a JavaScript module with a node:test suite, and the lane proposed a dependency-free single-file HTML idle demo unprompted — the artifact this door needs, offered before anyone asked.",
-      "measured_at": null,
+      "measured_at": "2026-08-09T17:24:00Z",
       "recheck_after": "2026-08-11",
       "measure_via": "codex_lane",
       "actionable_now": true,
@@ -514,6 +529,20 @@
         "the_reader": "scripts/check-free-artifact.mjs, on assets/free-demo/index.html. It refuses promotion markers, signup and email walls, any absolute URL outside the w3.org namespace, and a missing closing </html> — truncation checked first, because a file cut in half passes every other rule by not having reached the offending line yet. Run by tests/run-tests.mjs with its negative cases, and hourly by pulse.yml, because the artifact will arrive as a lane commit rather than as a lap running tests.",
         "why_before_the_artifact": "Because the rule was going to be lost in the gap between the two. It existed in exactly one place — a do_not line in state/continue.json, which is rewritten every lap — and the thing it forbids is the single most natural edit anyone would make to a free demo of a paid kit. Writing the reader first means the rule waits for the artifact rather than the artifact outliving the rule.",
         "absence_is_not_failure": "The check exits 0 while the file does not exist. A check that failed on absence would have to be disabled while the thing it guards is built, and a disabled check guards nothing."
+      },
+      "the_artifact_arrived": {
+        "at": "2026-08-09T17:20:00Z",
+        "source": "codex/outbox/2026-08-09.q.md, installed at assets/free-demo/index.html",
+        "what_it_is": "星くず工房 — a single-file Japanese idle game. Tap the moon for stardust, trade stardust for three producers whose price rises 15% per purchase, localStorage save. 11297 bytes, 229 lines, no external references, CSP default-src 'none'.",
+        "transport_held": "The lane's own answer claims it was not truncated. That is a claim. Measured independently before installing: the ```html fence closes, the file opens <!doctype html> and ends </html>, </body> present, script and style tags balanced. codex_lane_cannot_return_a_raster_image stands; TEXT it carries whole, and this is the first artifact large enough for that to be worth stating.",
+        "the_check_failed_first": {
+          "what": "scripts/check-free-artifact.mjs exited 1 on two promotion markers: /\\bbuy\\b/ and /購入/.",
+          "the_judgement": "FALSE POSITIVE ON THE RULE, TRUE POSITIVE ON THE DESIGN. Every match was the game's own shop vocabulary — a CSS class named `buy` and 購入 on buttons that spend in-game stardust. No paid asset appears anywhere in the file. The check is still right to have fired, and the fix belongs in the artifact: check-free-artifact.mjs says in its own comment that it is deliberately broad because 'a false positive costs one lap a rewrite; a false negative costs the only open venue'. Narrowing the marker would mean teaching a regex to tell 'trade stardust for a satellite' from 'buy the full kit', and getting that wrong shuts the only door on record.",
+          "what_was_done": "Renamed the class buy -> trade and 購入 -> 交換. Six and three occurrences. The check then passed.",
+          "the_hole_this_exposed": "NOT FIXED, ON PURPOSE — one change per lap. The markers catch 購入 but not 買, and the demo still contains 次に買えるもの harmlessly. A promotional line reading フルキットを買う would pass the check today. That is a false NEGATIVE in the guard on the only open venue, which is the expensive direction. It needs its own gate and its own lap."
+        },
+        "it_was_actually_played": "Not eyeballed and not trusted to an exit code. The lane states outright it never started the UI in a browser, and this lap renamed a CSS class the page's own querySelector calls depend on — so a static pass proved nothing. Driven in headless Chromium at 390x844: 20 taps took stardust 0 -> 20, the first producer became affordable, trading it left 5 and moved its next price 15 -> 18 (matching the lane's own unit test of ceil(15 * 1.15^n)), owned went to 1, and localStorage key hoshikuzu-kobo-v1 was written. The screenshot was opened and looked at: one column, Japanese, no dead band at any edge.",
+        "the_first_probe_was_wrong_and_that_matters": "The first run reported 'amount 0 -> 0' and looked like a dead game. It was the probe: the button listens on pointerdown and the probe sent click. Recorded because a harness that under-reports is indistinguishable from a broken artifact, and the wrong conclusion here would have been to send a working demo back to the lane for repair."
       }
     },
     {

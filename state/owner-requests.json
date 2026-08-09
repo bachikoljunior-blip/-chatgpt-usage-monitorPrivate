@@ -172,6 +172,43 @@
         "why_a_second_pending_request_is_acceptable": "2026-08-09.itch-page-for-the-kit と競合しない。別のプラットフォーム・別の画面・2分。itch の依頼は10分で、そちらを薄めるものではない。"
       },
       "source": "state/constraints.json listing_has_no_cover_image（api_capability_measured に測定の全文）"
+    },
+    {
+      "id": "2026-08-09.reddit-account-username",
+      "created_at": "2026-08-09T17:30:00Z",
+      "status": "pending",
+      "candidate_id": "free_artifact_door",
+      "owner_actions": 1,
+      "estimated_owner_minutes": 1,
+      "one_line": "Reddit のアカウントを持っていますか。持っていれば、ユーザー名を1つ教えてください。無ければ「無い」で結構です。",
+      "owner_typing_and_judgement_count": "打ち込む文字：ユーザー名1つ（または「無い」）。判断する箇所：0。これ以上減らせない理由は下の not_reducible_further にあります。",
+      "why_now_and_not_before": {
+        "what_changed": "無料デモが到着し、検査を通りました（assets/free-demo/index.html、node scripts/check-free-artifact.mjs が exit 0）。r/gamedev の規約は「有料アセットの宣伝は禁止・完全無料で登録の壁が無いものは可」と同じ文の中にあり、その後半をこちらが満たした状態です。",
+        "why_that_matters": "これで r/gamedev の障害は1つだけになりました。scripts/venue-readiness.mjs が機械としてそう言っています（アカウントが不明なので postable は false ではなく unknown）。人が文章を読み直して気づいたのではありません。",
+        "the_clock": "この venue の投稿資格は「アカウント作成から48時間」で、6つの venue のうち数値で判明している唯一の資格です。つまり答えが1日遅れると、最短の投稿日も1日遅れます。"
+      },
+      "the_ask": {
+        "step_1": {
+          "what": "この質問に一言で答える",
+          "question": "Reddit のアカウントを持っていますか。持っていれば、そのユーザー名は何ですか。",
+          "if_none": "「無い」と答えてください。それも答えです。無いと分かれば、この経路を畳むか、作るかを次の周が決められます。",
+          "nothing_to_prepare": "パスワードも、ログインも、投稿も要りません。今回はユーザー名だけです。"
+        }
+      },
+      "what_this_lap_could_not_do_and_why": {
+        "reddit_is_unreachable_from_here": "https://www.reddit.com/r/gamedev/about.json に対して HTTP 403。ユーザー名が分かっても、この環境からは公開プロフィールすら読めません。",
+        "nothing_records_one": "state/ 全体を grep してユーザー名らしき文字列は1つもありません（一致するのは vault の base64 断片だけ）。2つの独立した観測です。",
+        "a_survey_cannot_answer_it": "venue 調査は6件・2バッチ回して、外部の読み手はこちらのアカウントの権限を読めないと確定しています。7件目を出しても同じ答えが返ります。これはオーナーの事実であって venue の事実ではありません。"
+      },
+      "success_test": "state/constraints.json の no_standing_where_buyers_gather.venue_survey.per_venue[r/gamedev].account.exists が true か false になること（null でなくなること）。true なら、そのユーザー名で codex レーンが公開プロフィールの経過日数と karma を読めます。",
+      "not_success": "アカウントがあると分かっただけで投稿できたことにしないこと。48時間の資格と、実際に投稿することは別です。",
+      "judge_by": "2026-08-16",
+      "minimised": {
+        "removed": "アカウントの作成依頼は入れていません。まず有無だけを訊きます。無いと分かってから作成を頼むほうが、要らないかもしれない作業を頼まずに済みます。投稿文の作成も、実際の投稿も、この依頼には入れていません。",
+        "not_reducible_further": "打ち込む文字を0にはできません。オーナーの Reddit ユーザー名は、この環境から観測できる場所に存在しないからです（上の2観測）。RUNBOOK 6 関門④は0文字を要求しているのではなく、0でないなら減らせない理由を書けと言っています。これがその理由です。",
+        "why_a_third_pending_request_is_acceptable": "他の2件と競合しません。1分・別のプラットフォーム・別の画面。そして性格が違います：他の2件は経路を進める依頼で、これは経路を殺せる依頼です。「無い」という答えは、この loop が r/gamedev に周を使い続けるのを止めます。"
+      },
+      "source": "state/constraints.json free_artifact_door.the_artifact_arrived と no_standing_where_buyers_gather.venue_survey.per_venue[r/gamedev].account.how_to_measure"
     }
   ]
 }

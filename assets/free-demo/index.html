@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; img-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>星くず工房</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090b1a;
+      --panel: #141831;
+      --panel2: #1c2242;
+      --ink: #f8f7ff;
+      --muted: #aeb7dc;
+      --accent: #ffd166;
+      --accent2: #7bdff2;
+      --ok: #9bf6b3;
+      font-family: system-ui, -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; overflow-x: hidden; background: var(--bg); color: var(--ink); }
+    body {
+      min-height: 100svh;
+      background:
+        radial-gradient(circle at 15% 15%, #2b2e65 0 2px, transparent 3px),
+        radial-gradient(circle at 85% 25%, #ffffff 0 1px, transparent 2px),
+        radial-gradient(circle at 70% 65%, #5959a3 0 2px, transparent 3px),
+        linear-gradient(180deg, #11142d, var(--bg));
+      background-size: 95px 95px, 130px 130px, 170px 170px, auto;
+    }
+    main { width: min(100%, 520px); margin: 0 auto; padding: max(18px, env(safe-area-inset-top)) 14px max(24px, env(safe-area-inset-bottom)); }
+    header { text-align: center; margin-bottom: 14px; }
+    h1 { margin: 0; font-size: clamp(1.7rem, 8vw, 2.35rem); letter-spacing: .08em; }
+    .subtitle { margin: 6px 0 0; color: var(--muted); font-size: .9rem; }
+    .panel { background: color-mix(in srgb, var(--panel) 94%, transparent); border: 1px solid #343b70; border-radius: 20px; box-shadow: 0 14px 40px #0007; }
+    .status { padding: 16px; text-align: center; }
+    .amount { font-size: clamp(2rem, 12vw, 3.5rem); font-weight: 900; line-height: 1; color: var(--accent); overflow-wrap: anywhere; }
+    .unit { margin-top: 6px; color: var(--muted); }
+    .rate { margin-top: 5px; color: var(--accent2); font-weight: 700; }
+    .tap {
+      display: block; width: min(68vw, 250px); aspect-ratio: 1; margin: 16px auto;
+      border: 0; border-radius: 50%; color: #29203c; cursor: pointer; touch-action: manipulation;
+      background: radial-gradient(circle at 35% 28%, #fff3b0, var(--accent) 45%, #e69532 75%);
+      box-shadow: 0 10px 0 #9b5a24, 0 18px 34px #0008, inset 0 4px 8px #fff8;
+      font-size: clamp(4rem, 22vw, 7rem); transition: transform .06s, box-shadow .06s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tap:active, .tap.pressed { transform: translateY(7px) scale(.98); box-shadow: 0 3px 0 #9b5a24, 0 10px 20px #0008, inset 0 4px 8px #fff8; }
+    .tap-help { text-align: center; margin: -2px 0 17px; color: var(--muted); font-size: .9rem; }
+    .goal { padding: 13px 14px; margin-bottom: 14px; }
+    .goal-row { display: flex; justify-content: space-between; gap: 10px; font-size: .83rem; color: var(--muted); }
+    .bar { height: 9px; margin-top: 8px; border-radius: 999px; overflow: hidden; background: #080a16; }
+    .bar > span { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--accent2), var(--ok)); transition: width .18s; }
+    h2 { font-size: 1.08rem; margin: 18px 4px 10px; }
+    .shop { display: grid; gap: 10px; }
+    .producer { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 12px; }
+    .icon { font-size: 2rem; text-align: center; }
+    .producer-name { font-weight: 800; }
+    .producer-info { color: var(--muted); font-size: .78rem; margin-top: 3px; overflow-wrap: anywhere; }
+    .trade { min-width: 94px; min-height: 52px; border: 0; border-radius: 13px; padding: 7px 9px; font: inherit; font-weight: 900; color: #11172b; background: var(--ok); cursor: pointer; touch-action: manipulation; }
+    .trade:disabled { color: #8289a5; background: #2c314e; cursor: not-allowed; }
+    .owned { display: block; font-size: .72rem; font-weight: 600; margin-top: 2px; }
+    .save-note { text-align: center; color: var(--muted); font-size: .75rem; margin: 16px 0 0; }
+    .pop { position: fixed; z-index: 5; pointer-events: none; color: var(--accent); font-weight: 900; animation: float .7s ease-out forwards; }
+    @keyframes float { to { transform: translateY(-60px); opacity: 0; } }
+    @media (max-width: 360px) {
+      .producer { grid-template-columns: 38px minmax(0, 1fr) 86px; gap: 7px; padding: 10px; }
+      .trade { min-width: 86px; padding-inline: 5px; font-size: .86rem; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>星くず工房</h1>
+      <p class="subtitle">月をタップして、小さな宇宙を育てよう</p>
+    </header>
+
+    <section class="panel status" aria-live="polite">
+      <div id="amount" class="amount">0</div>
+      <div class="unit">星くず</div>
+      <div id="rate" class="rate">毎秒 0</div>
+    </section>
+
+    <button id="tap" class="tap" type="button" aria-label="月をタップして星くずを1増やす">🌕</button>
+    <p class="tap-help">タップするたび +1</p>
+
+    <section class="panel goal" aria-label="次の生産物までの進み具合">
+      <div class="goal-row"><span>次に買えるもの</span><strong id="goalText">小さな衛星まで 15</strong></div>
+      <div class="bar"><span id="goalBar"></span></div>
+    </section>
+
+    <h2>自動で集める</h2>
+    <section id="shop" class="shop"></section>
+    <p class="save-note">進行はこの端末に自動保存されます</p>
+  </main>
+
+  <script>
+    'use strict';
+
+    const nextCost = (baseCost, owned) => Math.ceil(baseCost * Math.pow(1.15, owned));
+
+    const producerTypes = [
+      { name: '小さな衛星', icon: '🛰️', baseCost: 15, perSecond: 0.2 },
+      { name: '月面観測所', icon: '🔭', baseCost: 100, perSecond: 1.5 },
+      { name: '星間工房', icon: '🚀', baseCost: 800, perSecond: 12 }
+    ];
+    const saveKey = 'hoshikuzu-kobo-v1';
+    const state = { amount: 0, owned: producerTypes.map(() => 0) };
+
+    const amountEl = document.getElementById('amount');
+    const rateEl = document.getElementById('rate');
+    const shopEl = document.getElementById('shop');
+    const tapEl = document.getElementById('tap');
+    const goalTextEl = document.getElementById('goalText');
+    const goalBarEl = document.getElementById('goalBar');
+
+    const format = value => {
+      if (value < 1000) return value.toLocaleString('ja-JP', { maximumFractionDigits: value < 10 ? 1 : 0 });
+      const units = [['兆', 1e12], ['億', 1e8], ['万', 1e4]];
+      const found = units.find(([, size]) => value >= size);
+      return found ? (value / found[1]).toLocaleString('ja-JP', { maximumFractionDigits: 2 }) + found[0] : Math.floor(value).toLocaleString('ja-JP');
+    };
+
+    const productionRate = () => producerTypes.reduce((sum, item, index) => sum + item.perSecond * state.owned[index], 0);
+
+    function load() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(saveKey));
+        if (!saved || !Number.isFinite(saved.amount) || !Array.isArray(saved.owned)) return;
+        state.amount = Math.max(0, saved.amount);
+        state.owned = producerTypes.map((_, index) => Math.max(0, Math.floor(Number(saved.owned[index]) || 0)));
+      } catch (_) {
+        // 壊れた保存データは無視して、新しいゲームとして始める。
+      }
+    }
+
+    function save() {
+      localStorage.setItem(saveKey, JSON.stringify(state));
+    }
+
+    function buildShop() {
+      shopEl.replaceChildren(...producerTypes.map((item, index) => {
+        const article = document.createElement('article');
+        article.className = 'panel producer';
+        article.innerHTML = `
+          <div class="icon" aria-hidden="true">${item.icon}</div>
+          <div><div class="producer-name">${item.name}</div><div class="producer-info">1個で毎秒 ${format(item.perSecond)}</div></div>
+          <button class="trade" type="button" data-index="${index}"><span class="cost"></span><span class="owned"></span></button>`;
+        return article;
+      }));
+    }
+
+    function render() {
+      amountEl.textContent = format(state.amount);
+      rateEl.textContent = `毎秒 ${format(productionRate())}`;
+      const buttons = shopEl.querySelectorAll('.trade');
+      producerTypes.forEach((item, index) => {
+        const cost = nextCost(item.baseCost, state.owned[index]);
+        const button = buttons[index];
+        button.querySelector('.cost').textContent = `${format(cost)} と交換`;
+        button.querySelector('.owned').textContent = `所持 ${state.owned[index]}`;
+        button.disabled = state.amount < cost;
+        button.setAttribute('aria-label', `${item.name}を星くず${format(cost)}と交換。所持${state.owned[index]}個`);
+      });
+
+      const choices = producerTypes.map((item, index) => ({ item, cost: nextCost(item.baseCost, state.owned[index]) }));
+      const next = choices.reduce((best, choice) => choice.cost < best.cost ? choice : best);
+      goalTextEl.textContent = state.amount >= next.cost ? `${next.item.name}と交換できます` : `${next.item.name}まで ${format(next.cost - state.amount)}`;
+      goalBarEl.style.width = `${Math.min(100, state.amount / next.cost * 100)}%`;
+    }
+
+    function showPop(clientX, clientY) {
+      const pop = document.createElement('span');
+      pop.className = 'pop';
+      pop.textContent = '+1';
+      pop.style.left = `${Math.max(8, Math.min(innerWidth - 42, clientX - 10))}px`;
+      pop.style.top = `${Math.max(8, clientY - 15)}px`;
+      document.body.append(pop);
+      setTimeout(() => pop.remove(), 750);
+    }
+
+    tapEl.addEventListener('pointerdown', event => {
+      state.amount += 1;
+      showPop(event.clientX, event.clientY);
+      tapEl.classList.add('pressed');
+      render();
+      save();
+    });
+    const releaseTap = () => tapEl.classList.remove('pressed');
+    tapEl.addEventListener('pointerup', releaseTap);
+    tapEl.addEventListener('pointercancel', releaseTap);
+    tapEl.addEventListener('pointerleave', releaseTap);
+
+    shopEl.addEventListener('click', event => {
+      const button = event.target.closest('.trade');
+      if (!button) return;
+      const index = Number(button.dataset.index);
+      const item = producerTypes[index];
+      const cost = nextCost(item.baseCost, state.owned[index]);
+      if (state.amount < cost) return;
+      state.amount -= cost;
+      state.owned[index] += 1;
+      render();
+      save();
+    });
+
+    load();
+    buildShop();
+    render();
+
+    let previous = performance.now();
+    function tick(now) {
+      const elapsedSeconds = Math.min(1, (now - previous) / 1000);
+      previous = now;
+      state.amount += productionRate() * elapsedSeconds;
+      render();
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+    setInterval(save, 5000);
+    addEventListener('pagehide', save);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) save(); });
+  </script>
+</body>
+</html>
