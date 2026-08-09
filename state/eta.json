@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T15:08:52.453Z",
+  "fetched_at": "2026-08-09T15:13:11.493Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -66,7 +66,7 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-09T14:19:21.592Z",
+      "measured_at": "2026-08-09T15:06:03.992Z",
       "monthly_yen_now": 0,
       "games": 0,
       "total_views": 0,
