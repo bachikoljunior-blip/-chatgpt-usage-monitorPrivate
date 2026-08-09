@@ -2503,6 +2503,81 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   run(process.execPath, [join(root, "scripts/venue-readiness.mjs")]);
 }
 
+// --- the announcement the owner actually pastes ------------------------------
+//
+// EXISTENCE IS NOT USE. The itch.io row's postable_when gained a member checking
+// that assets/announce/itch-release-announcement.en.md exists, so the row could
+// not read POSTABLE without a summary — and the text the owner was told to paste
+// stayed Japanese, in state/owner-requests.json step_2, on a board this same row
+// measures as audience_language "en". The row asserted the venue's summary
+// requirement was met on the strength of a file nobody was going to post.
+//
+// The announcement file said so itself, in prose, in its own header. That is the
+// third consecutive lap where a correction was written next to the error and
+// changed nothing, so this one is a check rather than a sentence.
+{
+  const { parseAnnouncement, findDrift, expectedStep2, ANNOUNCEMENT_PATH, REQUEST_ID } = await import(
+    "../scripts/sync-announcement.mjs"
+  );
+
+  // The pasteable part stops at the commentary. Getting this wrong would paste
+  // "## Not decided here" into a public board, which is worse than the bug.
+  const sample = [
+    "# doc",
+    "prose that must not be pasted",
+    "",
+    "## Title",
+    "A title",
+    "",
+    "## Body",
+    "line one",
+    "",
+    "line two",
+    "",
+    "---",
+    "",
+    "## Not decided here",
+    "internal notes that must never reach the board",
+  ].join("\n");
+  const parsed = parseAnnouncement(sample);
+  assert(parsed.ok === true, "a well-formed announcement did not parse");
+  assert(parsed.title === "A title", `the title was misparsed: ${JSON.stringify(parsed.title)}`);
+  assert(parsed.body === "line one\n\nline two", `the body was misparsed: ${JSON.stringify(parsed.body)}`);
+  assert(!parsed.body.includes("Not decided"), "internal commentary would have been pasted into a public board");
+  assert(!parsed.body.includes("prose that must not"), "text above the Title heading leaked into the post");
+
+  assert(parseAnnouncement("# nothing here").ok === false, "a file with no Title/Body sections parsed as postable");
+
+  // The negative case that IS the bug: a Japanese body sitting where an English
+  // one belongs must be reported as drift, not silently accepted.
+  const japanese = { the_ask: { step_2: { title_to_paste: "A title", body_to_paste: "放置クリッカーを1本..." } } };
+  const drift = findDrift(parsed, japanese);
+  assert(drift.includes("body_to_paste"), "a Japanese body on an English board was not reported as drift");
+  assert(!drift.includes("title_to_paste"), "a matching title was reported as drift");
+
+  const matching = { the_ask: { step_2: expectedStep2(parsed) } };
+  assert(findDrift(parsed, matching).length === 0, "a request matching its source was reported as drift");
+
+  const missing = findDrift(parsed, {});
+  assert(missing.length === 1 && missing[0].includes("step_2"), "a request with no step_2 passed silently");
+
+  // And the committed pair really agree, which is the part that goes red if a
+  // later lap edits either one alone.
+  const announcement = parseAnnouncement(await readFile(join(root, ANNOUNCEMENT_PATH), "utf8"));
+  assert(announcement.ok === true, `${ANNOUNCEMENT_PATH} has no pasteable Title/Body`);
+  const requests = JSON.parse(await readFile(join(root, "state/owner-requests.json"), "utf8"));
+  const request = requests.requests.find((r) => r.id === REQUEST_ID);
+  assert(request, `${REQUEST_ID} is not in state/owner-requests.json`);
+  assert(
+    findDrift(announcement, request).length === 0,
+    `the owner request and ${ANNOUNCEMENT_PATH} have drifted — the board would receive the wrong text`,
+  );
+  assert(
+    !/[ぁ-んァ-ヶ一-龠]/.test(request.the_ask.step_2.body_to_paste),
+    "the text to paste into an English-language board contains Japanese",
+  );
+}
+
 console.log("All usage monitor tests passed.");
 
 function run(command, args, extraEnv = {}, { allowFailure = false } = {}) {
