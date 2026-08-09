@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T12:22:35.566Z",
+  "fetched_at": "2026-08-09T13:38:55.105Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -38,18 +38,18 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T11:02:42.926Z",
-      "days_unchanged": 0.06
+      "days_unchanged": 0.11
     },
     "planned": {
       "unchanged_since": "2026-08-09T11:02:42.926Z",
-      "days_unchanged": 0.06
+      "days_unchanged": 0.11
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-09T12:14:26.300Z",
+      "measured_at": "2026-08-09T13:33:36.741Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": false,
       "revenue_window_days": null,
@@ -66,7 +66,7 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-09T12:02:31.821Z",
+      "measured_at": "2026-08-09T13:36:14.407Z",
       "monthly_yen_now": 0,
       "games": 0,
       "total_views": 0,
@@ -102,33 +102,11 @@
     },
     {
       "kind": "constraint_recheck",
-      "id": "product_form_vs_addressed_buyer",
-      "why": "large, and it is the first finding that constrains the PRODUCT rather than a proposed shape. Seven surveys refuted candidate shapes; this one refutes the thing that already exists and already has a price. Until the branch below is chosen, every distribution route is aimed at a class that was not observed buying this form, which is why no venue work can fix it.",
+      "id": "listing_has_no_cover_image",
+      "why": "unknown in days, and the honest reason is that no channel has a derivable rate yet. Bounded claim only: it is a precondition for the tags added this day to do anything in Discover BROWSE. It is not a precondition for Discover SEARCH, where a text match can surface a tile regardless, so this does not retroactively make the tags worthless.",
       "owner_actions": 0,
-      "note": "MEASURED FROM OUTSIDE, DECISION NOT YET TAKEN: the priced product's FORM does not match the buyer class its own description addresses. The description addresses shops, cafes, salons, streamers and campaign pages, and asks them to drop an HTML folder on their own site and edit a config file. Every purchase actually confirmed for that class was a monthly SaaS with a browser admin panel, hosting or an instant URL, and setup help. Not one buy-once, self-installed kit purchase was found for that class. The price is NOT the blocker: USD 25 is below one month of every comparable found.",
+      "note": "MEASURED, NOT INFERRED: the priced product has covers: [], main_cover_id: null, thumbnail_url: null and preview_url: null. Gumroad Discover browse is a visual grid of tiles, so the product now carries the eight tags that put it IN the index while presenting a blank tile to everyone the index shows it to. This is the immediate next blocker on the path opened the same day, and it was invisible until the tags made the path real: an untagged product is nowhere, and being nowhere hides the fact that it also has no picture.",
       "measure_via": "here",
-      "actionable_now": true,
-      "eta_effect_days": null,
-      "eta_effect_basis": "no comparable estimate recorded"
-    },
-    {
-      "kind": "constraint_recheck",
-      "id": "codex_lane_capability_range_unmapped",
-      "why": "high: the Claude weekly pool is the scarce one and the Codex pool sat at 100% unused. Every kind of work that turns out to be delegable moves off the binding constraint, which is the same mechanism as halving lap cost but without giving anything up.",
-      "owner_actions": 0,
-      "note": "What the ChatGPT lane can do has never been enumerated. It has only ever been asked to look things up outside, because that is what RUNBOOK offered it — the range was assumed rather than measured.",
-      "measure_via": "codex_lane",
-      "actionable_now": true,
-      "eta_effect_days": null,
-      "eta_effect_basis": "no comparable estimate recorded"
-    },
-    {
-      "kind": "constraint_recheck",
-      "id": "codex_can_produce_images",
-      "why": "medium: store art, covers and screenshots are needed on every listing. Chromium here already renders text-and-CSS covers (assets/itch-cover.png), so this only buys what CSS cannot draw — illustration. Real, but smaller than the range question above.",
-      "owner_actions": 0,
-      "note": "The ChatGPT account can generate images. Whether that reaches our automated lane is a separate and untested question.",
-      "measure_via": "codex_lane",
       "actionable_now": true,
       "eta_effect_days": null,
       "eta_effect_basis": "no comparable estimate recorded"
