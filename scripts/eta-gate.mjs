@@ -1,0 +1,187 @@
+#!/usr/bin/env node
+
+// The admission ticket for doing work: say what the ETA is now, and what you claim
+// it becomes if this change works. If that is not an improvement, do not do it.
+//
+// The loop ranked candidates by ETA from the start and never asked this question,
+// so laps could spend a week on machinery while the number the goal is defined in
+// sat untouched. Ranking says which is best of what is on offer. It does not say
+// whether the best of them is worth doing at all.
+//
+// Two failure modes this has to avoid at once, and they pull in opposite directions:
+//
+//   Too strict. Every path is currently infinite. "after < before" with before = ∞
+//   admits only changes that claim to make the goal reachable outright, and refuses
+//   the measurement or unblocking that would let anyone find such a change. The loop
+//   deadlocks and the honest-looking reason is that it was being rigorous.
+//
+//   Too loose. Allow "this is a prerequisite" and everything becomes a prerequisite.
+//   That is the sixteen-lap failure: real work, real commits, ETA never moves, and
+//   every single lap had a reason at the time.
+//
+// The resolution is a cap, not a judgement call. A prerequisite claim is allowed,
+// named, and counted. After MAX_CONSECUTIVE_PREREQUISITES of them with no movement
+// in the ETA history, prerequisites stop being admitted and only a direct claim
+// passes. That is the "three rounds without movement means change the route, not the
+// parameter" rule, enforced instead of written down.
+//
+//   node scripts/eta-gate.mjs --id=<candidate> --kind=direct|prerequisite \
+//     --after-idle=<days|inf> --after-planned=<days|inf> --mechanism="..." [--record]
+//
+// Exit 0 = go ahead. Exit 10 = do not do this; pick something else.
+
+import { writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { readStateJson, REPO } from "./state-source.mjs";
+
+const MAX_CONSECUTIVE_PREREQUISITES = 3;
+
+const preferLocal = process.argv.includes("--local");
+const record = process.argv.includes("--record");
+const arg = (name) => {
+  const hit = process.argv.find((a) => a.startsWith(`--${name}=`));
+  return hit ? hit.slice(name.length + 3) : null;
+};
+
+// "inf" is a first-class answer, not a missing value. A claim of infinity is a
+// claim, and one worth being held to.
+const days = (raw) => {
+  if (raw === null) return undefined;
+  if (/^(inf|infinite|never|null|∞)$/i.test(raw.trim())) return null;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : undefined;
+};
+const cmp = (v) => (v === null || v === undefined ? Infinity : Number(v));
+const show = (v) => (v === null ? "∞" : `${v}d`);
+
+const id = arg("id");
+const kind = arg("kind") ?? "direct";
+const mechanism = arg("mechanism");
+const afterIdle = days(arg("after-idle"));
+const afterPlanned = days(arg("after-planned"));
+
+const problems = [];
+if (!id) problems.push("--id is required: name the candidate this work is against");
+if (!["direct", "prerequisite"].includes(kind)) {
+  problems.push("--kind must be direct or prerequisite");
+}
+if (afterIdle === undefined) problems.push("--after-idle is required (a number of days, or inf)");
+if (afterPlanned === undefined) {
+  problems.push("--after-planned is required (a number of days, or inf)");
+}
+if (!mechanism || mechanism.length < 20) {
+  // A mechanism short enough to be a label is a label. The claim has to say how the
+  // number moves, because that sentence is what a later lap checks against reality.
+  problems.push("--mechanism is required and must say how the number moves, not just what you did");
+}
+if (problems.length) {
+  for (const p of problems) console.log(`  ${p}`);
+  process.exit(10);
+}
+
+const [{ value: eta }, { value: history }, { value: claimsFile }] = await Promise.all([
+  readStateJson("state/eta.json", { preferLocal }),
+  readStateJson("state/eta-history.json", { preferLocal }),
+  readStateJson("state/lap-claims.json", { preferLocal }),
+]);
+
+if (!eta) {
+  console.log("  state/eta.json is unreadable, so there is no 'before' to improve on.");
+  console.log("  Run scripts/compute-eta.mjs first. Guessing the baseline defeats the gate.");
+  process.exit(10);
+}
+
+const beforeIdle = eta.idle_eta_days ?? null;
+const beforePlanned = eta.planned_eta_days ?? null;
+const claims = claimsFile?.claims ?? [];
+
+// Movement is read from the history, not from this run's opinion of itself.
+const rows = history?.rows ?? [];
+const distinct = new Set(rows.map((r) => `${r.idle_eta_days}/${r.planned_eta_days}`));
+const etaHasEverMoved = distinct.size > 1;
+
+let consecutivePrerequisites = 0;
+for (let i = claims.length - 1; i >= 0; i -= 1) {
+  if (claims[i].kind !== "prerequisite") break;
+  consecutivePrerequisites += 1;
+}
+
+const improvesIdle = cmp(afterIdle) < cmp(beforeIdle);
+const improvesPlanned = cmp(afterPlanned) < cmp(beforePlanned);
+const improves = improvesIdle || improvesPlanned;
+const worsens = cmp(afterIdle) > cmp(beforeIdle) || cmp(afterPlanned) > cmp(beforePlanned);
+
+console.log(`ETA gate for ${id} (${kind})`);
+console.log(`  before: idle ${show(beforeIdle)} · planned ${show(beforePlanned)}   [measured]`);
+console.log(`  after:  idle ${show(afterIdle)} · planned ${show(afterPlanned)}   [claimed]`);
+console.log(`  eta has ever moved: ${etaHasEverMoved} (${rows.length} history row(s))`);
+console.log(`  consecutive prerequisite laps: ${consecutivePrerequisites}`);
+
+let verdict;
+let reason;
+
+if (worsens) {
+  verdict = "stop";
+  reason = "the claim makes the ETA worse. Whatever this is for, it is not the goal.";
+} else if (improves) {
+  verdict = "go";
+  reason =
+    "the claim is an improvement. It is a claim and not a measurement — the history is " +
+    "what settles it later, and a claim that never materialises is the useful kind of wrong.";
+} else if (kind === "prerequisite" && consecutivePrerequisites < MAX_CONSECUTIVE_PREREQUISITES) {
+  verdict = "go";
+  reason =
+    `no improvement claimed, admitted as prerequisite ` +
+    `${consecutivePrerequisites + 1}/${MAX_CONSECUTIVE_PREREQUISITES}. ` +
+    "Prerequisites are how an infinite portfolio gets a finite path at all, and also how " +
+    "a loop spends a month getting better at nothing. The count is the difference.";
+} else if (kind === "prerequisite") {
+  verdict = "stop";
+  reason =
+    `${consecutivePrerequisites} prerequisite laps in a row and the ETA is unchanged. ` +
+    "The rule is that three rounds without movement means the route is wrong, not the " +
+    "parameter. Take a candidate that claims to move the number, or change the route.";
+} else {
+  verdict = "stop";
+  reason =
+    "a direct claim that does not improve either ETA is not a reason to spend a lap. " +
+    "If this is groundwork, say so with --kind=prerequisite and it will be counted.";
+}
+
+console.log("");
+console.log(`  verdict: ${verdict}`);
+console.log(`  ${reason}`);
+
+if (verdict === "go" && record) {
+  // Written before the work, deliberately. A claim composed after seeing the result
+  // is not a prediction, and this file is only worth keeping if its rows could not
+  // have been fitted to what happened.
+  const claim = {
+    at: new Date().toISOString(),
+    candidate: id,
+    kind,
+    mechanism,
+    before: { idle_eta_days: beforeIdle, planned_eta_days: beforePlanned },
+    after_claimed: { idle_eta_days: afterIdle, planned_eta_days: afterPlanned },
+    improves,
+    outcome: null,
+  };
+  await writeFile(
+    resolve(REPO, "state/lap-claims.json"),
+    `${JSON.stringify(
+      {
+        schema_version: 1,
+        note:
+          "What each lap claimed the ETA would become, recorded before the work. outcome is " +
+          "filled in later from state/eta-history.json. A claim written afterwards is not a " +
+          "prediction, so rows are appended by scripts/eta-gate.mjs and not by hand.",
+        claims: [...claims, claim].slice(-200),
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  console.log("  recorded in state/lap-claims.json");
+}
+
+process.exit(verdict === "go" ? 0 : 10);

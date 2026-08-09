@@ -158,6 +158,31 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
       throw new Error(`heartbeat row ${a.id} has an invalid status`);
     }
   }
+} else if (Array.isArray(state.claims)) {
+  // Lap claims. The before/after pair is the whole record, and null must survive in
+  // both: a claim of "still never" is a real claim, and coercing it to a number
+  // would turn a lap that promised nothing into one that promised something.
+  for (const c of state.claims) {
+    if (typeof c.candidate !== "string" || !c.candidate) throw new Error("lap claim has no candidate");
+    if (!["direct", "prerequisite"].includes(c.kind)) {
+      throw new Error(`lap claim for ${c.candidate} has an invalid kind`);
+    }
+    if (typeof c.mechanism !== "string" || c.mechanism.length < 20) {
+      throw new Error(`lap claim for ${c.candidate} has no substantive mechanism`);
+    }
+    for (const side of ["before", "after_claimed"]) {
+      for (const k of ["idle_eta_days", "planned_eta_days"]) {
+        const v = c[side]?.[k];
+        if (v === undefined) throw new Error(`lap claim for ${c.candidate} is missing ${side}.${k}`);
+        if (v !== null && !Number.isFinite(Number(v))) {
+          throw new Error(`lap claim for ${c.candidate} has a non-numeric ${side}.${k}`);
+        }
+      }
+    }
+    if (c.outcome === undefined) {
+      throw new Error(`lap claim for ${c.candidate} has no outcome field (use null while open)`);
+    }
+  }
 } else if (Array.isArray(state.rows)) {
   // ETA history. null is the correct value for "never reaches the target" and must
   // survive here exactly as it does in the report: a history that coerced null to a

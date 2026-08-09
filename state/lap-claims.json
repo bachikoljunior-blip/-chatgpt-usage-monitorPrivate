@@ -1,0 +1,5 @@
+{
+  "schema_version": 1,
+  "note": "What each lap claimed the ETA would become, recorded before the work. outcome is filled in later from state/eta-history.json. A claim written afterwards is not a prediction, so rows are appended by scripts/eta-gate.mjs and not by hand.",
+  "claims": []
+}
