@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T06:01:42.686Z",
+  "fetched_at": "2026-08-09T06:32:16.061Z",
   "target_yen_per_month": 200000,
   "idle_eta_days": null,
   "idle_eta_note": "every measurable channel is infinite: zero revenue, zero growth, or blocked behind an owner action. This is the real baseline, not a measurement failure.",
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-09T04:48:53.263Z",
+      "measured_at": "2026-08-09T06:28:14.626Z",
       "monthly_yen_now": 0,
       "lifetime_sales": 0,
       "lifetime_usd_cents": 0,
@@ -19,7 +19,7 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-09T05:34:37.739Z",
+      "measured_at": "2026-08-09T06:28:10.864Z",
       "monthly_yen_now": 0,
       "games": 0,
       "total_views": 0,
