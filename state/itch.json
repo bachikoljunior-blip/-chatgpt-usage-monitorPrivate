@@ -1,18 +1,29 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T11:49:10.755Z",
+  "fetched_at": "2026-08-09T11:50:53.503Z",
   "source": "api.itch.io/profile/games",
   "profile": {
-    "username": null,
-    "url": null,
+    "username": "bachikoljunior-blip",
+    "url": "https://bachikoljunior-blip.itch.io",
     "read_from": "api.itch.io/me",
-    "http_status": 404,
-    "top_level_keys": [
-      "details",
-      "errors"
+    "http_status": 200,
+    "tried": [
+      "api.itch.io/me",
+      "itch.io/api/1/KEY/me"
     ],
-    "user_keys": null,
+    "used": "itch.io/api/1/KEY/me",
+    "top_level_keys": [
+      "user"
+    ],
+    "user_keys": [
+      "developer",
+      "gamer",
+      "id",
+      "press_user",
+      "url",
+      "username"
+    ],
     "error": null
   },
   "game_count": 0,
