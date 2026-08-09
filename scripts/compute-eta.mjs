@@ -22,6 +22,7 @@
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { readStateJson, REPO } from "./state-source.mjs";
+import { applyRepricings } from "./repricing.mjs";
 
 const write = process.argv.includes("--write");
 // Reads come from origin/main so a stale checkout cannot drive the ranking. That
@@ -396,11 +397,30 @@ candidates.sort((a, b) => {
   return ao - bo;
 });
 
+// A finding that changes how an existing candidate is judged has to arrive on the
+// candidate. distribution_answer concluded that the itch.io page is judged on
+// being found and referred rather than on existing, and wrote it in zerobase.json
+// — where the side that picks and executes work never reads it. Reasoning in
+// scripts/repricing.mjs.
+const { unmatched: unmatchedRepricings } = applyRepricings(
+  candidates,
+  zerobase?.distribution_answer?.reprices_candidates,
+);
+
 const report = {
   schema_version: 1,
   status: "ok",
   fetched_at: now.toISOString(),
-  ranking: "candidates are sorted by estimated days to first yen (conservative end), actionable ones first",
+  // Describes what the sort above actually does. It used to say "sorted by
+  // estimated days to first yen" after that estimate had already lost its ranking
+  // authority for the zero-base options, which is the drift this repository keeps
+  // paying for: a description that stops matching the mechanism it describes.
+  ranking:
+    "actionable first; refuted last; efficiency last while every path is infinite. Among " +
+    "zero-base options whose round was discredited, the days estimate does not rank — they are " +
+    "ordered by recurring owner actions per month, which is measured. Everything else falls " +
+    "back to the days estimate, then to owner actions.",
+  repricings_with_no_candidate: unmatchedRepricings,
   target_yen_per_month: TARGET_YEN_PER_MONTH,
   idle_eta_days: idlePortfolio,
   idle_eta_note:
@@ -434,4 +454,9 @@ for (const c of channels) {
 console.log("candidates:");
 for (const c of candidates) {
   console.log(`  [${c.kind}] ${c.id} (owner actions: ${c.owner_actions}) — ${c.why}`);
+  if (c.success_test) console.log(`      succeeds if: ${c.success_test}`);
+  if (c.not_success) console.log(`      NOT success: ${c.not_success}`);
+}
+for (const id of unmatchedRepricings) {
+  console.log(`  REPRICING NOT APPLIED: no candidate with id ${JSON.stringify(id)}`);
 }

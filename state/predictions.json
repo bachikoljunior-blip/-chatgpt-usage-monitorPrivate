@@ -65,6 +65,24 @@
       ],
       "outcome": null,
       "note": "The candidate deliberately carries no days-to-first-yen. Judging this on a day count would reproduce the exact error the change corrects, so it is judged on what gets executed."
+    },
+    {
+      "id": "2026-08-09.itch-repricing-reaches-the-candidate",
+      "made_at": "2026-08-09T10:45:00Z",
+      "claim": "distribution_answer decided the itch.io page is judged on being found and referred rather than on existing, and wrote that decision only into zerobase.json. The itch candidate in eta.json — the file work is picked from — still read 'turns an infinite path finite' with no success test. Carrying the repricing onto the candidate should mean that when the owner action is spent, the lap that follows measures whether anyone found the page, instead of recording the page as done.",
+      "metric": "after the itch page exists, whether the lap that handles it cites the success test (found and referred, or arrival from itch search/browse, from state/itch.json views) rather than the page's existence. Also whether eta.json keeps carrying success_test on the itch candidate across bot recomputes.",
+      "baseline": {
+        "itch_candidate_success_test_before": null,
+        "published_artifacts_with_no_route_to_a_buyer": 28,
+        "revenue_yen": 0,
+        "games_published": 0
+      },
+      "judge_on": "2026-08-13",
+      "concurrent_changes": [
+        "2026-08-09.distribution-class-added — pushed by the other worker on this chain eight minutes earlier, from the same evidence. It reranked the candidates; this one only attaches a judging criterion, so the two are separable, but a reader should know both landed the same hour."
+      ],
+      "falsified_if": "the page is created and the following lap records it as done without asking whether anyone found it, or the repricing stops reaching the candidate because reprices_candidates was dropped from zerobase.json",
+      "outcome": null
     }
   ]
 }

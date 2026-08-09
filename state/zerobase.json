@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T06:20:00.000Z",
+  "fetched_at": "2026-08-09T10:32:14.903Z",
   "last_round_at": "2026-08-09T06:20:00.000Z",
   "cadence_days": 7,
   "note": "Zero-base round: options produced without sight of the current portfolio, then compared against the measured ETA. The proposal passed scripts/check-blind.mjs, so no name of ours appears in it.",
@@ -116,6 +116,15 @@
     "route_1_is_excluded_for_us_and_why": "Reaching buyers by posting where they gather requires an account and repeated human posting. Recurring owner operations are excluded by design (the owner may not read instructions at all), and automating the posting gets the account banned, which destroys the asset it depends on. It is excluded on our constraints, not on its evidence — which is the stronger of the two.",
     "route_2_is_the_one_that_survives": "Long-tail findable pages are the only evidence-carrying route that runs with zero recurring owner actions: generation, publication and measurement are all things this operation already does unattended.",
     "honest_weakness": "Neither route has a case with both calendar dates confirmed, and route 2's one concrete case had a founder with a prior exit, so 'no audience' is unproven there. This is the least-unsupported route, not a demonstrated one.",
-    "it_reprices_the_weekly_owner_action": "The itch.io game page is itself a route-2 surface on a marketplace that has its own search. The recommended weekly action does not change. Its success test does: it is judged on whether anyone finds and refers the page, not on the page existing."
+    "it_reprices_the_weekly_owner_action": "The itch.io game page is itself a route-2 surface on a marketplace that has its own search. The recommended weekly action does not change. Its success test does: it is judged on whether anyone finds and refers the page, not on the page existing.",
+    "reprices_candidates": [
+      {
+        "candidate_id": "itch",
+        "by": "state/zerobase.json distribution_answer.it_reprices_the_weekly_owner_action",
+        "because": "distribution_answer elected route 2 — long-tail findable pages a third party can discover and refer — as the only evidence-carrying route that runs with zero recurring owner actions. The itch.io page is a route-2 surface on a marketplace with its own search, so the action does not change but what counts as success does.",
+        "success_test": "someone who was not told about the page finds it and refers it, or arrives from itch's own search or browse. Measured from state/itch.json views and from any referral that can be traced, not from the page's existence.",
+        "not_success": "the page exists and is well made. That is the pattern the portfolio already ran 28 times: 28 published artifacts, no route to a buyer, ¥0 in eight months. Publishing and waiting was checked against outside evidence and produced one to six months at zero every time, and signup counts do not substitute — about 1,200 accounts and still no revenue in the clearest case on record."
+      }
+    ]
   }
 }

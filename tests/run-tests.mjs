@@ -15,6 +15,7 @@ import {
   deriveFromSegment, readingsFromHistory, segmentsWithoutRoll,
 } from "../scripts/derive-lap-cost.mjs";
 import { classify, resolveLastSeen } from "../scripts/check-heartbeats.mjs";
+import { applyRepricings } from "../scripts/repricing.mjs";
 import {
   ATTACHMENTS, buildPrompt, decide, markerEarned, parseInboxHeader,
 } from "../scripts/inbox-task.mjs";
@@ -672,6 +673,42 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     buildPrompt(inbox, [["state/eta.json", null]]).includes("読めませんでした"),
     "an unreadable attachment was passed off as content",
   );
+}
+
+// A repricing has to land on the candidate, and a repricing that lands nowhere
+// has to say so. The failure being guarded is not a crash: it is a correction
+// that is recorded, believed, and never reaches the side that picks work.
+{
+  const candidates = [{ id: "itch", why: "turns an infinite path finite" }, { id: "other" }];
+  const { applied, unmatched } = applyRepricings(candidates, [
+    { candidate_id: "itch", success_test: "found and referred", not_success: "it exists", by: "z" },
+    { candidate_id: "gone", success_test: "never lands" },
+  ]);
+  assert(candidates[0].success_test === "found and referred", "the success test did not reach the candidate");
+  assert(candidates[0].not_success === "it exists", "the not-success half was dropped");
+  assert(candidates[0].repriced_by === "z", "the repricing landed without saying where it came from");
+  assert(candidates[1].success_test === undefined, "a repricing touched a candidate it does not name");
+  assert(applied.includes("itch") && applied.length === 1, "applied did not report exactly what landed");
+  assert(
+    unmatched.length === 1 && unmatched[0] === "gone",
+    "a repricing that matched no candidate was dropped silently",
+  );
+  assert(
+    applyRepricings(candidates, undefined).unmatched.length === 0,
+    "absent repricings were not treated as none",
+  );
+
+  // The state file has to keep carrying one, or the wiring above is dead code
+  // that nothing notices. This is the half that actually decays.
+  const zerobaseNow = JSON.parse(await readFile(join(root, "state/zerobase.json"), "utf8"));
+  const declared = zerobaseNow.distribution_answer?.reprices_candidates ?? [];
+  assert(declared.length > 0, "distribution_answer no longer reprices any candidate");
+  for (const repricing of declared) {
+    assert(
+      repricing.candidate_id && repricing.success_test && repricing.not_success,
+      `repricing for ${repricing.candidate_id} is missing a candidate id, a success test, or its negative`,
+    );
+  }
 }
 
 console.log("All usage monitor tests passed.");
