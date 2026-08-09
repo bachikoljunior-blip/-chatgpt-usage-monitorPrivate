@@ -53,10 +53,12 @@
   "owner_requests_this_lap": 0,
   "owner_requests_this_lap_note": "Zero new, zero corrected. RUNBOOK 6 says 'today we send none' is also a conclusion and this session's is: the one question worth asking (does a Reddit account exist) is recorded with its mechanism in state/constraints.json no_standing_where_buyers_gather.our_side_is_now_partly_measured, deliberately NOT bundled into either pending request, and left for a lap that can weigh it against two requests already sitting unactioned.",
   "owner_request_ids": [],
-  "predecessor_session_id": null,
+  "predecessor_session_id": "session_01Ly5xpLuRK166NLKLPXQDCK",
+  "predecessor_note_for_the_successor": "That id is THIS session — the one the successor should archive, and only once get_session reports SESSION_STATUS_IDLE. It will still be RUNNING for a short while after the successor starts, because this record is written before the session ends. One reading is not a verdict.",
+  "predecessor_of_this_session": null,
   "predecessor_note": "state/continue.json recorded predecessor_session_id null at startup — the previous chain's last child had already been archived by the parent — so there was nothing to archive. Verified by reading the field, not assumed.",
-  "successor_session_id": null,
-  "successor_status": "being created as this file is written; the id is recorded in the commit that follows if create_session succeeded, and the reason is recorded here if it did not",
+  "successor_session_id": "session_01GxQh3yGKEoei8CRkzTZyRB",
+  "successor_status": "created 2026-08-09T16:55:15Z, SESSION_STATUS_PENDING, environment env_01XBCU2bxr2xArCs2PB8NUyL, model claude-opus-5. The lineage depth limit was NOT hit — create_session returned the session on the first attempt with no retry and no classifier refusal.",
   "archive_policy": "A successor archives its predecessor at startup, and only when get_session reports SESSION_STATUS_IDLE. RUNNING means look again later — one reading is not a verdict. If archive_session is refused, that is the intermittent classifier: do something else and retry.",
   "status": "ok"
 }
