@@ -3,16 +3,16 @@
   "status": "ok",
   "source": "anthropic-oauth-usage",
   "subscription": "claude",
-  "fetched_at": "2026-08-09T08:49:09.676Z",
-  "fresh_until": "2026-08-09T10:49:09.676Z",
+  "fetched_at": "2026-08-09T08:53:27.084Z",
+  "fresh_until": "2026-08-09T10:53:27.084Z",
   "quota_windows": [
     {
       "window_id": "five_hour",
       "window_name": "Current session",
-      "used_percent": 7,
-      "remaining_percent": 93,
+      "used_percent": 8,
+      "remaining_percent": 92,
       "window_duration_minutes": 300,
-      "resets_at_iso": "2026-08-09T10:20:00.931Z"
+      "resets_at_iso": "2026-08-09T10:19:59.428Z"
     },
     {
       "window_id": "seven_day",
@@ -20,7 +20,7 @@
       "used_percent": 57,
       "remaining_percent": 43,
       "window_duration_minutes": 10080,
-      "resets_at_iso": "2026-08-14T22:00:00.931Z"
+      "resets_at_iso": "2026-08-14T21:59:59.428Z"
     }
   ],
   "governing_window": {
@@ -29,7 +29,7 @@
     "used_percent": 57,
     "remaining_percent": 43,
     "window_duration_minutes": 10080,
-    "resets_at_iso": "2026-08-14T22:00:00.931Z"
+    "resets_at_iso": "2026-08-14T21:59:59.428Z"
   },
   "extra_usage_present": true,
   "extra_usage_used_percent": 0,
@@ -51,7 +51,22 @@
         "limits",
         "spend",
         "member_dashboard_available"
-      ]
+      ],
+      "other_field_types": {
+        "seven_day_oauth_apps": "null",
+        "seven_day_cowork": "null",
+        "seven_day_omelette": "null",
+        "tangelo": "null",
+        "iguana_necktie": "null",
+        "omelette_promotional": "null",
+        "nimbus_quill": "object",
+        "cinder_cove": "null",
+        "amber_ladder": "null",
+        "extra_usage": "object",
+        "limits": "array",
+        "spend": "object",
+        "member_dashboard_available": "boolean"
+      }
     },
     "windows": {
       "five_hour": {
@@ -60,7 +75,12 @@
           "limit_dollars",
           "used_dollars",
           "remaining_dollars"
-        ]
+        ],
+        "other_field_types": {
+          "limit_dollars": "null",
+          "used_dollars": "null",
+          "remaining_dollars": "null"
+        }
       },
       "seven_day": {
         "numeric_fields": {},
@@ -68,7 +88,12 @@
           "limit_dollars",
           "used_dollars",
           "remaining_dollars"
-        ]
+        ],
+        "other_field_types": {
+          "limit_dollars": "null",
+          "used_dollars": "null",
+          "remaining_dollars": "null"
+        }
       }
     }
   },
