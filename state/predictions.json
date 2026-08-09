@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-09T10:00:00.000Z",
+  "note": "Every change made because it was claimed to shorten the ETA. judge_on is set when the change lands, not when it is convenient. concurrent_changes is what else was in flight, so a later reader can tell a clean attribution from a confounded one.",
+  "predictions": [
+    {
+      "id": "2026-08-09.derived-lap-cost",
+      "claim": "Replacing the 0.5% guessed reservation with a bound derived from real consumption frees discretionary budget, so more laps fit in the same week.",
+      "made_at": "2026-08-09T08:57:00Z",
+      "metric": "discretionary_percent reported by scripts/pacing.mjs, and laps per day in state/laps.json",
+      "baseline": { "discretionary_percent": 13.0, "reservation_basis": "unmeasured_default 0.5%" },
+      "judge_on": "2026-08-10",
+      "concurrent_changes": ["2026-08-09.revenue-loop-disabled-in-registry"],
+      "outcome": null
+    },
+    {
+      "id": "2026-08-09.revenue-loop-disabled-in-registry",
+      "claim": "The registry listed revenue-loop as enabled after the owner stopped it, so the gate reserved quota for a trigger that cannot fire. Marking it disabled returns that share.",
+      "made_at": "2026-08-09T09:11:00Z",
+      "metric": "reserved_for_others_percent reported by scripts/pacing.mjs",
+      "baseline": { "reserved_percent_including_dead_trigger": 9.43 },
+      "judge_on": "2026-08-10",
+      "concurrent_changes": ["2026-08-09.derived-lap-cost"],
+      "outcome": null
+    },
+    {
+      "id": "2026-08-09.efficiency-demoted-while-eta-infinite",
+      "claim": "Ranking efficiency last while every path is infinite stops the loop spending laps on acceleration, so the next laps pick a candidate that could make a path finite.",
+      "made_at": "2026-08-09T09:20:00Z",
+      "metric": "the kind of candidate chosen by each lap, read from state/continue.json and commit subjects",
+      "baseline": { "consecutive_laps_choosing_efficiency_or_machinery": 16 },
+      "judge_on": "2026-08-11",
+      "concurrent_changes": [],
+      "outcome": null
+    }
+  ]
+}

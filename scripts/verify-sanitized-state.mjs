@@ -71,6 +71,23 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
   if (typeof state.reason !== "string" || !state.reason) {
     throw new Error("continuation record has a decision but no reason");
   }
+} else if (Array.isArray(state.predictions)) {
+  // Prediction ledger. judge_on is mandatory and must be a date: a prediction with
+  // no judgeable date can never come due, so it is invisible to the checker and
+  // effectively never judged. That is worse than a late judgement, because it
+  // looks like nothing is owed.
+  for (const p of state.predictions) {
+    if (typeof p.id !== "string" || !p.id) throw new Error("prediction has no id");
+    if (!/^\d{4}-\d{2}-\d{2}/.test(p.judge_on ?? "")) {
+      throw new Error(`prediction ${p.id} has no judgeable judge_on date`);
+    }
+    if (typeof p.metric !== "string" || !p.metric) {
+      throw new Error(`prediction ${p.id} names no metric, so it can never be settled`);
+    }
+    if (p.outcome === undefined) {
+      throw new Error(`prediction ${p.id} has no outcome field (use null while open)`);
+    }
+  }
 } else if (state.probe !== undefined) {
   // API capability probes. This shape predates the branch and was failing the
   // checker outright — which meant a file under state/ was exempt from the
