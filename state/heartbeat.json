@@ -1,12 +1,20 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T04:01:49.098Z",
+  "fetched_at": "2026-08-09T05:37:50.711Z",
   "overdue_factor": 2,
   "overdue_count": 0,
-  "never_seen_count": 6,
+  "never_seen_count": 7,
   "repair": null,
   "automations": [
+    {
+      "id": "eta-loop",
+      "kind": "claude-trigger",
+      "cadence_minutes": 240,
+      "last_seen": null,
+      "age_minutes": null,
+      "status": "never_seen"
+    },
     {
       "id": "revenue-loop",
       "kind": "claude-trigger",

@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T04:01:48.713Z",
+  "fetched_at": "2026-08-09T05:37:50.229Z",
   "target_yen_per_month": 200000,
   "idle_eta_days": null,
   "idle_eta_note": "every measurable channel is infinite: zero revenue, zero growth, or blocked behind an owner action. This is the real baseline, not a measurement failure.",
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-09T02:37:23.868Z",
+      "measured_at": "2026-08-09T04:48:53.263Z",
       "monthly_yen_now": 0,
       "lifetime_sales": 0,
       "lifetime_usd_cents": 0,
@@ -19,7 +19,7 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-09T03:57:48.022Z",
+      "measured_at": "2026-08-09T05:34:37.739Z",
       "monthly_yen_now": 0,
       "games": 0,
       "total_views": 0,
@@ -38,13 +38,6 @@
     }
   ],
   "candidates": [
-    {
-      "kind": "constraint_recheck",
-      "id": "chatgpt_reach_from_automation",
-      "why": "large: Claude is the scarce pool and ChatGPT is not; moving review/audit/ETA work there raises laps per week",
-      "owner_actions": 0,
-      "note": "UNMEASURED: whether the automated ChatGPT path (chatgpt-ask.yml, codex exec in a read-only sandbox) can read our repositories."
-    },
     {
       "kind": "constraint_recheck",
       "id": "itch_profile_games_fields",
