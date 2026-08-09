@@ -1523,6 +1523,51 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(declaredUnevaluable.ok === true, "a declared not-evaluable condition was rejected");
   assert(declaredUnevaluable.rows[0].postable_today === null, "a not-evaluable row did not report unknown");
 
+  // 6. A venue can be shut by more than one thing at once. postable_when held a
+  //    single condition, so r/gamedev's row could only express the blocker whoever
+  //    wrote it thought of first — and it reported "one unknown left" while the demo
+  //    had no public host at all. A member nobody can settle yet must drag the row to
+  //    unknown, not be silently dropped.
+  const twoBlockers = venueReadiness(
+    [
+      {
+        venue: "x",
+        postable_today: null,
+        postable_when: [
+          { repo_file: "assets/free-demo/index.html" },
+          { not_evaluable: "nothing records a public URL" },
+        ],
+        account: { exists: true, evidence_state_file: "state/itch.json" },
+      },
+    ],
+    evidence,
+    { "assets/free-demo/index.html": true },
+  );
+  assert(
+    twoBlockers.rows[0].postable_today === null,
+    `a satisfied first blocker hid an unsettled second one: ${JSON.stringify(twoBlockers.rows[0].postable_today)}`,
+  );
+  assert(twoBlockers.ok === true, `a declared multi-blocker row was rejected: ${twoBlockers.rows[0].problem}`);
+
+  // A settled NO in any member still shuts the row, or a route would read unknown
+  // for as long as one unanswerable condition sat beside a real refusal.
+  const oneRefusal = venueReadiness(
+    [
+      {
+        venue: "x",
+        postable_today: false,
+        postable_when: [
+          { repo_file: "assets/free-demo/index.html" },
+          { not_evaluable: "nothing records a public URL" },
+        ],
+        account: { exists: true, evidence_state_file: "state/itch.json" },
+      },
+    ],
+    evidence,
+    { "assets/free-demo/index.html": false },
+  );
+  assert(oneRefusal.rows[0].postable_today === false, "a settled refusal was softened to unknown by an unsettled sibling");
+
   // And the real rows pass, which is what keeps this honest as venues are added.
   // The CLI also checks the survey's stored count against the derived one, so the
   // number a reader acts on cannot drift from the rows underneath it.

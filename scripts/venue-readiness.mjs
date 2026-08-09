@@ -88,6 +88,21 @@ function blockerCleared(v, evidence, repoFiles) {
     };
   }
 
+  // A venue can be shut by more than one thing at once, and r/gamedev is: it needs a
+  // free unwalled artifact AND a public link to it. Writing only the blocker somebody
+  // happened to think of first is how this row came to read "one unknown left" when
+  // there were two. An array is ANDed with the same three-valued rule as the account,
+  // so a member nobody can settle yet drags the row to unknown instead of being
+  // quietly dropped.
+  if (Array.isArray(cond)) {
+    const parts = cond.map((one) => blockerCleared({ postable_when: one, postable_not_evaluable: one?.not_evaluable }, evidence, repoFiles));
+    return {
+      declared: parts.every((p) => p.declared),
+      holds: parts.reduce((acc, p) => andKleene(acc, p.holds), true),
+      reason: parts.map((p) => p.reason).join(" AND "),
+    };
+  }
+
   if (cond.repo_file) {
     const present = repoFiles[cond.repo_file];
     if (typeof present !== "boolean") {
@@ -222,10 +237,12 @@ if (isMain) {
 
   // Only the files the rows actually cite are read, so adding a venue that cites a
   // new state file does not need this script edited.
+  // postable_when is one condition or an array of them, so flatten before collecting.
+  const conditions = venues.flatMap((v) => (Array.isArray(v?.postable_when) ? v.postable_when : [v?.postable_when]));
   const cited = new Set(
     [
       ...venues.map((v) => v?.account?.evidence_state_file),
-      ...venues.map((v) => v?.postable_when?.state_file),
+      ...conditions.map((one) => one?.state_file),
     ].filter(Boolean),
   );
   const evidence = {};
@@ -235,7 +252,7 @@ if (isMain) {
   // This reads the checkout rather than origin/main, which is sound only because
   // RUNBOOK 7.5 forbids leaving work uncommitted; if that ever stops holding, this
   // is the line that starts lying.
-  const wanted = new Set(venues.map((v) => v?.postable_when?.repo_file).filter(Boolean));
+  const wanted = new Set(conditions.map((one) => one?.repo_file).filter(Boolean));
   const repoFiles = {};
   for (const path of wanted) {
     repoFiles[path] = await stat(resolve(root, path)).then(

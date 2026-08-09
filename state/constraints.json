@@ -211,9 +211,14 @@
             "eligibility_threshold": "48 hours minimum account age, observed in a 2026 auto-removal notice",
             "live_slot_evidence": null,
             "postable_today": null,
-            "postable_when": {
-              "repo_file": "assets/free-demo/index.html"
-            },
+            "postable_when": [
+              {
+                "repo_file": "assets/free-demo/index.html"
+              },
+              {
+                "not_evaluable": "the venue needs a LINK, and nothing here records a public URL for the demo. No state file holds one because nothing can yet produce one: the repository is private, and itch_no_write_api measured that butler pushes builds to an EXISTING page and has no page-creation command. When a host exists, replace this member with a predicate over the state file that records the URL — do not delete it."
+              }
+            ],
             "postable_when_note": "The venue's rule forbids the paid kit and permits a free unwalled artifact in the same sentence, so what decides this row is whether such an artifact exists. It does not: task .q commissioned one from the codex lane and codex/outbox/2026-08-09.q.md has not arrived. False beats unknown in the AND, so this row reads shut on the artifact even though the account answer is unknown — which is correct, and also why the account question is not yet the binding blocker here. WHEN THE ARTIFACT LANDS THIS ROW TURNS unknown, NOT postable, and scripts/venue-readiness.mjs will fail until somebody answers the account question or records that it cannot be answered. That failure is the feature: it is the loop refusing to carry r/gamedev as an open route on an account nobody has established.",
             "blocked_on": "the rule, not the account. A USD 25 paid kit is forbidden here regardless of standing, and no paid-product day thread or dedicated slot was found.",
             "what_it_opens_instead": "A free artifact with no signup wall is explicitly permitted by the same sentence. This is the one venue whose door is open to a different product form rather than to a better-standing account.",
@@ -229,6 +234,13 @@
               "what_moved": "The artifact arrived. postable_today read false because a paid kit is forbidden here; that reason is spent, because what would be posted is now a free unwalled demo the venue's own sentence permits. The remaining blocker is the account, which has never been established — so the honest value is unknown, not false.",
               "who_said_so": "scripts/venue-readiness.mjs, not a reader noticing. It exited 1 with 'postable_today says false but the evidence says null (account_exists=null, blocker: assets/free-demo/index.html exists)'. The reader was added earlier the same session, BEFORE the artifact landed, and this is it firing on the case it was written for — inside one session rather than after a handoff, which is the part that was not expected this fast.",
               "what_it_means_for_the_route": "r/gamedev is no longer blocked on anything this loop can build. It is blocked on one owner fact. That is the whole change of shape: the free-artifact route's two unknowns are down to one, and the survivor is not a venue question."
+            },
+            "the_second_blocker_was_missed_for_an_hour": {
+              "found_at": "2026-08-09T17:33:00Z",
+              "what": "This session recorded at 17:28Z that r/gamedev's remaining unknown was one owner fact. It is two. The rule permits sharing a free unwalled asset, and sharing on Reddit means posting a link — so a demo that exists only inside a private repository satisfies the product form and still cannot be posted.",
+              "how_it_was_missed": "postable_when held exactly one condition, so the row could only ever express the blocker whoever wrote it thought of first. The machine then reported the account as the sole blocker and was believed, because it had just been right about something else. A reader that is right about one thing is not thereby complete.",
+              "the_fix": "postable_when accepts an ARRAY, ANDed with the same three-valued rule as the account. A member nobody can settle yet is written as { not_evaluable } and drags the row to unknown rather than being left out. Leaving it out is what happened here.",
+              "two_independent_observations_that_no_host_exists": "(1) grep across state/ for hosting, pages, reachability and public URL returns only venue_survey.what_was_not_measured, which is about the KIT's source files, not about a URL. (2) itch_no_write_api, measured 2026-08-08 from the docs: butler pushes builds to an existing page, no page-creation command; the server API is six read-only endpoints."
             }
           },
           {
@@ -543,6 +555,16 @@
         },
         "it_was_actually_played": "Not eyeballed and not trusted to an exit code. The lane states outright it never started the UI in a browser, and this lap renamed a CSS class the page's own querySelector calls depend on — so a static pass proved nothing. Driven in headless Chromium at 390x844: 20 taps took stardust 0 -> 20, the first producer became affordable, trading it left 5 and moved its next price 15 -> 18 (matching the lane's own unit test of ceil(15 * 1.15^n)), owned went to 1, and localStorage key hoshikuzu-kobo-v1 was written. The screenshot was opened and looked at: one column, Japanese, no dead band at any edge.",
         "the_first_probe_was_wrong_and_that_matters": "The first run reported 'amount 0 -> 0' and looked like a dead game. It was the probe: the button listens on pointerdown and the probe sent click. Recorded because a harness that under-reports is indistinguishable from a broken artifact, and the wrong conclusion here would have been to send a working demo back to the lane for repair."
+      },
+      "route_changed": {
+        "at": "2026-08-09T17:35:00Z",
+        "admitted_as": "route_change through scripts/eta-gate.mjs at 3/3 prerequisite with the ETA unmoved, recorded in state/lap-claims.json. The prerequisite lane rejected this same work first (exit 20) and named the reason: three rounds without movement means the route is wrong, not the parameter.",
+        "from": "r/gamedev is the one venue whose door opens with NO owner action, so a free artifact bypasses the owner entirely.",
+        "to": "The free artifact is not an alternative to the owner. It is cargo, and it needs a host, and the host is an owner action. Both surviving venues now converge on the SAME single pending request: the itch.io page.",
+        "why_the_premise_fell": "Two measurements, neither available when the route was adopted at 16:44Z. (a) No Reddit account has ever been established, and reddit.com returns HTTP 403 from here, so it cannot be looked up even with a name. (b) The venue needs a link and the demo has no public home. The route was adopted on 'no owner action required'. That is the term that failed.",
+        "what_this_makes_the_itch_request_worth": "It was one venue's blocker. It is now the host for the other venue too: butler can push an HTML5 build to a page once the page exists, which is the only route to a public URL this environment has. One owner action, ten minutes, unblocks both. That is a larger claim than the request was written under, and the request has NOT been rewritten — RUNBOOK 6 says a pending request is not to be re-prepared, and this changes its value, not its text.",
+        "what_is_deliberately_not_decided_here": "Whether the demo should be its own itch page or ride along with the kit's. That needs the owner's page to exist first, and guessing now would be inventing a step nobody can take. Recorded as the next lap's question rather than answered by this one.",
+        "do_not_read_this_as": "that the free demo was wasted. It exists, it passes the venue rule, it was played, and it is the thing that makes a free-and-tryable link possible at all. What changed is who has to act first."
       }
     },
     {

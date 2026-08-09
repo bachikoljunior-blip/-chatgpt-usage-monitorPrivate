@@ -305,6 +305,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T17:27:19.434Z",
+      "candidate": "free_artifact_door",
+      "kind": "route_change",
+      "mechanism": "Abandoning the premise the route was adopted on, not a parameter of it. free_artifact_door was taken because r/gamedev is the one venue whose door opens with NO owner action. Measured today, that premise is false twice: no Reddit account has ever been established (owner fact, and reddit returns 403 from here so it cannot be looked up), and the venue needs a LINK to something tryable while nothing in this repository gives assets/free-demo/index.html a public home — a grep across state/ for hosting, pages, reachability and public URL finds only a sentence about the kit's source files, which is a different question. itch_no_write_api settles where the host comes from: butler pushes builds to an EXISTING page and has no page-creation command. So the free artifact is not an alternative to the owner; it is cargo that needs a host, and the host is an owner action. Both surviving venues now converge on the same single pending request. The route changes from 'a free artifact bypasses the owner' to 'one owner action unblocks both venues, and the demo is what makes it worth taking'.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
