@@ -257,6 +257,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T16:49:34.192Z",
+      "candidate": "no_standing_where_buyers_gather",
+      "kind": "prerequisite",
+      "mechanism": "The route just adopted depends on an account nobody has established exists. Six venue surveys asked whether venues would permit us and never asked whether we can post at all, and the two facts sit on opposite sides of the file: state/itch.json returns HTTP 200 with a username, so an itch account is MEASURED, while nothing anywhere records a Reddit account. So the venue with an explicitly-none eligibility threshold and a confirmed account is the one waiting on a pending owner request, and the venue the loop just changed route toward is the one whose account is unverified. Nothing reports that asymmetry, so the next lap ranks the two as if they were alike. Make account existence a declared per-venue field that a machine refuses to leave blank, so a venue cannot be counted as a route on the strength of its rules alone. No ETA improvement claimed: it prices a route correctly rather than shortening one.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

@@ -107,6 +107,9 @@ jobs:
           # and the rule that opens the venue can be broken by any later edit to it.
           # Silent while the file is absent.
           node scripts/check-free-artifact.mjs || rc=1
+          # Fails when a surveyed venue is carried as a route without saying whether
+          # we can post from it. null is a legitimate answer; omission is not.
+          node scripts/venue-readiness.mjs || rc=1
           if [ "$rc" != "0" ]; then
             echo "::error::something is owed or the zero-base round has stalled — see the output above"
           fi

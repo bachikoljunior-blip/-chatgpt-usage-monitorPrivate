@@ -25,6 +25,7 @@ import { decideVerdict } from "../scripts/gate-verdict.mjs";
 import { constraintDue } from "../scripts/constraint-due.mjs";
 import { evaluateUnlock } from "../scripts/unlock-condition.mjs";
 import { checkFreeArtifact } from "../scripts/check-free-artifact.mjs";
+import { venueReadiness } from "../scripts/venue-readiness.mjs";
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import {
   checkAddressee, checkRequestsAddressee, copyChanged, diffListing, pasteableStrings,
@@ -1403,6 +1404,58 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     allowFailure: true,
   });
   assert(refusedDemo.status !== 0, "the CLI exited 0 on an artifact that violates the rule opening the venue");
+}
+
+// --- a venue is not a route until we can post from it -------------------------
+//
+// Six surveys asked whether venues would permit us and none asked whether an
+// account exists to post from. The loop then changed route toward r/gamedev on the
+// strength of its rules, while the one venue with a measured account sat behind a
+// pending owner request. Both rows read as equally researched, because every field
+// described the venue and no field described us.
+{
+  const itch = {
+    venue: "itch.io",
+    blocked_on: "needs a page on itch.io first",
+    account: { exists: true, evidence_state_file: "state/itch.json" },
+  };
+  const reddit = { venue: "r/gamedev", account: { exists: null, evidence_state_file: null } };
+  const evidence = { "state/itch.json": { status: "ok", profile: { username: "someone" } } };
+
+  const ok = venueReadiness([itch, reddit], evidence);
+  assert(ok.ok === true, `declared venues were rejected: ${JSON.stringify(ok.rows)}`);
+  assert(ok.postable_with_a_measured_account === 1, "the measured account was not counted, or the unmeasured one was");
+  assert(
+    ok.rows[1].blocked_on.includes("nobody has established"),
+    "an unmeasured account did not say so as the blocker",
+  );
+
+  // Undeclared is the failure this exists for: a missing field and an unmeasured
+  // account are indistinguishable when the field is optional.
+  const missing = venueReadiness([{ venue: "somewhere" }], evidence);
+  assert(missing.ok === false, "a venue carried as a route never said whether we can post from it");
+  assert(missing.rows[0].problem === "no account field", "the undeclared account was not named as the problem");
+
+  // An asserted account is exactly the thing no_standing_where_buyers_gather says
+  // has never been measured, so a claim has to point at something readable.
+  const asserted = venueReadiness([{ venue: "x", account: { exists: true } }], evidence);
+  assert(asserted.ok === false, "a claimed account with no evidence file was accepted");
+  assert(asserted.rows[0].account_exists === null, "an unevidenced claim was reported as a measured account");
+
+  const unreadable = venueReadiness(
+    [{ venue: "x", account: { exists: true, evidence_state_file: "state/nope.json" } }],
+    { "state/nope.json": null },
+  );
+  assert(unreadable.ok === false, "an account whose evidence file could not be read was accepted");
+
+  const errored = venueReadiness(
+    [{ venue: "x", account: { exists: true, evidence_state_file: "state/itch.json" } }],
+    { "state/itch.json": { status: "error" } },
+  );
+  assert(errored.ok === false, "an account was accepted on an evidence file reporting an error");
+
+  // And the real rows pass, which is what keeps this honest as venues are added.
+  run(process.execPath, [join(root, "scripts/venue-readiness.mjs")]);
 }
 
 console.log("All usage monitor tests passed.");

@@ -152,6 +152,14 @@
       "two_ways_it_lifts": "Acquire standing — participation that accrues over time, an owner action that repeats, and therefore genuinely expensive under this loop's constraints. Or substitute breadth, which is what the one zero-audience case on record did: several venues on the same day. Breadth is a single bounded act, so it does not fall foul of the recurring-actions constraint at all. Breadth is the cheaper test and has never been tried.",
       "prerequisite_the_evidence_adds": "UPGRADED FROM INFERENCE TO A QUOTED RULE 2026-08-09. It was: in every fast case what was posted was a finished artifact the reader could try immediately, and no case was found where a bare announcement sufficed. That was a pattern across case studies, which a reader could discount. It is now also a written venue rule — r/gamedev: \"If you want to share assets make sure they are entirely free and not locked behind anything such as requiring account sign ups or emails\", and itch.io: \"Release posts that show little to no effort, or are just links, will be locked and removed.\" A link to a paid Gumroad page fails both as written, not as interpreted.",
       "note": "measured_at is null on purpose: it records that OUR side is unmeasured, which is what makes this actionable now rather than a scheduled recheck. Do not backfill it with the survey dates — those are in evidence, and confusing the two would turn 'we never looked' into 'we looked and found nothing'.",
+  "our_side_is_now_partly_measured": {
+   "measured_at": "2026-08-09T16:51:00Z",
+   "found": "One of the three surveyed venues has a measured account and it is not the one the loop changed route toward. state/itch.json returns HTTP 200 from itch.io/api/1/KEY/me with username bachikoljunior-blip, so itch.io — the venue whose eligibility threshold is an explicit none — is the single place where BOTH the venue's permission and our own ability to post are settled. Nothing in this repository records a Reddit account: no username, no state file, no owner request asking for one.",
+   "why_it_was_invisible": "Every field on a venue row described the VENUE — rule_quoted, eligibility_threshold, live_slot_evidence, postable_today. No field described us, so two rows looked equally researched when one rested on a measured account and the other on nothing. Six surveys asked whether they would permit us and none asked whether we could post at all.",
+   "the_machine": "scripts/venue-readiness.mjs. Every per_venue row must declare account: { exists, evidence_state_file, note }. exists:null is a legitimate answer and means nobody has looked; OMITTING the field is not, because a missing field and an unmeasured account are indistinguishable when the field is optional. A row claiming exists:true must name a state file that reads and reports ok, so standing cannot be asserted. Run by tests/run-tests.mjs with its negative cases and hourly by pulse.yml.",
+   "what_it_does_to_the_ranking": "It does not close the free-artifact route and does not reopen the itch one. It stops them being compared as if alike: the r/gamedev route needs an account nobody has established, and the cheapest way to establish it is one owner question — does a Reddit account exist, and what is the username — after which the codex lane can read the public profile for age and karma as ordinary outside research. That question has NOT been asked yet and is deliberately not being bundled into either pending request.",
+   "still_unmeasured": "Everything else the claim above says. Whether the owner holds standing anywhere in the sense of participation or following, and whether any of the 28 published artifacts is worth posting. Account existence is the floor beneath standing, not standing itself."
+  },
       "lift_mechanism_chosen": {
         "chosen_at": "2026-08-09T14:05:00Z",
         "mechanism": "substitute breadth",
@@ -179,7 +187,13 @@
             "live_slot_evidence": "an asset pack (CBORN Character Pack 01) posted 2026-08-09, the day of the survey",
             "postable_today": false,
             "blocked_on": "the required link is to a page ON itch.io, and state/itch.json reports zero games. That page is owner request 2026-08-09.itch-page-for-the-kit, already pending.",
-            "the_reason_this_venue_matters_most": "It is the only surveyed venue with no eligibility threshold AND a dated live slot AND rules that permit a paid asset pack. Its only blocker is an owner action already asked for."
+            "the_reason_this_venue_matters_most": "It is the only surveyed venue with no eligibility threshold AND a dated live slot AND rules that permit a paid asset pack. Its only blocker is an owner action already asked for.",
+            "account": {
+              "exists": true,
+              "evidence_state_file": "state/itch.json",
+              "measured_at": "2026-08-09",
+              "note": "itch.io/api/1/KEY/me returns HTTP 200 with username bachikoljunior-blip. This is the ONLY venue across six surveys where our own ability to post is measured rather than assumed, and it is also the only one whose eligibility threshold is an explicit none. Both halves are settled here and nowhere else."
+            }
           },
           {
             "venue": "r/gamedev",
@@ -189,7 +203,14 @@
             "live_slot_evidence": null,
             "postable_today": false,
             "blocked_on": "the rule, not the account. A USD 25 paid kit is forbidden here regardless of standing, and no paid-product day thread or dedicated slot was found.",
-            "what_it_opens_instead": "A free artifact with no signup wall is explicitly permitted by the same sentence. This is the one venue whose door is open to a different product form rather than to a better-standing account."
+            "what_it_opens_instead": "A free artifact with no signup wall is explicitly permitted by the same sentence. This is the one venue whose door is open to a different product form rather than to a better-standing account.",
+            "account": {
+              "exists": null,
+              "evidence_state_file": null,
+              "measured_at": null,
+              "note": "NOBODY HAS LOOKED, and the loop changed route toward this venue on 2026-08-09 without looking. Nothing in this repository records a Reddit account: no username, no state file, no owner request asking for one. The venue's rule and its 48-hour eligibility threshold are both established, and both are facts about the venue rather than about us. If no account exists, the eligibility number is the cheapest part to satisfy — 48 hours — and that is worth knowing before more laps are spent here.",
+              "how_to_measure": "One owner question: does a Reddit account exist, and what is the username. With a username the codex lane can read the public profile for age and karma, which is ordinary outside research rather than the eligibility question six surveys could not settle. Without one, the answer is the answer."
+            }
           },
           {
             "venue": "GameDev.net — Your Announcements",
@@ -198,7 +219,13 @@
             "eligibility_threshold": "could not be established from public rules — no number published for account age, post count, or free-member posting limits",
             "live_slot_evidence": "post dates were not retrievable from the listing, so the slot could not be shown to be active",
             "postable_today": false,
-            "blocked_on": "unverified eligibility. Counted as not-postable on purpose: the measured failure mode in the evidence is a standing-start account being auto-removed, and an unverified threshold is exactly the condition under which that happened before."
+            "blocked_on": "unverified eligibility. Counted as not-postable on purpose: the measured failure mode in the evidence is a standing-start account being auto-removed, and an unverified threshold is exactly the condition under which that happened before.",
+            "account": {
+              "exists": null,
+              "evidence_state_file": null,
+              "measured_at": null,
+              "note": "Never asked, and unlike r/gamedev it would not help much if answered: this venue's blocker is that its own eligibility threshold is unpublished, so an account here could not be shown to qualify either way."
+            }
           }
         ],
         "what_this_does_to_the_lift_mechanism": "The route adopted at 3555e97 was substitute breadth for standing. Breadth is now measured rather than assumed, and it did not substitute: 0 of 3. But the reason is NOT that standing turned out to be required after all — no venue refused us for lack of standing. Two refused for reasons that have nothing to do with reputation: one wants a page on its own platform, one forbids the product form. Standing remains unmeasured on our side, as the claim above says. What has changed is that the next blocker is no longer reputational and is no longer unknown.",
@@ -492,7 +519,15 @@
       },
       "why_it_did_not_go_through_the_gate": "RUNBOOK 3.9's single exception. The gate's verdict is defined by numbers in state/eta.json, so asking the gate for permission to repair the instrument that produces those numbers is circular. The exception's price is that the repair must be shown by machine rather than reported, which is what the test and the sanitizer check are.",
       "the_generalisable_half": "A CONDITION THAT NOTHING EVALUATES NEVER COMES TRUE, AND IT FAILS SILENTLY — the entry looks identical to one that is merely not met yet. It is worse than a missing condition, because a missing one is noticed the moment someone asks 'what opens this?'. Ask of every waiting thing: WHICH LINE OF CODE DECIDES IT, and if the answer is a sentence, it is not waiting, it is stopped. The second half generalises too: a machine-checkable condition is not automatically the RIGHT condition, and the way to tell is to construct the cheapest world in which it is satisfied and check whether the goal is actually met there. Here that world was two readings of zero.",
-      "what_is_not_known": "Whether other stated conditions in this repository have the same defect. Three were found because compute-eta.mjs happened to be the reader being inspected. Not checked: the judge conditions in state/predictions.json (min_observations, judge_deadline), the done_marker logic in codex/INBOX.md, and the recheck dates in state/wiring-exceptions.json."
+      "what_is_not_known": "Whether other stated conditions in this repository have the same defect. Three were found because compute-eta.mjs happened to be the reader being inspected.",
+      "the_three_suspects_were_checked_and_are_clean": {
+        "checked_at": "2026-08-09T16:50:00Z",
+        "why_recorded": "The entry above named three places to check as an honest gap. They were checked the same session, and leaving the gap text standing would have cost a later lap a re-check of ground already walked — the same waste as free_artifact_door's honest_gap asking for an eligibility number the file already held.",
+        "min_observations_and_judge_deadline": "READ. scripts/check-predictions.mjs counts observations at the declared source/path, honours usable_only, and forces at judge_deadline. Not prose.",
+        "wiring_exception_recheck_dates": "READ. scripts/check-wiring.mjs parses recheck_after and re-reports an expired exception as unexcused.",
+        "codex_inbox_done_marker": "READ. scripts/inbox-task.mjs decides on markerEarned and tests/run-tests.mjs covers it.",
+        "what_is_still_unknown": "Everything outside those three. The search was a list somebody wrote down, not a sweep — nobody has enumerated the conditions in this repository and asked of each which line of code decides it."
+      }
     }
   ]
 }
