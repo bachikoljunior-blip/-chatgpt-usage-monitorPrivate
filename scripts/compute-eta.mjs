@@ -33,12 +33,14 @@ const [
   { value: constraints },
   { value: external },
   { value: zerobase },
+  { value: blocked },
 ] = await Promise.all([
   readStateJson("state/gumroad.json"),
   readStateJson("state/itch.json"),
   readStateJson("state/constraints.json"),
   readStateJson("state/external-metrics.json"),
   readStateJson("state/zerobase.json"),
+  readStateJson("state/blocked.json"),
 ]);
 
 const channels = [];
@@ -257,19 +259,53 @@ for (const c of candidates) {
 // could make a path finite outranks anything that merely makes travel faster.
 // The moment one path is finite, efficiency starts buying real days again and
 // this demotion lifts by itself.
+// The exception, and it is a real one: efficiency can be the thing that makes a
+// finite path reachable at all. If the top candidate cannot be finished inside the
+// quota available to it, then capacity is the binding constraint and cutting lap
+// cost is on the critical path rather than beside it.
+//
+// What separates that from the sixteen-lap failure is *evidence of having hit the
+// wall*. Optimising first, in case it is needed later, is exactly how a loop
+// spends its life getting faster at nothing. So the promotion is not available on
+// a hunch: a lap must have tried the work, run out, and recorded which candidate
+// it was blocked on. Only then does efficiency outrank it.
+//
+// A lap records this by setting blocked_on_capacity on the candidate in
+// state/blocked.json — written when it actually stops mid-work for want of budget,
+// never in advance.
+const blockedIds = new Set(
+  Object.entries(blocked?.candidates ?? {})
+    .filter(([, v]) => v?.blocked_on_capacity === true)
+    .map(([id]) => id),
+);
+const capacityIsBinding = candidates.some(
+  (c) => blockedIds.has(c.id) && c.kind !== "efficiency",
+);
+
 const etaIsInfinite = idlePortfolio === null;
 for (const c of candidates) {
-  if (c.kind === "efficiency" && etaIsInfinite) {
+  if (c.kind !== "efficiency") continue;
+  if (capacityIsBinding) {
+    c.promoted_as_prerequisite = true;
+    c.eta_effect_basis =
+      `a lap ran out of budget on ${[...blockedIds].join(", ")} and recorded it. ` +
+      "Capacity is the binding constraint, so cutting lap cost is what makes that " +
+      "path reachable — it is on the critical path, not beside it.";
+  } else if (etaIsInfinite) {
     c.deprioritised_while_eta_infinite = true;
     c.eta_effect_basis =
       "buys no days while every path is at infinity: a faster rate along a road that " +
-      "never arrives still never arrives. Ranks above nothing until one path is finite.";
+      "never arrives still never arrives. Promotes itself the moment a lap records " +
+      "running out of budget on a real candidate — but not on a hunch beforehand.";
   }
 }
 
 candidates.sort((a, b) => {
-  const aDead = a.kind === "efficiency" && etaIsInfinite;
-  const bDead = b.kind === "efficiency" && etaIsInfinite;
+  const aPre = a.kind === "efficiency" && capacityIsBinding;
+  const bPre = b.kind === "efficiency" && capacityIsBinding;
+  if (aPre !== bPre) return aPre ? -1 : 1;
+  const aDead = a.kind === "efficiency" && etaIsInfinite && !capacityIsBinding;
+  const bDead = b.kind === "efficiency" && etaIsInfinite && !capacityIsBinding;
   if (aDead !== bDead) return aDead ? 1 : -1;
   if (a.actionable_now !== b.actionable_now) return a.actionable_now ? -1 : 1;
   const ad = a.eta_effect_days ?? Infinity;

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T09:25:23.260Z",
+  "fetched_at": "2026-08-09T09:34:53.517Z",
   "ranking": "candidates are sorted by estimated days to first yen (conservative end), actionable ones first",
   "target_yen_per_month": 200000,
   "idle_eta_days": null,
@@ -128,7 +128,7 @@
       "note": "move work to the non-scarce pool; stop loading the full directive into every session in 14 repos",
       "actionable_now": true,
       "eta_effect_days": null,
-      "eta_effect_basis": "buys no days while every path is at infinity: a faster rate along a road that never arrives still never arrives. Ranks above nothing until one path is finite.",
+      "eta_effect_basis": "buys no days while every path is at infinity: a faster rate along a road that never arrives still never arrives. Promotes itself the moment a lap records running out of budget on a real candidate — but not on a hunch beforehand.",
       "deprioritised_while_eta_infinite": true
     }
   ],
