@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { readFile } from "node:fs/promises";
+import { KINDS } from "./gate-verdict.mjs";
 
 const path = process.argv[2] ?? "state/usage.json";
 const raw = await readFile(path, "utf8");
@@ -243,8 +244,15 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
   // would turn a lap that promised nothing into one that promised something.
   for (const c of state.claims) {
     if (typeof c.candidate !== "string" || !c.candidate) throw new Error("lap claim has no candidate");
-    if (!["direct", "prerequisite"].includes(c.kind)) {
-      throw new Error(`lap claim for ${c.candidate} has an invalid kind`);
+    // Imported rather than restated. This list was written as a literal
+    // ["direct", "prerequisite"] and never learned about route_change, which
+    // scripts/gate-verdict.mjs added as a third kind and the gate has been
+    // recording since 2026-08-09. So the gate could write a file this checker
+    // rejected, and did, repeatedly — invisibly, because nothing runs the checker
+    // on state/lap-claims.json. Two copies of one list is the defect; there is
+    // now one copy, and tests/run-tests.mjs asserts they cannot drift apart again.
+    if (!KINDS.includes(c.kind)) {
+      throw new Error(`lap claim for ${c.candidate} has an invalid kind: ${JSON.stringify(c.kind)}`);
     }
     if (typeof c.mechanism !== "string" || c.mechanism.length < 20) {
       throw new Error(`lap claim for ${c.candidate} has no substantive mechanism`);

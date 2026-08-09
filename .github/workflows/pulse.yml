@@ -135,6 +135,13 @@ jobs:
           # when the only measurement of whether anything can FIND our public surface
           # has gone stale — which is the state it silently sat in for months.
           node scripts/measure-findable-surface.mjs || rc=1
+          # The two files laps EDIT BY HAND that the gate then reads. Nothing ran the
+          # checker on either, and it showed: verify-sanitized-state kept its own copy
+          # of the lap-claim kinds, never learned about route_change, and rejected every
+          # row the gate had written for a day. A validator nobody invokes is the same
+          # defect as a rule that lives only in a runbook.
+          node scripts/verify-sanitized-state.mjs state/lap-claims.json || rc=1
+          node scripts/verify-sanitized-state.mjs state/constraints.json || rc=1
           if [ "$rc" != "0" ]; then
             echo "::error::something is owed or the zero-base round has stalled — see the output above"
           fi

@@ -384,7 +384,15 @@
         "planned_eta_days": null
       },
       "improves": false,
-      "outcome": null
+      "outcome": {
+        "judged_at": "2026-08-09T20:22:00Z",
+        "judged_by": "the same lap, before it spent the budget the reset gave back",
+        "verdict": "the mechanism was wrong and the lap did something else",
+        "what_happened": "The claim said no lap had taken the distribution decision deliberately. It had — state/constraints.json no_standing_where_buyers_gather.venue_survey.route_after_two_batches, decided 2026-08-09T15:20:00Z: one venue, all in, itch.io Release Announcements, and stop commissioning venue surveys. The claim also assumed codex/outbox/2026-08-09.p.md was unread; it is ingested as second_batch with a running total of 6 venues surveyed and 0 postable. Both were found by opening the files instead of acting on what the surveys said was owed.",
+        "what_the_lap_actually_did": "Corrected two claims inside the pending itch request that this session had just measured false, and registered cookiestrateger.com as an unmeasured constraint so it becomes a candidate automatically.",
+        "the_part_that_matters_for_the_counter": "A route_change RESETS the consecutive-prerequisite run, and this lap did not change any route. So the groundwork budget was refilled by a lap that had not earned it. Recorded here rather than by deleting the row, because the row is what makes the reset visible; a future lap reading a clean 0/3 with no explanation would spend three prerequisites believing a direction change bought them.",
+        "what_a_later_lap_should_do_with_this": "Treat the prerequisite counter as if this reset had not happened until a real route change or a direct claim lands. If the next lap is groundwork, count it as 4th-in-a-row in spirit and prefer a claim that moves a number."
+      }
     }
   ]
 }

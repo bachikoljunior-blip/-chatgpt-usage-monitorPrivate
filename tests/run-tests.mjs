@@ -21,7 +21,7 @@ import {
   ATTACHMENTS, buildPrompt, decide, markerEarned, parseInboxHeader,
 } from "../scripts/inbox-task.mjs";
 import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/revenue-rate.mjs";
-import { decideVerdict } from "../scripts/gate-verdict.mjs";
+import { decideVerdict, KINDS } from "../scripts/gate-verdict.mjs";
 import { constraintDue } from "../scripts/constraint-due.mjs";
 import { evaluateUnlock } from "../scripts/unlock-condition.mjs";
 import { checkFreeArtifact } from "../scripts/check-free-artifact.mjs";
@@ -1460,6 +1460,60 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   });
   assert(absent.ok === true, "the check failed while the artifact does not exist yet");
   assert(absent.matches === null, "an absent artifact was reported as a settled match");
+}
+
+// --- the gate and the checker share one list of kinds -------------------------
+//
+// scripts/gate-verdict.mjs added route_change as a third kind and the gate began
+// recording it. scripts/verify-sanitized-state.mjs kept its own literal
+// ["direct", "prerequisite"] and rejected every row the gate wrote. That went
+// unnoticed for a whole day of laps because nothing runs the checker on
+// state/lap-claims.json — the writer and the validator disagreed, and the only
+// thing that would have said so was never invoked.
+//
+// The fix is one list, imported. This asserts the import is real: a checker that
+// silently re-forked the literal would pass every other test in this file.
+{
+  // Run the real checker as a subprocess rather than re-implementing its rule:
+  // re-implementing it here would be a third copy of the very list whose
+  // duplication caused this.
+  const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+  const lapClaimKindAccepted = async (kind) => {
+    const dir = await mkdtemp(join(tmpdir(), "lap-claims-"));
+    const file = join(dir, "lap-claims.json");
+    await writeFile(
+      file,
+      JSON.stringify({
+        schema_version: 1,
+        claims: [
+          {
+            at: "2026-08-09T00:00:00Z",
+            candidate: "probe",
+            kind,
+            mechanism: "a mechanism long enough to satisfy the substantive-mechanism rule",
+            before: { idle_eta_days: null, planned_eta_days: null },
+            after_claimed: { idle_eta_days: null, planned_eta_days: null },
+            outcome: null,
+          },
+        ],
+      }),
+    );
+    const r = spawnSync(process.execPath, ["scripts/verify-sanitized-state.mjs", file], {
+      cwd: repoRoot,
+    });
+    return r.status === 0;
+  };
+
+  for (const kind of KINDS) {
+    assert(
+      await lapClaimKindAccepted(kind),
+      `verify-sanitized-state rejects ${kind}, which scripts/gate-verdict.mjs can record`,
+    );
+  }
+  assert(
+    !(await lapClaimKindAccepted("groundwork")),
+    "verify-sanitized-state accepts a kind the gate cannot produce",
+  );
 }
 
 // --- published is not findable, and nobody-looked is not zero -----------------
