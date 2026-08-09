@@ -85,6 +85,14 @@
         "removed": "step_3 (Product Hunt account). It is a different route, not part of making this one finite. RUNBOOK 6 gate 5 asks whether the request can be reduced further, and bundling a second route into one ask is exactly the padding that gate exists to catch.",
         "kept_and_why": "Two steps, not one. The page alone is publish-and-wait, which eight outward surveys agree does not reach a buyer. The announcement is the traffic. Dropping either one leaves a request that cannot succeed.",
         "not_reducible_further": "itch has no write API (state/constraints.json itch_no_write_api), so the form cannot be automated, and the announcement must come from the account that owns the page."
+      },
+      "urls": {
+        "create_project": "https://itch.io/game/new",
+        "dashboard": "https://itch.io/dashboard",
+        "release_announcements_board": "https://itch.io/board/10022/release-announcements",
+        "existing_gumroad_listing": "https://bachiko4.gumroad.com/l/fbozt",
+        "how_these_were_obtained": "Read off the live https://itch.io/community index with curl on 2026-08-09, not recalled. The board id was first guessed as 10025, which returned HTTP 200 and looked right; the index says 10022. A 200 proves something answered, not that it is the thing you named — the same lesson as the archive_session refusal recorded in state/continue.json.",
+        "codes_seen": "community 200, board/10022 200, game/new 429 (rate limited, so the path exists), dashboard 403 (login required, as expected)"
       }
     }
   ]
