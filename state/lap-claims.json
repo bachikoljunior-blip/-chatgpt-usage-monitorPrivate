@@ -113,6 +113,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T14:01:18.132Z",
+      "candidate": "no_standing_where_buyers_gather",
+      "kind": "route_change",
+      "mechanism": "Abandon the route this loop has spent its laps on - making ONE storefront findable on its own (copy, then tags, then cover, then category) - and take the one the evidence names. zerobase refuted.not_refuted for honest_post_where_buyers_gather says posting into a buyer community DOES reach a first buyer and is by far the fastest route on record, three cases at 0-1 days from publish to first revenue. What fell was only its 'exactly one post from a standing start' shape, and what_it_leaves names the surviving term precisely: the blocker is STANDING, and BREADTH SUBSTITUTES FOR IT - Invoker had zero audience, both calendar dates, a first sale on day zero, and hit three venues at once. no_standing_where_buyers_gather already lists 'substitute breadth (a single bounded act, never tried)' as one of its two lift mechanisms; this adopts that mechanism explicitly. Two preconditions that were missing at 10:45 are now measured as present: the survey found no case where a bare announcement sufficed and every fast case posted a finished artifact the reader could try immediately, and as of today the priced kit is decidably public (200/27465 bytes with the product name served, against a fabricated-permalink 404/900 control). The incumbent route is not deleted - its Discover prediction still judges 2026-08-13 on its own - it just stops receiving laps.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

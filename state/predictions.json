@@ -400,6 +400,30 @@
           "what_changed_underneath_it": "This same lap measured that a cover image cannot be set through the API at all, so the tile the index would show is blank and stays blank until a person uploads one. That does not explain absence from search results, but it does mean 'appears in Discover' and 'converts in Discover' are now known to be separately blocked."
         }
       ]
+    },
+    {
+      "id": "2026-08-09.breadth-replaces-storefront-tuning",
+      "made_at": "2026-08-09T14:05:00Z",
+      "claim": "A route change was admitted after the prerequisite lane hit 3/3 with the ETA unchanged: stop spending laps making one storefront findable, and take the lift mechanism this constraint has carried as 'never tried' since it was written - substitute breadth for standing. What is being judged is NOT a sale and NOT that the route works. It is the thing that has failed here repeatedly and silently: whether an adopted route actually reaches the work, or whether laps keep going into the abandoned one because that is where the familiar candidates are. state/zerobase.json already records seven adopted options, and the same file's what_it_leaves ended with an instruction - 'a lap should take this deliberately' - that no lap carried out for four hours while four laps went into storefront tuning.",
+      "metric": "Read from origin/main, not from any session's account of itself. (a) state/owner-requests.json contains a request whose act is the multi-venue post, paste-ready per venue, with each venue's promotion rules and account-eligibility checked and quoted - and state/constraints.json no_standing_where_buyers_gather.owner_request_prepared reads true. (b) state/lap-claims.json contains no further gate records for listing tuning (tags, cover, category, copy) after this record, unless one is admitted as a direct claim with a finite ETA.",
+      "baseline": {
+        "laps_spent_on_storefront_tuning_before": 4,
+        "owner_request_prepared": false,
+        "owner_requests_pending_unanswered": 1,
+        "venues_referring_traffic": 0,
+        "sales_count": 0,
+        "discover_presence": "absent from all three surfaces queried, controls 36/12/9",
+        "consecutive_prerequisite_laps_at_route_change": 3
+      },
+      "judge_on": "2026-08-12",
+      "judge_deadline": "2026-08-16",
+      "concurrent_changes": [
+        "The same lap that recorded this route change also added the owner_action_owed ranking path to compute-eta.mjs, for a different constraint (listing_has_no_cover_image). Both constraints now rank through that path, so if either becomes visible to a later lap it is partly because of machinery added the same day and not only because of this decision.",
+        "The incumbent route is deliberately left running: the tags and copy stay live and 2026-08-09.tagging-puts-the-listing-in-discover judges itself on 2026-08-13. Any arrival before then cannot be attributed to this route change, which has not been executed at all yet.",
+        "codex/INBOX.md task .n was dispatched by the previous lap and its answer had not landed when this was written. If it returns a Discover category and a lap sets it, that is storefront tuning after this record and (b) is designed to catch exactly that."
+      ],
+      "falsified_if": "Either (a) the judge date arrives with owner_request_prepared still false and no venue pack in state/owner-requests.json, which would mean the route change was a gate record and a JSON field rather than a change in what laps do - the most likely failure and the reason this prediction exists; or (b) later laps keep gating storefront-tuning work, which would mean the route was abandoned in the file and not in practice. Note the honest negative it does NOT cover: if the pack is prepared and the owner never posts, this prediction is CORRECT and the route is still untested. That is a different question and belongs to a later record - do not let a prepared-but-unposted pack be written up as the route having failed.",
+      "outcome": null
     }
   ]
 }
