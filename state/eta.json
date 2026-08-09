@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T05:37:50.229Z",
+  "fetched_at": "2026-08-09T06:01:09.371Z",
   "target_yen_per_month": 200000,
   "idle_eta_days": null,
   "idle_eta_note": "every measurable channel is infinite: zero revenue, zero growth, or blocked behind an owner action. This is the real baseline, not a measurement failure.",
@@ -51,6 +51,51 @@
       "why": "turns an infinite path finite",
       "owner_actions": 1,
       "note": "create one game page (form only); butler automates everything after"
+    },
+    {
+      "kind": "zero_base_option",
+      "id": "wordpress_plugin_pro",
+      "why": "borrows the plugin directory's existing search traffic; free version funnels to a paid Pro",
+      "owner_actions": "1 initial + 0-1 monthly",
+      "days_to_first_yen_estimate": "7-21",
+      "estimate_not_measurement": true,
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations."
+    },
+    {
+      "kind": "zero_base_option",
+      "id": "vscode_extension_pro",
+      "why": "CI can publish and update it; a concrete time-saver reaches the English-speaking developer market directly",
+      "owner_actions": "1 initial + 0-1 monthly",
+      "days_to_first_yen_estimate": "3-14",
+      "estimate_not_measurement": true,
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations."
+    },
+    {
+      "kind": "zero_base_option",
+      "id": "maintained_data_or_api",
+      "why": "CI turns public data into a normalised, diffable feed people pay monthly for",
+      "owner_actions": "1 initial",
+      "days_to_first_yen_estimate": "7-21",
+      "estimate_not_measurement": true,
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations."
+    },
+    {
+      "kind": "zero_base_option",
+      "id": "npm_pypi_cli_pro",
+      "why": "package search and README funnel to a commercial licence",
+      "owner_actions": "1 initial + 0-1 monthly",
+      "days_to_first_yen_estimate": "7-30",
+      "estimate_not_measurement": true,
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations."
+    },
+    {
+      "kind": "zero_base_option",
+      "id": "high_intent_tool_site",
+      "why": "captures validator/converter/generator searches with a free tool and sells the full version",
+      "owner_actions": "1 initial",
+      "days_to_first_yen_estimate": "14-60",
+      "estimate_not_measurement": true,
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations."
     },
     {
       "kind": "efficiency",

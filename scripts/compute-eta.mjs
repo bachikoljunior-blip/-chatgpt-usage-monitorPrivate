@@ -27,13 +27,19 @@ const write = process.argv.includes("--write");
 const now = new Date();
 const TARGET_YEN_PER_MONTH = 200_000;
 
-const [{ value: gumroad }, { value: itch }, { value: constraints }, { value: external }] =
-  await Promise.all([
-    readStateJson("state/gumroad.json"),
-    readStateJson("state/itch.json"),
-    readStateJson("state/constraints.json"),
-    readStateJson("state/external-metrics.json"),
-  ]);
+const [
+  { value: gumroad },
+  { value: itch },
+  { value: constraints },
+  { value: external },
+  { value: zerobase },
+] = await Promise.all([
+  readStateJson("state/gumroad.json"),
+  readStateJson("state/itch.json"),
+  readStateJson("state/constraints.json"),
+  readStateJson("state/external-metrics.json"),
+  readStateJson("state/zerobase.json"),
+]);
 
 const channels = [];
 
@@ -162,6 +168,30 @@ for (const ch of channels) {
     });
   }
 }
+// Options from the zero-base round. Without this the round is a ritual: it runs,
+// it writes a verdict, and the loop that chooses work never sees it. A measurement
+// written where the actor does not read it is the same as not measuring.
+//
+// They are listed ahead of the incumbent candidates on purpose. Every measured
+// channel is at infinity, so an untested finite estimate outranks a measured
+// impossibility — while staying labelled as an estimate.
+if (zerobase?.verdict === "adopt_for_next_test") {
+  for (const o of zerobase.options ?? []) {
+    candidates.push({
+      kind: "zero_base_option",
+      id: o.id,
+      why: o.why ?? "from the blind round",
+      owner_actions: o.owner_actions ?? "unknown",
+      days_to_first_yen_estimate: o.days_to_first_yen ?? null,
+      estimate_not_measurement: true,
+      note:
+        "Days-to-first-yen is the falsifiable part; measure that. The month-count " +
+        "figures in the round are the model's estimates and must not be carried " +
+        "forward as observations.",
+    });
+  }
+}
+
 // Cost reduction is an accelerator, not thrift: halving the cost of a lap doubles
 // laps per week, which doubles attempts at everything above.
 candidates.push({
