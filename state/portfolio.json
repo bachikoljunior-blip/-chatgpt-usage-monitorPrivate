@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T11:12:00Z",
+  "fetched_at": "2026-08-09T11:28:00.123Z",
   "why_this_exists": "The figure '28 published artifacts, no route to a buyer, ¥0 in eight months' is asserted in state/zerobase.json, state/eta.json, state/predictions.json, state/constraints.json and a comment in scripts/repricing.mjs. It entered at 8eca5b1 (2026-08-09T10:27:30Z) with no source and nothing ever enumerated it. It is load-bearing: it is the evidence that publishing-and-waiting has already been run 28 times, which is what demotes every build candidate. A number doing that much work should have a list under it.",
   "what_was_counted_here": "Two independent enumerations, both taken 2026-08-09T11:12Z, both complete rather than sampled.",
   "enumerations": [
@@ -70,17 +70,32 @@
   },
   "the_priced_artifact": {
     "found_at": "2026-08-09T11:25:00Z",
-    "why_this_was_added": "This file enumerated free artifacts and repository names and then asked 'does any of it reach BUYERS'. It never listed the one artifact that has a price. state/gumroad.json has been collected hourly the whole time and carries exactly one published product; nothing in this file mentioned it. A portfolio that omits the only thing with a price cannot answer a question about buyers.",
-    "source": "state/gumroad.json, fetched_at 2026-08-09T11:04:57.959Z — the collector's own reading, not an assertion",
-    "what_it_is": "one published product, priced, with zero lifetime sales. Name, price and counts live in state/gumroad.json and are deliberately not copied here: a number copied into prose is the failure this whole file exists to document.",
-    "the_pair_this_makes": {
-      "claim": "there is already a free, immediately-playable artifact AND a priced product of the same kind, so the shape codex/outbox/2026-08-09.i.md found in every fast first-sale case — a finished thing the reader can try at once, with something purchasable behind it — is already assembled.",
-      "status": "INFERRED, NOT VERIFIED. The free artifact and the paid product share a subject by their titles, and a public repository carries the same subject again. Nobody has opened the product page or compared its contents to the free build.",
-      "what_would_verify_it": "open the Gumroad product page and check whether what it sells is the same codebase as the free browser build. One page load. Cheap, and not yet done.",
-      "what_would_refute_it": "the paid product being unrelated to the free artifact, or the free artifact no longer reachable at its URL."
+    "verified_at": "2026-08-09T11:27:00Z",
+    "why_this_was_added": "This file enumerated free artifacts and repository names and then asked whether any of it reaches BUYERS. It never listed the one artifact that has a price. state/gumroad.json has been collected hourly the whole time and carries exactly one published product; nothing in this file mentioned it. A portfolio that omits the only thing with a price cannot answer a question about buyers.",
+    "source": "api.gumroad.com/v2/products, read directly at 11:27Z with the token this environment already holds. The hourly collector had been reading the same endpoint all along and keeping only counts, so the descriptive fields were never stored and nobody had looked at them.",
+    "what_it_is": "A rebrandable browser idle-clicker, sold as a commercial licence. Plain HTML/CSS/JS, no build step, no external libraries, no network calls, saves on the device. One config file decides title, palette, the name of the thing being counted, the generators, the upgrades, the milestone text, the call-to-action button and the footer. It ships a form-based config generator, three worked rebrands, a config validator and a browser test script. Name, price and sales counts stay in state/gumroad.json rather than being copied here.",
+    "licence_terms_as_written": "one publishing destination, for the buyer own shop, company or channel; commercial use and modification allowed. Delivering it inside client work is by separate arrangement. Reselling or redistributing the kit itself as a template product is prohibited.",
+    "who_it_actually_addresses": {
+      "corrected": true,
+      "the_description_names": [
+        "shops and cafes",
+        "salons",
+        "streamers and their link pages",
+        "campaign landing pages",
+        "trade-show giveaways"
+      ],
+      "the_pitch_as_written": "give your customers a reason to open your site again",
+      "what_this_corrects": "codex task 2026-08-09.k was dispatched at 11:26Z describing the buyer class as people who buy game source code or production kits with a commercial licence, i.e. developers. That is the wrong class. The product is not sold to people who want to make a game; it is sold to people who want a small branded thing on their own site so customers come back. Those two audiences gather in different places, so the venue half of that survey is aimed off-target.",
+      "what_follows": "the venue and rule questions in .k (questions 2 and 3) are buyer-class-independent and still worth the run. Question 1 and question 4 are not, and need re-asking against the corrected class. Do not read the .k answer for question 1 or 4 without this note next to it."
     },
-    "what_it_changes_about_the_open_question": "'Does a free browser idle game have buyers' was the wrong question to send outward. Players of a free idle game are not buyers, which this file already said. But the priced product is not aimed at players at all — it is aimed at whoever would buy that kind of product, which is a different audience with a different gathering place. The outward question that follows is who pays for this class of product and where they gather, and that is what codex task 2026-08-09.k asks.",
-    "still_not_established": "that anyone buys this. Zero lifetime sales is a measurement, and state/eta.json channels.gumroad already records why: no traffic source feeds it. This entry does not claim the product is good or priced right. It claims the enumeration was incomplete and the question was aimed at the wrong artifact."
+    "the_pair_this_makes": {
+      "claim": "there is a free, immediately-playable artifact of the same genre AND a priced product, so the shape codex/outbox/2026-08-09.i.md found in every fast first-sale case is already assembled: a finished thing the reader can try at once, with something purchasable behind it.",
+      "status": "PARTLY VERIFIED. The paid side is now read from the API rather than inferred: it is an idle-clicker kit, and the stack matches the free browser build. What is still unverified is whether the free build is literally the same codebase as what the kit ships.",
+      "why_the_remaining_gap_may_not_matter": "the funnel needs a demo of the same genre and stack that a reader can try in one click. Same-code identity would be tidier, but the demo works either way.",
+      "what_would_verify_it": "compare the free build against the kit contents. The kit is a small download; nobody has done this."
+    },
+    "what_it_changes_about_the_open_question": "Whether a free browser idle game has buyers was the wrong question to send outward. Players of a free idle game are not buyers, which this file already said. The priced product is not aimed at players and not aimed at developers either — it is aimed at small operators who want a retention widget on their own site. That is the class whose gathering places need naming.",
+    "still_not_established": "that anyone buys this. Zero lifetime sales is a measurement, and state/eta.json channels.gumroad already records why: no traffic source feeds it. This entry does not claim the product is good or priced right. It claims the enumeration was incomplete, the buy link was missing from the file that tracks the product, and the outward question named the wrong buyer."
   },
   "the_question_this_was_actually_opened_for": {
     "question": "Is there a finished artifact a reader could try immediately? codex/outbox/2026-08-09.i.md found that in every fast first-sale case there was one, and that no case succeeded on a bare announcement. state/zerobase.json recorded honest_post_where_buyers_gather as blocked_on 'there is nothing to post about yet', and the previous handoff recorded that nobody had ever looked.",

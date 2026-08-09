@@ -44,6 +44,13 @@ try {
     // No token, no URLs that embed one, no buyer data. Counts and state only.
     id: p.id,
     name: p.name,
+    // The public buy link. Added 2026-08-09: this file recorded "0 sales, no
+    // traffic source feeds it" for a day while omitting the address any traffic
+    // would have to arrive at. Nothing can be posted, linked or handed to the
+    // owner without it, and the whole #1 candidate is about getting a link in
+    // front of buyers. short_url carries no token — the API returns it as the
+    // page anyone can open.
+    short_url: typeof p.short_url === "string" ? p.short_url : null,
     published: p.published === true,
     price_cents: p.price ?? null,
     currency: p.currency ?? null,
