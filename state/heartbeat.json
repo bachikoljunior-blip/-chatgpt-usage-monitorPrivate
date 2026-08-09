@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T09:10:21.619Z",
+  "fetched_at": "2026-08-09T09:21:31.673Z",
   "overdue_factor": 2,
   "overdue_count": 0,
   "never_seen_count": 3,
@@ -11,16 +11,7 @@
       "id": "eta-loop",
       "kind": "claude-trigger",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-09T07:52:24.636Z",
-      "last_seen_source": "laps.samples",
-      "age_minutes": 78,
-      "status": "ok"
-    },
-    {
-      "id": "revenue-loop",
-      "kind": "claude-trigger",
-      "cadence_minutes": 240,
-      "last_seen": "2026-08-09T09:05:17.406Z",
+      "last_seen": "2026-08-09T09:16:39.080Z",
       "last_seen_source": "laps.open",
       "age_minutes": 5,
       "status": "ok"
@@ -28,7 +19,7 @@
     {
       "id": "youtube-loop",
       "kind": "claude-trigger",
-      "cadence_minutes": 360,
+      "cadence_minutes": 60,
       "last_seen": null,
       "last_seen_source": null,
       "age_minutes": null,
@@ -37,7 +28,7 @@
     {
       "id": "cookie-daily",
       "kind": "claude-trigger",
-      "cadence_minutes": 1440,
+      "cadence_minutes": 60,
       "last_seen": null,
       "last_seen_source": null,
       "age_minutes": null,
@@ -47,16 +38,16 @@
       "id": "usage-monitor",
       "kind": "github-actions",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-09T09:10:15.359Z",
+      "last_seen": "2026-08-09T09:16:06.446Z",
       "last_seen_source": "state_file:state/usage.json",
-      "age_minutes": 0,
+      "age_minutes": 5,
       "status": "ok"
     },
     {
       "id": "claude-usage-monitor",
       "kind": "github-actions",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-09T09:10:13.855Z",
+      "last_seen": "2026-08-09T09:21:28.390Z",
       "last_seen_source": "state_file:state/claude-usage.json",
       "age_minutes": 0,
       "status": "ok"
@@ -65,14 +56,14 @@
       "id": "gumroad-monitor",
       "kind": "github-actions",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-09T07:37:56.232Z",
+      "last_seen": "2026-08-09T09:20:48.307Z",
       "last_seen_source": "state_file:state/gumroad.json",
-      "age_minutes": 92,
+      "age_minutes": 1,
       "status": "ok"
     },
     {
       "id": "codex-loop",
-      "kind": "chatgpt-lane",
+      "kind": "github-actions",
       "cadence_minutes": 1440,
       "last_seen": null,
       "last_seen_source": null,
