@@ -1,8 +1,13 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T11:06:16.458Z",
+  "fetched_at": "2026-08-09T11:47:35.234Z",
   "source": "api.itch.io/profile/games",
+  "profile": {
+    "username": null,
+    "url": null,
+    "read_from": "api.itch.io/me"
+  },
   "game_count": 0,
   "total_views": 0,
   "total_downloads": 0,
