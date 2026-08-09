@@ -24,7 +24,9 @@ import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/reven
 import { decideVerdict } from "../scripts/gate-verdict.mjs";
 import { constraintDue } from "../scripts/constraint-due.mjs";
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
-import { checkAddressee, copyChanged, diffListing, readRepoListing } from "../scripts/sync-listing.mjs";
+import {
+  checkAddressee, copyChanged, diffListing, readCoverSource, readRepoListing,
+} from "../scripts/sync-listing.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const temporary = await mkdtemp(join(tmpdir(), "usage-monitor-test-"));
@@ -1079,6 +1081,51 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     "a live product missing one tag was not reported as drift");
   assert(diffListing({ ...liveSame, tags: [...repo.tags].reverse() }, repo).in_sync,
     "tag order was treated as drift; Gumroad does not promise an order");
+
+  // The cover is copy, and on a Discover grid it is the FIRST copy — a tile is a
+  // picture with a price under it. The tags added on 2026-08-09 put the product
+  // into that grid while it had covers: [], so every impression the tags earned
+  // rendered blank. The picture is now a file in this repository, which means it
+  // can drift off the addressee exactly the way the body could, silently, and
+  // with nobody reading it because it is not prose. So the same terms hold it.
+  {
+    const coverText = await readCoverSource(repo);
+    assert(coverText.length > 0,
+      "the listing declares no cover source, so the only copy a browsing buyer sees is unchecked");
+    assert(checkAddressee(repo, coverText).ok,
+      `the committed cover copy drifted off the declared addressee: ${JSON.stringify(checkAddressee(repo, coverText).forbidden_present)}`);
+    // The check has to be able to fail on the cover specifically, or it is only
+    // ever passing because the body passes.
+    const forbidden = repo.addressee_terms?.forbidden?.[0];
+    assert(typeof forbidden === "string" && forbidden.length > 0,
+      "the listing declares no forbidden terms, so the cover check cannot fail");
+    assert(!checkAddressee(repo, `${coverText}<p>${forbidden}</p>`).ok,
+      "a cover carrying a forbidden addressee term was accepted");
+
+    // The rendered file is what gets uploaded, and it is checked for the one
+    // property a person cannot eyeball from the source: that it came out at the
+    // size the store asks for. scripts/render-cover.mjs made assets/itch-cover.png
+    // at the right dimensions with a 90px dead band inside it, because the browser
+    // binary it picked lays the page out 90px shorter than the screenshot. Two
+    // laps shipped that into an owner request and called it paste-ready. This
+    // cannot see a dead band, so it is a floor: SOMEONE HAS TO LOOK AT THE PNG.
+    const png = await readFile(join(root, repo.cover.rendered));
+    const [w, h] = repo.cover.size.split("x").map(Number);
+    assert(png.readUInt32BE(16) === w && png.readUInt32BE(20) === h,
+      `${repo.cover.rendered} is ${png.readUInt32BE(16)}x${png.readUInt32BE(20)}, not the declared ${repo.cover.size}`);
+
+    // Read as text rather than imported: scripts/render-cover.mjs does its work at
+    // module scope, so importing it to read a constant would render a PNG as a
+    // side effect of running the tests.
+    const renderer = await readFile(join(root, "scripts/render-cover.mjs"), "utf8");
+    for (const declared of [repo.cover.source, repo.cover.rendered, repo.cover.size]) {
+      assert(renderer.includes(declared),
+        `the listing declares ${declared} but scripts/render-cover.mjs does not name it, so the committed cover cannot be reproduced`);
+    }
+    assert(/headless_shell/.test(renderer) &&
+      renderer.indexOf("headless_shell") < renderer.indexOf("chrome-linux/chrome"),
+      "render-cover.mjs no longer prefers headless_shell; full chrome lays the page out 90px short and the band comes back");
+  }
 
   // The revert target must survive a push that is not a change of copy. Before
   // this guard, listing-sync.yml ran --apply on every push touching

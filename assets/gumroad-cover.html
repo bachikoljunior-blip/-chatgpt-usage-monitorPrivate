@@ -1,0 +1,46 @@
+<!doctype html><meta charset="utf-8">
+<!--
+  The Gumroad cover. Deliberately NOT assets/itch-cover.html reused at another size.
+
+  Two measured reasons, either one sufficient:
+
+  1. SHAPE. Gumroad Discover browse is a grid of 16:9 tiles; itch states 630x500.
+     Reusing the itch file means a rescale or a crop decided by Gumroad, and the
+     text in a small cover is exactly what a rescale destroys.
+  2. ADDRESSEE. assets/listing/gumroad.ja.json is branch A of the
+     product_form_vs_addressed_buyer constraint: the copy addresses someone who
+     builds and publishes their own game, and the itch cover leads with a phrase
+     on that file's forbidden list. A cover is copy the buyer reads before any
+     description, so it is checked by scripts/sync-listing.mjs checkAddressee
+     together with the name and the body.
+
+  Do not quote the forbidden terms in this file, even to explain them. This very
+  comment named one on its first draft and the check failed on it, correctly: the
+  checker reads the source, and it cannot tell an example from a slogan.
+-->
+<style>
+ /* The gradient is on html too, and the height is 100vh rather than 720px. Belt
+    and braces: the real cause of the 90px band on the first render was the
+    browser binary (see scripts/render-cover.mjs), and that is fixed there, but a
+    page whose background stops short of the canvas is how the stripe became
+    visible at all. This way a viewport that is not exactly --window-size loses
+    the composition, not the colour. */
+ html,body{margin:0;padding:0;height:100%}
+ html{background:#16203a}
+ body{width:100%;min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  font-family:"Noto Sans CJK JP","Noto Sans JP",sans-serif;
+  background:linear-gradient(155deg,#16203a 0%,#243a63 46%,#1f5f63 100%);color:#fff;
+  padding:0 92px;box-sizing:border-box}
+ .kicker{font-size:26px;letter-spacing:.2em;color:#8fe3d0;margin-bottom:30px}
+ h1{font-size:76px;line-height:1.22;margin:0 0 30px;font-weight:800;letter-spacing:-.01em}
+ h1 em{font-style:normal;color:#ffd36e}
+ code{font-family:"DejaVu Sans Mono",monospace;font-size:.82em;
+  background:#ffffff1a;border-radius:10px;padding:2px 12px}
+ p{font-size:31px;line-height:1.62;margin:0;color:#d9e3f2}
+ .row{display:flex;gap:14px;margin-top:44px;flex-wrap:wrap}
+ .chip{font-size:25px;border:2px solid #ffffff55;border-radius:999px;padding:11px 24px}
+</style>
+<div class="kicker">IDLE CLICKER GAME KIT &nbsp;/&nbsp; HTML &middot; CSS &middot; JS</div>
+<h1><code>brand.config.json</code> <em>1枚</em>で<br>あなたの作品になる</h1>
+<p>放置クリッカーのソース一式。題名・配色・数える単位・増やすもの・強化・到達演出まで、書き換えるのは設定ファイル1枚だけ。</p>
+<div class="row"><div class="chip">ビルド不要</div><div class="chip">依存ライブラリ 0</div><div class="chip">通信なし</div><div class="chip">商用可</div><div class="chip">スマホ縦画面</div></div>

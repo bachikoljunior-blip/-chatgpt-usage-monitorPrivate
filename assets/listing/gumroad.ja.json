@@ -36,6 +36,15 @@
     "source code"
   ],
   "tags_note": "MEASURED 2026-08-09: the live product carried tags: [] while the copy above was already addressed correctly — the listing was talking to the right buyer in a place none of them could find it. Gumroad Discover browses and searches by tag, and it is the only venue this account can reach with ZERO standing and ZERO owner actions, which is the 'substitute breadth' half of state/constraints.json no_standing_where_buyers_gather and is recorded there as never tried. PUT /v2/products/:id with repeated tags[] params returns 200 success:true and the tags read back on a separate GET; that was not previously known — state/gumroad-capabilities.json had only ever probed create. The tags are English on purpose: Discover is English-dominant, and these are the words a person who builds an idle game would search, not a translation of the Japanese title.",
+  "cover": {
+    "source": "assets/gumroad-cover.html",
+    "rendered": "assets/gumroad-cover.png",
+    "size": "1280x720",
+    "render_command": "node scripts/render-cover.mjs --store=gumroad",
+    "why_it_is_here": "Gumroad Discover BROWSE is a grid of tiles, so the cover is the only copy a browsing buyer reads before deciding whether to click. It is registered beside the name and the body because scripts/sync-listing.mjs checkAddressee reads its source and holds it to the same addressee_terms — a picture that talks to the refuted class would otherwise pass every check this repository has.",
+    "why_not_the_itch_cover": "assets/itch-cover.png is 630x500 and leads with 自社ブランド, which is on the forbidden list above. Wrong shape and wrong reader; the two stores get two files.",
+    "api_cannot_set_it": "state/constraints.json listing_has_no_cover_image: the v2 API has no cover route and PUT silently accepts-and-ignores cover_url. Uploading is an owner action, prepared in state/owner-requests.json."
+  },
   "taxonomy_unresolved": {
     "live_taxonomy_id": 266,
     "live_category": "other",

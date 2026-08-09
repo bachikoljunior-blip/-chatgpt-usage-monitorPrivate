@@ -193,6 +193,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T15:56:12.761Z",
+      "candidate": "listing_has_no_cover_image",
+      "kind": "prerequisite",
+      "mechanism": "The Gumroad product carries eight Discover tags and a blank tile: covers[], main_cover_id null, thumbnail_url null. Discover BROWSE is a grid of tiles, so every impression the tags now earn renders as an empty square. The v2 API was measured to have no cover route (probe-gumroad-cover.mjs: 404 byte-identical to a nonexistent path, PUT cover_url accepted-and-ignored exactly like a fake parameter), so the only remaining route is one owner upload. This lap does not claim days: it renders the 1280x720 cover here with Chromium and writes the paste-ready request, which is the pair state/constraints.json listing_has_no_cover_image.owner_action_note names as the condition for owner_request_prepared to flip true. Without the rendered file the request would ask the owner to make an image, which RUNBOOK gate 4 forbids.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

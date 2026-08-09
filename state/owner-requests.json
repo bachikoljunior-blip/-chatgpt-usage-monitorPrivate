@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T11:33:00Z",
+  "fetched_at": "2026-08-09T16:10:00Z",
   "why_this_file_exists": "RUNBOOK 6 gates an owner request on five conditions, and the fourth is that the request is prepared to the point where the owner only has to paste. Until now there was nowhere to put that. So the gate could never be satisfied, only asserted — which is the same failure this project keeps finding: a rule written in prose with no file under it and no machine reading it. compute-eta.mjs reads this file and attaches a pending request to the candidate it unblocks, so the picker sees that the preparation is already done instead of preparing it again.",
   "how_to_use_this": "One entry per request. status pending means it is prepared and waiting on the owner. Nothing here should ever say 'please investigate' or 'please decide' — if a lap could not finish the preparation, the entry does not belong here yet.",
   "requests": [
@@ -119,6 +119,50 @@
         "what_that_changes_for_the_owner": "Nothing about the work being asked for, which is unchanged and still two steps. It changes what follows from not doing it: there is no second venue waiting behind this one.",
         "what_it_does_not_claim": "That the post will sell anything. The success test below is unchanged and still measures a first sale, not a published page or an accepted post."
       }
+    },
+    {
+      "id": "2026-08-09.gumroad-cover-upload",
+      "created_at": "2026-08-09T16:10:00Z",
+      "status": "pending",
+      "candidate_id": "listing_has_no_cover_image",
+      "owner_actions": 1,
+      "estimated_owner_minutes": 2,
+      "one_line": "Gumroad の商品ページに、画像を1枚アップロードしてください。ファイルはこちらで作ってあります。選ぶだけです。",
+      "owner_typing_and_judgement_count": "打ち込む文字：0。判断する箇所：0。操作：Edit product → Cover の欄で assets/gumroad-cover.png を選び、Save。",
+      "why_now_and_not_before": {
+        "what_changed": "2026-08-09 にタグ8件を実際に設定し、GET で読み戻して確認した。これで商品は Gumroad Discover の索引に入った。同じ GET が、covers: []・main_cover_id: null・thumbnail_url: null・preview_url: null も返した。",
+        "why_that_matters": "Discover の browse は画像タイルの格子。つまり今この商品は「索引に載っているが、見せる絵が無い」状態で、タグが稼いだ表示は全部まっさらな四角として出る。タグを入れるまで、絵が無いことは見えなかった。",
+        "bounded_claim": "これは Discover BROWSE の前提条件であって、SEARCH の前提条件ではない。文字一致なら絵が無くても出る。だからタグが無駄だったという話ではない。"
+      },
+      "the_ask": {
+        "step_1": {
+          "what": "Gumroad にログインし、Products → 該当商品 → Edit を開く",
+          "url": "https://bachiko4.gumroad.com/l/fbozt",
+          "product_name": "放置クリッカー制作キット 商用ライセンス｜設定ファイル1枚でリスキンできる HTML/CSS/JS 一式"
+        },
+        "step_2": {
+          "what": "Cover（商品画像）の欄で、画像を1枚アップロードする",
+          "file": "assets/gumroad-cover.png",
+          "file_note": "このリポジトリ内にあります。1280x720（Gumroad の Discover タイルと同じ 16:9）。node scripts/render-cover.mjs --store=gumroad で再生成できます。",
+          "nothing_to_create": "新しく作るものはありません。スクリーンショットも要りません。既に描いてあるファイルを選ぶだけです。",
+          "then": "Save changes を押す"
+        }
+      },
+      "what_this_lap_could_not_do_and_why": {
+        "the_api_has_no_cover_route": "GET /v2/products/:id/covers は 404・text/html・900バイトを返し、存在しないことが確実な /__nonexistent_probe_zzz と1バイト違わない。対照として、文書化された下位資源 /variant_categories は同じトークン・同じ実行で 200・JSON・40バイトを返す。だから 404 はルータがその経路を知らないという意味で、認証でも経路の形でもない。",
+        "put_is_not_evidence": "PUT /v2/products/:id に cover_url を送ると HTTP 200 success:true が返り、何も変わらない。対照として、確実に偽のパラメータ名 zzz_probe_param を送っても1バイト違わない 200 success:true が返る。Gumroad は知らないパラメータを黙って受け取る。",
+        "repeatable_without_a_lap": "node scripts/probe-gumroad-cover.mjs。.github/workflows/gumroad-monitor.yml の probe_cover 入力から再実行できる。「そんな経路は無い」は静かに真でなくなる種類の事実なので、周を使わずに測り直せるようにしてある。",
+        "safety_of_that_probe": "調べている間、公開中の商品は一切変わっていない。名前52文字・説明1537バイト・価格2500・公開中・タグ8件、前後で同一。"
+      },
+      "success_test": "state/gumroad.json の当該商品が covers を1件以上、または thumbnail_url を非 null で返すこと。そのうえで、Discover 経由の到達が state/gumroad-history.json の売上に現れるかどうかは別の問い。ページに絵が付いたことは成功ではない。",
+      "not_success": "画像が綺麗にできたこと。この周が直した assets/itch-cover.png は、2つの周が「貼るだけの状態」と報告したまま、下端90ピクセルが白帯で、下の帯（chips）が切れていた。誰も PNG を開いていなかった。",
+      "judge_by": "2026-08-16",
+      "minimised": {
+        "removed": "Gumroad 側の他の調整（説明文・価格・カテゴリ）は入れていない。RUNBOOK 6 の関門⑤は、1つの依頼に別の道を束ねないことを見ている。",
+        "not_reducible_further": "v2 API に cover 経路が無いことを実測済み（上記）。だから自動化で置き換えられない。画像そのものはこちらで生成・コミット済みなので、残りは1操作。",
+        "why_a_second_pending_request_is_acceptable": "2026-08-09.itch-page-for-the-kit と競合しない。別のプラットフォーム・別の画面・2分。itch の依頼は10分で、そちらを薄めるものではない。"
+      },
+      "source": "state/constraints.json listing_has_no_cover_image（api_capability_measured に測定の全文）"
     }
   ]
 }

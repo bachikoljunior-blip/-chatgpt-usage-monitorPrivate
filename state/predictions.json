@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T15:05:00Z",
+  "fetched_at": "2026-08-09T16:10:00Z",
   "note": "Every change made because it was claimed to shorten the ETA. judge_on is set when the change lands, not when it is convenient. concurrent_changes is what else was in flight, so a later reader can tell a clean attribution from a confounded one.",
   "predictions": [
     {
@@ -459,6 +459,32 @@
         "verify-sanitized-state.mjs gained a branch for the new shape. If state/codex-lane.json is ever absent, check whether the sanitizer rejected it before concluding the schedule did not fire."
       ],
       "falsified_if": "The judge date arrives with no schedule-event run on codex-inbox.yml, which would mean GitHub is not running this workflow on a cron at all and the daily-to-hourly edit was cosmetic — in which case the repair is not another cron but a dispatcher that does not depend on a lap holding MCP, and the finding is that this repository cannot rely on GitHub schedules for anything. It is ALSO falsified, differently, if schedule runs appear but no committed state/codex-lane.json ever carries ran:false, which would mean the skip path does not commit and the lane is only visible on the runs that were already visible.",
+      "outcome": null
+    },
+    {
+      "id": "2026-08-09.cover-copy-is-checked-like-copy",
+      "made_at": "2026-08-09T16:10:00Z",
+      "claim": "A store cover is copy, and treating it as an asset instead of as copy is what let two separate defects ship unseen on the same day. Two things are claimed and they fail separately. FIRST, that putting the cover source under the addressee check catches drift the body check cannot: the Gumroad tile is the only copy a browsing buyer reads, and until this lap it could have said anything while name and description passed. The check proved it can fire on its first run — it rejected this lap own HTML comment for quoting a forbidden term. SECOND, that preferring headless_shell removes the 90px dead band for good, rather than moving it: the band was invisible to every check that existed because the PNG had the exact requested dimensions, so the fix is only real if a later re-render still comes back clean.",
+      "metric": "Read from origin/main, not from any lap description. (a) node tests/run-tests.mjs passes with the cover block present, and fails when assets/gumroad-cover.html is given a term from assets/listing/gumroad.ja.json addressee_terms.forbidden — the negative case is asserted inside the suite, so a suite that passes with that assertion deleted does not count. (b) assets/gumroad-cover.png and assets/itch-cover.png, re-rendered by any later lap with node scripts/render-cover.mjs, still carry image content to the last row: no band of flat html-canvas colour along the bottom. Judged by opening the PNG, which is the only instrument that has ever caught this. (c) state/gumroad.json for the priced product reports covers non-empty or thumbnail_url non-null, which is the owner half and can fail on its own without falsifying (a) or (b).",
+      "baseline": {
+        "cover_source_under_addressee_check_before": false,
+        "committed_covers_before": 1,
+        "committed_covers_with_a_dead_band_before": 1,
+        "dead_band_px": 90,
+        "renderer_preferred_binary_before": "/opt/pw-browsers/chromium-1194/chrome-linux/chrome",
+        "renderer_verified_output_dimensions_before": false,
+        "product_covers_before": 0,
+        "product_thumbnail_url_before": null,
+        "laps_that_called_the_striped_image_paste_ready": 2
+      },
+      "judge_on": "2026-08-13",
+      "judge_deadline": "2026-08-16",
+      "concurrent_changes": [
+        "The same lap reversed the browser preference, added the PNG header check to the renderer, added the cover block to assets/listing/gumroad.ja.json, extended checkAddressee, and re-rendered BOTH covers. Metric (b) therefore measures the binary swap and the CSS belt-and-braces at once; the probe recorded in state/constraints.json renderer_wrote_a_dead_band_into_a_shipped_image separates them, since the band reproduced on a page with no CSS of ours at all.",
+        "The same lap wrote owner request 2026-08-09.gumroad-cover-upload. Metric (c) depends on the owner acting and says nothing about whether the checks work.",
+        "assets/itch-cover.png changed bytes this lap while owner request 2026-08-09.itch-page-for-the-kit was already pending and unmodified. Anyone judging that request should note the file it points at is now a different image — a better one, but not the one the request was reviewed against."
+      ],
+      "falsified_if": "A later lap re-renders and the band is back, which would mean the binary preference is not what fixed it and the real cause is still unfound. It is ALSO falsified, differently, if the cover check never fires again on anything — a check that only ever passed is indistinguishable from one that is not wired, and the negative assertion inside the suite is the only thing currently proving otherwise.",
       "outcome": null
     }
   ]
