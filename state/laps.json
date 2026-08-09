@@ -1,6 +1,13 @@
 {
   "schema_version": 1,
-  "open": {},
+  "open": {
+    "revenue-loop": {
+      "at": "2026-08-09T06:58:39.481Z",
+      "usage_fetched_at": "2026-08-09T06:41:57.994Z",
+      "remaining_percent": 43,
+      "resets_at": "2026-08-14T22:00:00.314Z"
+    }
+  },
   "samples": [
     {
       "id": "revenue-loop",
@@ -50,5 +57,21 @@
       "usable": false,
       "reason": "no_new_usage_reading"
     }
-  ]
+  ],
+  "pending_verification": {
+    "claim": "Lap-cost measurement can now produce a usable sample.",
+    "changed": "scripts/window-roll.mjs — resets_at compared with a 5-minute tolerance instead of string equality.",
+    "why": "The collector re-derives resets_at every call, so one unmoved weekly window reported .314Z/.180Z/.968Z/21:59:59.937Z across 12 consecutive collections on 2026-08-09. String equality called that a reset. Laps spanning a collection died as window_reset_mid_lap; laps not spanning one died as no_new_usage_reading. Together those cover every lap, so 6 of 6 samples were unusable and no cost was ever measured.",
+    "not_yet_verified": "No usable sample has been observed since the fix. Do not call this fixed until one exists.",
+    "verify_by": "2026-08-10T07:00:00Z",
+    "indicator": "state/automations.json shows avg_cost_percent != null with samples >= 1 for eta-loop, and scripts/pacing.mjs stops printing UNMEASURED default for it.",
+    "if_still_unmeasured": "The remaining killer is no_new_usage_reading: laps shorter than the collection interval compare a reading to itself. Next move would be to have the lap read usage directly at both ends rather than waiting on the hourly commit.",
+    "baseline_at_fix": {
+      "samples_total": 6,
+      "usable_total": 0,
+      "pacing_reserved_percent": 30.1,
+      "pacing_discretionary_percent": 12.9,
+      "lap_budget_percent": 1.37
+    }
+  }
 }

@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 
 import { readVault, writeVault } from "../scripts/token-vault.mjs";
 import { startMockAnthropic } from "./mock-anthropic.mjs";
+import { windowDidRoll } from "../scripts/window-roll.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const temporary = await mkdtemp(join(tmpdir(), "usage-monitor-test-"));
@@ -225,6 +226,44 @@ try {
 }
 
 run(process.execPath, [join(root, "scripts/show-usage.mjs"), claudeJsonPath, jsonPath]);
+
+// Lap-cost measurement: the window-roll check decides whether a sample survives.
+// The values below are the real resets_at strings the collector committed between
+// 05:17Z and 06:41Z on 2026-08-09 for the *same* unmoved weekly window. Treating
+// them as different windows discarded every sample the loop ever took, so this is
+// the regression that must never come back.
+const jitteredWeeklyResets = [
+  "2026-08-14T22:00:00.317Z",
+  "2026-08-14T22:00:00.265Z",
+  "2026-08-14T22:00:00.627Z",
+  "2026-08-14T22:00:00.324Z",
+  "2026-08-14T22:00:00.117Z",
+  "2026-08-14T22:00:00.435Z",
+  "2026-08-14T22:00:00.965Z",
+  "2026-08-14T22:00:00.281Z",
+  "2026-08-14T21:59:59.937Z",
+  "2026-08-14T22:00:00.968Z",
+  "2026-08-14T22:00:00.180Z",
+  "2026-08-14T22:00:00.314Z",
+];
+for (const a of jitteredWeeklyResets) {
+  for (const b of jitteredWeeklyResets) {
+    assert(!windowDidRoll(a, b), `sub-second jitter read as a window reset: ${a} vs ${b}`);
+  }
+}
+// A window that genuinely rolls must still be caught, or a reset would be recorded
+// as a huge negative cost. Both real window lengths move the boundary far enough.
+assert(
+  windowDidRoll("2026-08-14T22:00:00.314Z", "2026-08-21T22:00:00.180Z"),
+  "a real seven-day roll was not detected",
+);
+assert(
+  windowDidRoll("2026-08-09T10:20:00.314Z", "2026-08-09T15:20:00.180Z"),
+  "a real five-hour roll was not detected",
+);
+// Missing or unparseable values fall back to exact comparison rather than guessing.
+assert(!windowDidRoll(undefined, undefined), "identical unparseable values should not roll");
+assert(windowDidRoll(undefined, "2026-08-14T22:00:00.314Z"), "unparseable vs parseable should roll");
 
 console.log("All usage monitor tests passed.");
 

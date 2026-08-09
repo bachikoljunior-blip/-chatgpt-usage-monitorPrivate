@@ -24,6 +24,7 @@
 import { writeFile, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { readStateJson, REPO } from "./state-source.mjs";
+import { windowDidRoll } from "./window-roll.mjs";
 
 const flags = new Map(
   process.argv
@@ -95,7 +96,10 @@ delete laps.open[id];
 // Another lap open across this one means the drop cannot be attributed to either.
 const confounded = Object.keys(laps.open).length > 0;
 // The window resetting mid-lap makes the delta meaningless (remaining goes up).
-const windowRolled = open.resets_at !== reading.resets_at;
+// Compared with a tolerance, not by string equality — see scripts/window-roll.mjs
+// for why the obvious version silently discarded every sample ever taken. A real
+// reset that somehow slipped past it is still caught by the delta < 0 check below.
+const windowRolled = windowDidRoll(open.resets_at, reading.resets_at);
 // No new collection between the ends means we are comparing a reading to itself.
 const noNewReading = open.usage_fetched_at === reading.usage_fetched_at;
 
