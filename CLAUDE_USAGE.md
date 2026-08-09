@@ -1,13 +1,13 @@
 # Claude subscription usage
 
 - Status: **ok**
-- Updated: `2026-08-09T12:46:07.422Z`
+- Updated: `2026-08-09T12:51:26.431Z`
 - Recommended mode: **normal**
 
 | Limit | Window | Used | Remaining | Reset (UTC) |
 |---|---:|---:|---:|---|
-| Current session | 5h | 14% | 86% | 2026-08-09T15:19:59.637Z |
-| Current week (all models) | 1w | 62% | 38% | 2026-08-14T21:59:59.637Z |
+| Current session | 5h | 14% | 86% | 2026-08-09T15:19:59.985Z |
+| Current week (all models) | 1w | 62% | 38% | 2026-08-14T21:59:59.985Z |
 | Extra usage | — | 0% | — | — |
 
 The window with the least remaining quota is used to choose normal, conserve, or reserve mode.
