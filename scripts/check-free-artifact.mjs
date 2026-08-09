@@ -158,6 +158,23 @@ export function declaredLanguage(html) {
   return match ? match[1].toLowerCase() : null;
 }
 
+// The same question for an artifact that is not HTML. Venues do not all receive the
+// same file: r/gamedev gets the playable demo, itch.io Release Announcements gets the
+// announcement text. Markdown has no <html lang>, so the declaration lives in the
+// filename — `itch-release-announcement.en.md`. That is still DERIVED rather than
+// asserted, which is the property worth keeping: a row cannot be edited to change the
+// answer, only the file can, and renaming a file is a visible act.
+//
+// null means the file's language is undeclared, which must read as unknown and never
+// as a mismatch. "Nobody declared it" and "the reader cannot read it" are different
+// answers, and collapsing them is the defect the account field was added to fix.
+export function artifactLanguage(path, text) {
+  const name = String(path ?? "");
+  if (/\.html?$/i.test(name)) return declaredLanguage(text);
+  const suffix = name.match(/\.([a-z]{2,3})\.[a-z0-9]+$/i);
+  return suffix ? suffix[1].toLowerCase() : null;
+}
+
 const isMain = process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url));
 if (isMain) {
   const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");

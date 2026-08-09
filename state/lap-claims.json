@@ -537,6 +537,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T22:13:23.647Z",
+      "candidate": "itch",
+      "kind": "prerequisite",
+      "mechanism": "language_fit derives ONE artifact language for every venue row, from assets/free-demo/index.html. That is the artifact for r/gamedev only. itch.io Release Announcements receives the announcement, which lap 2 wrote in English — so the machine currently prints LANGUAGE MISMATCH for the one venue measured to be payable, about a file that venue never sees, and the reading is now false rather than merely coincidental. Two of this session's findings leaned on this instrument. The fix gives each row an explicit artifact path and derives that file's language from the file itself: <html lang> for HTML, the .<lang>.md suffix for Markdown, null when neither is present. Deriving keeps the property the original had — a hand-written language would drift from the file — while removing the assumption that every venue receives the same artifact. Claims no day count: it repairs a reading, it does not open a door.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

@@ -26,7 +26,7 @@ import { decideVerdict, KINDS } from "../scripts/gate-verdict.mjs";
 import { blockedByDirective, directiveBlockers } from "../scripts/directive-block.mjs";
 import { constraintDue } from "../scripts/constraint-due.mjs";
 import { evaluateUnlock } from "../scripts/unlock-condition.mjs";
-import { checkFreeArtifact, declaredLanguage } from "../scripts/check-free-artifact.mjs";
+import { checkFreeArtifact, declaredLanguage, artifactLanguage } from "../scripts/check-free-artifact.mjs";
 import { publishedDemoVerdict } from "../scripts/check-published-demo.mjs";
 import { findableSurfaceVerdict, inboundSurfaceVerdict } from "../scripts/measure-findable-surface.mjs";
 import { prerequisiteCheck, venueReadiness } from "../scripts/venue-readiness.mjs";
@@ -1977,6 +1977,7 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     postable_when: shut,
     account: { exists: true, evidence_state_file: "state/itch.json" },
     audience_language: "en",
+    artifact: "assets/announce/itch-release-announcement.en.md",
     paid_promotion_permitted: true,
   };
   const reddit = {
@@ -1985,6 +1986,7 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     postable_when: { repo_file: "assets/free-demo/index.html" },
     account: { exists: null, evidence_state_file: null },
     audience_language: "en",
+    artifact: "assets/free-demo/index.html",
     paid_promotion_permitted: false,
   };
   const evidence = { "state/itch.json": { status: "ok", game_count: 0, profile: { username: "someone" } } };
@@ -2200,34 +2202,83 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   // postable_today null because with the artifact present and the account unknown the
   // row derives unknown; the stale-verdict rule is a different check and firing it
   // here would hide what this case is about.
+  const DEMO = "assets/free-demo/index.html";
+  const ANNOUNCE = "assets/announce/itch-release-announcement.en.md";
   const enVenue = { ...reddit, postable_today: null };
-  const mismatch = venueReadiness([enVenue], evidence, { "assets/free-demo/index.html": true }, "ja");
+  const mismatch = venueReadiness([enVenue], evidence, { [DEMO]: true }, { [DEMO]: "ja" });
   assert(mismatch.rows[0].language_fit === false, "a Japanese artifact at an English venue was not reported as a mismatch");
   assert(mismatch.rows[0].postable_today !== false || mismatch.ok === true, "a language mismatch was allowed to shut the row");
   assert(mismatch.ok === true, `a declared mismatch was treated as a defect: ${mismatch.rows[0].problem}`);
   assert(mismatch.language_mismatches.length === 1, "the mismatch was not counted");
 
-  const fits = venueReadiness([enVenue], evidence, { "assets/free-demo/index.html": true }, "en");
+  const fits = venueReadiness([enVenue], evidence, { [DEMO]: true }, { [DEMO]: "en" });
   assert(fits.rows[0].language_fit === true, "a matching language was not reported as a fit");
   assert(fits.language_mismatches.length === 0, "a matching language was counted as a mismatch");
 
   // Unmeasured is a legitimate answer and must not read as a mismatch — otherwise
   // "nobody looked" and "the reader cannot read it" become the same value, which is
   // the defect the account field was added to fix.
-  const unknownLang = venueReadiness([{ ...reddit, audience_language: null }], evidence, repoFiles, "ja");
+  const unknownLang = venueReadiness([{ ...reddit, audience_language: null }], evidence, repoFiles, { [DEMO]: "ja" });
   assert(unknownLang.rows[0].language_fit === null, "an unmeasured audience produced a verdict");
   assert(unknownLang.ok === true, "a declared-null audience was rejected");
 
   // Omission is not. Same rule as the account field, for the same reason.
   const withoutLang = { ...reddit };
   delete withoutLang.audience_language;
-  const noLang = venueReadiness([withoutLang], evidence, repoFiles, "ja");
+  const noLang = venueReadiness([withoutLang], evidence, repoFiles, { [DEMO]: "ja" });
   assert(noLang.ok === false, "a venue with no audience_language field was accepted");
   assert(noLang.rows[0].problem.includes("audience_language"), `the missing field was not named: ${noLang.rows[0].problem}`);
 
   // The artifact's language is derived from the file, never asserted on a row.
   assert(declaredLanguage('<!doctype html>\n<html lang="ja">') === "ja", "the declared language was not read from <html lang>");
   assert(declaredLanguage("<html>") === null, "an undeclared language was invented");
+
+  // --- and each venue is asked WHICH artifact it receives ------------------------
+  //
+  // One language was derived for every row, from assets/free-demo/index.html. That is
+  // the artifact for r/gamedev alone. itch.io Release Announcements receives the
+  // announcement post, and once that was written in English the row printed a mismatch
+  // about a file the board never sees — a reading that had been merely coincidental
+  // while everything we owned was Japanese, and became false the moment it was not.
+  assert(artifactLanguage("x/demo.html", '<html lang="ja">') === "ja", "an HTML artifact's language was not read from <html lang>");
+  assert(artifactLanguage("x/post.en.md", "# anything") === "en", "a Markdown artifact's language was not read from its filename");
+  assert(artifactLanguage("x/post.md", "# anything") === null, "an undeclared Markdown language was invented");
+  assert(artifactLanguage("x/demo.html", "<html>") === null, "an undeclared HTML language was invented");
+
+  // The case the fix exists for: two rows, two artifacts, two different answers.
+  const twoArtifacts = venueReadiness(
+    [
+      { ...itch, artifact: ANNOUNCE, postable_today: false },
+      { ...reddit, artifact: DEMO, postable_today: null },
+    ],
+    evidence,
+    { [DEMO]: true },
+    { [DEMO]: "ja", [ANNOUNCE]: "en" },
+  );
+  assert(twoArtifacts.rows[0].language_fit === true, "the English announcement at an English board was still called a mismatch");
+  assert(twoArtifacts.rows[1].language_fit === false, "the Japanese demo at an English subreddit stopped being a mismatch");
+  assert(
+    twoArtifacts.language_mismatches.length === 1,
+    `one artifact's language was applied to both rows: ${JSON.stringify(twoArtifacts.language_mismatches)}`,
+  );
+
+  // Undecided is legitimate and must read as unknown, not as a fit and not as a
+  // mismatch. GameDev.net is this case: nobody has chosen what would be posted there,
+  // and the old instrument silently compared it against the free demo.
+  const noArtifactChosen = venueReadiness([{ ...reddit, artifact: null }], evidence, repoFiles, { [DEMO]: "ja" });
+  assert(noArtifactChosen.rows[0].language_fit === null, "a venue with no artifact chosen produced a language verdict");
+  assert(noArtifactChosen.ok === true, "a declared-null artifact was rejected");
+
+  // Omission is not legitimate. Third field to take this rule, for the third time
+  // for the same reason: an optional field makes "nobody asked" invisible.
+  const withoutArtifact = { ...reddit };
+  delete withoutArtifact.artifact;
+  const noArtifactField = venueReadiness([withoutArtifact], evidence, repoFiles, { [DEMO]: "ja" });
+  assert(noArtifactField.ok === false, "a venue with no artifact field was accepted");
+  assert(
+    noArtifactField.rows[0].problem.includes("artifact"),
+    `the missing field was not named: ${noArtifactField.rows[0].problem}`,
+  );
 
   // --- and whether a post there could ever be paid for --------------------------
   //

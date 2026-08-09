@@ -34,7 +34,7 @@ import { readFile, stat } from "node:fs/promises";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { PREDICATES } from "./unlock-condition.mjs";
-import { FREE_ARTIFACT_PATH, declaredLanguage } from "./check-free-artifact.mjs";
+import { FREE_ARTIFACT_PATH, artifactLanguage } from "./check-free-artifact.mjs";
 
 // The third half, added 2026-08-09T21:2xZ. The election in state/zerobase.json names
 // STANDING as the prerequisite of the only route it kept, and says standing ACCRUES —
@@ -231,7 +231,14 @@ export function prerequisiteCheck(election, result) {
 // Pure so it can be tested without a repository. `venues` is the per_venue array;
 // `evidence` maps a state-file path to its parsed contents (or null if unreadable);
 // `repoFiles` maps a checkout-relative path to whether it exists.
-export function venueReadiness(venues, evidence = {}, repoFiles = {}, artifactLanguage = undefined) {
+// `artifactLanguages` maps a repo path to that file's declared language, or is
+// undefined when the caller is not asking the language question at all. It replaced a
+// single language applied to every row on 2026-08-09, after the row for the one venue
+// measured to be PAYABLE started printing a mismatch about a file that venue never
+// sees. Venues do not receive the same artifact: r/gamedev gets the playable demo,
+// itch.io Release Announcements gets the announcement. One value for all of them was
+// right only for as long as everything we had was Japanese.
+export function venueReadiness(venues, evidence = {}, repoFiles = {}, artifactLanguages = undefined) {
   const rows = (Array.isArray(venues) ? venues : []).map((v) => {
     const account = v?.account;
     if (account === undefined) {
@@ -285,21 +292,35 @@ export function venueReadiness(venues, evidence = {}, repoFiles = {}, artifactLa
     const audience = Object.prototype.hasOwnProperty.call(v ?? {}, "audience_language")
       ? v.audience_language ?? null
       : undefined;
+
+    // WHICH artifact this venue receives. Required for the same reason every other
+    // fact about a row is required: a missing field and an undecided artifact are
+    // indistinguishable when the field is optional, and this one was not merely
+    // missing — it was assumed, identically, for every row.
+    const artifactPath = Object.prototype.hasOwnProperty.call(v ?? {}, "artifact")
+      ? v.artifact ?? null
+      : undefined;
+    if (artifactLanguages !== undefined && artifactPath === undefined && !problem) {
+      problem =
+        "no artifact field. Say which file this venue actually receives — null is a legitimate " +
+        "answer and means nobody has decided yet. It was assumed to be the free demo for every " +
+        "row, which is true for exactly one of them.";
+    }
+    const artifactLang =
+      artifactLanguages === undefined || !artifactPath ? null : artifactLanguages[artifactPath] ?? null;
     // Required only once there is an artifact to compare against — which there is, and
     // has been since 2026-08-09T17:45Z. Before one exists the question is premature,
     // and a rule that fires on rows nobody could yet answer teaches people to fill the
     // field in with anything. `artifactLanguage` undefined means the caller is not
     // asking the language question at all; null means it asked and the file is absent.
-    if (artifactLanguage !== undefined && audience === undefined && !problem) {
+    if (artifactLanguages !== undefined && audience === undefined && !problem) {
       problem =
         "no audience_language field. Say who reads this venue and in what language — null is a " +
         "legitimate answer and means nobody looked; leaving it out is how a route came to be " +
         "aimed at an audience nobody had described.";
     }
     const languageFit =
-      audience === undefined || audience === null || artifactLanguage === undefined || artifactLanguage === null
-        ? null
-        : audience === artifactLanguage;
+      audience === undefined || audience === null || artifactLang === null ? null : audience === artifactLang;
 
     // May a reader who liked the artifact lawfully be shown the thing we are paid for?
     //
@@ -355,7 +376,8 @@ export function venueReadiness(venues, evidence = {}, repoFiles = {}, artifactLa
       venue_blocker: blocker.holds,
       binding: bindingCause(exists, blocker.holds, computed),
       audience_language: audience ?? null,
-      artifact_language: artifactLanguage ?? null,
+      artifact: artifactPath ?? null,
+      artifact_language: artifactLang,
       language_fit: languageFit,
       paid_promotion_permitted: paidPromotion ?? null,
       // Three-valued and kept distinct from postable_today for the same reason
@@ -432,16 +454,23 @@ export async function loadVenueRows(constraints, readJson, fileExists, readText 
   const repoFiles = {};
   for (const path of wanted) repoFiles[path] = await fileExists(path);
 
-  // Derived from the artifact itself rather than read off a row, for the same reason
+  // Derived from each artifact itself rather than read off a row, for the same reason
   // postable_today is derived: a hand-written language would drift from the file the
-  // moment somebody edited one and not the other.
-  let artifactLanguage;
+  // moment somebody edited one and not the other. What changed on 2026-08-09 is WHICH
+  // file — one per row, named by the row, instead of the free demo for all of them.
+  // FREE_ARTIFACT_PATH is still read unconditionally so a row that names it gets an
+  // answer even if some other row names nothing.
+  let artifactLanguages;
   if (readText) {
-    const html = await readText(FREE_ARTIFACT_PATH);
-    artifactLanguage = html === null || html === undefined ? null : declaredLanguage(html);
+    const paths = new Set([FREE_ARTIFACT_PATH, ...venues.map((v) => v?.artifact).filter(Boolean)]);
+    artifactLanguages = {};
+    for (const path of paths) {
+      const text = await readText(path);
+      artifactLanguages[path] = text === null || text === undefined ? null : artifactLanguage(path, text);
+    }
   }
 
-  return { standing, venues, result: venueReadiness(venues, evidence, repoFiles, artifactLanguage) };
+  return { standing, venues, result: venueReadiness(venues, evidence, repoFiles, artifactLanguages) };
 }
 
 const isMain = process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url));
@@ -468,7 +497,7 @@ if (isMain) {
     console.log(`      binding: ${r.binding} · postable_when: ${r.postable_reason}`);
     if (r.language_fit === false) {
       console.log(
-        `      LANGUAGE MISMATCH: this venue reads ${r.audience_language}, the artifact declares ${r.artifact_language}. ` +
+        `      LANGUAGE MISMATCH: this venue reads ${r.audience_language}, and ${r.artifact} declares ${r.artifact_language}. ` +
           "Not a rule breach and not a blocker — it decides whether the post lands on people who can read it.",
       );
     }

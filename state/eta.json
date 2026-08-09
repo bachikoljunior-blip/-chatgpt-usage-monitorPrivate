@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T22:15:10.825Z",
+  "fetched_at": "2026-08-09T22:18:42.296Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -52,11 +52,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.15
+      "days_unchanged": 0.16
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.15
+      "days_unchanged": 0.16
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -265,7 +265,7 @@
         "published_count": 10,
         "pages_found_by_search": 0,
         "verdict": "published_but_not_findable",
-        "measured_at": "2026-08-09T22:04:30.370Z",
+        "measured_at": "2026-08-09T22:15:12.351Z",
         "what_it_settles": "Not a shortage of pages. Ten serve 200 and a search index returned none of them, so page COUNT is not the binding term — the missing step is an inbound path from a surface that is already crawled. Building more pages buys nothing until that step exists.",
         "inbound_surface": {
           "verdict": "no_crawled_surface_found",
@@ -366,9 +366,7 @@
           },
           "venues_on_the_named_term": 1,
           "language_mismatches": [
-            "itch.io — Release Announcements",
-            "r/gamedev",
-            "GameDev.net — Your Announcements"
+            "r/gamedev"
           ],
           "venues_with_a_revenue_path": [
             "itch.io — Release Announcements",
@@ -381,9 +379,7 @@
           "problem": null
         },
         "language_mismatches": [
-          "itch.io — Release Announcements",
-          "r/gamedev",
-          "GameDev.net — Your Announcements"
+          "r/gamedev"
         ],
         "binding_venues_without_a_revenue_path": [
           "r/gamedev"
