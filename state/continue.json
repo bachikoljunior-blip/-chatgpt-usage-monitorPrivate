@@ -38,8 +38,13 @@
   ],
   "concurrency_note": "main moved under this session on most pushes — the usage collectors, the gumroad collector, and the codex-inbox workflow committing its own answer. Always fetch + rebase --autostash, never force. No conflicts this session. Note that codex-inbox.yml commits from its own checkout: it stages only state/answers, state/auth.vault and codex, so an INBOX rewritten while a run is in flight is not reverted by it.",
   "owner_requests_this_lap": 1,
-  "owner_request_ids": ["2026-08-09.itch-page-for-the-kit"],
+  "owner_request_ids": [
+    "2026-08-09.itch-page-for-the-kit"
+  ],
   "predecessor_session_id": "session_01SaTLjvQCzTMGWh3r5FiCEv",
   "archive_policy": "A successor archives its predecessor at startup, and only when get_session reports SESSION_STATUS_IDLE. RUNNING means look again later, not never again. A permission refusal means try again later — it is not evidence the session cannot be archived.",
-  "status": "ok"
+  "status": "ok",
+  "successor_session_id": "session_01DVC2L5hCJFMsz4ddkJKbeQ",
+  "successor_note": "Spawned 11:36:06Z with source_url + source_revision=main, tagged revenue-loop-chain. Status at creation was PENDING with connection_status connected, which is not evidence it runs — a previous handoff recorded a successor that then sat in REQUIRES_ACTION for an hour. Re-read after the push; the reading is in successor_status_recheck.",
+  "successor_status_recheck": "11:36:28Z — SESSION_STATUS_RUNNING, connected. That is motion, not just presence. Checked because create_session returning PENDING proves nothing."
 }
