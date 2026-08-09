@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T21:11:29.121Z",
+  "fetched_at": "2026-08-09T21:18:40.979Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -34,13 +34,6 @@
       "created_at": "2026-08-09T16:10:00Z",
       "judge_by": "2026-08-16",
       "one_line": "Gumroad の商品ページに、画像を1枚アップロードしてください。ファイルはこちらで作ってあります。選ぶだけです。"
-    },
-    {
-      "id": "2026-08-09.reddit-account-username",
-      "candidate_id": "free_artifact_door",
-      "created_at": "2026-08-09T17:30:00Z",
-      "judge_by": "2026-08-16",
-      "one_line": "Reddit のアカウントを持っていますか。持っていれば、ユーザー名を1つ教えてください。無ければ「無い」で結構です。"
     }
   ],
   "target_yen_per_month": 200000,
@@ -262,7 +255,7 @@
         "published_count": 10,
         "pages_found_by_search": 0,
         "verdict": "published_but_not_findable",
-        "measured_at": "2026-08-09T21:03:48.197Z",
+        "measured_at": "2026-08-09T21:11:30.265Z",
         "what_it_settles": "Not a shortage of pages. Ten serve 200 and a search index returned none of them, so page COUNT is not the binding term — the missing step is an inbound path from a surface that is already crawled. Building more pages buys nothing until that step exists.",
         "inbound_surface": {
           "verdict": "no_crawled_surface_found",
