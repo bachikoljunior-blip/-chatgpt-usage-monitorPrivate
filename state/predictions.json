@@ -17,7 +17,16 @@
       "concurrent_changes": [
         "2026-08-09.revenue-loop-disabled-in-registry"
       ],
-      "outcome": null
+      "outcome": null,
+      "min_observations": {
+        "source": "state/laps.json",
+        "path": "samples",
+        "min": 3,
+        "usable_only": true,
+        "why": "laps per day cannot be read off a pile of laps whose cost could not be measured. Six consecutive samples came back unusable, so a calendar date would have forced a verdict with no evidence under it."
+      },
+      "judge_deadline": "2026-08-13",
+      "deadline_reason": "if three usable samples have not appeared by then, the method itself is the finding — say so and stop waiting for it."
     },
     {
       "id": "2026-08-09.revenue-loop-disabled-in-registry",

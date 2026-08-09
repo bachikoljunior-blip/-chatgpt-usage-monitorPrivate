@@ -87,6 +87,22 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
     if (p.outcome === undefined) {
       throw new Error(`prediction ${p.id} has no outcome field (use null while open)`);
     }
+    // Judging on a count rather than a calendar is what stops a verdict being
+    // reached before the evidence exists. It also introduces the opposite failure:
+    // evidence that never accumulates keeps the prediction permanently "not yet
+    // measurable", which looks like patience and works like forgetting. So a count
+    // gate is only allowed alongside a deadline that forces the judgement anyway.
+    if (p.min_observations) {
+      if (!p.min_observations.source || !Number.isFinite(Number(p.min_observations.min))) {
+        throw new Error(`prediction ${p.id} has min_observations without a source and numeric min`);
+      }
+      if (!/^\d{4}-\d{2}-\d{2}/.test(p.judge_deadline ?? "")) {
+        throw new Error(
+          `prediction ${p.id} waits for observations but has no judge_deadline, so it can ` +
+          `wait forever`,
+        );
+      }
+    }
   }
 } else if (state.probe !== undefined) {
   // API capability probes. This shape predates the branch and was failing the
