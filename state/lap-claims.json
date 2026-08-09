@@ -1,5 +1,22 @@
 {
   "schema_version": 1,
   "note": "What each lap claimed the ETA would become, recorded before the work. outcome is filled in later from state/eta-history.json. A claim written afterwards is not a prediction, so rows are appended by scripts/eta-gate.mjs and not by hand.",
-  "claims": []
+  "claims": [
+    {
+      "at": "2026-08-09T11:38:36.877Z",
+      "candidate": "no_standing_where_buyers_gather",
+      "kind": "prerequisite",
+      "mechanism": "The #1 candidate is blocked on naming where the CORRECTED buyer class gathers. state/portfolio.json the_priced_artifact.who_it_actually_addresses records that task .k asked about developers buying source code, while the product description addresses shops, cafes, salons, streamers and campaign pages. .k's questions 1 and 4 are therefore aimed off-target and its venue answer is for the wrong crowd. This lap re-asks the venue and rule questions against the class the description actually names. It cannot itself make the ETA finite, so it is claimed as a prerequisite: it produces the venue+rule evidence that a direct route claim would have to rest on. Cost falls on the ChatGPT pool, not the weekly quota.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
+    }
+  ]
 }

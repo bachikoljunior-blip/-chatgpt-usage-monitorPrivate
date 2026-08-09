@@ -218,6 +218,30 @@
       ],
       "falsified_if": "a later lap prepares an itch request again, or defers itch on the ground that nothing is prepared, or the owner_request annotation is dropped by a bot recompute so the picker stops seeing it. Presence in the file is not the claim — being seen by the side that picks work is.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-09.buyer-class-corrected-outward",
+      "made_at": "2026-08-09T11:42:00Z",
+      "claim": "Task .k asked which people buy game source code and production kits — developers. state/portfolio.json the_priced_artifact.who_it_actually_addresses records that the product description addresses shops, cafes, salons, streamers and campaign pages instead, so .k's answers to its questions 1 and 4 are about a class this product does not address, and its venue answer names where the wrong crowd gathers. Task .l re-asks the buyer, the venue-with-quoted-rule and the price question against the class the description actually names, and drops the same-day-precedent question because that one does not depend on the buyer class and .k already answered it. The claim is that asking the corrected class returns venues that differ from .k's, which would establish that the correction was load-bearing rather than cosmetic.",
+      "metric": "codex/outbox/2026-08-09.l.md exists and carries the three 判定 answers. Read: (a) whether the venues named overlap .k's developer venues at all, (b) whether any venue arrives with its self-promotion rule quoted verbatim AND its zero-standing posting precondition stated with a number or an explicit 'none', (c) whether question 1 returns paid examples with source URLs or an honest なし, (d) whether question 3 reports a form mismatch — a class that only ever commissions work cannot use a kit it must configure itself, and that would be a finding about the product, not the venue.",
+      "baseline": {
+        "outward_surveys_run": 8,
+        "outward_surveys_returning_refuted": 7,
+        "outward_surveys_returning_not_refuted": 1,
+        "surveys_asked_against_the_corrected_buyer_class": 0,
+        "venues_named_with_rule_quoted_for_the_corrected_class": 0,
+        "lifetime_sales": 0,
+        "itch_games_published": 0,
+        "price_usd": 25
+      },
+      "judge_on": "2026-08-12",
+      "concurrent_changes": [
+        "state/owner-requests.json 2026-08-09.itch-page-for-the-kit is pending over the same window and rests on .k's venue answer, which is the developer-class answer this task calls off-target. If the owner acts on it before .l lands, any movement in itch or gumroad figures belongs to that action and not to this one.",
+        "2026-08-09.buyer-question-aimed-at-the-priced-artifact judges 2026-08-11 against the same .k answer this prediction calls off-target, so the two read the same file for opposite purposes and should be judged together.",
+        "the ETA gate admitted this lap as prerequisite 1/3, the first row ever written to state/lap-claims.json; the counter itself is new machinery moving in the same window."
+      ],
+      "falsified_if": "the venues .l names are substantially the same developer venues .k already named, which would mean the buyer-class correction changed the question's wording but not its answer, and the lap bought nothing. Also falsified if .l comes back with no venue carrying a quoted rule, since that is the one output shape .k proved this channel can produce.",
+      "outcome": null
     }
   ]
 }
