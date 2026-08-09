@@ -9,6 +9,10 @@ on:
         description: "Also probe whether the API can create products (non-mutating)"
         type: boolean
         default: false
+      probe_lifecycle:
+        description: "Create a draft product, read it back, then delete it. Mutating but self-cleaning; decides whether listing needs a person at all."
+        type: boolean
+        default: false
   push:
     branches: [main]
     paths:
@@ -58,6 +62,14 @@ jobs:
       - name: Verify no credentials entered committed state
         id: verify
         run: node scripts/verify-sanitized-state.mjs state/gumroad.json
+
+      - name: Probe the full create/read/delete lifecycle
+        if: always() && inputs.probe_lifecycle
+        env:
+          GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
+        run: |
+          node scripts/probe-gumroad-lifecycle.mjs state/gumroad-capabilities.json
+          node scripts/verify-sanitized-state.mjs state/gumroad-capabilities.json
 
       - name: Probe whether products can be created over REST
         if: always() && inputs.probe_create
