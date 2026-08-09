@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T17:19:01.511Z",
+  "fetched_at": "2026-08-09T18:18:44.232Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -34,6 +34,13 @@
       "created_at": "2026-08-09T16:10:00Z",
       "judge_by": "2026-08-16",
       "one_line": "Gumroad の商品ページに、画像を1枚アップロードしてください。ファイルはこちらで作ってあります。選ぶだけです。"
+    },
+    {
+      "id": "2026-08-09.reddit-account-username",
+      "candidate_id": "free_artifact_door",
+      "created_at": "2026-08-09T17:30:00Z",
+      "judge_by": "2026-08-16",
+      "one_line": "Reddit のアカウントを持っていますか。持っていれば、ユーザー名を1つ教えてください。無ければ「無い」で結構です。"
     }
   ],
   "target_yen_per_month": 200000,
@@ -45,18 +52,18 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T11:02:42.926Z",
-      "days_unchanged": 0.26
+      "days_unchanged": 0.3
     },
     "planned": {
       "unchanged_since": "2026-08-09T11:02:42.926Z",
-      "days_unchanged": 0.26
+      "days_unchanged": 0.3
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-09T17:07:17.101Z",
+      "measured_at": "2026-08-09T18:02:12.840Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": false,
       "revenue_window_days": null,
@@ -73,7 +80,7 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-09T17:13:47.083Z",
+      "measured_at": "2026-08-09T18:04:27.123Z",
       "monthly_yen_now": 0,
       "games": 0,
       "total_views": 0,
@@ -96,17 +103,6 @@
     }
   ],
   "candidates": [
-    {
-      "kind": "constraint_recheck",
-      "id": "free_artifact_door",
-      "why": "unknown effect",
-      "owner_actions": 0,
-      "note": "SCOPED FOR THE FIRST TIME, NOT YET MEASURED: there is exactly one venue on record whose door opens with NO owner action, and it opens to a different PRODUCT FORM rather than to a better account. r/gamedev forbids promoting paid assets and permits free ones not locked behind a signup, in the same sentence. Six venue surveys never counted this as a candidate because the recorded blocker was that the kit source is not in this repository, so there is nothing here to make free. That is a fact about the KIT, not about the DOOR. A small original demo written from scratch opens it just as well, needs no owner, no browser, and no external site.",
-      "measure_via": "codex_lane",
-      "actionable_now": true,
-      "eta_effect_days": null,
-      "eta_effect_basis": "no comparable estimate recorded"
-    },
     {
       "kind": "channel_unblock",
       "id": "itch",
