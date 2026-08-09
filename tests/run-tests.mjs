@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn, spawnSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { chmod, copyFile, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -22,6 +23,7 @@ import {
 } from "../scripts/inbox-task.mjs";
 import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/revenue-rate.mjs";
 import { decideVerdict, KINDS } from "../scripts/gate-verdict.mjs";
+import { blockedByDirective, directiveBlockers } from "../scripts/directive-block.mjs";
 import { constraintDue } from "../scripts/constraint-due.mjs";
 import { evaluateUnlock } from "../scripts/unlock-condition.mjs";
 import { checkFreeArtifact } from "../scripts/check-free-artifact.mjs";
@@ -953,6 +955,111 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
         consecutivePrerequisites: 3,
       }).verdict === "reject",
       `${kind} admitted a claim that makes the ETA worse`,
+    );
+  }
+}
+
+// --- A standing owner directive outranks every claim ------------------------
+// 2026-08-09, and this one was found by a lap walking into it rather than by
+// reading. state/constraints.json has carried simple_main_frozen since
+// 2026-08-08 — "the main branch of Simple-browser-cookie-clicker-game must not be
+// modified", permanent directive A2, blocks: ["cookiestrateger_site_changes"].
+// The same file then acquired a candidate whose stated method was to push a file
+// to that repository, and compute-eta.mjs ranked it FIRST of everything on offer.
+// The record was correct and dated; the `blocks` field simply had no reader in
+// any script. What follows is that reader, held in place.
+{
+  const constraints = [
+    {
+      id: "simple_main_frozen",
+      claim: "The main branch of Simple-browser-cookie-clicker-game must not be modified.",
+      evidence: "Permanent directive A2.",
+      measured_at: "2026-08-08",
+      recheck_after: null,
+      blocks: ["cookiestrateger_site_changes"],
+    },
+    { id: "forbidden", recheck_after: "2026-08-16", requires: ["cookiestrateger_site_changes"] },
+    { id: "allowed", recheck_after: "2026-08-16", requires: ["something_else"] },
+    { id: "silent", recheck_after: "2026-08-16" },
+    // An ENVIRONMENTAL limit, dated, that happens to name a block token. It must not
+    // acquire directive force: those get lifted by measurement, and this whole
+    // mechanism exists to mark the ones that never do.
+    { id: "merely_hard", recheck_after: "2026-12-01", blocks: ["some_hard_thing"] },
+  ];
+  const blockers = directiveBlockers(constraints);
+
+  assert(blockers.size === 1, `standing directives resolved to ${blockers.size}, expected exactly 1`);
+  assert(
+    !blockers.has("some_hard_thing"),
+    "a dated environmental limit was treated as a standing directive, so measuring it away would look forbidden",
+  );
+
+  const byId = (id) => constraints.find((c) => c.id === id);
+  const hit = blockedByDirective(byId("forbidden"), blockers);
+  assert(hit && hit.directive === "simple_main_frozen", "the forbidden candidate was not blocked");
+  assert(hit.why.includes("A2"), "the block did not name the directive a lap would have to argue with");
+  assert(blockedByDirective(byId("allowed"), blockers) === null, "an unrelated requirement was blocked");
+  assert(blockedByDirective(byId("silent"), blockers) === null, "a candidate with no requires was blocked");
+  assert(blockedByDirective(undefined, blockers) === null, "an unregistered candidate was blocked");
+
+  // The ordering is the assertion, not a detail. The forbidden candidate ranked
+  // first, so it would have reached the gate carrying the STRONGEST claim available.
+  // A directive check placed after the improvement test passes exactly the case it
+  // was written for.
+  const strongest = {
+    beforeIdle: null, beforePlanned: null, afterIdle: 1, afterPlanned: 1,
+  };
+  for (const kind of KINDS) {
+    assert(
+      decideVerdict({ ...strongest, kind, directiveBlock: hit }).verdict === "reject",
+      `${kind} admitted work forbidden by a standing directive while claiming an improvement`,
+    );
+  }
+  assert(
+    decideVerdict({ ...strongest, kind: "direct" }).verdict === "go",
+    "the same claim without a directive block was refused, so the guard is rejecting everything",
+  );
+
+  // Mutation: delete the field the directive is carried in and the suite must fail.
+  // simple_main_frozen is the ONLY constraint in the live registry with a null
+  // recheck_after, which is what makes recheck_after === null a usable test for
+  // "standing owner instruction" — verify-sanitized-state.mjs already permits null
+  // for nothing else.
+  const live = JSON.parse(
+    readFileSync(join(root, "state/constraints.json"), "utf8"),
+  ).constraints;
+  const liveBlockers = directiveBlockers(live);
+  assert(liveBlockers.size >= 1, "the live registry carries no standing directive at all");
+  assert(
+    liveBlockers.has("cookiestrateger_site_changes"),
+    "simple_main_frozen stopped blocking cookiestrateger_site_changes",
+  );
+  const domain = live.find((c) => c.id === "custom_domain_is_an_unmeasured_distribution_surface");
+  assert(
+    domain && blockedByDirective(domain, liveBlockers),
+    "the custom-domain candidate no longer declares the requirement A2 forbids — if the entry " +
+      "was rewritten, keep `requires`, because dropping it silently re-opens the top-ranked " +
+      "candidate as a directive violation",
+  );
+
+  // The other direction, which costs more than it saves if it ever goes wrong. This
+  // mechanism refuses work permanently and with no appeal, so the marker that grants
+  // that power has to keep meaning what it means. `recheck_after === null` is
+  // inferred, not declared, and the registry ALREADY contains a row where null means
+  // something else: settings_change_cannot_be_done_by_any_session is an environmental
+  // limit with no recheck date. It is harmless today only because it carries no
+  // `blocks` — add one and an environmental limit acquires directive force, and the
+  // loop starts refusing work that a measurement could have cleared. Over-blocking is
+  // the worse failure of the two: a missed block wastes a lap, a false block removes
+  // a route for good and looks principled while doing it.
+  for (const [token, hit] of liveBlockers) {
+    const source = live.find((c) => c.id === hit.id);
+    assert(
+      /directive|恒久指示|\bA\d+\b/i.test(String(source?.evidence ?? "")),
+      `${hit.id} blocks ${token} with the force of a standing owner directive, but its evidence ` +
+        "does not cite one. A null recheck_after is permitted only for standing owner " +
+        "instructions; if this is an environmental limit, give it a real recheck date instead " +
+        "of directive power.",
     );
   }
 }

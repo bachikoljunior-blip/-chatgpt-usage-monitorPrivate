@@ -26,6 +26,7 @@ import { applyRepricings } from "./repricing.mjs";
 import { daysToTarget } from "./revenue-rate.mjs";
 import { constraintDue } from "./constraint-due.mjs";
 import { evaluateUnlock } from "./unlock-condition.mjs";
+import { blockedByDirective, directiveBlockers } from "./directive-block.mjs";
 
 const write = process.argv.includes("--write");
 // Reads come from origin/main so a stale checkout cannot drive the ranking. That
@@ -409,9 +410,21 @@ const refutedSiblings = zeroBase.filter((c) => c.refuted).length;
 const roundEstimatesDiscredited = refutedSiblings >= 3;
 
 const constraintById = new Map((constraints?.constraints ?? []).map((c) => [c.id, c]));
+const blockers = directiveBlockers(constraints?.constraints);
 
 for (const c of candidates) {
   const constraint = constraintById.get(c.id);
+
+  // Checked before the unlock logic, and reported as its own field rather than folded
+  // into not_actionable_reason alone. The two are different in kind and a lap must be
+  // able to tell them apart: an unlock condition is a "not yet" that some later
+  // measurement opens, while a directive block is a "never by us" that no measurement
+  // reaches. Collapsing them would invite a lap to go looking for the experiment that
+  // clears it, and there isn't one.
+  const forbidden = blockedByDirective(constraint, blockers);
+  if (forbidden) {
+    c.blocked_by_directive = forbidden;
+  }
   // A recheck date that is not a date is a condition, not a schedule — it cannot
   // be satisfied by choosing to do it today. Until 2026-08-09 that was the whole
   // test, so a condition written as a sentence could never come true: the two
@@ -431,6 +444,15 @@ for (const c of candidates) {
     }
   } else {
     c.actionable_now = true;
+  }
+
+  // Applied after the unlock branch, because that branch's else assigns
+  // actionable_now unconditionally and would otherwise re-open a forbidden row. A
+  // satisfied unlock condition means "the thing it waited for happened", never "the
+  // directive lapsed".
+  if (forbidden) {
+    c.actionable_now = false;
+    c.not_actionable_reason = `forbidden by standing directive ${forbidden.directive}: ${forbidden.why}`;
   }
 
   c.eta_effect_days = worstCaseDays(c.days_to_first_yen_estimate);

@@ -15,6 +15,13 @@
       "planned_eta_days": null,
       "measured_monthly_yen": 0,
       "top_candidate": "custom_domain_is_an_unmeasured_distribution_surface"
+    },
+    {
+      "at": "2026-08-09T20:35:15.186Z",
+      "idle_eta_days": null,
+      "planned_eta_days": null,
+      "measured_monthly_yen": 0,
+      "top_candidate": "itch"
     }
   ]
 }

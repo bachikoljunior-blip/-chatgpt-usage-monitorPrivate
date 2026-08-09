@@ -142,6 +142,13 @@ jobs:
           # defect as a rule that lives only in a runbook.
           node scripts/verify-sanitized-state.mjs state/lap-claims.json || rc=1
           node scripts/verify-sanitized-state.mjs state/constraints.json || rc=1
+          # A standing owner directive must keep refusing the work it forbids. The
+          # registry recorded A2 correctly for a day while nothing read the `blocks`
+          # field, and in that window the forbidden candidate ranked FIRST. The
+          # assertions live in the suite because they are pure; they run here because a
+          # guard that only fires when a lap remembers to run tests is the same defect
+          # as a rule that lives only in a runbook.
+          node tests/run-tests.mjs >/dev/null || rc=1
           if [ "$rc" != "0" ]; then
             echo "::error::something is owed or the zero-base round has stalled — see the output above"
           fi

@@ -393,6 +393,22 @@
         "the_part_that_matters_for_the_counter": "A route_change RESETS the consecutive-prerequisite run, and this lap did not change any route. So the groundwork budget was refilled by a lap that had not earned it. Recorded here rather than by deleting the row, because the row is what makes the reset visible; a future lap reading a clean 0/3 with no explanation would spend three prerequisites believing a direction change bought them.",
         "what_a_later_lap_should_do_with_this": "Treat the prerequisite counter as if this reset had not happened until a real route change or a direct claim lands. If the next lap is groundwork, count it as 4th-in-a-row in spirit and prefer a claim that moves a number."
       }
+    },
+    {
+      "at": "2026-08-09T20:25:59.344Z",
+      "candidate": "custom_domain_is_an_unmeasured_distribution_surface",
+      "kind": "prerequisite",
+      "mechanism": "Measures the two zero-owner-action questions the constraint names: whether an arbitrary NEW path can be served on cookiestrateger.com, and whether HTTPS is enforced. Neither moves days by itself. It decides whether every future artifact can carry a real-domain product-looking URL instead of a github.io subpath, which is the link form honest_post_where_buyers_gather must post and the surface findable_surface_at_scale must make crawlable. A no closes the surface and stops the loop spending laps on it; a yes makes it the only distribution surface needing no owner action.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

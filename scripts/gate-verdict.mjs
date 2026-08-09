@@ -45,12 +45,29 @@ export function decideVerdict({
   afterPlanned,
   consecutivePrerequisites = 0,
   max = MAX_CONSECUTIVE_PREREQUISITES,
+  directiveBlock = null,
 }) {
   const improvesIdle = cmp(afterIdle) < cmp(beforeIdle);
   const improvesPlanned = cmp(afterPlanned) < cmp(beforePlanned);
   const improves = improvesIdle || improvesPlanned;
   const worsens = cmp(afterIdle) > cmp(beforeIdle) || cmp(afterPlanned) > cmp(beforePlanned);
   const capFired = consecutivePrerequisites >= max;
+
+  // Before anything about days. A standing owner directive is not a bad trade to be
+  // outweighed by a good enough claim — it is outside what the ETA is allowed to buy,
+  // so it cannot be reached by improving the number. Ordering matters: on 2026-08-09
+  // the forbidden candidate was ranked FIRST, which means it would have arrived here
+  // with the strongest available claim, and any check placed after `improves` would
+  // have waved through exactly the case this is for. See scripts/directive-block.mjs.
+  if (directiveBlock) {
+    return {
+      verdict: "reject",
+      improves,
+      capFired,
+      directiveBlock,
+      reason: `forbidden by a standing owner directive, so the claim is not weighed: ${directiveBlock.why}`,
+    };
+  }
 
   if (worsens) {
     return {

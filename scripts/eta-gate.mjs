@@ -42,6 +42,7 @@ import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { readStateJson, REPO } from "./state-source.mjs";
 import { decideVerdict, KINDS, MAX_CONSECUTIVE_PREREQUISITES } from "./gate-verdict.mjs";
+import { blockedByDirective, directiveBlockers } from "./directive-block.mjs";
 
 const preferLocal = process.argv.includes("--local");
 const record = process.argv.includes("--record");
@@ -87,11 +88,13 @@ if (problems.length) {
   process.exit(20);
 }
 
-const [{ value: eta }, { value: history }, { value: claimsFile }] = await Promise.all([
-  readStateJson("state/eta.json", { preferLocal }),
-  readStateJson("state/eta-history.json", { preferLocal }),
-  readStateJson("state/lap-claims.json", { preferLocal }),
-]);
+const [{ value: eta }, { value: history }, { value: claimsFile }, { value: constraintsFile }] =
+  await Promise.all([
+    readStateJson("state/eta.json", { preferLocal }),
+    readStateJson("state/eta-history.json", { preferLocal }),
+    readStateJson("state/lap-claims.json", { preferLocal }),
+    readStateJson("state/constraints.json", { preferLocal }),
+  ]);
 
 if (!eta) {
   console.log("  state/eta.json is unreadable, so there is no 'before' to improve on.");
@@ -114,6 +117,17 @@ for (let i = claims.length - 1; i >= 0; i -= 1) {
   consecutivePrerequisites += 1;
 }
 
+// The registry entry for THIS candidate, and the standing directives in force. An
+// unreadable constraints file yields no blockers rather than an error: the gate's job
+// is to refuse forbidden work, and a missing file is not evidence that something is
+// permitted — but it is also not a reason to refuse everything, which would hand the
+// loop a stop condition that is not the quota. The absence is printed instead.
+const allConstraints = constraintsFile?.constraints ?? null;
+const directiveBlock = blockedByDirective(
+  (allConstraints ?? []).find((c) => c?.id === id),
+  directiveBlockers(allConstraints),
+);
+
 const { verdict, reason, improves } = decideVerdict({
   kind,
   beforeIdle,
@@ -122,6 +136,7 @@ const { verdict, reason, improves } = decideVerdict({
   afterPlanned,
   consecutivePrerequisites,
   max: MAX_CONSECUTIVE_PREREQUISITES,
+  directiveBlock,
 });
 
 console.log(`ETA gate for ${id} (${kind})`);
@@ -129,6 +144,11 @@ console.log(`  before: idle ${show(beforeIdle)} · planned ${show(beforePlanned)
 console.log(`  after:  idle ${show(afterIdle)} · planned ${show(afterPlanned)}   [claimed]`);
 console.log(`  eta has ever moved: ${etaHasEverMoved} (${rows.length} history row(s))`);
 console.log(`  consecutive prerequisite laps: ${consecutivePrerequisites}`);
+if (allConstraints === null) {
+  console.log("  standing directives: state/constraints.json unreadable, so NONE were checked");
+} else {
+  console.log(`  standing directives in force: ${directiveBlockers(allConstraints).size}`);
+}
 
 console.log("");
 console.log(`  verdict: ${verdict}`);
