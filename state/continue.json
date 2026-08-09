@@ -50,12 +50,14 @@
   "concurrency_note": "main moved under this session twice and both rebases were clean. state/eta.json is GENERATED — if it ever conflicts, regenerate with compute-eta --local --write rather than merging by hand.",
   "owner_requests_this_lap": 1,
   "owner_requests_this_lap_note": "One new (2026-08-09.gumroad-cover-upload) and one corrected (2026-08-09.itch-page-for-the-kit, addressee only — same two steps, same venue, slug, price, image and owner cost). RUNBOOK 6 gate 1 was satisfied by measurement rather than assertion: the API was probed for a cover route and has none, and the probe is repeatable from the workflow without a lap. Owner characters to type across both requests: 0. Judgement calls: 0.",
-  "owner_request_ids": ["2026-08-09.gumroad-cover-upload"],
-  "predecessor_session_id": null,
+  "owner_request_ids": [
+    "2026-08-09.gumroad-cover-upload"
+  ],
+  "predecessor_session_id": "session_01HQKRQjVCs287R6qYHi18cX",
   "predecessor_note": "This session is the first generation of a fresh lineage. The previous chain's last child stalled on an approval and the parent archived it before this session started, so there was nothing to archive at startup.",
-  "successor_session_id": null,
-  "successor_status": "see handoff_note",
-  "handoff_note": "Filled in below by this session before it ended.",
+  "successor_session_id": "session_01Ly5xpLuRK166NLKLPXQDCK",
+  "successor_status": "created",
+  "handoff_note": "Successor created at 16:25Z with the repository attached at main and the worker prompt, including the instruction to archive this session once get_session reads SESSION_STATUS_IDLE. create_session returned on the first attempt: this lineage is fresh (generation 1 -> 2) and the depth-8 ceiling an earlier chain hit does not apply here. The chain therefore does not wait for the hourly spawner. The successor prompt carries three things this session learned the hard way and that are cheap to forget: prerequisite is at 3/3 so route_change is the open lane, codex/outbox/2026-08-09.q.md is the first thing to read, and a rendered artifact has to be OPENED rather than dimension-checked.",
   "archive_policy": "A successor archives its predecessor at startup, and only when get_session reports SESSION_STATUS_IDLE. RUNNING means look again later — one reading is not a verdict. If archive_session is refused, that is the intermittent classifier: do something else and retry.",
   "status": "ok"
 }
