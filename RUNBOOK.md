@@ -112,10 +112,29 @@ cat state/heartbeat.json # 止まっている自動実行
 ### いまの最優先目標：実測に足る日数を1つ作る
 
 **達成条件（機械が判定できる形）:**
-`state/eta.json` のいずれかの channel が **`revenue_rate_derivable: true`** を報告すること。
+`state/eta.json` のいずれかの channel が **`idle_eta_days` を null 以外**で報告すること。
 
-これは「日付つきの読み取りが2点以上あり、そこから月次レートが導けた」という意味です
-（`scripts/revenue-rate.mjs`）。**モデルの見積りではなく、実測から出た日数**がここで初めて1つ生まれます。
+**モデルの見積りではなく、実測から出た日数**がここで初めて1つ生まれます。
+
+**以前ここは `revenue_rate_derivable: true` でした。2026-08-09 に2つ壊れているのが実測で分かり、
+両方直しました。**
+
+1. **その条件は、この文が主張することを意味していませんでした。**
+   ¥0 の読み取りが2点あれば `revenue_rate_derivable` は true になります
+   （`scripts/revenue-rate.mjs`：レート0は「導けた」であって「導けない」ではない）。
+   そのとき `monthly_yen_now` は 0、`idle_eta_days` は null。
+   **日数は1つも生まれていないのに、目標は達成と表示されます。**
+2. **誰もその条件を読んでいませんでした。** `state/constraints.json` の
+   `recheck_after` に文章で書かれていて、`compute-eta.mjs` は
+   `Date.parse` が失敗するかどうかしか見ていませんでした。
+   つまり**条件が真になっても永久に開きません。**
+   18:37Z の収集で追加される2点目を実際に入れて確かめました
+   （`revenue_rate_derivable` は true になり、待っている候補2件は false のまま）。
+
+いまは条件を**データとして**書きます（`unlocks_when`）。読む側は
+`scripts/unlock-condition.mjs`、機械で判定できない条件は
+`unlock_not_evaluable` に理由を書かないと `verify-sanitized-state.mjs` が落とします。
+**文章のまま置いて、誰かが読んでくれることを期待しない。**
 
 **なぜこれが先か。** 候補の日数を継承で導くにも、効率化を日数に換算するにも、
 **どこかに実測の数字が1つ必要**です。いま日数を持つのは反証済みのゼロベース案だけで、
@@ -128,11 +147,13 @@ cat state/heartbeat.json # 止まっている自動実行
   **止まりません**（RUNBOOK 3.9）
 - **順序を飛ばして継承や率の実装を始めないこと。** 割る相手がまだ存在しません
 
-**達成したら（機械が自動で開けます）:**
+**達成したら（機械が自動で開けます。2026-08-09 以降は本当に開きます）:**
 
 `state/constraints.json` の `eta_effect_inheritance_via_unblocks` と
-`lap_throughput_to_days_calibration` は、上の条件を `recheck_after` に持っています。
-条件が満たされるまで候補一覧に **`actionable: false`** で並び、満たされた時点で着手可能になります。
+`lap_throughput_to_days_calibration` は、上の条件を `unlocks_when` に持っています。
+条件が満たされるまで候補一覧に **`actionable_now: false`** で並び、満たされた時点で着手可能になります。
+**`not_actionable_reason` には、いま実際に読んだ各 channel の値が入ります。**
+「まだ満たされていない」と「見ている場所が違う」を、開かないまま見分けるためです。
 **この2つを実装してから、通常の ETA 改善ループに戻ります。**
 
 **選び方は、使う資源ごとに分けます。1本の行列にしないこと。**

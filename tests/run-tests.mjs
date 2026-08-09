@@ -23,6 +23,7 @@ import {
 import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/revenue-rate.mjs";
 import { decideVerdict } from "../scripts/gate-verdict.mjs";
 import { constraintDue } from "../scripts/constraint-due.mjs";
+import { evaluateUnlock } from "../scripts/unlock-condition.mjs";
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import {
   checkAddressee, checkRequestsAddressee, copyChanged, diffListing, pasteableStrings,
@@ -1251,6 +1252,102 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   // No recheck_after at all is still the one way to opt out entirely.
   const opted = constraintDue({ id: "x", measured_at: null }, NOW);
   assert(opted.due === false, "a constraint with no recheck_after was ranked anyway");
+}
+
+// --- an event-gated constraint actually opens ---------------------------------
+//
+// The regression this pins down was live for a day and would have gone off
+// silently. compute-eta.mjs treated every non-date recheck_after as permanently
+// not-actionable, so the two candidates waiting on the loop's top-priority goal
+// could never open — the condition was a sentence and nothing read sentences.
+// Proved by seeding state/gumroad-history.json with the exact second reading the
+// 18:37Z monitor run appends: revenue_rate_derivable flipped true and both stayed
+// shut. The second half is that the OLD condition would have been the wrong one to
+// open on: two ¥0 readings satisfy it while producing no days at all.
+{
+  const inherit = {
+    id: "eta_effect_inheritance_via_unblocks",
+    recheck_after: "waits on: some channel carries a non-null idle_eta_days",
+    unlocks_when: { any_channel: { field: "idle_eta_days", is: "non_null" } },
+  };
+
+  // The false unlock, written as a test so it cannot come back. This is exactly
+  // what state/eta.json reports after two dated readings of zero sales.
+  const zeroRevenue = [
+    { id: "gumroad", revenue_rate_derivable: true, monthly_yen_now: 0, idle_eta_days: null },
+    { id: "itch", idle_eta_days: null },
+  ];
+  const stillShut = evaluateUnlock(inherit, zeroRevenue);
+  assert(stillShut.evaluable === true, "a structured unlock condition was not evaluated");
+  assert(
+    stillShut.satisfied === false,
+    "two readings of zero revenue opened a candidate that waits on a measured number of days",
+  );
+  assert(
+    stillShut.reason.includes("gumroad"),
+    "an unsatisfied unlock did not name the channels it looked at",
+  );
+
+  // And the real one does open, without anybody editing the constraint by hand.
+  const withDays = [
+    { id: "gumroad", revenue_rate_derivable: true, monthly_yen_now: 4000, idle_eta_days: 62.5 },
+  ];
+  const opens = evaluateUnlock(inherit, withDays);
+  assert(opens.satisfied === true, "a measured idle_eta_days did not open the candidate waiting on it");
+  assert(opens.matched_channel === "gumroad", "the opened unlock did not record which channel opened it");
+
+  // "first game published" is settleable too — the count was already on the channel.
+  const firstGame = {
+    id: "itch_profile_games_fields",
+    recheck_after: "first game published",
+    unlocks_when: { any_channel: { field: "games", is: "positive" } },
+  };
+  assert(evaluateUnlock(firstGame, [{ id: "itch", games: 0 }]).satisfied === false, "zero games opened the itch fields constraint");
+  assert(evaluateUnlock(firstGame, [{ id: "itch", games: 1 }]).satisfied === true, "one game did not open the itch fields constraint");
+
+  // Prose with no structured form must report itself unevaluable rather than pass
+  // for a condition that is merely not met yet. Those two look identical from the
+  // outside, and telling them apart is the whole point of this module.
+  const prose = evaluateUnlock({ id: "x", recheck_after: "when someone buys" }, withDays);
+  assert(prose.evaluable === false, "prose with no unlocks_when was treated as an evaluated condition");
+  assert(prose.satisfied === false, "prose with no unlocks_when was treated as satisfied");
+  assert(prose.declared === false, "undeclared prose claimed to have declared itself unevaluable");
+
+  const declared = evaluateUnlock(
+    { id: "x", recheck_after: "when someone buys", unlock_not_evaluable: "no reader exists for this" },
+    withDays,
+  );
+  assert(declared.declared === true, "a declared-unevaluable condition was not recognised as declared");
+
+  // The sanitizer is the half that stops a NEW condition going back to unread
+  // prose. Run as a process because that is how CI runs it.
+  const unreadable = join(temporary, "constraints-unreadable.json");
+  await writeFile(
+    unreadable,
+    JSON.stringify({
+      schema_version: 1,
+      constraints: [{ id: "x", measured_at: null, recheck_after: "someday" }],
+    }),
+  );
+  const refused = run(process.execPath, [join(root, "scripts/verify-sanitized-state.mjs"), unreadable], {}, {
+    allowFailure: true,
+  });
+  assert(
+    refused.status !== 0,
+    "the sanitizer accepted a condition that neither evaluates nor says it cannot",
+  );
+
+  const readable = join(temporary, "constraints-readable.json");
+  await writeFile(
+    readable,
+    JSON.stringify({
+      schema_version: 1,
+      constraints: [
+        { id: "x", measured_at: null, recheck_after: "someday", unlock_not_evaluable: "nothing here can see it" },
+      ],
+    }),
+  );
+  run(process.execPath, [join(root, "scripts/verify-sanitized-state.mjs"), readable]);
 }
 
 console.log("All usage monitor tests passed.");

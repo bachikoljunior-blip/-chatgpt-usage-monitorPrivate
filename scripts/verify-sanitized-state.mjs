@@ -142,6 +142,24 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
     if (c.measured_at === undefined) {
       throw new Error(`constraint ${c.id} has no measured_at (use null when unmeasured)`);
     }
+    // A recheck_after that is not a date is a CONDITION, and a condition nothing
+    // evaluates never comes true. Until 2026-08-09 three constraints carried one and
+    // compute-eta.mjs only ever asked whether it parsed as a date, so the two waiting
+    // on the loop's top-priority goal would have stayed shut on the day it was
+    // reached. Either express it as data (unlocks_when) or say in the file that it
+    // cannot be (unlock_not_evaluable, with the reason). Both are readable; prose
+    // alone is not. See scripts/unlock-condition.mjs.
+    if (c.recheck_after !== null && Number.isNaN(Date.parse(c.recheck_after))) {
+      const evaluable = c.unlocks_when && typeof c.unlocks_when === "object";
+      const declared = typeof c.unlock_not_evaluable === "string" && c.unlock_not_evaluable;
+      if (!evaluable && !declared) {
+        throw new Error(
+          `constraint ${c.id} waits on a condition nothing can read: recheck_after ` +
+            `${JSON.stringify(c.recheck_after)} is not a date and the entry carries neither ` +
+            "unlocks_when nor unlock_not_evaluable",
+        );
+      }
+    }
   }
 } else if (state.overdue_count !== undefined) {
   // Heartbeat report. Checked before the registry branch below: both carry an

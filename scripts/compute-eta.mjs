@@ -25,6 +25,7 @@ import { readStateJson, REPO } from "./state-source.mjs";
 import { applyRepricings } from "./repricing.mjs";
 import { daysToTarget } from "./revenue-rate.mjs";
 import { constraintDue } from "./constraint-due.mjs";
+import { evaluateUnlock } from "./unlock-condition.mjs";
 
 const write = process.argv.includes("--write");
 // Reads come from origin/main so a stale checkout cannot drive the ranking. That
@@ -384,11 +385,25 @@ const constraintById = new Map((constraints?.constraints ?? []).map((c) => [c.id
 for (const c of candidates) {
   const constraint = constraintById.get(c.id);
   // A recheck date that is not a date is a condition, not a schedule — it cannot
-  // be satisfied by choosing to do it today.
+  // be satisfied by choosing to do it today. Until 2026-08-09 that was the whole
+  // test, so a condition written as a sentence could never come true: the two
+  // candidates waiting on the loop's top-priority goal would have stayed shut on
+  // the day it was reached. The sentence is now evaluated where it can be, and
+  // where it cannot, the constraint has to say so. See scripts/unlock-condition.mjs.
   const gatedOnEvent =
     constraint?.recheck_after && Number.isNaN(Date.parse(constraint.recheck_after));
-  c.actionable_now = !gatedOnEvent;
-  if (gatedOnEvent) c.not_actionable_reason = `waits on an event: ${constraint.recheck_after}`;
+  if (gatedOnEvent) {
+    const unlock = evaluateUnlock(constraint, channels);
+    c.actionable_now = unlock.satisfied;
+    c.unlock_condition_evaluated = unlock.evaluable;
+    if (!unlock.satisfied) {
+      c.not_actionable_reason = unlock.evaluable
+        ? `waits on a measured condition: ${unlock.reason}`
+        : `waits on an event nothing evaluates: ${constraint.recheck_after} — ${unlock.reason}`;
+    }
+  } else {
+    c.actionable_now = true;
+  }
 
   c.eta_effect_days = worstCaseDays(c.days_to_first_yen_estimate);
   if (c.kind === "zero_base_option") {

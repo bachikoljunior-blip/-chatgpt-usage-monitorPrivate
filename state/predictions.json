@@ -526,6 +526,37 @@
       ],
       "falsified_if": "The answer arrives truncated, or arrives as a description of how to write the demo instead of the demo. Either would mean the lane production range stops short of an artifact big enough to matter, and the repair is to split the artifact across tasks rather than to ask again. It is ALSO falsified, differently, if the 判定 claims the file is complete and the file in the outbox is not — that would repeat the .p failure exactly, and would mean self-report is unreliable for size as well as for images.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-09.stated-unlock-now-actually-evaluated",
+      "made_at": "2026-08-09T16:36:00Z",
+      "claim": "The loop's top-priority goal was about to be reported achieved and open nothing. Two claims, which fail separately. FIRST, the reported achievement was going to be hollow: the 18:37Z gumroad run appends a second dated reading of ¥0, which makes revenue_rate_derivable true while monthly_yen_now stays 0 and idle_eta_days stays null — a rate of zero is a rate, so the old condition is satisfied by a series that contains no revenue and yields no days. SECOND, even a genuine achievement could not have opened anything, because the condition lived as a sentence in recheck_after and compute-eta.mjs only asked whether that string parsed as a date. After this lap, the same event produces the HONEST answer instead: the two waiting candidates stay shut, and their reason names idle_eta_days and prints what each channel actually carries.",
+      "metric": "Read from origin/main after 18:37Z, all four from files rather than from a run log. (a) state/gumroad-history.json carries 2 or more readings, which is also what tests whether the monitor commits its append at all. (b) state/eta.json channels[gumroad].revenue_rate_derivable is true — the OLD condition, now confirmed satisfied by a zero series, which is the evidence that it was the wrong condition rather than an argument that it was. (c) state/eta.json channels[gumroad].idle_eta_days is still null, and eta_effect_inheritance_via_unblocks and lap_throughput_to_days_calibration both still carry actionable_now false with unlock_condition_evaluated true and a not_actionable_reason containing the literal string \"idle_eta_days is not null on some channel\". (d) That reason names every channel and its value, so a reader can tell 'not yet' from 'looking at the wrong field' without opening any code.",
+      "baseline": {
+        "measured_at": "2026-08-09T16:34:00Z",
+        "gumroad_history_readings": 1,
+        "revenue_rate_derivable": false,
+        "idle_eta_days_any_channel": null,
+        "candidates_waiting_on_the_goal": 2,
+        "unlock_conditions_evaluated_by_any_machine": 0,
+        "constraints_with_a_non_date_recheck_after": 3,
+        "what_the_probe_showed": "A scratch copy seeded with the 18:37Z reading gave revenue_rate_derivable true, window_days 0.271, monthly_yen_now 0, idle_eta_days null, and BOTH candidates still actionable_now false quoting the sentence. That is the pre-fix behaviour, measured rather than predicted."
+      },
+      "judge_on": "2026-08-10",
+      "judge_deadline": "2026-08-13",
+      "min_observations": {
+        "source": "state/gumroad-history.json",
+        "path": "readings",
+        "min": 2,
+        "usable_only": false
+      },
+      "concurrent_changes": [
+        "Same lap, same commit: the predicate on both waiting constraints changed from revenue_rate_derivable to idle_eta_days non-null, and itch_profile_games_fields gained an unlocks_when reading the itch game count. The evaluator and the predicate are one change on purpose — shipping the evaluator alone would have opened both candidates at 18:37Z on two readings of zero, which is the defect, not the fix.",
+        "verify-sanitized-state.mjs gained a check rejecting a non-date recheck_after that carries neither unlocks_when nor unlock_not_evaluable. It cannot affect this metric; it exists so the next such condition cannot be written as unread prose.",
+        "RUNBOOK 3's stated success condition changed in the same commit. If a later reader finds the RUNBOOK and the machine disagreeing about what the goal is, that is a failure of THIS lap, since keeping them in step was the point."
+      ],
+      "falsified_if": "Any of these. state/gumroad-history.json still holds one reading after 18:37Z — then the append-and-commit path is broken and the whole question was moot, which is worth knowing separately. OR the two candidates open on the zero series anyway — then the predicate change did not take and the fix shipped the exact defect it named. OR the not_actionable_reason carries no channel values — then the condition is evaluated but still unreadable, which was half the original complaint. Note what this prediction does NOT claim: that anything gets closer to revenue. Nothing here sells anything. It claims only that a stated unlock now tells the truth, and a reader who wants the revenue question should read the 2026-08-13 tag prediction instead.",
+      "outcome": null
     }
   ]
 }

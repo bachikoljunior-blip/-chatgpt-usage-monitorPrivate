@@ -105,6 +105,11 @@
       "evidence": "2026-08-09: three dispatched runs. First two returned 200 with a games key that was not an array; the collector now accepts either container. Third returned status ok, game_count 0. The legacy itch.io/api/1/KEY/my-games endpoint returned 429 under repeated calls. fields_present is [] only because there are no games to describe.",
       "measured_at": "2026-08-09",
       "recheck_after": "first game published",
+      "unlocks_when": {
+        "any_channel": { "field": "games", "is": "positive" },
+        "stated": "the itch channel in state/eta.json reports games > 0, which is what 'first game published' means where a machine can see it",
+        "why_changed": "It was prose, and prose in recheck_after was never read by anything — see scripts/unlock-condition.mjs. This one turned out to be settleable without asking anyone: state/itch.json already carries the game count and compute-eta.mjs already copies it onto the channel, so the condition had a reader all along and only lacked a way to say so."
+      },
       "blocks": [
         "itch_funnel_measurement"
       ],
@@ -317,7 +322,13 @@
       "claim": "A candidate that unblocks another should inherit its days rather than report null. Machinery work is unanswerable in days today only because candidates are a flat list with no dependency edges.",
       "evidence": "2026-08-09: every candidate in the top six reported eta_effect_days null, so the ranking's primary key was null for all of them and 'take the top one' was decided by arrival order. The ones that do carry numbers are the zero-base options, whose numbers are marked discredited_by_siblings after three of three were refuted.",
       "measured_at": null,
-      "recheck_after": "waits on: any channel in state/eta.json reports revenue_rate_derivable true",
+      "recheck_after": "waits on: some channel in state/eta.json carries a non-null idle_eta_days",
+      "unlocks_when": {
+        "any_channel": { "field": "idle_eta_days", "is": "non_null" },
+        "stated": "some channel in state/eta.json carries a measured idle_eta_days that is not null — one real number of days, which is the thing this constraint inherits from",
+        "was": "any channel reports revenue_rate_derivable true",
+        "why_changed": "Two defects, found together on 2026-08-09 and both proved by seeding the second gumroad reading the 18:37Z run would append. (1) NOTHING EVALUATED THE OLD SENTENCE. compute-eta.mjs decided availability with Number.isNaN(Date.parse(recheck_after)) alone, so a condition written as prose was permanently not-actionable however true it became; the probe flipped revenue_rate_derivable to true and this candidate stayed shut, quoting the sentence back. (2) THE OLD CONDITION DID NOT MEAN WHAT RUNBOOK 3 CLAIMED. Two readings of ¥0 make revenue_rate_derivable true while monthly_yen_now is 0 and idle_eta_days is null, so the goal would have reported achieved with no measured days in existence — and days are exactly what do_not_start_before says must exist first. The new predicate is the RUNBOOK's own stated intent, in a form a machine settles."
+      },
       "measure_via": "here",
       "eta_effect_if_lifted": "high for ranking quality: it is what lets design and machinery work answer 'how many days' at all, by deriving the answer from what they unblock instead of estimating it.",
       "do_not_start_before": "A tree whose leaves are all null yields null however it is traversed. Inheritance is worth building the moment one real number exists to inherit, and is worth nothing before that.",
@@ -328,7 +339,13 @@
       "claim": "Halving lap cost doubles attempts, but attempts only convert to days once the number of laps per ETA-moving finding is known. That rate is what makes efficiency work priceable.",
       "evidence": "state/laps.json holds 22 samples of which 0 are usable, and state/eta-history.json holds a single row, so neither the cost per lap nor the findings per lap has ever been measured. Efficiency is currently demoted to last while the ETA is infinite, which is correct but is a stand-in for a number, not the number.",
       "measured_at": null,
-      "recheck_after": "waits on: any channel in state/eta.json reports revenue_rate_derivable true",
+      "recheck_after": "waits on: some channel in state/eta.json carries a non-null idle_eta_days",
+      "unlocks_when": {
+        "any_channel": { "field": "idle_eta_days", "is": "non_null" },
+        "stated": "some channel in state/eta.json carries a measured idle_eta_days that is not null — the ETA movement this calibration divides by",
+        "was": "any channel reports revenue_rate_derivable true",
+        "why_changed": "Same pair of defects as eta_effect_inheritance_via_unblocks; read the why_changed there. It bites harder here: do_not_start_before requires at least one ETA MOVEMENT to calibrate against, and revenue_rate_derivable true from two ¥0 readings is not a movement — the ETA is still ∞ on both sides of it."
+      },
       "measure_via": "here",
       "eta_effect_if_lifted": "medium: it prices the whole efficiency category, which is otherwise either last by rule or admitted on a hunch.",
       "do_not_start_before": "The rate needs at least one ETA movement to calibrate against. With the history at one row there is nothing to divide by, and a calibration invented before the first movement is an estimate wearing a measurement's clothes.",
@@ -444,6 +461,23 @@
       "why_it_costs_this_loop_nothing": "The Codex pool was 100% and 94% remaining while the Claude weekly pool was at 35%. A task in the INBOX is one file edit here and runs on the other quota.",
       "what_would_falsify_the_whole_door": "A quoted r/gamedev rule that also bars free self-made assets, or a posting-eligibility threshold on that subreddit stated as a number this account cannot meet. Neither has been found; neither has been looked for since the door was reframed.",
       "the_honest_gap": "Even with the artifact in hand, posting it is a route change and has to be gated as one. Nobody has measured this account standing on that subreddit, and no_standing_where_buyers_gather still says our standing anywhere is unmeasured. HAVING SOMETHING POSTABLE IS NOT THE SAME AS BEING ABLE TO POST IT."
+    },
+    {
+      "id": "a_stated_unlock_was_never_evaluated",
+      "claim": "FIXED, AND THE FIX IS THE ONLY REASON THIS IS NOT STILL TRUE: the loop's top-priority goal had a success condition that no machine read and that did not mean what the RUNBOOK claimed it meant. Both halves were live at once, and each one alone would have been enough to make reaching the goal change nothing.",
+      "evidence": "Two independent observations, 2026-08-09T16:26-16:32Z. (1) READ: compute-eta.mjs decided availability with `constraint?.recheck_after && Number.isNaN(Date.parse(constraint.recheck_after))` and nothing else; a grep for recheck_after across scripts/, tests/ and .github/ returned constraint-due.mjs, verify-sanitized-state.mjs and check-wiring.mjs, none of which evaluates the sentence either. (2) RUN: a scratch copy of the repo was given the exact second reading the 18:37Z gumroad run appends (at 18:37:10Z, 0 sales, 0 cents) and compute-eta --local --write was run against it. state/eta.json then carried revenue_rate_derivable true, window 0.271 days, monthly_yen_now 0, idle_eta_days null — and eta_effect_inheritance_via_unblocks and lap_throughput_to_days_calibration were both still actionable_now false, quoting the same sentence back as their reason.",
+      "measured_at": "2026-08-09T16:34:00Z",
+      "recheck_after": "2026-09-09",
+      "measure_via": "here",
+      "actionable_now": false,
+      "not_actionable_reason": "both halves are fixed and both now have readers: scripts/unlock-condition.mjs evaluates unlocks_when, verify-sanitized-state.mjs rejects a non-date recheck_after carrying neither unlocks_when nor unlock_not_evaluable, and tests/run-tests.mjs pins the false unlock (two ¥0 readings must NOT open a candidate waiting on days) alongside the true one.",
+      "the_two_halves": {
+        "nothing_read_the_condition": "The unlock was prose inside a JSON field whose only reader asked 'is this a date?'. This is the exact shape recorded as a_correction_reaches_only_the_surface_that_has_a_reader, arriving from the other direction: there the decision reached the surface with a reader and missed the one without; here the condition sat on a field whose reader was too narrow to see it. Three constraints were affected — the two above plus itch_profile_games_fields, whose 'first game published' turned out to be settleable from a count state/itch.json already carries.",
+        "the_condition_was_the_wrong_one": "revenue_rate_derivable true means 'two dated readings exist and a rate came out'. A rate of zero is a rate. So two readings of ¥0 satisfy it while monthly_yen_now is 0 and idle_eta_days is null — the goal would have reported achieved with no measured number of days anywhere, which is the one thing RUNBOOK 3 says it produces and the one thing both waiting constraints need to divide by."
+      },
+      "why_it_did_not_go_through_the_gate": "RUNBOOK 3.9's single exception. The gate's verdict is defined by numbers in state/eta.json, so asking the gate for permission to repair the instrument that produces those numbers is circular. The exception's price is that the repair must be shown by machine rather than reported, which is what the test and the sanitizer check are.",
+      "the_generalisable_half": "A CONDITION THAT NOTHING EVALUATES NEVER COMES TRUE, AND IT FAILS SILENTLY — the entry looks identical to one that is merely not met yet. It is worse than a missing condition, because a missing one is noticed the moment someone asks 'what opens this?'. Ask of every waiting thing: WHICH LINE OF CODE DECIDES IT, and if the answer is a sentence, it is not waiting, it is stopped. The second half generalises too: a machine-checkable condition is not automatically the RIGHT condition, and the way to tell is to construct the cheapest world in which it is satisfied and check whether the goal is actually met there. Here that world was two readings of zero.",
+      "what_is_not_known": "Whether other stated conditions in this repository have the same defect. Three were found because compute-eta.mjs happened to be the reader being inspected. Not checked: the judge conditions in state/predictions.json (min_observations, judge_deadline), the done_marker logic in codex/INBOX.md, and the recheck dates in state/wiring-exceptions.json."
     }
   ]
 }
