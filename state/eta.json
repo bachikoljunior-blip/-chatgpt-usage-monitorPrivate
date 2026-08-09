@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T11:16:58.063Z",
+  "fetched_at": "2026-08-09T11:34:04.673Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -20,6 +20,15 @@
     "the_honest_gap": "The private youtube repository holds figures this environment cannot read — state/external-metrics.json has never been published, which is already recorded as a wiring exception. If '28' counted published videos, it could be right and unverifiable from here. So this entry does not say the number is wrong. It says the number has no list under it and the lists that do exist do not add up to it.",
     "what_would_settle_it": "publish state/external-metrics.json from the repository that holds the YouTube credentials, or have whoever wrote 8eca5b1 name what was counted. Until then, treat 28 as an assertion, not an observation."
   },
+  "owner_requests_pending": [
+    {
+      "id": "2026-08-09.itch-page-for-the-kit",
+      "candidate_id": "itch",
+      "created_at": "2026-08-09T11:33:00Z",
+      "judge_by": "2026-08-23",
+      "one_line": "itch.io に、有料キットの販売ページを1つ作ってください。フォームを埋めるだけです。あとは自動で回せます。"
+    }
+  ],
   "target_yen_per_month": 200000,
   "idle_eta_days": null,
   "idle_eta_note": "every measurable channel is infinite: zero revenue, zero growth, or blocked behind an owner action. This is the real baseline, not a measurement failure.",
@@ -29,18 +38,18 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T11:02:42.926Z",
-      "days_unchanged": 0.01
+      "days_unchanged": 0.02
     },
     "planned": {
       "unchanged_since": "2026-08-09T11:02:42.926Z",
-      "days_unchanged": 0.01
+      "days_unchanged": 0.02
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-09T11:04:57.959Z",
+      "measured_at": "2026-08-09T11:28:51.670Z",
       "monthly_yen_now": 0,
       "lifetime_sales": 0,
       "lifetime_usd_cents": 0,
@@ -92,6 +101,18 @@
       "why": "turns an infinite path finite",
       "owner_actions": 1,
       "note": "create one game page (form only); butler automates everything after",
+      "owner_request": {
+        "id": "2026-08-09.itch-page-for-the-kit",
+        "status": "pending",
+        "created_at": "2026-08-09T11:33:00Z",
+        "one_line": "itch.io に、有料キットの販売ページを1つ作ってください。フォームを埋めるだけです。あとは自動で回せます。",
+        "owner_actions": 1,
+        "estimated_owner_minutes": 10,
+        "judge_by": "2026-08-23",
+        "source": "codex/outbox/2026-08-09.k.md（規約原文・先例・比較価格の出典URLはすべてそこにある）",
+        "where": "state/owner-requests.json",
+        "read_this_before_acting": "The request is prepared. Do not prepare it again, and do not treat this candidate as work a lap can do — it waits on the owner. If it has been pending past judge_by with nothing happening, that is a finding about the request channel, not a reason to rewrite the request."
+      },
       "actionable_now": true,
       "eta_effect_days": null,
       "eta_effect_basis": "no comparable estimate recorded",
@@ -210,7 +231,7 @@
       "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "no comparable estimate recorded",
       "blocked_on_rechecked": {
-        "at": "2026-08-09T11:12:00Z",
+        "at": "2026-08-09T11:28:00.123Z",
         "was": "there is nothing to post about yet",
         "found": "Yes, at least one. The cookie-clicker idle game is free, browser-playable and corroborated by a second source. Two more artifacts are games and are probably tryable, though neither page was opened.",
         "still_blocked_on": "honest_post_where_buyers_gather was not blocked on having something to post. That half is answered and it was cheap — one tool call. What it is actually blocked on is the other half, which is still untouched: whether any of these reaches a community that contains BUYERS. A free browser idle game has players, and players are not the same as buyers. Do not read this entry as saying the route is now open.",
