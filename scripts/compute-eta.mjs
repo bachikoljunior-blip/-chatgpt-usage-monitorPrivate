@@ -40,6 +40,7 @@ const [
   { value: external },
   { value: zerobase },
   { value: blocked },
+  { value: history },
 ] = await Promise.all([
   readStateJson("state/gumroad.json", { preferLocal }),
   readStateJson("state/itch.json", { preferLocal }),
@@ -47,6 +48,7 @@ const [
   readStateJson("state/external-metrics.json", { preferLocal }),
   readStateJson("state/zerobase.json", { preferLocal }),
   readStateJson("state/blocked.json", { preferLocal }),
+  readStateJson("state/eta-history.json", { preferLocal }),
 ]);
 
 const channels = [];
@@ -145,6 +147,47 @@ const finite = channels
   .map((c) => c.idle_eta_days)
   .filter((d) => Number.isFinite(d) && d !== null);
 const idlePortfolio = finite.length ? Math.min(...finite) : null;
+
+// The planned ETA — what the goal costs if the owner performs up to one action a
+// week. It was described in this file's own header from the day it was written and
+// never once computed, so state/eta.json has carried a single number while claiming
+// two. That is the same defect as a rule living where the actor cannot read it,
+// except here the missing half was the one that prices owner actions at all.
+//
+// It is deliberately not more optimistic than the evidence. Performing the unblock
+// converts "cannot start" into "started" — it does not create a trajectory. A game
+// page with no visitors still reaches the target never, so this returns null
+// exactly as often as the honest answer is never. What it does change is the
+// reason: idle says "blocked behind an owner action", planned says "the action
+// would not be what is missing".
+const OWNER_ACTIONS_PER_WEEK = 1;
+let ownerActionsSpent = 0;
+for (const ch of channels) {
+  const needed = Number(ch.owner_actions_required ?? 0);
+  const affordable = needed > 0 && ownerActionsSpent + needed <= OWNER_ACTIONS_PER_WEEK;
+  if (needed > 0 && !affordable) {
+    ch.planned_eta_days = null;
+    ch.planned_eta_reason =
+      `needs ${needed} owner action(s) and the week's budget of ${OWNER_ACTIONS_PER_WEEK} is ` +
+      `already committed to a channel ranked above it`;
+    continue;
+  }
+  if (affordable) ownerActionsSpent += needed;
+  // Unblocking removes the blocker, not the flatness. Only a channel with a
+  // measured trajectory can be finite, and none has one yet.
+  const hasTrajectory = Number(ch.monthly_yen_now ?? 0) > 0;
+  ch.planned_eta_days = hasTrajectory ? ch.idle_eta_days : null;
+  ch.planned_eta_reason = hasTrajectory
+    ? "same trajectory as idle; the owner action was not the binding constraint"
+    : needed > 0
+      ? "the owner action is affordable and would unblock it, but nothing measured feeds it " +
+        "afterwards, so it still arrives never. The action is necessary, not sufficient."
+      : "no owner action is required and none would help: the trajectory itself is flat";
+}
+const finitePlanned = channels
+  .map((c) => c.planned_eta_days)
+  .filter((d) => Number.isFinite(d) && d !== null);
+const plannedPortfolio = finitePlanned.length ? Math.min(...finitePlanned) : null;
 
 // --- Candidates ------------------------------------------------------------
 // Seeded from constraints whose recheck is due, plus the channel unblocks. Each
@@ -407,6 +450,30 @@ const { unmatched: unmatchedRepricings } = applyRepricings(
   zerobase?.distribution_answer?.reprices_candidates,
 );
 
+// Read off the history rather than recomputed: the question "how long has this been
+// stuck" is about the record, not about this run. Null means there is no history to
+// judge against yet, which is different from "it just changed".
+const movementOf = (field) => {
+  const rows = history?.rows ?? [];
+  if (!rows.length) return null;
+  const current = field === "idle" ? idlePortfolio : plannedPortfolio;
+  const key = field === "idle" ? "idle_eta_days" : "planned_eta_days";
+  let since = null;
+  for (let i = rows.length - 1; i >= 0; i -= 1) {
+    if (rows[i][key] !== current) break;
+    since = rows[i].at;
+  }
+  if (!since) return { unchanged_since: null, days_unchanged: 0 };
+  const days = (now - Date.parse(since)) / 86_400_000;
+  return { unchanged_since: since, days_unchanged: Number(days.toFixed(2)) };
+};
+const movement = {
+  idle: movementOf("idle"),
+  planned: movementOf("planned"),
+  note: "days_unchanged is measured from the oldest consecutive row carrying the same value. "
+    + "Three rounds without movement is the signal to change the route rather than the parameter.",
+};
+
 const report = {
   schema_version: 1,
   status: "ok",
@@ -427,6 +494,18 @@ const report = {
     idlePortfolio === null
       ? "every measurable channel is infinite: zero revenue, zero growth, or blocked behind an owner action. This is the real baseline, not a measurement failure."
       : null,
+  planned_eta_days: plannedPortfolio,
+  planned_eta_note:
+    plannedPortfolio === null
+      ? `with up to ${OWNER_ACTIONS_PER_WEEK} owner action per week, still never. The owner actions ` +
+        "on offer unblock starting, not arriving — which says the shortage is demand, not permission, " +
+        "and that asking for more owner actions would not move this number."
+      : null,
+  owner_actions_per_week_assumed: OWNER_ACTIONS_PER_WEEK,
+  // How long the objective function has sat still. Without this the loop can rank
+  // by ETA forever while nobody notices the number has never once changed — which
+  // is exactly what happened between the first computation and now.
+  movement: movement,
   channels,
   candidates,
   measured_current_monthly_yen: channels.reduce((n, c) => n + (c.monthly_yen_now ?? 0), 0),
@@ -434,6 +513,32 @@ const report = {
 
 if (write) {
   await writeFile(resolve(REPO, "state/eta.json"), `${JSON.stringify(report, null, 2)}\n`);
+  // Append-only, and capped. A file rewritten every hour with no history cannot
+  // answer "did the change help", which is the one question the whole loop exists
+  // to ask. Rows are only added when a value actually differs from the last row:
+  // an hourly heartbeat of identical numbers would bury the transitions that matter
+  // and make the file grow for no information.
+  const rows = history?.rows ?? [];
+  const last = rows[rows.length - 1];
+  const row = {
+    at: now.toISOString(),
+    idle_eta_days: idlePortfolio,
+    planned_eta_days: plannedPortfolio,
+    measured_monthly_yen: report.measured_current_monthly_yen,
+    top_candidate: candidates[0]?.id ?? null,
+  };
+  const changed =
+    !last ||
+    last.idle_eta_days !== row.idle_eta_days ||
+    last.planned_eta_days !== row.planned_eta_days ||
+    last.measured_monthly_yen !== row.measured_monthly_yen ||
+    last.top_candidate !== row.top_candidate;
+  if (changed) {
+    await writeFile(
+      resolve(REPO, "state/eta-history.json"),
+      `${JSON.stringify({ schema_version: 1, note: "Append-only ETA transitions. A row is written only when a value changed; identical hours are not recorded.", rows: [...rows, row].slice(-500) }, null, 2)}\n`,
+    );
+  }
 }
 
 console.log(`target: ¥${TARGET_YEN_PER_MONTH.toLocaleString()}/month`);

@@ -158,6 +158,22 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
       throw new Error(`heartbeat row ${a.id} has an invalid status`);
     }
   }
+} else if (Array.isArray(state.rows)) {
+  // ETA history. null is the correct value for "never reaches the target" and must
+  // survive here exactly as it does in the report: a history that coerced null to a
+  // number would show the objective function improving from infinity to something,
+  // which is the one lie this whole file exists to prevent.
+  for (const r of state.rows) {
+    if (!/^\d{4}-\d{2}-\d{2}T/.test(r.at ?? "")) {
+      throw new Error("eta history row has no valid timestamp");
+    }
+    for (const k of ["idle_eta_days", "planned_eta_days"]) {
+      if (r[k] === undefined) throw new Error(`eta history row is missing ${k}`);
+      if (r[k] !== null && !Number.isFinite(Number(r[k]))) {
+        throw new Error(`eta history row has a non-numeric ${k}`);
+      }
+    }
+  }
 } else if (state.target_yen_per_month !== undefined) {
   // ETA report. idle_eta_days is allowed to be null and that is the whole point:
   // null means "never reaches the target on the current trajectory". Coercing it

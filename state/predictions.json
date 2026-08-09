@@ -114,6 +114,33 @@
       ],
       "falsified_if": "either candidate produces a case with both calendar dates where the first buyer arrived from search or a listing with no simultaneous post, referral or existing following. One such case is enough to falsify this and it becomes the plan.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-09.eta-becomes-observable",
+      "made_at": "2026-08-09T11:05:00Z",
+      "claim": "The loop ranked by ETA and never once observed the ETA move. planned_eta existed only in a comment, there was no history, and none of the six predictions was measured in ETA units. With both numbers emitted and an append-only history, a later lap can finally answer whether anything shortened the goal — and the honest first answer may well be no.",
+      "metric": "state/eta-history.json gains a row whose idle_eta_days or planned_eta_days differs from the row before it. Falsified if the history is still a single unchanged row: that would mean every change since was machinery, and the objective function never moved.",
+      "baseline": {
+        "idle_eta_days": null,
+        "planned_eta_days": null,
+        "measured_monthly_yen": 0,
+        "history_rows": 1,
+        "first_row_at": "2026-08-09T11:02:42.926Z"
+      },
+      "judge_on": "2026-08-12",
+      "min_observations": {
+        "source": "state/eta-history.json",
+        "path": "rows",
+        "min": 2,
+        "why": "one row is a baseline, not a trend. Two distinct rows is the minimum that can show movement at all."
+      },
+      "judge_deadline": "2026-08-16",
+      "deadline_reason": "if the history still holds one row on 16 Aug, that is the finding: a week of laps moved no number that the goal is defined in. Say so plainly rather than waiting for a better week.",
+      "concurrent_changes": [
+        "the chain restart at 10:59 changed who runs laps, so lap throughput is not constant across this window"
+      ],
+      "outcome": null,
+      "note": "null is the correct value for 'never' and the sanitizer now refuses a coerced number in the history. A row showing infinity becoming finite must be a real change, not a rounding."
     }
   ]
 }

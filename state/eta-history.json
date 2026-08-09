@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "note": "Append-only ETA transitions. A row is written only when a value changed; identical hours are not recorded.",
+  "rows": [
+    {
+      "at": "2026-08-09T11:02:42.926Z",
+      "idle_eta_days": null,
+      "planned_eta_days": null,
+      "measured_monthly_yen": 0,
+      "top_candidate": "high_intent_tool_site"
+    }
+  ]
+}
