@@ -62,7 +62,7 @@
       },
       "unverified_and_stated_as_such": [
         "butler が既存の itch の鍵で通るか。state/itch.json を書いている読み取りは api.itch.io に通っているが、butler は別経路で、試していない。通らなければ、アップロードもフォーム操作になり、owner_actions が増える。",
-        "無料で遊べるデモの公開状態。claude.ai の公開成果物 'クッキーストラテジャー｜無料ブラウザで遊べるクッキークリッカー系放置ゲーム'（https://claude.ai/code/artifact/eb826cb0-a94b-46b1-a763-963db5a50016）は、この持ち主の一覧には出るが、他人が開けるかは未確認。claude.ai の成果物は既定で非公開。**開けないなら、告知に貼っても意味がない。** 公開されている GitHub リポジトリ Simple-browser-cookie-clicker-game を GitHub Pages で出せば、確実に公開のデモになる。これはこちら側でできる可能性がある仕事で、まだ誰も手を付けていない。",
+        "無料で遊べるデモの公開状態。**測定したが、決着しなかった。** 2026-08-09 に未認証で取得したところ HTTP 200・14019バイトが返ったが、存在し得ないUUIDでも同じ200・同じ14019バイト・ノンスとUUID以外は同一のHTMLが返る。つまり**状態コードもHTMLも、公開・非公開の情報を一切持っていない。**決着させるには、claude.ai のセッションを持たないJavaScript実行環境が要る。state/constraints.json playwright_cannot_reach_external により、それはこちらには無い。**未着手ではなく、この環境では不可能**という意味。詳細は state/portfolio.json の public_reachability_measured。 **公開・非公開に関わらず確定したことが1つある:** この頁は noindex,nofollow で配信されている。公開であっても検索から見つかることは永久に無く、リンクを手渡された人しか辿り着けない。なお現在の告知文（body_to_paste）にデモのリンクは入っていないので、この請求は今これで壊れてはいない。公開リンクが要るなら、公開リポジトリ Simple-browser-cookie-clicker-game を GitHub Pages で出すのが確実で、しかも検索に載る。こちら側でできる可能性のある仕事で、まだ誰も試していない。",
         "新規販売者の最初の有料商品はモデレータ審査に入り、検索・Browse に載るまで数営業日かかり得る（itch Getting indexed）。ページ自体はURL経由で即時に公開・購入可能。だから step_2 の告知が最初の流入経路になる。"
       ],
       "price_check": {

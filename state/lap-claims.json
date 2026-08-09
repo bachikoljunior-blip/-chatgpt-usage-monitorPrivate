@@ -17,6 +17,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T11:43:03.473Z",
+      "candidate": "itch",
+      "kind": "prerequisite",
+      "mechanism": "state/owner-requests.json lists as unverified whether the free demo is reachable by a stranger: claude.ai artifacts are private by default, and the owner's own list showing it proves nothing about a third party. codex/outbox/2026-08-09.i.md found that every fast first-sale case posted something the reader could try immediately, so a dead demo link removes the announcement's strongest element. This is not re-preparing the request — the request is written and the read_this_before_acting note forbids rewriting it. It closes a gap the request itself names, and it is work this side can do with no owner action. Prerequisite because verifying a link cannot make the ETA finite.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

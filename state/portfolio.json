@@ -37,7 +37,16 @@
           "title": "クッキーストラテジャー｜無料ブラウザで遊べるクッキークリッカー系放置ゲーム",
           "updated": "2026-07-26",
           "kind": "free browser idle game",
-          "immediately_tryable": "yes. The title states free and browser-playable, and a separate public repository (Simple-browser-cookie-clicker-game) carries the same product. Two signals, neither of them the other."
+          "immediately_tryable": "UNRESOLVED, and previously overstated. This said 'yes' on the strength of the title and a sibling public repository. It was measured on 2026-08-09 and the measurement cannot decide it — see public_reachability_measured. Separately and certainly: the page is served noindex,nofollow, so it is never findable, only linkable.",
+          "public_reachability_measured": {
+            "measured_at": "2026-08-09T11:45:00Z",
+            "method": "unauthenticated GET from this session, plus a control",
+            "what_came_back": "HTTP 200, 14019 bytes, a generic single-page shell. og:title is 'Claude Artifact', not the artifact's title, and none of the game's strings appear in the served HTML. The content is rendered by JavaScript after load.",
+            "the_control_that_makes_this_decisive": "The same GET against 00000000-0000-4000-8000-000000000000, a UUID that cannot exist, returned HTTP 200 at exactly 14019 bytes with a byte-identical shell — the only differences are the echoed data-frame-uuid and the CSP nonce. So status code, response size and HTML all carry ZERO information about whether an artifact exists, let alone whether a stranger can open it.",
+            "verdict": "NOT public, and NOT private — undecidable from here by this method. The earlier 'immediately_tryable: yes' rested on the title and on a sibling repository, never on opening the page, and this measurement does not rescue it.",
+            "what_would_decide_it": "a JavaScript-executing client carrying no claude.ai session. state/constraints.json playwright_cannot_reach_external says that is unavailable here, so this is not merely undone — it is not doable from this environment.",
+            "the_finding_that_does_not_depend_on_reachability": "the shell is served with <meta name=\"robots\" content=\"noindex, nofollow\">, twice. Even if the artifact is fully public, it can never be found through a search engine. It works only as a link someone is handed. Any plan that expected the free demo to be discovered on its own is refuted by this line regardless of how the privacy question resolves."
+          }
         }
       ]
     },
