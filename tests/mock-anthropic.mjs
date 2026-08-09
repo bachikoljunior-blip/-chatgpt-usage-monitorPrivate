@@ -43,7 +43,18 @@ export function startMockAnthropic({ expectedToken = "test-oauth-token", status 
     }
     response.writeHead(200, { "Content-Type": "application/json" }).end(
       JSON.stringify({
-        five_hour: { utilization: 12.5, resets_at: "2026-08-08T04:00:00Z" },
+        // five_hour deliberately carries fields the collector does not map, plus
+        // one the sanitizer forbids by name. Both are what the field probe has to
+        // handle: report the unread numbers, and never let an unexpected key name
+        // reach the state file and fail the credential check.
+        five_hour: {
+          utilization: 12.5,
+          resets_at: "2026-08-08T04:00:00Z",
+          used_tokens: 1234567,
+          limit_tokens: 9876543,
+          window_label: "session",
+          access_token: "must-never-be-copied",
+        },
         seven_day: { utilization: 81, resets_at: "2026-08-12T00:00:00Z" },
         seven_day_sonnet: { utilization: 40, resets_at: "2026-08-12T00:00:00Z" },
         extra_usage: { utilization: 3, spent_cents: 120, limit_cents: 4000 },

@@ -10,6 +10,7 @@ import { readVault, writeVault } from "../scripts/token-vault.mjs";
 import { startMockAnthropic } from "./mock-anthropic.mjs";
 import { windowDidRoll } from "../scripts/window-roll.mjs";
 import { hasConflictMarkers, parseStateFile } from "../scripts/state-file.mjs";
+import { describeFields, probeUsageFields } from "../scripts/usage-fields.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const temporary = await mkdtemp(join(tmpdir(), "usage-monitor-test-"));
@@ -120,6 +121,36 @@ try {
   assert(
     !JSON.stringify(claudeState).includes("test-oauth-token"),
     "claude state contains the bearer token",
+  );
+
+  // The field probe exists to answer one question with the next scheduled
+  // collection instead of another lap of guessing: does the endpoint carry
+  // anything finer than the integer utilization percentages? It must report the
+  // unread numbers, list the unread non-numbers by name only, and drop a
+  // forbidden key entirely — the state file above already passed the sanitizer,
+  // which is the assertion that a bad key name cannot take collection down.
+  const probe = claudeState.field_probe;
+  assert(probe && probe.windows, "field probe was not written");
+  assert(
+    probe.windows.five_hour?.numeric_fields?.used_tokens === 1234567,
+    "field probe did not report the unread numeric field",
+  );
+  assert(
+    probe.windows.five_hour.numeric_fields.utilization === undefined,
+    "field probe reported a field the collector already maps",
+  );
+  assert(
+    probe.windows.five_hour.other_field_names.includes("window_label"),
+    "field probe did not list the unread non-numeric field",
+  );
+  assert(
+    !JSON.stringify(probe).includes("access_token")
+      && !JSON.stringify(probe).includes("must-never-be-copied"),
+    "field probe copied a forbidden key out of the API response",
+  );
+  assert(
+    probe.top_level?.other_field_names?.includes("extra_usage"),
+    "field probe did not describe the payload's own unread fields",
   );
 
   // A credentials.json paste must work as well as a bare token.
@@ -310,6 +341,31 @@ const committedLaps = await readFile(join(root, "state/laps.json"), "utf8");
 assert(!hasConflictMarkers(committedLaps), "state/laps.json contains unresolved conflict markers");
 const parsedLaps = parseStateFile(committedLaps, "state/laps.json");
 assert(Array.isArray(parsedLaps.samples), "state/laps.json has no samples array");
+
+// Field probe, as a pure function. The end-to-end assertions above prove it is
+// wired in; these pin the rules that keep it safe to point at an API response.
+assert(describeFields(null) === null, "describeFields accepted a non-object");
+assert(describeFields({ a: 1 }, ["a"]) === null, "consumed fields were still reported");
+{
+  const d = describeFields({ n: 4, s: "x", nan: Number.NaN, secret_value: 1 });
+  assert(d.numeric_fields.n === 4, "finite number was not kept");
+  assert(d.numeric_fields.nan === undefined, "NaN was kept as a number");
+  assert(d.other_field_names.includes("s"), "string field was not listed by name");
+  assert(d.other_field_names.includes("nan"), "non-finite number was not listed by name");
+  assert(
+    d.numeric_fields.secret_value === undefined && !d.other_field_names.includes("secret_value"),
+    "a forbidden key name survived the filter",
+  );
+}
+{
+  // Nothing unread means nothing written: a quiet response must not add noise.
+  const quiet = probeUsageFields(
+    { five_hour: { utilization: 1, resets_at: "2026-08-09T00:00:00Z" } },
+    ["five_hour"],
+  );
+  assert(quiet === null, "probe wrote a record for a response with no unread fields");
+}
+assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null payload");
 
 console.log("All usage monitor tests passed.");
 

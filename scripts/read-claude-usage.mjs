@@ -4,6 +4,7 @@ import { mkdir, rename, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 
 import { accessTokenFromVault } from "./claude-token.mjs";
+import { probeUsageFields } from "./usage-fields.mjs";
 
 const jsonPath = process.argv[2] ?? "state/claude-usage.json";
 const markdownPath = process.argv[3] ?? "CLAUDE_USAGE.md";
@@ -139,8 +140,21 @@ function buildState(payload) {
     extra_usage_used_percent: payload?.extra_usage
       ? nullableRound(finiteNumber(payload.extra_usage.utilization))
       : null,
+    // Diagnostic, not a measurement anyone acts on yet. Wrapped so that a shape
+    // nobody anticipated can never take hourly collection down with it: this
+    // file is the only source of quota data, and every other decision here
+    // depends on it being written.
+    field_probe: safeFieldProbe(payload),
     recommended_mode: pickMode(remaining),
   };
+}
+
+function safeFieldProbe(payload) {
+  try {
+    return probeUsageFields(payload, WINDOWS.map((w) => w.key));
+  } catch {
+    return null;
+  }
 }
 
 function pickMode(remaining) {
