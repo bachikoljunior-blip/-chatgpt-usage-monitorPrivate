@@ -241,6 +241,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T16:42:26.801Z",
+      "candidate": "free_artifact_door",
+      "kind": "route_change",
+      "mechanism": "Adopt the free-artifact route by writing down the rule that DEFINES it, in a machine rather than in a handoff note. r/gamedev permits free assets and forbids promoting paid ones in the same sentence, so the demo the lane is building opens the door only for as long as it carries no promotional link and no signup wall. That rule currently exists in exactly one place: prose in state/continue.json, which is rewritten every lap. The measured failure mode of this repository is that a decision survives only on surfaces with a reader, so the artifact will arrive and some lap will add a buy-the-full-kit line to it, and the door closes without anybody noticing it was open. This lap gives the rule a reader before the artifact exists. No ETA improvement is claimed: it removes a way the route can be destroyed, which is not the same as moving a number, and route_change is admitted on the cap rather than on a claim.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

@@ -24,6 +24,7 @@ import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/reven
 import { decideVerdict } from "../scripts/gate-verdict.mjs";
 import { constraintDue } from "../scripts/constraint-due.mjs";
 import { evaluateUnlock } from "../scripts/unlock-condition.mjs";
+import { checkFreeArtifact } from "../scripts/check-free-artifact.mjs";
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import {
   checkAddressee, checkRequestsAddressee, copyChanged, diffListing, pasteableStrings,
@@ -1348,6 +1349,60 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     }),
   );
   run(process.execPath, [join(root, "scripts/verify-sanitized-state.mjs"), readable]);
+}
+
+// --- the free artifact stays the thing the venue permits ----------------------
+//
+// The door r/gamedev leaves open is conditional and the condition is in the same
+// sentence as the prohibition: free assets are permitted, promoting paid ones is
+// forbidden. So the demo opens the venue only while it carries no promotional
+// link and no signup wall. Before this block that rule lived once, as prose in
+// state/continue.json, which is rewritten every lap.
+{
+  const clean = "<!doctype html><html><body><canvas id=g></canvas><script>let n=0</script></body></html>";
+  const ok = checkFreeArtifact(clean);
+  assert(ok.present === true && ok.ok === true, `a clean self-contained demo was rejected: ${JSON.stringify(ok.violations)}`);
+
+  // Absence is not failure. The artifact is commissioned on the other quota and
+  // may never arrive; a check that failed on absence would have to be switched off
+  // while the thing it guards is built, and a switched-off check guards nothing.
+  const missing = checkFreeArtifact(null);
+  assert(missing.present === false && missing.ok === true, "an absent artifact was treated as a failure");
+
+  // The specific line a future lap will want to add, and the reason this exists.
+  const promoted = clean.replace("</body>", '<a href="https://gumroad.com/l/kit">Buy the full kit</a></body>');
+  const promo = checkFreeArtifact(promoted);
+  assert(promo.ok === false, "a buy-the-full-kit link passed the check that exists to catch it");
+  assert(promo.violations.some((v) => v.kind === "promotion"), "the promotional link was not reported as promotion");
+  assert(promo.violations.some((v) => v.kind === "external_reference"), "an outbound link was not reported as reaching outside the file");
+
+  const walled = clean.replace("</body>", '<form><input type="email"><button>Sign up to play</button></form></body>');
+  const wall = checkFreeArtifact(walled);
+  assert(wall.ok === false, "a signup wall passed, and 'not locked behind anything' is the quoted rule");
+  assert(wall.violations.some((v) => v.kind === "wall"), "the signup wall was not reported as a wall");
+
+  // Truncation is checked first because a file cut in half passes every other rule
+  // by simply not having reached the offending line yet, and truncation is the
+  // measured failure mode of this transport.
+  const cut = clean.slice(0, clean.length - 30);
+  const truncated = checkFreeArtifact(cut);
+  assert(truncated.ok === false, "a truncated file passed as a playable demo");
+  assert(truncated.violations.some((v) => v.kind === "incomplete"), "truncation was not reported as incomplete");
+
+  // A namespace declaration is not a link: nothing is fetched and no reader is sent
+  // anywhere. Without this the check would fail on ordinary XHTML boilerplate and a
+  // later lap would weaken it for the wrong reason.
+  const ns = '<html xmlns="http://www.w3.org/1999/xhtml"><body>x</body></html>';
+  assert(checkFreeArtifact(ns).ok === true, "an XHTML namespace was mistaken for an outbound link");
+
+  // And the CLI agrees with the module, since the CLI is what CI runs.
+  run(process.execPath, [join(root, "scripts/check-free-artifact.mjs")]);
+  const promoFile = join(temporary, "promo-demo.html");
+  await writeFile(promoFile, promoted);
+  const refusedDemo = run(process.execPath, [join(root, "scripts/check-free-artifact.mjs"), promoFile], {}, {
+    allowFailure: true,
+  });
+  assert(refusedDemo.status !== 0, "the CLI exited 0 on an artifact that violates the rule opening the venue");
 }
 
 console.log("All usage monitor tests passed.");

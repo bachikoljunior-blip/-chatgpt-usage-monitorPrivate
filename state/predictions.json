@@ -557,6 +557,30 @@
       ],
       "falsified_if": "Any of these. state/gumroad-history.json still holds one reading after 18:37Z — then the append-and-commit path is broken and the whole question was moot, which is worth knowing separately. OR the two candidates open on the zero series anyway — then the predicate change did not take and the fix shipped the exact defect it named. OR the not_actionable_reason carries no channel values — then the condition is evaluated but still unreadable, which was half the original complaint. Note what this prediction does NOT claim: that anything gets closer to revenue. Nothing here sells anything. It claims only that a stated unlock now tells the truth, and a reader who wants the revenue question should read the 2026-08-13 tag prediction instead.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-09.free-artifact-rule-outlives-the-note",
+      "made_at": "2026-08-09T16:45:00Z",
+      "claim": "The rule that opens the only owner-free venue was one lap away from being lost. r/gamedev permits free assets and forbids promoting paid ones in one sentence, so the demo opens the door only while it carries no promotional link, no signup or email wall, and no outbound reference. That rule existed in exactly one place — a do_not line in state/continue.json, which is rewritten every lap — and the thing it forbids is the single most natural edit anyone would make to a free demo of a paid kit. Claimed: giving the rule a reader BEFORE the artifact exists is what makes it survive the handoff. Second and separable claim: the honest gap was misstated — r/gamedev eligibility was already measured as a number (48h account age) and sat unread on a venue row marked postable_today false for an unrelated reason, so the remaining unknowns are the artifact and whether a Reddit account exists, not eligibility.",
+      "metric": "Read from origin/main. (a) scripts/check-free-artifact.mjs exists and tests/run-tests.mjs fails when its promotion, wall or truncation assertions are removed — the negative cases are inside the suite, so a suite that passes with them deleted does not count. (b) If assets/free-demo/index.html arrives before the judge date, the check runs against the real artifact and its verdict is recorded, pass or fail; a failing verdict on a real artifact CONFIRMS this prediction rather than falsifying it, because catching that edit is the whole purpose. (c) No later lap re-asks whether r/gamedev eligibility is known, and no seventh venue survey is commissioned — read from codex/INBOX.md task ids and state/continue.json.",
+      "baseline": {
+        "measured_at": "2026-08-09T16:44:00Z",
+        "places_the_rule_was_written": 1,
+        "of_which_machine_readable": 0,
+        "free_artifact_present": false,
+        "venues_surveyed": 6,
+        "venues_with_eligibility_established_as_a_number": 1,
+        "venue_that_has_it": "r/gamedev — 48 hours minimum account age",
+        "what_the_honest_gap_text_said": "nobody has checked r/gamedev's posting eligibility as a number"
+      },
+      "judge_on": "2026-08-12",
+      "judge_deadline": "2026-08-16",
+      "concurrent_changes": [
+        "Same session, earlier commit b1f0224: unlock conditions became machine-evaluated. Unrelated mechanism, same underlying defect class — a decision that only exists on a surface nothing reads. If both hold, that is one finding twice, not two findings.",
+        "The artifact itself is commissioned on the Codex lane as task .q and judged separately by 2026-08-09.free-artifact-door-gets-an-artifact. If the lane never delivers, (b) here is simply not measurable and must be recorded as such rather than scored as a pass."
+      ],
+      "falsified_if": "A later lap adds a promotional link or a signup wall to the artifact and it reaches origin/main anyway — that would mean the reader exists and is not in the path that matters. OR the check is weakened or excused rather than the artifact fixed, without state/constraints.json free_artifact_door recording that the route changed. OR a seventh venue survey is commissioned, which would mean the narrowing of the gap did not reach the side that picks work. Note what this does NOT claim: that anything sells. Nothing here reaches a buyer, and the door is still shut on two named unknowns.",
+      "outcome": null
     }
   ]
 }

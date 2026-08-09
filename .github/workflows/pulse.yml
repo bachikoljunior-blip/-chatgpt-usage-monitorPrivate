@@ -103,6 +103,10 @@ jobs:
           node scripts/check-predictions.mjs || rc=1
           node scripts/check-zerobase.mjs || rc=1
           node scripts/check-wiring.mjs || rc=1
+          # The free artifact arrives by a lane commit, not by a lap running tests,
+          # and the rule that opens the venue can be broken by any later edit to it.
+          # Silent while the file is absent.
+          node scripts/check-free-artifact.mjs || rc=1
           if [ "$rc" != "0" ]; then
             echo "::error::something is owed or the zero-base round has stalled — see the output above"
           fi
