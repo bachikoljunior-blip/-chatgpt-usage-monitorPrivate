@@ -52,8 +52,22 @@ const PROMOTION_MARKERS = [
   /\bfull version\b/i,
   /購入/,
   /有料/,
+  /有償/,
   /販売/,
+  /製品版/,
+  /完全版/,
+  /\bstore\b/i,
+  // 2026-08-09: 購入 was here and 買 was not, so フルキットを買う passed the guard
+  // on the venue whose rule the whole route depends on. A false negative here is
+  // the expensive direction — it costs the venue, not a rewrite — and the single
+  // character is what every promotional Japanese verb is built from: 買う, 買える,
+  // お買い得. 売 covers the other side: 販売 was already listed, 発売 and 売る were
+  // not. Both are broad enough to hit ordinary shop vocabulary in a game, and that
+  // is the intended trade: the demo says 交換 throughout for exactly this reason.
+  /買/,
+  /売/,
   /￥\s*\d|¥\s*\d|\$\s*\d/,
+  /\d\s*円/,
 ];
 
 const WALL_MARKERS = [

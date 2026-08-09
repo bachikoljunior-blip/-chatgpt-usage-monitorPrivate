@@ -38,8 +38,6 @@ import { readFileSync, existsSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
 
 export const PUBLIC_URL = "https://bachikoljunior-blip.github.io/O/hoshikuzu/";
-export const RAW_URL =
-  "https://raw.githubusercontent.com/bachikoljunior-blip/O/main/hoshikuzu/index.html";
 export const LOCAL_PATH = "assets/free-demo/index.html";
 export const STATE_PATH = "state/public-host.json";
 
@@ -114,28 +112,30 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const local = localExists ? readFileSync(LOCAL_PATH) : null;
   const localSha = local ? sha256(local) : null;
 
-  // The rendered page and the raw blob are fetched separately on purpose. The
-  // raw blob is what gets compared; the page url is what a stranger clicks, and
-  // a raw blob that matches while the page 404s is not a public home.
+  // Compare the PAGE, not the raw blob. The first version of this compared
+  // raw.githubusercontent.com, on the reasoning that the blob is the file and the
+  // page is the click. That was wrong in the expensive direction and it showed up
+  // within an hour: after the artifact was edited and republished, the page served
+  // the new bytes immediately while raw served a cached copy for minutes, so the
+  // check reported drift about a page that was already correct. A false `drifted`
+  // writes demo_matches_repo_copy false, which shuts the r/gamedev row. The page is
+  // what a stranger opens, so the page is what has to match.
   const page = localExists ? await fetchRaw(PUBLIC_URL) : { ok: false, status: null, body: null };
-  const raw = localExists ? await fetchRaw(RAW_URL) : { ok: false, status: null, body: null };
 
   const verdict = publishedDemoVerdict({
     localExists,
     localSha,
-    reachable: Boolean(page.ok && raw.ok && raw.body),
+    reachable: Boolean(page.ok && page.body),
     httpStatus: page.status,
-    remoteSha: raw.body ? sha256(raw.body) : null,
+    remoteSha: page.body ? sha256(page.body) : null,
   });
 
   const report = {
     checked_at: new Date().toISOString(),
     public_url: PUBLIC_URL,
-    raw_url: RAW_URL,
     repo_file: LOCAL_PATH,
     page_http_status: page.status,
-    raw_http_status: raw.status,
-    published_bytes: raw.body ? raw.body.length : null,
+    published_bytes: page.body ? page.body.length : null,
     local_bytes: local ? local.length : null,
     ...verdict,
   };

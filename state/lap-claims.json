@@ -337,6 +337,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T18:37:18.148Z",
+      "candidate": "free_artifact_door",
+      "kind": "prerequisite",
+      "mechanism": "Close the false NEGATIVE the previous lap named and left: check-free-artifact catches 購入 but not 買, so a promotional line reading フルキットを買う passes the guard today. That guard is the rule that opens r/gamedev, and as of this session's first lap the venue's hosting blocker is gone - the demo is live at a public URL - so the guard now protects a route that is actually reachable rather than a hypothetical one. The file's own comment states the asymmetry: a false positive costs one lap a rewrite, a false negative costs the only open venue. So the markers widen and the ARTIFACT gets rewritten to match, which is the precedent set when buy became trade and 購入 became 交換. No ETA claim: this changes what the guard catches, not what any channel earns.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

@@ -1378,6 +1378,20 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(promo.violations.some((v) => v.kind === "promotion"), "the promotional link was not reported as promotion");
   assert(promo.violations.some((v) => v.kind === "external_reference"), "an outbound link was not reported as reaching outside the file");
 
+  // The same line in Japanese, with no link at all — which is what actually gets
+  // typed, and what passed the guard until 2026-08-09. 購入 was a marker and 買 was
+  // not, so フルキットを買う walked straight through the check on the venue whose
+  // rule the entire free-artifact route depends on. No external_reference to fall
+  // back on here: if the promotion marker misses, nothing catches it.
+  const promotedJa = clean.replace("</body>", "<p>フルキットを買う</p></body>");
+  const promoJa = checkFreeArtifact(promotedJa);
+  assert(promoJa.ok === false, "a Japanese buy-the-full-kit line passed the promotion check");
+  assert(promoJa.violations.every((v) => v.kind === "promotion"), "the Japanese promotion line was caught by something other than the promotion markers, so the markers still have the hole");
+
+  // A price with no verb at all is still promotion, and 円 is how it is written here.
+  const priced = clean.replace("</body>", "<p>フルキットは 2500 円</p></body>");
+  assert(checkFreeArtifact(priced).ok === false, "a yen price passed the promotion check");
+
   const walled = clean.replace("</body>", '<form><input type="email"><button>Sign up to play</button></form></body>');
   const wall = checkFreeArtifact(walled);
   assert(wall.ok === false, "a signup wall passed, and 'not locked behind anything' is the quoted rule");
