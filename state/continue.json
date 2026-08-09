@@ -38,5 +38,7 @@
   "owner_requests_this_lap": 0,
   "predecessor_session_id": "session_01EUJYgAaJiSTZeoJzEM815g",
   "archive_policy": "A successor archives its predecessor at startup, and only when get_session reports SESSION_STATUS_IDLE. RUNNING means look again later, not never again. A permission refusal means try again later — it is not evidence the session cannot be archived.",
-  "status": "ok"
+  "status": "ok",
+  "successor_session_id": "session_01SaTLjvQCzTMGWh3r5FiCEv",
+  "successor_note": "Spawned 11:16:53Z with source_url + source_revision=main, tagged revenue-loop-chain. Status at creation was PENDING, which is not evidence it runs — the previous handoff recorded a successor that then sat in REQUIRES_ACTION for an hour. Re-read at 11:17:15Z: SESSION_STATUS_RUNNING, connected. That is motion, not just presence — checked because the create call returning PENDING proves nothing."
 }
