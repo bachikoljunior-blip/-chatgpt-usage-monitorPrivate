@@ -241,6 +241,23 @@
       "eta_effect_if_lifted": "medium: it prices the whole efficiency category, which is otherwise either last by rule or admitted on a hunch.",
       "do_not_start_before": "The rate needs at least one ETA movement to calibrate against. With the history at one row there is nothing to divide by, and a calibration invented before the first movement is an estimate wearing a measurement's clothes.",
       "how_to_measure": "Once the ETA has moved at least once, count laps between movements from state/eta-history.json and state/lap-claims.json."
+    },
+    {
+      "id": "listing_has_no_cover_image",
+      "claim": "MEASURED, NOT INFERRED: the priced product has covers: [], main_cover_id: null, thumbnail_url: null and preview_url: null. Gumroad Discover browse is a visual grid of tiles, so the product now carries the eight tags that put it IN the index while presenting a blank tile to everyone the index shows it to. This is the immediate next blocker on the path opened the same day, and it was invisible until the tags made the path real: an untagged product is nowhere, and being nowhere hides the fact that it also has no picture.",
+      "evidence": "GET /v2/products 2026-08-09, the same call that measured tags: [] before they were set. All four image fields are empty or null on the single product; file_info reports only Size 31.2 KB. Nothing here is a self-report - these are the values the storefront serves.",
+      "measured_at": null,
+      "recheck_after": "2026-08-10",
+      "blocks": [
+        "no_standing_where_buyers_gather"
+      ],
+      "eta_effect_if_lifted": "unknown in days, and the honest reason is that no channel has a derivable rate yet. Bounded claim only: it is a precondition for the tags added this day to do anything in Discover BROWSE. It is not a precondition for Discover SEARCH, where a text match can surface a tile regardless, so this does not retroactively make the tags worthless.",
+      "what_is_not_known": "WHETHER THE API CAN SET IT AT ALL. Gumroad v2 documents no cover-upload endpoint, and this was deliberately NOT probed by firing guesses at the live published product: a wrong write here is visible to every buyer, unlike a wrong read. So the capability is unmeasured, and it must not be recorded as absent - state/gumroad-capabilities.json made exactly that mistake in the other direction by having only ever probed create, which is why editing was believed impossible until it was tried and worked.",
+      "the_owner_action_is_not_yet_established": "Do not raise this as an owner request until the API question is settled. RUNBOOK gate 1 requires actually attempting the automation first, and scripts/render-cover.mjs already renders an image locally with no network, so even in the worst case the owner would upload a file we produced rather than create one - which is a different and much smaller request than it looks like now.",
+      "note": "Recorded rather than fixed on purpose. The lap that measured this had already made its one change, and a second write to the same live storefront in the same lap would make the two impossible to tell apart in state/predictions.json 2026-08-09.tagging-puts-the-listing-in-discover.",
+      "measured_at_is_null_on_purpose": "Follows the precedent set by no_standing_where_buyers_gather. The BLANK TILE is measured and sits in evidence with the call that measured it. What is unmeasured is OUR side: whether this environment can set a cover through the API at all. Dating measured_at would file this as a settled fact and drop it out of the candidate list, when the actionable half has not been attempted once. Do not backfill it with the GET date - that would turn we never tried into we tried and could not.",
+      "measure_via": "here",
+      "actionable_now": true
     }
   ]
 }
