@@ -79,7 +79,8 @@
     "premise": "structural_insight above: the fast options are fast because they borrow an existing marketplace's search demand instead of building an audience.",
     "what_two_surveys_found": "Borrowed demand came with an occupant. In both markets the specific complaint the estimate rested on was already served — by the platform itself plus free extensions (VS Code), and by a free plugin at 800+ installs whose paid tier is exactly the missing feature (WordPress). Monetisation was confirmed real in both. Speed was not: neither survey could find a single case of first yen from directory traffic alone without a pre-existing list, and the one same-day sale on record had a mailing list behind it.",
     "implication_if_it_holds": "'Borrows existing search demand' and 'reaches a buyer within weeks from zero' may not be satisfiable together — a marketplace with enough traffic to borrow has had time to grow an incumbent for any complaint specific enough to charge for. If the third survey lands the same way, the next zero-base round should be told this axis failed twice rather than being allowed to rediscover it.",
-    "status": "two of two checked; not yet enough to call. npm_pypi_cli_pro is the next test of the same axis.",
-    "decide_after": "the third survey"
+    "status": "two of two checked; not yet enough to call.",
+    "next_test_of_this_axis": "npm_pypi_cli_pro — package search is borrowed marketplace demand, so it tests the same premise. Note it is NOT the next candidate to be surveyed: with wordpress_plugin_pro demoted, the top of state/eta.json is maintained_data_or_api, whose demand does not come from a marketplace at all. So the next survey tests a different premise, and this one stays open until npm_pypi_cli_pro is reached.",
+    "decide_after": "npm_pypi_cli_pro is surveyed, not merely after a third survey of anything"
   }
 }

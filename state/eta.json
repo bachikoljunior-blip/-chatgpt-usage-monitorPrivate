@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T09:44:13.542Z",
+  "fetched_at": "2026-08-09T09:54:26.817Z",
   "ranking": "candidates are sorted by estimated days to first yen (conservative end), actionable ones first",
   "target_yen_per_month": 200000,
   "idle_eta_days": null,
@@ -39,19 +39,6 @@
     }
   ],
   "candidates": [
-    {
-      "kind": "zero_base_option",
-      "id": "wordpress_plugin_pro",
-      "why": "borrows the plugin directory's existing search traffic; free version funnels to a paid Pro",
-      "owner_actions": "1 initial + 0-1 monthly",
-      "days_to_first_yen_estimate": "7-21",
-      "estimate_not_measurement": true,
-      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
-      "refuted": null,
-      "actionable_now": true,
-      "eta_effect_days": 21,
-      "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 21 days at the conservative end (estimate, not measured)"
-    },
     {
       "kind": "zero_base_option",
       "id": "maintained_data_or_api",
@@ -132,6 +119,27 @@
       "actionable_now": true,
       "eta_effect_days": 14,
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 14 days at the conservative end (estimate, not measured)"
+    },
+    {
+      "kind": "zero_base_option",
+      "id": "wordpress_plugin_pro",
+      "why": "borrows the plugin directory's existing search traffic; free version funnels to a paid Pro",
+      "owner_actions": "1 initial + 0-1 monthly",
+      "days_to_first_yen_estimate": "7-21",
+      "estimate_not_measurement": true,
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "refuted": {
+        "at": "2026-08-09T09:51:55Z",
+        "by": "codex-loop (codex/outbox/2026-08-09.e.md)",
+        "claim_tested": "first yen within 7-21 days, borrowing the WordPress plugin directory's search traffic",
+        "finding": "The complaint is real and sourced — a weekly production cap shared across several products, resetting automatically — with three independent posts (WordPress.org support thread, r/Wordpress 2020-10-05, r/woocommerce 2020-02-24), and WooCommerce core does not provide it. But it is already occupied: Order Limit for WooCommerce ships the free version at 800+ active installs (4.2, 13 reviews, updated 2 months ago) and puts the store-wide weekly cap with automatic reset in its Pro at USD 49/year, and WPC Shared Stock (50+ installs, updated 7 days ago) already covers the shared-stock half. Monetisation is real and confirmed with sources (Order Limit Pro USD 49/yr; Independent Analytics Pro USD 49-199/yr, licence keys). What could not be found is any case of first yen reached on new directory traffic alone: the one same-day sale on record (Independent Analytics) launched to an existing user base and an announcement post, and the counter-example (Gato GraphQL) took about 2.5 months.",
+        "verdict": "does not meet the 7-21 day claim as stated",
+        "sources_in": "codex/outbox/2026-08-09.e.md",
+        "not_refuted": "that WordPress plugins can be sold, or that this complaint exists. Only this candidate's speed from a standing start with no list."
+      },
+      "actionable_now": true,
+      "eta_effect_days": 21,
+      "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 21 days at the conservative end (estimate, not measured)"
     },
     {
       "kind": "efficiency",
