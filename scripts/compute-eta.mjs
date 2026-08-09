@@ -60,6 +60,13 @@ const [
   readStateJson("state/owner-requests.json", { preferLocal }),
 ]);
 
+// Measured separately because it is the only first-party evidence about the
+// findable_surface_at_scale route. The refutation that candidate already carries
+// came from a survey of other people's cases; this is our own ten pages.
+const { value: findableSurface } = await readStateJson("state/findable-surface.json", {
+  preferLocal,
+});
+
 const channels = [];
 
 // --- Gumroad ---------------------------------------------------------------
@@ -274,6 +281,27 @@ if (zerobase?.verdict === "adopt_for_next_test") {
       // because the side that picks work reads this file — a refutation the
       // picker never sees is a refutation that changes nothing.
       refuted: o.refuted ?? null,
+      // The route says "many individually findable pages". Ten already exist and
+      // are live. Whether any of them is FINDABLE is a measurement, and until
+      // 2026-08-09 nobody had taken it — the candidate was ranked on the word,
+      // and refuted on somebody else's case studies. This attaches our own.
+      measured_surface:
+        o.id === "findable_surface_at_scale" && findableSurface
+          ? {
+              published_count: findableSurface.published_count ?? null,
+              pages_found_by_search: findableSurface.pages_found_by_search ?? null,
+              verdict: findableSurface.verdict ?? null,
+              measured_at: findableSurface.fetched_at ?? null,
+              what_it_settles:
+                findableSurface.pages_found_by_search === 0
+                  ? "Not a shortage of pages. Ten serve 200 and a search index returned none of " +
+                    "them, so page COUNT is not the binding term — the missing step is an inbound " +
+                    "path from a surface that is already crawled. Building more pages buys nothing " +
+                    "until that step exists."
+                  : "See state/findable-surface.json.",
+              source: "state/findable-surface.json",
+            }
+          : null,
     });
   }
 }
@@ -705,6 +733,15 @@ for (const c of channels) {
 console.log("candidates:");
 for (const c of candidates) {
   console.log(`  [${c.kind}] ${c.id} (owner actions: ${c.owner_actions}) — ${c.why}`);
+  // Printed, not just written into state/eta.json: a lap picking work reads this
+  // list, and a measurement the picker never sees changes nothing.
+  if (c.measured_surface) {
+    console.log(
+      `      MEASURED (${c.measured_surface.source}): ${c.measured_surface.published_count} pages published, ` +
+        `${c.measured_surface.pages_found_by_search ?? "unknown"} found by search — ${c.measured_surface.verdict}`,
+    );
+    console.log(`      what that settles: ${c.measured_surface.what_it_settles}`);
+  }
   if (c.success_test) console.log(`      succeeds if: ${c.success_test}`);
   if (c.not_success) console.log(`      NOT success: ${c.not_success}`);
   if (c.owner_request) {

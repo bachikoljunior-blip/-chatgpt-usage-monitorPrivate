@@ -395,6 +395,46 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
     // measure" lead to different decisions, and one of them is not a diagnosis.
     throw new Error("itch state reports error but still carries a game_count");
   }
+} else if (Array.isArray(state.pages) && state.published_count !== undefined) {
+  // Findable-surface measurement. The one thing worth enforcing here is the
+  // distinction the file exists for: published (a 200 to someone who has the url)
+  // is not findable (a search index handing the url to someone who does not).
+  if (!["ok", "error"].includes(state.status)) {
+    throw new Error("findable-surface state has an invalid status");
+  }
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at)) {
+    throw new Error("findable-surface state has no valid fetched_at timestamp");
+  }
+  // null means nobody has run a search; a number means somebody did and this is
+  // what came back. Collapsing them turns "we never looked" into "we looked and
+  // found nothing", which is the difference between an open question and a
+  // finding — the same error the sales and itch branches above refuse.
+  if (state.pages_found_by_search !== null && !Number.isFinite(state.pages_found_by_search)) {
+    throw new Error("findable-surface state has a pages_found_by_search that is neither null nor a number");
+  }
+  if (!Array.isArray(state.search_index_observations)) {
+    throw new Error("findable-surface state has no search_index_observations array");
+  }
+  if (state.pages_found_by_search !== null && state.search_index_observations.length === 0) {
+    throw new Error("findable-surface state reports a search count with no observation behind it");
+  }
+  for (const o of state.search_index_observations) {
+    if (!/^\d{4}-\d{2}-\d{2}T/.test(o.observed_at ?? "")) {
+      throw new Error("a search observation has no valid observed_at timestamp");
+    }
+    // The query verbatim, and what limits it. A zero from an instrument pointed
+    // the wrong way reads identically to a zero from a good one unless both are
+    // written down next to each other.
+    if (typeof o.query !== "string" || !o.query) {
+      throw new Error("a search observation records no query");
+    }
+    if (typeof o.caveat !== "string" || !o.caveat) {
+      throw new Error("a search observation records no caveat limiting it");
+    }
+    if (!Number.isFinite(o.hits_on_our_surface)) {
+      throw new Error("a search observation records no numeric hits_on_our_surface");
+    }
+  }
 } else {
   if (!["ok", "error"].includes(state.status)) {
     throw new Error("usage state has an invalid schema");

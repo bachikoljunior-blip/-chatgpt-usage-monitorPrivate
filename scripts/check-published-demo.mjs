@@ -166,7 +166,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         "reads demo_matches_repo_copy. It is the half of that row that asks whether a link exists to give the venue. " +
         "The other half is the artifact itself, and the account question is ANDed in by scripts/venue-readiness.mjs.",
       how_the_host_was_found:
-        "The account owns nine public repositories and GitHub Pages already serves all nine. " +
+        "The account owns TEN public repositories and GitHub Pages already serves all ten. " +
+        "This said nine until 2026-08-09T20:05Z, when list_repos was re-run: 14 repositories, " +
+        "10 public. The tenth answers 301 rather than 200, which is the likeliest way a " +
+        "page-by-page probe counted nine — and following that redirect found a custom domain " +
+        "nobody here had recorded. See state/findable-surface.json. " +
         "*.github.io answers from inside this container; reddit.com returns 403 and headless Chromium here " +
         "cannot complete TLS to the public internet at all. Measured 2026-08-09, recorded as " +
         "constraints public_host_via_github_pages.",

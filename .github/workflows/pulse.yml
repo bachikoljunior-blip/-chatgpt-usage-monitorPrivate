@@ -52,6 +52,9 @@ jobs:
           # the step — drift in the demo must not cost the ETA refresh, and the
           # reporting step below is what turns it red.
           node scripts/check-published-demo.mjs --write || echo "published demo check reported a problem; the reporting step fails on it"
+          # Same shape, and deliberately allowed to fail here too: this one goes red
+          # when a search observation gets stale, which must not cost the ETA refresh.
+          node scripts/measure-findable-surface.mjs --write || echo "findable-surface check reported a problem; the reporting step fails on it"
 
       # fail closed, same as the collectors: a state file that failed its check
       # must never reach main.
@@ -62,6 +65,7 @@ jobs:
           node scripts/verify-sanitized-state.mjs state/heartbeat.json
           node scripts/verify-sanitized-state.mjs state/eta-history.json
           node scripts/verify-sanitized-state.mjs state/public-host.json
+          node scripts/verify-sanitized-state.mjs state/findable-surface.json
 
       - name: Commit current state
         if: steps.compute.outcome == 'success' && steps.verify.outcome == 'success'
@@ -80,10 +84,12 @@ jobs:
             node scripts/verify-sanitized-state.mjs state/eta-history.json || exit 1
             node scripts/check-published-demo.mjs --write || echo "published demo check reported a problem"
             node scripts/verify-sanitized-state.mjs state/public-host.json || exit 1
+            node scripts/measure-findable-surface.mjs --write || echo "findable-surface check reported a problem"
+            node scripts/verify-sanitized-state.mjs state/findable-surface.json || exit 1
             # The history has to be staged here or the scheduled run computes a
             # transition and then throws it away on the next reset --hard, leaving a
             # file that only ever records whatever a lap happened to run by hand.
-            git add state/eta.json state/heartbeat.json state/eta-history.json state/public-host.json
+            git add state/eta.json state/heartbeat.json state/eta-history.json state/public-host.json state/findable-surface.json
             if git diff --cached --quiet; then
               echo "no change"
               exit 0
@@ -125,6 +131,10 @@ jobs:
           # Fails when a surveyed venue is carried as a route without saying whether
           # we can post from it. null is a legitimate answer; omission is not.
           node scripts/venue-readiness.mjs || rc=1
+          # Published is not findable. This turns red when a page stops serving, or
+          # when the only measurement of whether anything can FIND our public surface
+          # has gone stale — which is the state it silently sat in for months.
+          node scripts/measure-findable-surface.mjs || rc=1
           if [ "$rc" != "0" ]; then
             echo "::error::something is owed or the zero-base round has stalled — see the output above"
           fi

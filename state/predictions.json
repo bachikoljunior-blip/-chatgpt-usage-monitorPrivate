@@ -661,6 +661,31 @@
       ],
       "falsified_if": "any marker added here is deleted to make a file pass, rather than the file being rewritten. OR the suite passes with /買/ removed. Note what this does NOT claim: that r/gamedev is postable, that anyone posts, or that the markers are complete — 完全 and 限定 and ストア are not covered, and the next audit should assume more holes rather than fewer.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-09.published-is-not-findable",
+      "made_at": "2026-08-09T20:10:00Z",
+      "claim": "Ten public pages have been live on GitHub Pages for months — including one on a registered custom domain with its own meta description — and four search queries returned none of them. The claim being registered is causal, not just descriptive: they are invisible because nothing that is already crawled links to them, not because they are too few, too small, or too new. Seven of the ten READMEs do not contain the live url, the user root is 404 so there is no hub page, and the only inbound candidates are repository pages for an account with no reach. So: absent any inbound-link or submission work, pages_found_by_search stays 0. If it becomes non-zero with no such work done, this model of WHY is wrong and 'wait longer' was the right answer all along — which would be worth much more than being right here.",
+      "metric": "state/findable-surface.json pages_found_by_search, read from origin/main. The observations behind it must be appended by a lap running a search tool and recording the query verbatim; scripts/measure-findable-surface.mjs preserves the array and never regenerates it. Judge by re-running at least the bare-domain query 'cookiestrateger.com', which is the one probe in the set with no confounding meaning.",
+      "baseline": {
+        "measured_at": "2026-08-09T20:01:17Z",
+        "public_repos": 10,
+        "pages_serving_200": 10,
+        "pages_found_by_search": 0,
+        "search_queries_run": 4,
+        "readmes_linking_their_own_page": 3,
+        "owner_root_http_status": 404,
+        "custom_domains_known_before_today": 0,
+        "custom_domains_known_now": 1
+      },
+      "judge_on": "2026-08-23",
+      "judge_deadline": "2026-09-06",
+      "concurrent_changes": [
+        "Same lap: scripts/compute-eta.mjs now prints the measurement on the findable_surface_at_scale candidate. That changes what a lap READS, not what a crawler sees, so it cannot move this metric — but if a later lap does inbound-link work because of it, that work is the confound and must be named at judging.",
+        "Nothing else on this lap touches any public page. assets/free-demo/index.html and the published copy were not edited."
+      ],
+      "falsified_if": "pages_found_by_search is non-zero at the judge date with no inbound-link, sitemap, hub-page or submission work in the log. ALSO falsified, in the more useful direction, if a lap does that work and the number still does not move — in which case the missing term is not links either, and the route needs an answer this lap did not have. What this does NOT claim: that the pages are absent from every index everywhere. Only one US-only index was queried; Google and Bing are unreachable from this container.",
+      "outcome": null
     }
   ]
 }

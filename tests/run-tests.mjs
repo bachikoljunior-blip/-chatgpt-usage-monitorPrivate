@@ -26,6 +26,7 @@ import { constraintDue } from "../scripts/constraint-due.mjs";
 import { evaluateUnlock } from "../scripts/unlock-condition.mjs";
 import { checkFreeArtifact } from "../scripts/check-free-artifact.mjs";
 import { publishedDemoVerdict } from "../scripts/check-published-demo.mjs";
+import { findableSurfaceVerdict } from "../scripts/measure-findable-surface.mjs";
 import { venueReadiness } from "../scripts/venue-readiness.mjs";
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import {
@@ -1459,6 +1460,73 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   });
   assert(absent.ok === true, "the check failed while the artifact does not exist yet");
   assert(absent.matches === null, "an absent artifact was reported as a settled match");
+}
+
+// --- published is not findable, and nobody-looked is not zero -----------------
+//
+// The loop kept ten live public pages for months while ranking "many individually
+// findable pages" as a route it still had to BUILD. Two different collapses did
+// that, and both are asserted here.
+//
+// The first is published vs findable: a 200 to someone holding the url says
+// nothing about whether anyone without the url can arrive. check-published-demo
+// reports green on exactly that weaker property, correctly, which is why a second
+// instrument was needed rather than a stricter reading of the first.
+//
+// The second is the one that would quietly rot: an absent observation must read
+// as UNKNOWN, never as zero. "No search index returned our pages" is a finding
+// about the route. "Nobody has run a search" is a gap in our instruments. They
+// point at opposite next actions, and only one of them is evidence.
+{
+  const now = new Date("2026-08-09T20:00:00Z");
+  const tenServing = Array.from({ length: 10 }, (_, i) => ({ repo: `r${i}`, serving: true }));
+
+  const neverLooked = findableSurfaceVerdict({ pages: tenServing, searchObservations: [], now });
+  assert(
+    neverLooked.pages_found_by_search === null,
+    "an unmeasured findable surface was reported as zero rather than unknown",
+  );
+  assert(neverLooked.ok === false, "never having looked passed the check silently");
+
+  const measuredZero = findableSurfaceVerdict({
+    pages: tenServing,
+    searchObservations: [{ observed_at: "2026-08-09T19:00:00Z", hits_on_our_surface: 0 }],
+    now,
+  });
+  assert(
+    measuredZero.pages_found_by_search === 0,
+    "a recorded zero was not carried through as a measurement",
+  );
+  assert(
+    measuredZero.verdict === "published_but_not_findable",
+    "ten serving pages with no search hits were not reported as published-but-not-findable",
+  );
+  // A finding is not an error. This one is the point of the file, so it must not
+  // hold the workflow red forever — only staleness and an outage do that.
+  assert(measuredZero.ok === true, "a measured zero was treated as a broken check");
+
+  const stale = findableSurfaceVerdict({
+    pages: tenServing,
+    searchObservations: [{ observed_at: "2026-06-01T00:00:00Z", hits_on_our_surface: 0 }],
+    now,
+  });
+  assert(stale.verdict === "observation_stale", "a months-old search reading still counted as current");
+  assert(stale.ok === false, "a stale observation passed as a live measurement");
+
+  const down = findableSurfaceVerdict({
+    pages: [...tenServing.slice(1), { repo: "r0", serving: false }],
+    searchObservations: [{ observed_at: "2026-08-09T19:00:00Z", hits_on_our_surface: 0 }],
+    now,
+  });
+  assert(down.verdict === "page_stopped_serving", "a page that stopped serving was not reported");
+  assert(down.published_count === 9, "the published count did not drop when a page went down");
+
+  const found = findableSurfaceVerdict({
+    pages: tenServing,
+    searchObservations: [{ observed_at: "2026-08-09T19:00:00Z", hits_on_our_surface: 3 }],
+    now,
+  });
+  assert(found.verdict === "findable", "search hits on our own pages were not recognised");
 }
 
 // --- a venue is not a route until we can post from it -------------------------

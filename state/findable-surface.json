@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-09T20:01:17.880Z",
+  "enumerated_at": "2026-08-09T20:05:00Z",
+  "enumerated_by": "list_repos (limit 100, has_more false): 14 repositories, 10 public, all can_push",
+  "owner_root_http_status": 404,
+  "published_count": 10,
+  "pages_found_by_search": 0,
+  "verdict": "published_but_not_findable",
+  "why": "10 pages serve 200 and a search index returned none of them across 4 recorded queries. Publishing is not distribution here, measured on our own assets rather than inferred from someone else's case study.",
+  "pages": [
+    {
+      "repo": "Simple-browser-cookie-clicker-game",
+      "url": "https://bachikoljunior-blip.github.io/Simple-browser-cookie-clicker-game/",
+      "http_status": 301,
+      "redirects_to": "http://cookiestrateger.com/",
+      "landing_http_status": 200,
+      "title": "クッキーストラテジャー｜無料ブラウザで遊べる放置クリッカー×ノルマ管理ゲーム",
+      "bytes": 9792,
+      "readme_links_page": false,
+      "serving": true
+    },
+    {
+      "repo": "O",
+      "url": "https://bachikoljunior-blip.github.io/O/",
+      "http_status": 200,
+      "redirects_to": null,
+      "landing_http_status": 200,
+      "title": "アエテリア戦記 — オープンワールドRPG",
+      "bytes": 1000,
+      "readme_links_page": false,
+      "serving": true
+    },
+    {
+      "repo": "J",
+      "url": "https://bachikoljunior-blip.github.io/J/",
+      "http_status": 200,
+      "redirects_to": null,
+      "landing_http_status": 200,
+      "title": "黒鉄の刻印 — KUROGANE",
+      "bytes": 4850,
+      "readme_links_page": false,
+      "serving": true
+    },
+    {
+      "repo": "game",
+      "url": "https://bachikoljunior-blip.github.io/game/",
+      "http_status": 200,
+      "redirects_to": null,
+      "landing_http_status": 200,
+      "title": "LUMINA — ルミナ",
+      "bytes": 7522,
+      "readme_links_page": false,
+      "serving": true
+    },
+    {
+      "repo": "game2",
+      "url": "https://bachikoljunior-blip.github.io/game2/",
+      "http_status": 200,
+      "redirects_to": null,
+      "landing_http_status": 200,
+      "title": "KAGEROU 陽炎",
+      "bytes": 5239,
+      "readme_links_page": true,
+      "serving": true
+    },
+    {
+      "repo": "exist-debug",
+      "url": "https://bachikoljunior-blip.github.io/exist-debug/",
+      "http_status": 200,
+      "redirects_to": null,
+      "landing_http_status": 200,
+      "title": "クッキーストラテジャー｜無料ブラウザで遊べるクッキークリッカー系放置ゲーム",
+      "bytes": 653254,
+      "readme_links_page": false,
+      "serving": true
+    },
+    {
+      "repo": "Q",
+      "url": "https://bachikoljunior-blip.github.io/Q/",
+      "http_status": 200,
+      "redirects_to": null,
+      "landing_http_status": 200,
+      "title": "Q: WILDBOUND",
+      "bytes": 8552,
+      "readme_links_page": true,
+      "serving": true
+    },
+    {
+      "repo": "Gptgame",
+      "url": "https://bachikoljunior-blip.github.io/Gptgame/",
+      "http_status": 200,
+      "redirects_to": null,
+      "landing_http_status": 200,
+      "title": "ECHO//SEVEN",
+      "bytes": 219767,
+      "readme_links_page": true,
+      "serving": true
+    },
+    {
+      "repo": "Cooky",
+      "url": "https://bachikoljunior-blip.github.io/Cooky/",
+      "http_status": 200,
+      "redirects_to": null,
+      "landing_http_status": 200,
+      "title": "COOKY SURVIVORS - 死に戻りサバイバーズ",
+      "bytes": 4876,
+      "readme_links_page": false,
+      "serving": true
+    },
+    {
+      "repo": "survival",
+      "url": "https://bachikoljunior-blip.github.io/survival/",
+      "http_status": 200,
+      "redirects_to": null,
+      "landing_http_status": 200,
+      "title": "CINDERLINE",
+      "bytes": 4947,
+      "readme_links_page": false,
+      "serving": true
+    }
+  ],
+  "search_index_observations": [
+    {
+      "observed_at": "2026-08-09T19:58:00Z",
+      "instrument": "WebSearch tool (US-only index), run from a lap",
+      "query": "site:bachikoljunior-blip.github.io",
+      "shape": "domain enumeration — the one query that could return a page nobody here had thought of",
+      "hits_on_our_surface": 0,
+      "caveat": "the backend does not appear to honour the site: operator strictly: it returned unrelated repositories matching the substring 'blip'. On its own this is weak, which is why the three exact-string probes below were run and do not depend on operator support."
+    },
+    {
+      "observed_at": "2026-08-09T20:01:00Z",
+      "instrument": "WebSearch tool (US-only index), run from a lap",
+      "query": "\"クッキーストラテジャー\" 無料ブラウザ 放置ゲーム",
+      "shape": "exact distinctive title of the largest page (653KB of HTML, carrying its own meta description)",
+      "hits_on_our_surface": 0,
+      "caveat": "the index is US-only, which biases hard against Japanese pages. A zero here is weaker than a zero on an English query."
+    },
+    {
+      "observed_at": "2026-08-09T20:02:00Z",
+      "instrument": "WebSearch tool (US-only index), run from a lap",
+      "query": "\"WILDBOUND\" bachikoljunior-blip github",
+      "shape": "English title plus the account name — would surface either the github.io page or the github.com repository page",
+      "hits_on_our_surface": 0,
+      "caveat": "returned an unrelated Minecraft mod named Wildbound, so the term itself is occupied."
+    },
+    {
+      "observed_at": "2026-08-09T20:06:00Z",
+      "instrument": "WebSearch tool (US-only index), run from a lap",
+      "query": "cookiestrateger.com",
+      "shape": "bare custom domain — the strongest single probe available, because a domain string has no competing meaning",
+      "hits_on_our_surface": 0,
+      "caveat": "none. A bare registered domain that returns nothing is the cleanest zero in this set."
+    }
+  ],
+  "how_to_add_an_observation": "Run a search tool from a lap, then append a row here and re-run this script with --write; it preserves this array and never regenerates it. Record the query VERBATIM and the caveat that limits it — a zero from an instrument pointed the wrong way is not a finding.",
+  "what_a_zero_here_does_and_does_not_mean": "It means: four queries against one US-only index returned none of our ten pages, including a bare-domain query that cannot be confounded. It does NOT mean the pages are absent from every index everywhere; Google and Bing were not queried directly, because this container cannot reach them. The claim this supports is narrow and it is still the first direct measurement of the route's premise on our own assets.",
+  "what_this_is_for": "scripts/compute-eta.mjs annotates the findable_surface_at_scale candidate with published_count and pages_found_by_search, so the side that picks work sees the measured realized surface instead of the route's assumption about it.",
+  "published_is_not_findable": "published_count counts pages that answer 200 to someone who already has the url. pages_found_by_search counts pages a search index returned to someone who did not. Only the second one is distribution, and null there means nobody looked, not zero."
+}

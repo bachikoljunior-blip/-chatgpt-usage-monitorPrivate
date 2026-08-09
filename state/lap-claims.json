@@ -353,6 +353,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T19:57:08.825Z",
+      "candidate": "findable_surface_at_scale",
+      "kind": "prerequisite",
+      "mechanism": "Points an outside instrument at the route's own premise. findable_surface_at_scale is ranked as the only route reaching a buyer without an audience, on the assumption that many published pages become individually findable. Ten such pages are already live on GitHub Pages. If a public search index cannot return any of them, the assumption is false as stated and the route needs an inbound-link or submission step before page count matters. The number moves later by stopping laps spent multiplying pages that nothing can find, and by naming the missing step.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
