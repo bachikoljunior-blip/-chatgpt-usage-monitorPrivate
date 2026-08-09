@@ -348,6 +348,16 @@ for (const c of candidates) {
       "buys no days while every path is at infinity: a faster rate along a road that " +
       "never arrives still never arrives. Promotes itself the moment a lap records " +
       "running out of budget on a real candidate — but not on a hunch beforehand.";
+    // "Never armed" and "not applicable right now" are different states that were
+    // reading identically. state/blocked.json has never existed: RUNBOOK asks a lap
+    // to write it by hand at the moment it runs out of budget, and no lap ever has.
+    // So this escape hatch has been decorative since it was added, and nothing said
+    // so. Say so here, in the file the picker actually reads.
+    c.escape_hatch_status = blocked
+      ? "armed: state/blocked.json exists, but no candidate is currently marked blocked_on_capacity"
+      : "NEVER ARMED: state/blocked.json has never been written. A lap that stops for " +
+        "want of budget must write it by hand (RUNBOOK), and none has. Until then this " +
+        "demotion has no way back up, whether or not capacity is the real constraint.";
   }
 }
 

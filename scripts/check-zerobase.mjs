@@ -22,6 +22,7 @@
 // Exit 0 = healthy. Exit 1 = something needs changing (details on stdout).
 
 import { readdir } from "node:fs/promises";
+import { execFile } from "node:child_process";
 import { resolve } from "node:path";
 import { readStateJson, REPO } from "./state-source.mjs";
 
@@ -69,6 +70,33 @@ let priorIds = new Set(zb.previous_option_ids ?? []);
 try {
   const files = await readdir(resolve(REPO, "state/blind"));
   notes.push(`${files.length} archived blind transcript(s) on disk`);
+  // The leak check existed and nothing ran it. zerobase.json asserts "the proposal
+  // passed scripts/check-blind.mjs", but no workflow, no runbook step and no script
+  // invoked it — so the claim rested on someone having run it by hand once, and the
+  // next round had nothing to make it happen again. A guarantee that depends on
+  // remembering is not a guarantee.
+  //
+  // Spawned rather than imported so check-blind.mjs stays the only place our names
+  // are listed. Duplicating that list to save a process is how the two copies drift.
+  for (const f of files) {
+    if (!f.endsWith(".md")) continue;
+    const target = resolve(REPO, "state/blind", f);
+    const r = await new Promise((done) =>
+      execFile(process.execPath, [resolve(REPO, "scripts/check-blind.mjs"), target], (err) =>
+        done(err?.code ?? 0),
+      ),
+    );
+    if (r === 1) {
+      problems.push(
+        `blind transcript ${f} names our own work, so that round was an improvement on ` +
+        `the incumbent rather than an independent alternative. Discard it.`,
+      );
+    } else if (r !== 0) {
+      notes.push(`leak check could not read ${f} (exit ${r})`);
+    } else {
+      notes.push(`${f}: no leak`);
+    }
+  }
 } catch {
   // no archive yet
 }

@@ -637,7 +637,14 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   // is itself in the file, so a whole-file match would pass on its own
   // declaration. The quoted form is why — done_signal is "## 判定", and until the
   // parser stripped those quotes it looked present everywhere and matched nothing.
-  const outputFormat = inbox.slice(inbox.indexOf("### 出力の形"));
+  // indexOf, checked before slicing. A missing heading returns -1, and slice(-1)
+  // is the last character of the file — non-empty, so the length assertion below
+  // passed while the section did not exist. Renaming the heading on 2026-08-09 hit
+  // exactly that: the guard meant to catch it passed, and the next one failed with
+  // a message about the wrong thing.
+  const formatAt = inbox.indexOf("### 出力の形");
+  assert(formatAt !== -1, "the INBOX no longer has a 出力の形 section for the signal to live in");
+  const outputFormat = inbox.slice(formatAt);
   assert(outputFormat.length > 0, "the INBOX no longer specifies an output format");
   assert(
     outputFormat.includes(header.done_signal),

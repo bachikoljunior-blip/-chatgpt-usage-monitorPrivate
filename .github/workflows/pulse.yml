@@ -80,4 +80,25 @@ jobs:
             echo "push rejected, retrying ($attempt)"
           done
           echo "could not push after 3 attempts" >&2
+
+      # Both of these lived only in RUNBOOK.md, which means they ran only when a
+      # Claude lap remembered to run them — and laps stop exactly when the weekly
+      # quota runs out. So the two checks that catch "a judgement came due and
+      # nobody made it" and "the weekly round stopped happening" were guaranteed to
+      # go quiet at the same moment they became true. Actions has its own budget and
+      # keeps firing, so they belong here.
+      #
+      # Deliberately after the commit: a red run must not cost us the state refresh.
+      # It reports by failing, because a report written into a file that only a lap
+      # reads has the same defect as running only in the runbook.
+      - name: Judgements owed and zero-base health
+        if: always()
+        run: |
+          rc=0
+          node scripts/check-predictions.mjs || rc=1
+          node scripts/check-zerobase.mjs || rc=1
+          if [ "$rc" != "0" ]; then
+            echo "::error::something is owed or the zero-base round has stalled — see the output above"
+          fi
+          exit $rc
           exit 1
