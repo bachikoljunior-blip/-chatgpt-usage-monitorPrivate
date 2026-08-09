@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "error",
-  "fetched_at": "2026-08-09T03:54:47.293Z",
+  "fetched_at": "2026-08-09T03:56:19.924Z",
   "game_count": null,
   "total_views": null,
   "total_downloads": null,
@@ -13,13 +13,17 @@
         "endpoint": "api.itch.io/profile/games",
         "http_status": 200,
         "parsed": true,
-        "failed": false
+        "failed": false,
+        "body_keys": [
+          "games"
+        ]
       },
       {
         "endpoint": "itch.io/api/1/KEY/my-games",
-        "http_status": 200,
-        "parsed": true,
-        "failed": false
+        "http_status": 429,
+        "parsed": false,
+        "failed": false,
+        "body_keys": null
       }
     ]
   }
