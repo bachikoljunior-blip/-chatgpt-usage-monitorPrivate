@@ -3,8 +3,8 @@
   "status": "ok",
   "source": "anthropic-oauth-usage",
   "subscription": "claude",
-  "fetched_at": "2026-08-09T08:45:27.858Z",
-  "fresh_until": "2026-08-09T10:45:27.858Z",
+  "fetched_at": "2026-08-09T08:48:06.145Z",
+  "fresh_until": "2026-08-09T10:48:06.145Z",
   "quota_windows": [
     {
       "window_id": "five_hour",
@@ -12,7 +12,7 @@
       "used_percent": 7,
       "remaining_percent": 93,
       "window_duration_minutes": 300,
-      "resets_at_iso": "2026-08-09T10:20:00.083Z"
+      "resets_at_iso": "2026-08-09T10:20:00.489Z"
     },
     {
       "window_id": "seven_day",
@@ -20,7 +20,7 @@
       "used_percent": 57,
       "remaining_percent": 43,
       "window_duration_minutes": 10080,
-      "resets_at_iso": "2026-08-14T22:00:00.083Z"
+      "resets_at_iso": "2026-08-14T22:00:00.489Z"
     }
   ],
   "governing_window": {
@@ -29,9 +29,48 @@
     "used_percent": 57,
     "remaining_percent": 43,
     "window_duration_minutes": 10080,
-    "resets_at_iso": "2026-08-14T22:00:00.083Z"
+    "resets_at_iso": "2026-08-14T22:00:00.489Z"
   },
   "extra_usage_present": true,
   "extra_usage_used_percent": 0,
+  "field_probe": {
+    "note": "unread fields from the usage response, numbers only. Present to answer whether any field resolves finer than the integer utilization percentages.",
+    "top_level": {
+      "numeric_fields": {},
+      "other_field_names": [
+        "seven_day_oauth_apps",
+        "seven_day_cowork",
+        "seven_day_omelette",
+        "tangelo",
+        "iguana_necktie",
+        "omelette_promotional",
+        "nimbus_quill",
+        "cinder_cove",
+        "amber_ladder",
+        "extra_usage",
+        "limits",
+        "spend",
+        "member_dashboard_available"
+      ]
+    },
+    "windows": {
+      "five_hour": {
+        "numeric_fields": {},
+        "other_field_names": [
+          "limit_dollars",
+          "used_dollars",
+          "remaining_dollars"
+        ]
+      },
+      "seven_day": {
+        "numeric_fields": {},
+        "other_field_names": [
+          "limit_dollars",
+          "used_dollars",
+          "remaining_dollars"
+        ]
+      }
+    }
+  },
   "recommended_mode": "normal"
 }
