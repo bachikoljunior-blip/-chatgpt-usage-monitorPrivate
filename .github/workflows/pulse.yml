@@ -116,6 +116,16 @@ jobs:
         if: always()
         run: |
           rc=0
+          # Every file under state/ is supposed to pass the sanitizer. Only three were
+          # ever checked here, so three shapes shipped that fail it outright:
+          # gumroad-capabilities.json, then owner-requests.json (a forbidden key name),
+          # then portfolio.json (no branch at all, so it fell through to the usage
+          # shape). A file that fails is a file the credential scan never finishes on —
+          # the opposite of what the rule exists for. Sweep them all instead of naming
+          # a few, so a new shape cannot be silently exempt.
+          for f in state/*.json; do
+            node scripts/verify-sanitized-state.mjs "$f" || { echo "::error::$f fails the sanitizer"; rc=1; }
+          done
           node scripts/check-predictions.mjs || rc=1
           node scripts/check-zerobase.mjs || rc=1
           node scripts/check-wiring.mjs || rc=1

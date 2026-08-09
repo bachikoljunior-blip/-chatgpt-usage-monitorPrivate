@@ -209,6 +209,22 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
   if (typeof state.ran !== "boolean") {
     throw new Error("lane state has a non-boolean ran");
   }
+} else if (state.enumerations !== undefined || state.not_examined !== undefined) {
+  // The portfolio census. It had no branch and fell through to the usage shape, so
+  // it has been failing the checker outright — the third file to do so, after
+  // gumroad-capabilities.json and owner-requests.json. A file under state/ that
+  // fails is a file the credential scan never finishes on, which is the opposite of
+  // what the rule is for.
+  //
+  // not_examined is required and must be an array. It is where this file records
+  // what it did NOT look at, and a census that cannot say what it skipped reads as
+  // complete when it is not.
+  if (!Array.isArray(state.not_examined)) {
+    throw new Error("portfolio state has no not_examined array");
+  }
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at ?? "")) {
+    throw new Error("portfolio state has no valid fetched_at timestamp");
+  }
 } else if (Array.isArray(state.requests)) {
   // Owner requests. This shape was added by a lap and had no branch, so it fell
   // through to the usage-state check and failed outright — meaning a file under
