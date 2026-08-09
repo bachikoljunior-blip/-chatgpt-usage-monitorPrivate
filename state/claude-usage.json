@@ -3,33 +3,33 @@
   "status": "ok",
   "source": "anthropic-oauth-usage",
   "subscription": "claude",
-  "fetched_at": "2026-08-08T23:46:33.812Z",
-  "fresh_until": "2026-08-09T01:46:33.812Z",
+  "fetched_at": "2026-08-09T00:12:33.821Z",
+  "fresh_until": "2026-08-09T02:12:33.821Z",
   "quota_windows": [
     {
       "window_id": "five_hour",
       "window_name": "Current session",
-      "used_percent": 36,
-      "remaining_percent": 64,
+      "used_percent": 38,
+      "remaining_percent": 62,
       "window_duration_minutes": 300,
-      "resets_at_iso": "2026-08-09T00:19:59.078Z"
+      "resets_at_iso": "2026-08-09T00:20:00.097Z"
     },
     {
       "window_id": "seven_day",
       "window_name": "Current week (all models)",
-      "used_percent": 52,
-      "remaining_percent": 48,
+      "used_percent": 53,
+      "remaining_percent": 47,
       "window_duration_minutes": 10080,
-      "resets_at_iso": "2026-08-14T21:59:59.078Z"
+      "resets_at_iso": "2026-08-14T22:00:00.097Z"
     }
   ],
   "governing_window": {
     "window_id": "seven_day",
     "window_name": "Current week (all models)",
-    "used_percent": 52,
-    "remaining_percent": 48,
+    "used_percent": 53,
+    "remaining_percent": 47,
     "window_duration_minutes": 10080,
-    "resets_at_iso": "2026-08-14T21:59:59.078Z"
+    "resets_at_iso": "2026-08-14T22:00:00.097Z"
   },
   "extra_usage_present": true,
   "extra_usage_used_percent": 0,
