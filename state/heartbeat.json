@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T16:47:19.901Z",
+  "fetched_at": "2026-08-09T16:52:42.766Z",
   "overdue_factor": 2,
   "overdue_count": 0,
   "never_seen_count": 2,
@@ -11,9 +11,9 @@
       "id": "eta-loop",
       "kind": "claude-trigger",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-09T16:40:14.801Z",
+      "last_seen": "2026-08-09T16:47:51.962Z",
       "last_seen_source": "laps.open",
-      "age_minutes": 7,
+      "age_minutes": 5,
       "status": "ok"
     },
     {
@@ -38,7 +38,7 @@
       "id": "usage-monitor",
       "kind": "github-actions",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-09T16:42:17.332Z",
+      "last_seen": "2026-08-09T16:47:26.619Z",
       "last_seen_source": "state_file:state/usage.json",
       "age_minutes": 5,
       "status": "ok"
@@ -47,9 +47,9 @@
       "id": "claude-usage-monitor",
       "kind": "github-actions",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-09T16:24:50.244Z",
+      "last_seen": "2026-08-09T16:47:22.296Z",
       "last_seen_source": "state_file:state/claude-usage.json",
-      "age_minutes": 22,
+      "age_minutes": 5,
       "status": "ok"
     },
     {
@@ -58,7 +58,7 @@
       "cadence_minutes": 60,
       "last_seen": "2026-08-09T16:01:30.698Z",
       "last_seen_source": "state_file:state/gumroad.json",
-      "age_minutes": 46,
+      "age_minutes": 51,
       "status": "ok"
     },
     {
@@ -67,7 +67,7 @@
       "cadence_minutes": 60,
       "last_seen": "2026-08-09T16:02:14.701Z",
       "last_seen_source": "state_file:state/codex-lane.json",
-      "age_minutes": 45,
+      "age_minutes": 50,
       "status": "ok"
     }
   ]
