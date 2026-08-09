@@ -27,6 +27,36 @@ const UNSAFE_KEY = /access_?token|refresh_?token|id_?token|secret|credential|aut
 const MAX_FIELDS = 24;
 const MAX_NAME_LENGTH = 48;
 
+// A plain decimal is not a credential. Anchored, no exponent, no letters, no
+// separators, and short enough that nothing token-shaped can pass: the longest
+// string this accepts is 24 characters of digits, one sign and one point.
+const PLAIN_DECIMAL = /^-?\d{1,18}(?:\.\d{1,6})?$/;
+
+/**
+ * A value we are allowed to record, or null. Numbers pass; strings pass only if
+ * they are a plain decimal, because that is the shape the dollar fields are
+ * expected to arrive in and it cannot carry anything secret.
+ */
+export function safeNumber(value) {
+  if (typeof value === "number") return Number.isFinite(value) ? value : null;
+  if (typeof value === "string" && PLAIN_DECIMAL.test(value)) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
+// What a field is, when we cannot record what it holds. The first probe returned
+// bare names — limit_dollars, used_dollars, remaining_dollars on every window —
+// which proved the fields exist but not whether they carry a finer figure than
+// the integer percentages or nothing at all. A type name is not data, and it is
+// the difference between "worth mapping" and "dead end".
+function typeName(value) {
+  if (value === null) return "null";
+  if (Array.isArray(value)) return "array";
+  return typeof value;
+}
+
 function safeName(name) {
   return typeof name === "string" && name.length > 0 && name.length <= MAX_NAME_LENGTH
     && !UNSAFE_KEY.test(name);
@@ -42,19 +72,22 @@ export function describeFields(source, consumed = []) {
   const skip = new Set(consumed);
   const numeric = {};
   const other = [];
+  const types = {};
   let seen = 0;
   for (const [name, value] of Object.entries(source)) {
     if (skip.has(name) || !safeName(name)) continue;
     if (seen >= MAX_FIELDS) break;
     seen += 1;
-    if (typeof value === "number" && Number.isFinite(value)) {
-      numeric[name] = value;
+    const number = safeNumber(value);
+    if (number !== null) {
+      numeric[name] = number;
     } else {
       other.push(name);
+      types[name] = typeName(value);
     }
   }
   if (Object.keys(numeric).length === 0 && other.length === 0) return null;
-  return { numeric_fields: numeric, other_field_names: other };
+  return { numeric_fields: numeric, other_field_names: other, other_field_types: types };
 }
 
 /**

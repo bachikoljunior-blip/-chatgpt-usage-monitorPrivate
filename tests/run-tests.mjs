@@ -10,7 +10,7 @@ import { readVault, writeVault } from "../scripts/token-vault.mjs";
 import { startMockAnthropic } from "./mock-anthropic.mjs";
 import { windowDidRoll } from "../scripts/window-roll.mjs";
 import { hasConflictMarkers, parseStateFile } from "../scripts/state-file.mjs";
-import { describeFields, probeUsageFields } from "../scripts/usage-fields.mjs";
+import { describeFields, probeUsageFields, safeNumber } from "../scripts/usage-fields.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const temporary = await mkdtemp(join(tmpdir(), "usage-monitor-test-"));
@@ -142,6 +142,17 @@ try {
   assert(
     probe.windows.five_hour.other_field_names.includes("window_label"),
     "field probe did not list the unread non-numeric field",
+  );
+  // The dollar figures are the reason this probe exists: the endpoint carries
+  // them on every window, and a decimal string there resolves far finer than the
+  // integer percentages that make every lap unmeasurable.
+  assert(
+    probe.windows.five_hour.numeric_fields.used_dollars === 1.2345,
+    "a plain decimal string was not recovered as a number",
+  );
+  assert(
+    probe.windows.five_hour.other_field_types?.limit_dollars === "null",
+    "an unrecoverable field was listed without saying what it was",
   );
   assert(
     !JSON.stringify(probe).includes("access_token")
@@ -346,6 +357,20 @@ assert(Array.isArray(parsedLaps.samples), "state/laps.json has no samples array"
 // wired in; these pin the rules that keep it safe to point at an API response.
 assert(describeFields(null) === null, "describeFields accepted a non-object");
 assert(describeFields({ a: 1 }, ["a"]) === null, "consumed fields were still reported");
+// Only a plain decimal may be read out of a string. Everything token-shaped —
+// exponents, letters, separators, anything long — stays a name and a type.
+for (const bad of [
+  "1e5", "0x10", "1,234", " 1.5", "1.5 ", "", "sk-abcdefghijklmnop",
+  "1234567890123456789", "1.1234567", "Bearer 1.5", "--1", "1.2.3",
+]) {
+  assert(safeNumber(bad) === null, `unsafe string was read as a number: ${JSON.stringify(bad)}`);
+}
+for (const [input, expected] of [["1.2345", 1.2345], ["-0.5", -0.5], ["42", 42], [7.5, 7.5], [0, 0]]) {
+  assert(safeNumber(input) === expected, `safe value was rejected: ${JSON.stringify(input)}`);
+}
+assert(safeNumber(Number.NaN) === null, "NaN was accepted");
+assert(safeNumber(null) === null && safeNumber({}) === null, "non-value was accepted");
+
 {
   const d = describeFields({ n: 4, s: "x", nan: Number.NaN, secret_value: 1 });
   assert(d.numeric_fields.n === 4, "finite number was not kept");

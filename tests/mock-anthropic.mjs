@@ -51,7 +51,11 @@ export function startMockAnthropic({ expectedToken = "test-oauth-token", status 
           utilization: 12.5,
           resets_at: "2026-08-08T04:00:00Z",
           used_tokens: 1234567,
-          limit_tokens: 9876543,
+          // The real endpoint sends the dollar figures as something other than a
+          // JSON number. A plain decimal string is recoverable and must be; a
+          // null is not, and the probe has to say which it was.
+          used_dollars: "1.2345",
+          limit_dollars: null,
           window_label: "session",
           access_token: "must-never-be-copied",
         },
