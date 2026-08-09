@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T09:41:59.116Z",
+  "fetched_at": "2026-08-09T09:42:43.427Z",
   "ranking": "candidates are sorted by estimated days to first yen (conservative end), actionable ones first",
   "target_yen_per_month": 200000,
   "idle_eta_days": null,
@@ -39,19 +39,6 @@
     }
   ],
   "candidates": [
-    {
-      "kind": "zero_base_option",
-      "id": "vscode_extension_pro",
-      "why": "CI can publish and update it; a concrete time-saver reaches the English-speaking developer market directly",
-      "owner_actions": "1 initial + 0-1 monthly",
-      "days_to_first_yen_estimate": "3-14",
-      "estimate_not_measurement": true,
-      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
-      "refuted": null,
-      "actionable_now": true,
-      "eta_effect_days": 14,
-      "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 14 days at the conservative end (estimate, not measured)"
-    },
     {
       "kind": "zero_base_option",
       "id": "wordpress_plugin_pro",
@@ -124,6 +111,27 @@
       "not_actionable_reason": "waits on an event: first game published",
       "eta_effect_days": null,
       "eta_effect_basis": "no comparable estimate recorded"
+    },
+    {
+      "kind": "zero_base_option",
+      "id": "vscode_extension_pro",
+      "why": "CI can publish and update it; a concrete time-saver reaches the English-speaking developer market directly",
+      "owner_actions": "1 initial + 0-1 monthly",
+      "days_to_first_yen_estimate": "3-14",
+      "estimate_not_measurement": true,
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "refuted": {
+        "at": "2026-08-09T09:33:00Z",
+        "by": "codex-loop (codex/outbox/2026-08-09.c.md)",
+        "claim_tested": "first yen within 3-14 days, borrowing Marketplace search traffic",
+        "finding": "The recurring complaint the estimate rested on — approval fatigue in agent extensions — is already solved by VS Code itself (chat.tools.terminal.autoApprove, per-command allow/deny and a management UI) and by at least three free extensions. Those competitors sit at 95-1,472 installs, so the search traffic being borrowed is thin. Paid VS Code extensions do exist and were confirmed with sources (DV Quick Run, $19/mo via Lemon Squeezy licence keys; VSCode Maestro MCP, Gumroad one-off), so monetisation is real — but no case of first yen within 14 days was found.",
+        "verdict": "does not meet the 3-14 day claim as stated",
+        "sources_in": "codex/outbox/2026-08-09.c.md",
+        "not_refuted": "that VS Code extensions can be sold at all. Only this candidate's speed."
+      },
+      "actionable_now": true,
+      "eta_effect_days": 14,
+      "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 14 days at the conservative end (estimate, not measured)"
     },
     {
       "kind": "efficiency",
