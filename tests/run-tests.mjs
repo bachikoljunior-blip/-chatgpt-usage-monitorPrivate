@@ -525,6 +525,21 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     unwatchable.length === 0,
     `github-actions automations with no liveness evidence: ${unwatchable.join(", ")}`,
   );
+
+  // A claude-trigger row's cadence and enabled flag are claims about the
+  // scheduler, and the scheduler is the only thing that can settle them. On
+  // 2026-08-09 three of four rows disagreed with it: revenue-loop was marked
+  // enabled after the owner had stopped it, and youtube-loop and cookie-daily
+  // carried 360m and 1440m cadences against live hourly crons. Requiring the
+  // trigger_id and the date it was checked is what makes the drift findable.
+  const unreconciled = registry.automations
+    .filter((a) => a.kind === "claude-trigger" && a.enabled !== false)
+    .filter((a) => !a.trigger_id || !a.observed_at)
+    .map((a) => a.id);
+  assert(
+    unreconciled.length === 0,
+    `claude-trigger rows never checked against list_triggers: ${unreconciled.join(", ")}`,
+  );
 }
 
 console.log("All usage monitor tests passed.");

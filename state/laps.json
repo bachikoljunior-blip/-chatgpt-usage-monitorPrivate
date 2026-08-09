@@ -1,14 +1,24 @@
 {
   "schema_version": 1,
-  "open": {},
+  "open": {
+    "eta-loop": {
+      "at": "2026-08-09T09:10:40.028Z",
+      "usage_fetched_at": "2026-08-09T09:10:13.855Z",
+      "remaining_percent": 42,
+      "resets_at": "2026-08-14T22:00:00.195Z",
+      "relabeled_from": "revenue-loop"
+    }
+  },
   "samples": [
     {
-      "id": "revenue-loop",
+      "id": "eta-loop",
       "started_at": "2026-08-09T03:52:18.631Z",
       "ended_at": "2026-08-09T03:52:19.443Z",
       "cost_percent": null,
       "usable": false,
-      "reason": "no_new_usage_reading"
+      "reason": "no_new_usage_reading",
+      "relabeled_from": "revenue-loop",
+      "relabeled_reason": "recorded under revenue-loop, but that trigger is disabled and last fired 2026-08-08T12:18:20Z, so it cannot have produced a 2026-08-09 lap. These are eta-loop laps: this chain descends from trig_01HKmX99VZRkuBjMbjqdqHE3, whose own prompt says --id=eta-loop. Earlier samples in the same chain are already eta-loop; the id drifted mid-chain."
     },
     {
       "id": "eta-loop",
@@ -51,12 +61,14 @@
       "reason": "no_new_usage_reading"
     },
     {
-      "id": "revenue-loop",
+      "id": "eta-loop",
       "started_at": "2026-08-09T06:58:39.481Z",
       "ended_at": "2026-08-09T06:59:35.981Z",
       "cost_percent": null,
       "usable": false,
-      "reason": "below_measurement_resolution"
+      "reason": "below_measurement_resolution",
+      "relabeled_from": "revenue-loop",
+      "relabeled_reason": "recorded under revenue-loop, but that trigger is disabled and last fired 2026-08-08T12:18:20Z, so it cannot have produced a 2026-08-09 lap. These are eta-loop laps: this chain descends from trig_01HKmX99VZRkuBjMbjqdqHE3, whose own prompt says --id=eta-loop. Earlier samples in the same chain are already eta-loop; the id drifted mid-chain."
     },
     {
       "id": "eta-loop",
@@ -67,46 +79,56 @@
       "reason": "no_new_usage_reading"
     },
     {
-      "id": "revenue-loop-child-0752",
+      "id": "eta-loop",
       "started_at": "2026-08-09T07:52:49.286Z",
       "ended_at": "2026-08-09T07:59:02.570Z",
       "cost_percent": null,
       "usable": false,
-      "reason": "no_new_usage_reading"
+      "reason": "no_new_usage_reading",
+      "relabeled_from": "revenue-loop-child-0752",
+      "relabeled_reason": "recorded under revenue-loop, but that trigger is disabled and last fired 2026-08-08T12:18:20Z, so it cannot have produced a 2026-08-09 lap. These are eta-loop laps: this chain descends from trig_01HKmX99VZRkuBjMbjqdqHE3, whose own prompt says --id=eta-loop. Earlier samples in the same chain are already eta-loop; the id drifted mid-chain."
     },
     {
-      "id": "revenue-loop",
+      "id": "eta-loop",
       "started_at": "2026-08-09T08:39:34.425Z",
       "ended_at": "2026-08-09T08:49:18.413Z",
       "cost_percent": null,
       "usable": false,
-      "reason": "below_measurement_resolution"
+      "reason": "below_measurement_resolution",
+      "relabeled_from": "revenue-loop",
+      "relabeled_reason": "recorded under revenue-loop, but that trigger is disabled and last fired 2026-08-08T12:18:20Z, so it cannot have produced a 2026-08-09 lap. These are eta-loop laps: this chain descends from trig_01HKmX99VZRkuBjMbjqdqHE3, whose own prompt says --id=eta-loop. Earlier samples in the same chain are already eta-loop; the id drifted mid-chain."
     },
     {
-      "id": "revenue-loop",
+      "id": "eta-loop",
       "started_at": "2026-08-09T08:50:11.462Z",
       "ended_at": "2026-08-09T08:54:44.480Z",
       "cost_percent": null,
       "usable": false,
-      "reason": "below_measurement_resolution"
+      "reason": "below_measurement_resolution",
+      "relabeled_from": "revenue-loop",
+      "relabeled_reason": "recorded under revenue-loop, but that trigger is disabled and last fired 2026-08-08T12:18:20Z, so it cannot have produced a 2026-08-09 lap. These are eta-loop laps: this chain descends from trig_01HKmX99VZRkuBjMbjqdqHE3, whose own prompt says --id=eta-loop. Earlier samples in the same chain are already eta-loop; the id drifted mid-chain."
     },
     {
-      "id": "revenue-loop",
+      "id": "eta-loop",
       "started_at": "2026-08-09T08:55:20.451Z",
       "ended_at": "2026-08-09T09:02:43.976Z",
       "cost_percent": null,
       "observed_delta_percent": 1,
       "usable": false,
-      "reason": "at_measurement_quantum"
+      "reason": "at_measurement_quantum",
+      "relabeled_from": "revenue-loop",
+      "relabeled_reason": "recorded under revenue-loop, but that trigger is disabled and last fired 2026-08-08T12:18:20Z, so it cannot have produced a 2026-08-09 lap. These are eta-loop laps: this chain descends from trig_01HKmX99VZRkuBjMbjqdqHE3, whose own prompt says --id=eta-loop. Earlier samples in the same chain are already eta-loop; the id drifted mid-chain."
     },
     {
-      "id": "revenue-loop",
+      "id": "eta-loop",
       "started_at": "2026-08-09T09:05:17.406Z",
       "ended_at": "2026-08-09T09:10:18.947Z",
       "cost_percent": null,
       "observed_delta_percent": 0,
       "usable": false,
-      "reason": "below_measurement_resolution"
+      "reason": "below_measurement_resolution",
+      "relabeled_from": "revenue-loop",
+      "relabeled_reason": "recorded under revenue-loop, but that trigger is disabled and last fired 2026-08-08T12:18:20Z, so it cannot have produced a 2026-08-09 lap. These are eta-loop laps: this chain descends from trig_01HKmX99VZRkuBjMbjqdqHE3, whose own prompt says --id=eta-loop. Earlier samples in the same chain are already eta-loop; the id drifted mid-chain."
     }
   ],
   "pending_verification": {

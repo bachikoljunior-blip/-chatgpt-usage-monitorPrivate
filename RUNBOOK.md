@@ -56,8 +56,18 @@ git fetch origin main
 ## 1. 続けるか止めるか（**この周で唯一の分岐点**）
 
 ```bash
-node scripts/pacing.mjs --id=revenue-loop
+node scripts/pacing.mjs --id=<自分のid>
 ```
+
+**`<自分のid>` は、この周を起こしたトリガーの id です。** ここに固有名を書かないのは、
+2026-08-09 にそれで実際に間違えたからです。手順1の例が `--id=revenue-loop` のままで、
+**その revenue-loop はオーナーが 2026-08-08 に停止済み**でした。結果、eta-loop の周が
+7回ぶん revenue-loop として記録され、ゲートは「自分」として停止済みの枠を除外し、
+生きている eta-loop の 37.71% を他人ぶんとして予約していました
+（`this lap may spend` が 1.37% と 2.70% に分かれます）。
+
+**自分の id が分からないときは、起こしてきた指示文に書いてあります。**
+どれが生きているかは `state/automations.json` の `enabled` と `observed_at` を見ること。
 
 - **終了コード 10 → この周は何もせずに終わる。** 次の定期実行を待つ。
 - 終了コード 0 → 続行。出力の `lap budget` がこの周で使ってよい量。

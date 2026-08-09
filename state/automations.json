@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T06:59:35.981Z",
+  "fetched_at": "2026-08-09T09:11:00Z",
   "note": "Live automations and their measured cost per run. pacing.mjs reserves each one's expected consumption before the reset, so a lap plans with what is genuinely spare rather than with the whole pool. avg_cost_percent is filled in by scripts/record-lap.mjs from real start/end readings; null means never measured and is reserved at a high default.",
   "automations": [
     {
@@ -16,7 +16,10 @@
       "note": "Hourly. The pacing gate is what stops it, so a shorter cadence only shortens the dead time after a stop. Cost is recorded on every fire including the ones that stop at the gate, so the average reflects mostly-cheap reality rather than only the laps that did work.",
       "avg_cost_percent": null,
       "samples": 0,
-      "last_seen": null
+      "last_seen": null,
+      "observed_at": "2026-08-09T09:11:00Z",
+      "observed_from": "list_triggers (the scheduler itself, not a repo file)",
+      "last_fired_at": "2026-08-09T08:50:16Z"
     },
     {
       "id": "revenue-loop",
@@ -25,31 +28,49 @@
       "trigger_id": "trig_01R88mf8nXVEY7pCSXZDyXr1",
       "pool": "claude_week",
       "cadence_minutes": 240,
-      "enabled": true,
+      "enabled": false,
       "avg_cost_percent": null,
-      "samples": 0
+      "samples": 0,
+      "cron": "11 */4 * * *",
+      "observed_at": "2026-08-09T09:11:00Z",
+      "observed_from": "list_triggers (the scheduler itself, not a repo file)",
+      "last_fired_at": "2026-08-08T12:18:20Z",
+      "disabled_at": "2026-08-08",
+      "disabled_by": "owner",
+      "note": "Owner stopped this on 2026-08-08; the trigger name still carries the [停止中] marker and next_run_at has been in the past since. The registry said enabled:true until 2026-08-09, so the gate reserved 9.43% of the week for a trigger that cannot fire. Do not re-enable without an explicit instruction."
     },
     {
       "id": "youtube-loop",
       "label": "YouTube",
       "kind": "claude-trigger",
       "pool": "claude_week",
-      "cadence_minutes": 360,
+      "cadence_minutes": 60,
       "enabled": true,
       "avg_cost_percent": null,
       "samples": 0,
-      "last_seen": null
+      "last_seen": null,
+      "trigger_id": "trig_01S5mtxkjiBp6hsttmDvdzgw",
+      "cron": "9 * * * *",
+      "observed_at": "2026-08-09T09:11:00Z",
+      "observed_from": "list_triggers (the scheduler itself, not a repo file)",
+      "last_fired_at": "2026-08-09T08:10:41Z"
     },
     {
       "id": "cookie-daily",
       "label": "クッキーストラテジャー運転",
       "kind": "claude-trigger",
       "pool": "claude_week",
-      "cadence_minutes": 1440,
+      "cadence_minutes": 60,
       "enabled": true,
       "avg_cost_percent": null,
       "samples": 0,
-      "last_seen": null
+      "last_seen": null,
+      "trigger_id": "trig_011CUbWRXqjNKLcGX5BhDgk9",
+      "cron": "55 * * * *",
+      "observed_at": "2026-08-09T09:11:00Z",
+      "observed_from": "list_triggers (the scheduler itself, not a repo file)",
+      "last_fired_at": "2026-08-09T00:02:04Z",
+      "note": "Named \"daily\" but the live cron is hourly (55 * * * *). The id is a key other files reference, so the name stays and the cadence follows the scheduler."
     },
     {
       "id": "eldria-loop",
@@ -120,5 +141,6 @@
       "samples": 0,
       "last_seen": null
     }
-  ]
+  ],
+  "reconciliation_note": "cadence/enabled for claude-trigger rows are reconciled against list_triggers, not asserted here. Actions cannot call that API, so a lap with MCP is the only thing that can refresh them — check observed_at before trusting these fields."
 }
