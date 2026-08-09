@@ -803,6 +803,7 @@
       },
       "judge_on": "2026-08-16",
       "judge_deadline": "2026-08-30",
+      "amended_2026-08-09T22:35Z": "THE TERM IS NO LONGER `account`. It is `venue_rule`, changed by a later lap in the same session, and the metric above says the election 'must still carry term=account'. Written here rather than by editing the metric, so the judge sees the amendment instead of a record that was quietly made true. WHY THIS IS NOT A FALSIFICATION: this prediction's claim is that the prerequisite must be a term some ROW CAN REPORT — that STANDING was a word nothing measures and `account` was one that something does. `venue_rule` is a member of the same four-term vocabulary, produced by the same instrument, with the same named reader, so the claim survives intact; only which of the four is named changed. What DID falsify a smaller part of it is the sentence 'if a later lap reverts the term to prose, venue-readiness.mjs exits 1' — that guard was real and still holds, but it guarded only against prose, and the term was wrong in a way prose-detection could never see: `account` binds only r/gamedev, which forbids the act that would pay for the post. The lesson is one layer down from this prediction's own: naming the prerequisite in a measurable vocabulary is necessary and not sufficient, because a term can be measurable and still point at a door with no revenue behind it. See 2026-08-09.the-route-was-waiting-at-the-unpayable-door.",
       "concurrent_changes": [
         "Same lap, and inseparable from it: scripts/venue-readiness.mjs gained the binding decomposition and prerequisiteCheck, scripts/repricing.mjs carries the measurement onto the candidate, and scripts/compute-eta.mjs prints it. Those ARE the mechanism, so they cannot be held apart from the claim at judging — what can be held apart is whether a lap's behaviour changed, which is what the metric reads.",
         "Same lap: codex/INBOX.md task .r asks whether any venue accepts an account we already hold. If that returns venues and a later lap acts on them, that work is downstream of this correction and must be named at judging rather than counted as independent confirmation.",
@@ -857,6 +858,32 @@
         "codex/INBOX.md still holds task .r (venues accepting an existing GitHub/Google account). The English version of the demo is the next INBOX slot, not this one — .r can remove the owner action entirely and the 48-hour clock has not started, so it is ahead in sequence."
       ],
       "falsified_if": "An English version is produced and posted and the post performs no better than a Japanese one would have — which is only measurable if both are tried, and probably will not be. The honest falsification available here is narrower and worth more: if a lap posts the Japanese artifact into an English venue and it draws real engagement anyway, the language term was not binding and this row should stop carrying it. What this does NOT claim: that language was the reason for ¥0. Nothing has been posted anywhere yet, so language has never yet cost anything — it is a term on a post that has not happened.",
+      "outcome": null
+    },
+    {
+      "id": "2026-08-09.the-route-was-waiting-at-the-unpayable-door",
+      "made_at": "2026-08-09T22:35:00Z",
+      "claim": "The elected route's prerequisite_term was `account`, which binds exactly one surveyed venue — r/gamedev — whose own quoted rule forbids promoting paid assets. So the route was waiting on a door that, once opened, yields a permitted post and no permitted way to be paid for it. The claim is that this was a real misdirection and not bookkeeping: under term=account the binding owner request for REVENUE was 2026-08-09.reddit-account-create, and clearing it could not have produced a sale no matter how well the post went. Re-pointed to venue_rule (itch.io), which its own rule REQUIRES a link to the paid page from, whose account is the only one across six surveys measured rather than assumed, whose eligibility threshold is an explicit none, and whose blocker is one already-pending owner action with no 48-hour age wait. The wider claim is about the failure MODE: the r/gamedev row had already recorded, in paid_promotion_note, that clearing it 'cannot be the route's revenue step and must stop being ranked as though it were', and that sentence moved nothing for two laps because the election is a different field with no reader.",
+      "metric": "scripts/venue-readiness.mjs prerequisiteCheck read from origin/main: `binding_venues_without_a_revenue_path` must stay empty, and the run must exit 0. Derived from each row's own paid_promotion_permitted, which is quoted from that venue's rule rather than asserted, so the election cannot be edited to make the failure disappear — only the term or a declared exception can change it. Judged together with WHICH owner request is cited as binding for revenue in state/eta.json's elected candidate.",
+      "baseline": {
+        "measured_at": "2026-08-09T22:30:00Z",
+        "prerequisite_term_before": "account",
+        "binding_venues_without_a_revenue_path_before": ["r/gamedev"],
+        "venue_readiness_exit_code_before_the_check_was_added": 0,
+        "venue_readiness_exit_code_with_the_check_and_the_old_term": 1,
+        "laps_the_correction_sat_in_the_file_with_no_reader": 2,
+        "venues_with_a_revenue_path": 2,
+        "idle_eta_days_all_channels": null
+      },
+      "judge_on": "2026-08-16",
+      "judge_deadline": "2026-08-30",
+      "concurrent_changes": [
+        "Same lap and inseparable: prerequisiteCheck now FAILS on an election whose named term has no payable venue, with a declared escape hatch (prerequisite_revenue_path_exception). That is the mechanism, and it was verified to fail on the pre-change state BEFORE the state was changed — so the check is not merely passing because the file was edited to suit it.",
+        "One lap earlier and still in flight: paid_promotion_permitted became a required field and revenue_path was derived from it. That lap produced the finding; this one acts on it. A later reader must not credit either alone.",
+        "Two laps earlier: audience_language / language_fit (2026-08-09.the-artifact-does-not-speak-the-venue). It points at the same venue and away from it for a different reason, so r/gamedev being deprioritised is over-determined by design and neither finding can claim the move by itself.",
+        "codex/outbox/2026-08-09.r.md landed this lap naming DEV Community and Hashnode. NOT acted on: it measured that a sign-in button exists, not that a lap can drive OAuth, and it never asked either venue the paid-promotion question."
+      ],
+      "falsified_if": "The owner creates the itch.io page and the itch.io row still does not read POSTABLE — that would mean venue_rule was not one owner action away and the term was re-pointed at a door with unmet conditions nobody had enumerated, which is the same defect as the r/gamedev row's second blocker being missed for an hour. Also falsified, and more usefully: if r/gamedev is established to tolerate an INDIRECT path (a free artifact whose own site links a paid one), its revenue path reopens and `account` was never the wrong term — only under-read. What this does NOT claim: that itch.io produces a buyer, or that any post has been made. Nothing has been posted anywhere yet and revenue is still ¥0; this changes which door the loop is standing at, not whether anyone walks through it.",
       "outcome": null
     }
   ]

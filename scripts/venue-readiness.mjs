@@ -196,6 +196,13 @@ export function prerequisiteCheck(election, result) {
     binding_venues_without_a_revenue_path: onTheTerm
       .filter((r) => r.revenue_path !== true)
       .map((r) => r.venue),
+    // The pending owner action that would actually clear the route's prerequisite,
+    // derived from the rows the named term binds rather than from which candidate a
+    // request happens to be filed against. owner-requests.json binds a request to ONE
+    // candidate, which is the right shape for a request and the wrong shape for this
+    // question: the itch.io page clears the itch CHANNEL and the elected route's
+    // prerequisite at once, and a one-candidate field can only say one of them.
+    owner_requests_clearing_the_term: onTheTerm.map((r) => r.owner_request_id).filter(Boolean),
   };
   if (!election?.route) return { ...base, ok: true, problem: null };
   if (!term) {
@@ -225,7 +232,48 @@ export function prerequisiteCheck(election, result) {
       problem: `prerequisite_term "${term}" names no prerequisite_measured_by.script, so nothing says which reader settles it.`,
     };
   }
-  return { ...base, ok: true, problem: null };
+  // The finding this instrument already computed and nobody enforced.
+  //
+  // binding_venues_without_a_revenue_path was derived on 2026-08-09T22:1xZ and printed
+  // in a loud paragraph, and `ok` ignored it. So the election kept naming `account` —
+  // the term that binds ONLY r/gamedev, whose own quoted rule forbids promoting paid
+  // assets — for two laps after the row itself had recorded, in paid_promotion_note,
+  // that clearing that blocker "cannot be the route's revenue step and must stop being
+  // ranked as though it were". That sentence was true, was in the file, and moved
+  // nothing, which is this repository's most-measured failure wearing its third name:
+  // a correction lands on a surface that has no reader.
+  //
+  // A printed warning is that surface. It is read by whoever happens to run the script
+  // and look past the row list, which is exactly the reader that failed before.
+  //
+  // What this does NOT do is shut a row. Rows are untouched: a venue that forbids paid
+  // promotion is still a venue, still permitted, still cheap, and r/gamedev's row still
+  // reads open. This is a claim about the ELECTION — about which door the route has
+  // chosen to wait at — and a route waiting on a door it cannot be paid through is
+  // waiting for nothing, however cheap that door is.
+  //
+  // The escape hatch is deliberate and must be DECLARED, like postable_not_evaluable
+  // and unlock_not_evaluable before it: a route elected for readership rather than
+  // revenue is a legitimate thing to elect, and the difference between that and this
+  // bug is whether somebody said so on purpose.
+  const exception = election?.prerequisite_revenue_path_exception ?? null;
+  if (base.binding_venues_without_a_revenue_path.length && !exception) {
+    return {
+      ...base,
+      ok: false,
+      problem:
+        `the elected route's prerequisite_term is "${term}", and every venue whose binding cause is ` +
+        `that term has no settled revenue path: ${base.binding_venues_without_a_revenue_path.join(", ")}. ` +
+        "Clearing the prerequisite there buys a permitted post and no permitted way to be paid for it, " +
+        "so the route is waiting on a door it cannot be paid through. Either name a term whose venues " +
+        "can be paid through, or read those venues' own rules for whether the paid product may be " +
+        "shown, or — if this route is elected for readership and not revenue — say so in " +
+        "prerequisite_revenue_path_exception and it will be admitted. A venue that is open to us and " +
+        "closed to our revenue is the most expensive kind of open door, because everything about it " +
+        "reads like progress.",
+    };
+  }
+  return { ...base, ok: true, problem: null, revenue_path_exception: exception };
 }
 
 // Pure so it can be tested without a repository. `venues` is the per_venue array;
@@ -379,6 +427,15 @@ export function venueReadiness(venues, evidence = {}, repoFiles = {}, artifactLa
       artifact: artifactPath ?? null,
       artifact_language: artifactLang,
       language_fit: languageFit,
+      // WHICH pending owner request clears this row, as an id rather than as prose.
+      // The itch.io row has named its request inside `blocked_on` since it was written
+      // — "That page is owner request 2026-08-09.itch-page-for-the-kit, already
+      // pending" — where nothing could read it. Meanwhile owner-requests.json binds
+      // each request to one CANDIDATE, and the elected candidate's request is the
+      // Reddit one, so re-pointing the route at itch.io left the picker still printing
+      // "OWNER REQUEST PENDING (reddit-account-create)" beside a prerequisite that
+      // named itch.io. Both statements were true and they were about different doors.
+      owner_request_id: v?.owner_request_id ?? null,
       paid_promotion_permitted: paidPromotion ?? null,
       // Three-valued and kept distinct from postable_today for the same reason
       // venue_blocker is: a venue we may post at but may not sell at, and a venue we
@@ -524,6 +581,16 @@ if (isMain) {
     `\nelected route prerequisite: ${prereq.term ?? "PROSE ONLY"} · ` +
       BINDING_CAUSES.map((c) => `${c}=${prereq.counts[c]}`).join(" "),
   );
+  if (prereq.owner_requests_clearing_the_term.length) {
+    console.log(
+      `the pending owner action that clears it: ${prereq.owner_requests_clearing_the_term.join(", ")}`,
+    );
+  } else if (prereq.term) {
+    console.log(
+      "no venue on the named term names an owner request that would clear it — either it is lap " +
+        "work, or nobody has written down what the owner action actually is.",
+    );
+  }
   if (prereq.binding_venues_without_a_revenue_path.length) {
     console.log(
       `\nTHE ROUTE IS WAITING ON A DOOR IT CANNOT BE PAID THROUGH: ` +

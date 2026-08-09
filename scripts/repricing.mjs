@@ -93,6 +93,15 @@ export function applyRouteElection(candidates, election, prerequisiteMeasured = 
       binding_venues_without_a_revenue_path: isElected
         ? prerequisiteMeasured?.binding_venues_without_a_revenue_path ?? null
         : null,
+      // The owner action that clears the prerequisite, derived from the rows the named
+      // term binds. It is carried here because this is where the contradiction showed:
+      // owner-requests.json files each request against one candidate, so this candidate
+      // printed OWNER REQUEST PENDING (2026-08-09.reddit-account-create) while its own
+      // prerequisite named itch.io. Both lines were true and about different doors, and
+      // a lap picking work reads exactly this block.
+      owner_requests_clearing_the_prerequisite: isElected
+        ? prerequisiteMeasured?.owner_requests_clearing_the_term ?? null
+        : null,
     };
     if (isElected) aligned.push(c.id);
     if (isAbandoned) onAbandoned.push(c.id);

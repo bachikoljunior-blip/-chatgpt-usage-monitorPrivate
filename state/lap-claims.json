@@ -553,6 +553,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T22:23:47.530Z",
+      "candidate": "honest_post_where_buyers_gather",
+      "kind": "prerequisite",
+      "mechanism": "Re-point the elected route's prerequisite_term from account (r/gamedev) to venue_rule (itch.io), and make the revenue-path finding a failing reader instead of a printed line. No day count moves this lap: both ETAs stay infinite because neither door has been walked through yet. What moves is WHICH pending owner request is the binding one for revenue. Under term=account the route waits on r/gamedev, whose own quoted rule forbids promoting paid assets, so clearing it yields a permitted post and no way to be paid — the route's revenue step is forbidden at the only venue its prerequisite names. Under term=venue_rule the route waits on itch.io, whose rule REQUIRES a link to the itch.io page (revenue path true), whose account is measured to exist (HTTP 200), whose eligibility threshold is an explicit none, whose announcement is already written in English and whose cover image is committed. Same class of blocker, one owner action, already pending, and no 48-hour account-age wait. The finite path this is prerequisite to is the first sale; this lap makes the loop wait at the door that can produce one.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

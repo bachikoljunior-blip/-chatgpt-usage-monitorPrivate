@@ -880,6 +880,21 @@ for (const c of candidates) {
       `— not work a lap can take): ${c.owner_request.one_line ?? ""}`,
     );
   }
+  // Printed immediately after the request above, because the two can disagree and did.
+  // owner-requests.json files a request against ONE candidate; the prerequisite is
+  // derived from the venue rows the elected term binds. When the route was re-pointed
+  // from r/gamedev to itch.io, this candidate went on printing the Reddit request while
+  // its own prerequisite named itch.io — two true lines about two different doors, with
+  // nothing to tell a reader which one the route is actually waiting on.
+  const clearing = c.route_alignment?.owner_requests_clearing_the_prerequisite;
+  if (clearing?.length && !clearing.includes(c.owner_request?.id)) {
+    console.log(
+      `      BUT THE PREREQUISITE IS CLEARED BY A DIFFERENT REQUEST: ${clearing.join(", ")}. ` +
+        "The request filed against this candidate is not the one the elected route is waiting on — " +
+        "that request is filed against another candidate, and this one is derived from the venue " +
+        "rows the elected term binds. Act on the derived one.",
+    );
+  }
 }
 for (const id of unmatchedRepricings) {
   console.log(`  REPRICING NOT APPLIED: no candidate with id ${JSON.stringify(id)}`);

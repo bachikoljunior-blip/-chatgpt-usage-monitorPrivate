@@ -2173,8 +2173,13 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   const unread = prerequisiteCheck({ route: "r", prerequisite_term: "account" }, bindings);
   assert(unread.ok === false, "a measurable prerequisite naming no reader was accepted");
 
+  // Named on `venue_rule` rather than `account` since 2026-08-09T22:3xZ. This case
+  // tests WELL-FORMEDNESS — a term in the vocabulary, with a reader — and it used to
+  // say "account", which is now a substantive failure for a separate reason (the only
+  // venue binding on it cannot be paid through). Left on `account` this would have
+  // gone red for a reason that has nothing to do with what it is checking.
   const good = prerequisiteCheck(
-    { route: "r", prerequisite_term: "account", prerequisite_measured_by: { script: "scripts/venue-readiness.mjs" } },
+    { route: "r", prerequisite_term: "venue_rule", prerequisite_measured_by: { script: "scripts/venue-readiness.mjs" } },
     bindings,
   );
   assert(good.ok === true, `a well-formed prerequisite was rejected: ${good.problem}`);
@@ -2186,7 +2191,7 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   const stamped = [{ id: "c", serves_route: "r" }];
   applyRouteElection(stamped, { route: "r", prerequisite: "words" }, good);
   assert(
-    stamped[0].route_alignment.prerequisite_measured?.term === "account",
+    stamped[0].route_alignment.prerequisite_measured?.term === "venue_rule",
     "the measured prerequisite never reached the candidate",
   );
   assert(stamped[0].route_alignment.prerequisite === "words", "the prose prerequisite was dropped instead of kept beside the measurement");
@@ -2306,7 +2311,6 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     { route: "r", prerequisite_term: "account", prerequisite_measured_by: { script: "scripts/venue-readiness.mjs" } },
     payable,
   );
-  assert(priced.ok === true, `pricing the prerequisite turned a well-formed election into a failure: ${priced.problem}`);
   assert(
     priced.binding_venues_without_a_revenue_path.includes("r/gamedev"),
     "the venue the route is waiting on was not reported as one it cannot be paid through",
@@ -2314,6 +2318,111 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(
     !priced.binding_venues_without_a_revenue_path.includes("itch.io"),
     "a venue the route is NOT waiting on was blamed for the prerequisite's price",
+  );
+
+  // THIS ASSERTION WAS `ok === true` UNTIL 2026-08-09T22:3xZ, AND THE FLIP IS THE
+  // POINT OF THE LAP THAT CHANGED IT.
+  //
+  // The reasoning for `true` was sound about ROWS and was then applied to the
+  // ELECTION: a venue forbidding paid promotion is still a venue, so the finding was
+  // called "a price, not a blocker" and left as a printed paragraph. The consequence
+  // was that the election went on naming `account` for two laps after the r/gamedev
+  // row itself had recorded that clearing it "cannot be the route's revenue step and
+  // must stop being ranked as though it were". True, in the file, and read by nobody.
+  //
+  // A row and an election are different objects. Nothing here shuts a row — the
+  // `unpayable` case above still asserts ok === true for exactly that. What is
+  // refused is a ROUTE that has chosen to wait at a door it cannot be paid through,
+  // which is a decision rather than a fact about a venue.
+  assert(priced.ok === false, "an election waiting on a door it cannot be paid through was admitted");
+  assert(
+    priced.problem.includes("cannot be paid through"),
+    `the unpayable election was rejected for the wrong reason: ${priced.problem}`,
+  );
+
+  // The other direction, and the one that must not be lost: naming a term whose
+  // venues CAN be paid through is admitted. Without this, the check could be
+  // satisfied by refusing everything.
+  const repointed = prerequisiteCheck(
+    { route: "r", prerequisite_term: "venue_rule", prerequisite_measured_by: { script: "scripts/venue-readiness.mjs" } },
+    payable,
+  );
+  assert(repointed.ok === true, `re-pointing at a payable door was still refused: ${repointed.problem}`);
+  assert(
+    repointed.binding_venues_without_a_revenue_path.length === 0,
+    "the payable door was reported as unpayable",
+  );
+
+  // A route elected for readership rather than revenue is a legitimate thing to
+  // elect. The difference between that and the bug is that somebody SAID so, which
+  // is the same two-way choice postable_not_evaluable and unlock_not_evaluable offer.
+  const declared = prerequisiteCheck(
+    {
+      route: "r",
+      prerequisite_term: "account",
+      prerequisite_measured_by: { script: "scripts/venue-readiness.mjs" },
+      prerequisite_revenue_path_exception: "this route is elected for readership, and the revenue step happens elsewhere",
+    },
+    payable,
+  );
+  assert(declared.ok === true, "a declared readership route was refused as though it were the unnoticed bug");
+  assert(
+    declared.binding_venues_without_a_revenue_path.includes("r/gamedev"),
+    "declaring the exception silenced the measurement as well as the failure",
+  );
+
+  // WHICH owner action clears the prerequisite, derived from the rows the named term
+  // binds rather than from which candidate a request was filed against. The two
+  // disagreed the moment the route was re-pointed: owner-requests.json binds the itch
+  // page to the `itch` candidate, so the elected candidate kept printing the Reddit
+  // request beside a prerequisite naming itch.io. Both lines were true.
+  const withRequests = venueReadiness(
+    [
+      { ...itch, owner_request_id: "2026-08-09.itch-page-for-the-kit" },
+      { ...reddit, postable_today: null, owner_request_id: "2026-08-09.reddit-account-create" },
+    ],
+    evidence,
+    { "assets/free-demo/index.html": true },
+    "en",
+  );
+  const onItch = prerequisiteCheck(
+    { route: "r", prerequisite_term: "venue_rule", prerequisite_measured_by: { script: "scripts/venue-readiness.mjs" } },
+    withRequests,
+  );
+  assert(
+    onItch.owner_requests_clearing_the_term.includes("2026-08-09.itch-page-for-the-kit"),
+    "the owner action that clears the named term was not derived",
+  );
+  assert(
+    !onItch.owner_requests_clearing_the_term.includes("2026-08-09.reddit-account-create"),
+    "a request clearing a venue the route is NOT waiting on was named as the one that clears it",
+  );
+
+  // The other direction: name the other term and the other request is derived. Without
+  // this the field could be hard-coded to itch and still pass.
+  const onReddit = prerequisiteCheck(
+    {
+      route: "r",
+      prerequisite_term: "account",
+      prerequisite_measured_by: { script: "scripts/venue-readiness.mjs" },
+      prerequisite_revenue_path_exception: "readership route, declared",
+    },
+    withRequests,
+  );
+  assert(
+    onReddit.owner_requests_clearing_the_term.includes("2026-08-09.reddit-account-create"),
+    "the derived owner action did not follow the named term",
+  );
+
+  // And it has to reach the candidate the picker reads, beside the request that
+  // disagrees with it — which is the only place the contradiction is visible.
+  const contradicted = [{ id: "c", serves_route: "r" }];
+  applyRouteElection(contradicted, { route: "r" }, onItch);
+  assert(
+    contradicted[0].route_alignment.owner_requests_clearing_the_prerequisite?.includes(
+      "2026-08-09.itch-page-for-the-kit",
+    ),
+    "the derived owner action never reached the candidate list",
   );
 
   // And it has to reach the candidate a lap picks from. Left in the venue file it

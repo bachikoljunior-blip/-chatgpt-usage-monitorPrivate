@@ -213,6 +213,8 @@
             },
             "postable_when_note": "This is the row the reader was added for. The blocker is an owner action that is already pending, so this venue flips to postable the moment the page exists — and until 2026-08-09 nothing would have noticed, because postable_today was hand-written and venues_postable_today_from_a_standing_start was hand-counted from it. game_count is the field state/itch.json actually carries; the survey prose says 'reports zero games', which is the same measurement in words.",
             "blocked_on": "the required link is to a page ON itch.io, and state/itch.json reports zero games. That page is owner request 2026-08-09.itch-page-for-the-kit, already pending.",
+            "owner_request_id": "2026-08-09.itch-page-for-the-kit",
+            "owner_request_id_note": "The same id blocked_on has named in prose since this row was written, now as data. It was unreadable there, and the cost showed the moment the elected route was re-pointed onto this row at 22:3xZ: state/owner-requests.json binds each request to one CANDIDATE, this one to `itch` (the channel), so the elected candidate went on printing OWNER REQUEST PENDING (2026-08-09.reddit-account-create) beside a prerequisite that named itch.io. Neither statement was false — they were about different doors, and nothing could tell a reader that.",
             "the_reason_this_venue_matters_most": "It is the only surveyed venue with no eligibility threshold AND a dated live slot AND rules that permit a paid asset pack. Its only blocker is an owner action already asked for.",
             "account": {
               "exists": true,
@@ -247,6 +249,8 @@
             ],
             "postable_when_note": "The venue's rule forbids the paid kit and permits a free unwalled artifact in the same sentence, so what decides this row is whether such an artifact exists. It does not: task .q commissioned one from the codex lane and codex/outbox/2026-08-09.q.md has not arrived. False beats unknown in the AND, so this row reads shut on the artifact even though the account answer is unknown — which is correct, and also why the account question is not yet the binding blocker here. WHEN THE ARTIFACT LANDS THIS ROW TURNS unknown, NOT postable, and scripts/venue-readiness.mjs will fail until somebody answers the account question or records that it cannot be answered. That failure is the feature: it is the loop refusing to carry r/gamedev as an open route on an account nobody has established.",
             "blocked_on": "the rule, not the account. A USD 25 paid kit is forbidden here regardless of standing, and no paid-product day thread or dedicated slot was found.",
+            "owner_request_id": "2026-08-09.reddit-account-create",
+            "owner_request_id_note": "Still pending and still worth making — for READERSHIP. This row's paid_promotion_permitted is false, so the request behind it cannot be the route's revenue step, which is why the election was re-pointed off this row at 22:3xZ rather than this request being withdrawn.",
             "what_it_opens_instead": "A free artifact with no signup wall is explicitly permitted by the same sentence. This is the one venue whose door is open to a different product form rather than to a better-standing account.",
             "account": {
               "exists": false,
