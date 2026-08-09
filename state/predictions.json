@@ -324,6 +324,27 @@
       ],
       "falsified_if": "PUT /v2/products/:id turns out not to exist or not to accept a description, so the workflow fails and the storefront keeps the shop-facing copy while the repository claims otherwise. That would be the worse outcome than an outright refusal: the repo would read as re-aimed and the public page would not be, and every later lap would reason from the file. It is also falsified if the workflow succeeds but writes nothing back, since then the replaced copy exists nowhere and branch A cannot be reverted. Note this prediction cannot be settled by a session that lacks network reach to the Gumroad API; (a) is readable from origin/main alone and is the half that must be checked first.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-09.codex-range-changes-what-gets-delegated",
+      "made_at": "2026-08-09T13:04:36.993Z",
+      "claim": "Ten tasks went to the ChatGPT lane and all ten were outside research, so the lane's range was never measured - only our ordering habit was. Task .m asked for five small artifacts and judged on arrival rather than self-report; four came back (English copy, a self-contained 512x512 SVG, a JS module with a node:test suite, one URL fetch) and the fifth was refused for the right reason (no FX rate in the attached files, and importing one was forbidden). The claim is NOT that the lane is capable - that is now measured and recorded. The claim is that measuring it changes behaviour: that later laps actually send copy, art, code or UI work across to the unused pool instead of spending the binding Claude quota on it. A capability recorded and never used is the same as one never measured, and this repository has that failure on file three times over.",
+      "metric": "codex/INBOX.md task ids after .m, read from origin/main. At least one task between now and the judge date asks the lane for something that is NOT outside research - copy, artwork, code, or a browser UI - and its codex/outbox/<id>.md exists. Counted from the INBOX text and the outbox listing, not from any lap's description of what it did.",
+      "baseline": {
+        "tasks_sent_to_the_lane_before_m": 10,
+        "of_those_that_were_outside_research": 10,
+        "artifacts_requested_by_m": 5,
+        "artifacts_delivered_by_m": 4,
+        "codex_pool_utilisation": "unused; state/usage.json is the collector, and the Claude side is the binding one at 11.40% discretionary"
+      },
+      "judge_on": "2026-08-12",
+      "judge_deadline": "2026-08-16",
+      "concurrent_changes": [
+        "The same lap recorded state/constraints.json codex_can_produce_images as partially measured from the same answer. One artifact set, two constraints - not two independent changes.",
+        "The lap before this one re-aimed the Gumroad listing, which is the most likely source of the first delegated copy task, so a later English-copy task cannot be attributed to this measurement alone."
+      ],
+      "falsified_if": "Every task after .m is outside research again, which would mean the range was measured, written into the file the picker reads, and changed nothing - the write-it-where-nobody-acts failure in its cheapest-looking form. Note the specific next step that would settle it fastest is already identified and NOT done: scripts/inbox-task.mjs ATTACHMENTS does not include assets/listing/gumroad.ja.json, so the lane cannot see the live listing copy and cannot be asked to localise it without someone copying prose into the instruction, which RUNBOOK forbids. If a later lap adds that one line and sends the task, this prediction settles true.",
+      "outcome": null
     }
   ]
 }

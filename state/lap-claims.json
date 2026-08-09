@@ -65,6 +65,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T13:01:13.189Z",
+      "candidate": "codex_lane_capability_range_unmapped",
+      "kind": "prerequisite",
+      "mechanism": "The Claude weekly pool is the binding resource (11.40% discretionary against a 26.60% reservation for automations nobody has measured) while the Codex pool sits unused. Every kind of work that turns out to be delegable moves off the binding constraint, which is arithmetically the same as halving lap cost but gives nothing up. state/constraints.json codex_lane_capability_range_unmapped is measured_at null: all ten tasks sent to that lane were outside research, which is the history of our orders and not the range of the lane. Task .m asks for five small artifacts and is judged on whether they arrive, because a self-report is not a measurement. This lap dispatches it and records what actually came back. It cannot itself make the ETA finite, so it is claimed as groundwork - the first since the route_change reset the run.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
