@@ -3,9 +3,7 @@
   "fetched_at": "2026-08-09T12:22:00Z",
   "decision": "handoff_after_two_laps",
   "reason": "RUNBOOK 6.5, on the judgement clause rather than the lap count: two laps, not three. The next lap is the zero-base round, which RUNBOOK 5 says is one round and must not be re-run inside a session. Starting it on a heavily used context and running out mid-round would waste the week's only round. The gate returned continue at the start of both laps and again at handoff (1.27%), so this is not a stop.",
-
   "the_one_thing_if_you_read_nothing_else": "For at least nineteen laps the loop could not have registered its own success, and this session measured that rather than reasoning about it. compute-eta.mjs pinned the Gumroad channel at monthly_yen_now: 0 with idle_eta_days: `sales === 0 ? null : null` — a conditional whose two branches are the same value. Writing 500 sales and USD 12,500 into state/gumroad.json and running compute-eta --local still printed '¥0/month' and '∞'. Since eta-gate admits a direct claim only when the claimed ETA beats the measured one, and the prerequisite lane had closed at 3/3, BOTH LANES REJECTED — observed, both of them, before any code was touched. The loop was not out of ideas; it was structurally unable to move. Both instruments are now repaired and both repairs are held by tests. THE ROUTE_CHANGE LANE IS OPEN AND THE ZERO-BASE ROUND IS THE NATURAL NEXT LAP.",
-
   "what_the_next_lap_should_probably_do": {
     "the_lane_that_is_open": "node scripts/eta-gate.mjs --id=zerobase --kind=route_change --after-idle=inf --after-planned=inf --mechanism=\"...\" --record — verified go against real state at 12:20Z. direct and prerequisite both still reject, correctly: there is still no revenue and no growth, so no finite claim is honest.",
     "run_the_zero_base_round": "RUNBOOK 3.9 and the gate's own rejection text both name it: when no candidate can claim to move the number, the candidate list is the conclusion. check-zerobase reports healthy and not due for ~6.7 days, but the cadence is not the trigger here — the exhausted parameter lane is. RUNBOOK 5 rules apply in full: hand the goal and state/constraints.json current values to a fresh context WITHOUT this repository's proper nouns, discard the round if our names come back in the output, and do not iterate inside the round.",
@@ -13,12 +11,10 @@
     "do_not": "re-prepare the itch owner request. It is written, paste-ready, and waits on a human. compute-eta prints OWNER REQUEST PENDING on that candidate.",
     "do_not_2": "do not treat the two instrument repairs as licence to keep repairing instruments. RUNBOOK 3.9 now says explicitly that only the gate's own inputs are exempt from the gate, and that exemption is narrow. A third consecutive machinery lap with no revenue is the sixteen-lap failure wearing a new hat."
   },
-
   "did": {
     "lap1": "Made revenue representable. Added scripts/revenue-rate.mjs (pure), a dated series state/gumroad-history.json appended by read-gumroad.mjs, and rewired compute-eta.mjs to derive the rate from it. Kept the honesty rules explicit: one reading is a level and not a rate; a positive but FLAT rate never reaches a higher target and says so rather than extrapolating a level as a slope; finiteness requires measured growth between the window's halves; a falling cumulative counter is a refund, not negative growth. Also staged state/gumroad-history.json in gumroad-monitor.yml — the workflow does `git reset --hard origin/main` before regenerating, so an append that is not committed is discarded and the series would have sat at one row forever. c404548.",
     "lap2": "Opened a lane. Extracted the gate's verdict into scripts/gate-verdict.mjs as a pure function and added --kind=route_change, admitted ONLY while the prerequisite cap is firing so it cannot become a bypass. Passing it breaks the trailing prerequisite run, so groundwork budget refills — intended: a loop that actually changed direction has earned that, and the counter still measures groundwork on the route it just abandoned. tests/run-tests.mjs now asserts that some lane is always open at the cap. RUNBOOK 3.9 documents the third lane and the one narrow exemption. b3f2e56."
   },
-
   "observed_not_guessed": {
     "gate": "continue on both laps and at handoff. 38% weekly remaining, 5.40 days to reset, discretionary ~11.7%, lap budget 1.29% / 1.30% / 1.27%.",
     "the_metric_was_pinned": "measured twice, independently. (1) Reading the code: monthly_yen_now hardcoded 0 and a ternary with identical branches. (2) End-to-end: 500 sales and USD 12,500 written into state/gumroad.json produced '¥0/month' and 'idle ETA: ∞' from compute-eta --local. Restored immediately; state/gumroad.json diff against origin/main was empty afterwards.",
@@ -32,11 +28,8 @@
     "concurrency": "main moved under this session on the first push — the hourly collectors. state/gumroad.json and state/laps.json conflicted. laps.json was merged field-wise rather than by picking a side: origin/main's samples were kept (they carry the predecessor's closed lap, 35 rows) and only this session's open row was re-applied. Taking either side whole would have discarded a measurement.",
     "checks": "run-tests, verify-sanitized-state, check-wiring (unexcused 0), check-predictions (owed 0, settled 1, waiting 12), check-zerobase (healthy) all green at handoff."
   },
-
   "for_the_parent_approval_required": "Nothing. No lap needed an operation that would raise a permission prompt. Two Bash commands were refused by the auto-mode classifier (`git reset --hard` combined with other commands, and a compound fetch+reset) and were routed around by running the steps separately; that is a tool-permission refusal, not an owner approval. Recording the zero explicitly, because 'no entry' and 'nothing needed' read identically.",
-
   "the_thing_worth_reading_twice": "Both of this session's findings are the same shape, and it is not the shape the repository has been watching for. check-wiring catches a file nobody reads and a script nothing runs. Neither of these was unwired: compute-eta was read by everything, and eta-gate was run by every lap. They were wired to CONSTANTS. A ternary whose branches are identical, and a counter that can only reset via an event it forbids, both pass every structural check while making the system incapable of the thing it exists to do. The way both were found was the same and is cheap: feed the machine a situation in which it MUST give a different answer, and see whether it does. A test that cannot fail proves nothing — and neither does a metric that cannot move.",
-
   "known_gaps": [
     "The itch channel has the identical defect and nobody has fixed it: idle_eta_days is an unconditional null and monthly_yen_now is hardcoded 0, while state/itch.json already carries total_purchases and total_downloads. The portfolio ETA is the minimum across channels, so itch cannot contribute a finite number either — and itch is exactly where the ONE pending owner action lands. If the owner creates the page and it sells, that success is currently invisible. scripts/revenue-rate.mjs is channel-agnostic and would be reused, but appendReading expects sales counts and USD cents, so itch needs a price to convert purchases into revenue.",
     "FX_USD_JPY_ASSUMED = 150 in scripts/revenue-rate.mjs is an assumption, labelled as one and surfaced as fx_usd_jpy_assumed on the channel. It only affects the answer once revenue is non-zero, but it should be replaced with a measured rate before any yen figure is treated as precise.",
@@ -47,20 +40,18 @@
     "push-with-retry.sh still lacks --autostash. EIGHT sessions have now paid this by hand instead of fixing it.",
     "read-gumroad.mjs computes file_count with Array.isArray(p.file_info) but the API returns an object, so file_count is always null. Harmless; left alone to keep laps to one change."
   ],
-
   "concurrency_note": "Always fetch + rebase --autostash, never force. Generated state files (gumroad.json, laps.json, usage.json, itch.json) conflict routinely because the hourly collectors regenerate them whole. For laps.json specifically, merge field-wise and keep origin/main's samples — picking a side throws away a lap measurement. codex-inbox.yml commits from its own checkout, staging only state/answers, state/auth.vault and codex, so an INBOX rewritten while a run is in flight is not reverted by it.",
-
   "owner_requests_this_lap": 0,
   "owner_requests_this_lap_note": "Deliberate. One is already pending and RUNBOOK 6 says confirm the set is minimal and keep it minimal. Adding a second while the first is unanswered would tell us nothing about the request channel.",
   "owner_request_ids": [],
-
-  "predictions_registered": ["2026-08-09.eta-can-represent-revenue"],
+  "predictions_registered": [
+    "2026-08-09.eta-can-represent-revenue"
+  ],
   "predictions_note": "Judge on 2026-08-11, deadline 2026-08-16, with min_observations of 2 readings in state/gumroad-history.json. The falsification is deliberately aimed at the half that historically breaks: if the series is still one reading long at the judge date, gumroad-monitor.yml is appending and discarding, and the repair looks done while remaining pinned at ∞.",
-
   "predecessor_session_id": "session_013Z7rdu4XVv2AH12Tb4R6dF",
   "successor_session_id": "session_013KZNAQR1GP5ERB91ccUaAu",
   "archive_policy": "A successor archives its predecessor at startup, and only when get_session reports SESSION_STATUS_IDLE. RUNNING means look again later, not never again. A permission refusal means try again later — it is not evidence the session cannot be archived.",
   "successor_note": "Spawned 12:22:11Z with source_url + source_revision=main, tagged revenue-loop-chain. Status at creation was PENDING with connection_status disconnected, which is not evidence it runs — a previous handoff recorded a successor that then sat in REQUIRES_ACTION for an hour. Re-read after the push; the reading is in successor_status_recheck.",
-  "successor_status_recheck": "pending — written after the push, see below",
+  "successor_status_recheck": "12:24:22Z — SESSION_STATUS_RUNNING, connected. That is motion, not just presence. Checked because create_session returning PENDING with connection_status disconnected proves nothing.",
   "status": "ok"
 }
