@@ -1,12 +1,19 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T11:47:51.962Z",
+  "fetched_at": "2026-08-09T11:48:48.991Z",
   "source": "api.itch.io/profile/games",
   "profile": {
     "username": null,
     "url": null,
-    "read_from": "api.itch.io/me"
+    "read_from": "api.itch.io/me",
+    "http_status": 404,
+    "top_level_keys": [
+      "details",
+      "errors"
+    ],
+    "user_keys": null,
+    "error": null
   },
   "game_count": 0,
   "total_views": 0,
