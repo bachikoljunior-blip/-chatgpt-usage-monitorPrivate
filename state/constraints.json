@@ -173,6 +173,24 @@
       "bearing_on_the_pending_owner_request": "state/owner-requests.json 2026-08-09.itch-page-for-the-kit is NOT invalidated by this and has NOT been rewritten — the request forbids that, and it is with the owner. itch Game Assets is a branch-A venue where the form matches, which this finding supports rather than undermines. What it does flag: the description_body_to_paste in that request is the shop-facing copy, so branch A would want it re-aimed at the developer or agency buying a licence. That is a decision for a later lap or for the owner, not a silent edit to a request already in flight.",
       "not_established": "that branch A sells either. .k found that developers buy kits of this genre; it did not find anyone buying OURS. The form matching a market is necessary, not sufficient — the same distinction state/eta.json already draws on the itch candidate under not_success.",
       "note": "The venue half of .l is real but belongs to the class in branch B: r/smallbusiness permits same-day zero-standing posting inside its weekly Promote-your-business thread, with the rule quoted and no karma or age numbers in the public rules. Do not carry that venue into branch A — it is where the class that was NOT observed buying this form gathers. r/Entrepreneur (10 comment karma, promotion banned) and r/shopify (30-day age, 20+20 karma, links banned) were both checked and both exclude us."
+    },
+    {
+      "id": "codex_lane_capability_range_unmapped",
+      "claim": "What the ChatGPT lane can do has never been enumerated. It has only ever been asked to look things up outside, because that is what RUNBOOK offered it — the range was assumed rather than measured.",
+      "evidence": "Nine tasks have gone through codex/INBOX.md and all nine were outward surveys. No task has ever tested a different kind of work, so 'the lane does research' is a description of what we asked, not of what it can do. The owner pointed this out on 2026-08-09 by naming a capability nobody here had considered.",
+      "measured_at": null,
+      "recheck_after": "2026-08-10",
+      "eta_effect_if_lifted": "high: the Claude weekly pool is the scarce one and the Codex pool sat at 100% unused. Every kind of work that turns out to be delegable moves off the binding constraint, which is the same mechanism as halving lap cost but without giving anything up.",
+      "how_to_measure": "Ask the lane directly what it can and cannot do in its own environment, and have it demonstrate rather than assert — one small artefact per claimed capability. An assertion from a model about its own tools is not a measurement."
+    },
+    {
+      "id": "codex_can_produce_images",
+      "claim": "The ChatGPT account can generate images. Whether that reaches our automated lane is a separate and untested question.",
+      "evidence": "Owner statement, 2026-08-09: ChatGPT can generate images. That is information about the interactive account, not an observation of scripts/ask-chatgpt.mjs, which runs codex exec in a read-only sandbox and returns text. The two paths have never been shown to have the same capabilities, so this is recorded as unmeasured rather than as a limit.",
+      "measured_at": null,
+      "recheck_after": "2026-08-10",
+      "eta_effect_if_lifted": "medium: store art, covers and screenshots are needed on every listing. Chromium here already renders text-and-CSS covers (assets/itch-cover.png), so this only buys what CSS cannot draw — illustration. Real, but smaller than the range question above.",
+      "how_to_measure": "Ask the lane for an image through codex/INBOX.md and see what comes back. An SVG is text and would arrive through the existing answer file; a raster image would not, and that difference is itself the finding."
     }
   ]
 }
