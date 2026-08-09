@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T10:33:25.405Z",
+  "fetched_at": "2026-08-09T10:33:37.295Z",
   "overdue_factor": 2,
   "overdue_count": 0,
   "never_seen_count": 2,
@@ -38,18 +38,18 @@
       "id": "usage-monitor",
       "kind": "github-actions",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-09T10:17:29.294Z",
+      "last_seen": "2026-08-09T10:33:33.156Z",
       "last_seen_source": "state_file:state/usage.json",
-      "age_minutes": 16,
+      "age_minutes": 0,
       "status": "ok"
     },
     {
       "id": "claude-usage-monitor",
       "kind": "github-actions",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-09T10:17:35.235Z",
+      "last_seen": "2026-08-09T10:33:28.089Z",
       "last_seen_source": "state_file:state/claude-usage.json",
-      "age_minutes": 16,
+      "age_minutes": 0,
       "status": "ok"
     },
     {
