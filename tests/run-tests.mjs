@@ -2283,6 +2283,48 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(unreadRule.ok === true, "a declared-null revenue path was rejected");
   assert(unreadRule.open_but_no_revenue_path.length === 0, "an unknown revenue path was counted as a forbidden one");
 
+  // --- a venue's rule can state more than one requirement ------------------------
+  //
+  // itch.io Release Announcements is the one venue measured to permit showing the
+  // paid product, and its rule states three requirements: a link to the itch.io
+  // page, a quick summary, and at least one embedded image or video. postable_when
+  // checked the first only, so the row would have flipped to POSTABLE the moment the
+  // pending owner request landed with two of the three unmet. The link is fixed in
+  // advance and the cover is committed; the summary was the requirement with nothing
+  // behind it. This is the same defect the r/gamedev row carried for an hour, and it
+  // is worth its own case because a satisfied first member must not hide an unmet
+  // second one.
+  const withSummary = {
+    venue: "itch.io",
+    postable_today: false,
+    postable_when: [
+      { state_file: "state/itch.json", field: "game_count", is: "positive" },
+      { repo_file: "assets/announce/itch-release-announcement.en.md" },
+    ],
+    account: { exists: true, evidence_state_file: "state/itch.json" },
+    audience_language: "en",
+    paid_promotion_permitted: true,
+  };
+  const pageButNoSummary = venueReadiness(
+    [withSummary],
+    { "state/itch.json": { status: "ok", game_count: 1 } },
+    { "assets/announce/itch-release-announcement.en.md": false },
+  );
+  assert(
+    pageButNoSummary.rows[0].postable_today === false,
+    "the itch.io page existing was enough to open the row while the summary its rule requires did not exist",
+  );
+
+  const bothPresent = venueReadiness(
+    [{ ...withSummary, postable_today: true }],
+    { "state/itch.json": { status: "ok", game_count: 1 } },
+    { "assets/announce/itch-release-announcement.en.md": true },
+  );
+  assert(
+    bothPresent.rows[0].postable_today === true,
+    "every stated requirement was met and the row still would not open",
+  );
+
   // Omission is not a legitimate answer. Same rule as the account and language
   // fields, for the same reason: an optional field makes "nobody asked" invisible.
   const withoutPaid = { ...reddit };

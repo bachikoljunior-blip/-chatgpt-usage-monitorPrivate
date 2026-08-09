@@ -521,6 +521,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T22:06:15.855Z",
+      "candidate": "itch",
+      "kind": "prerequisite",
+      "mechanism": "The one venue this route can be PAID at (established last lap: itch.io Release Announcements permits self-promotion and requires a link to an itch.io page, while r/gamedev forbids promoting paid assets outright) states three requirements in its own quoted rule: a link to the page on itch.io, a quick summary of the game, and at least one embedded image or video. The row's postable_when checks exactly one of the three — state/itch.json game_count positive. So the moment the pending owner request lands, the row flips to POSTABLE while two of the venue's three stated requirements are unmet, and the announcement that route exists to make cannot be written. This produces the missing one that needs no owner action — the summary, in English, because that board reads English — and makes the requirement a machine-checked member of postable_when rather than a sentence inside rule_quoted that only a human re-reading it would notice. It claims no day count: the door is still an owner action away.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

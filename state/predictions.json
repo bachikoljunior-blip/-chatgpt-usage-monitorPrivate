@@ -5,6 +5,30 @@
   "note": "Every change made because it was claimed to shorten the ETA. judge_on is set when the change lands, not when it is convenient. concurrent_changes is what else was in flight, so a later reader can tell a clean attribution from a confounded one.",
   "predictions": [
     {
+      "id": "2026-08-09.a-rule-with-three-requirements-was-checked-for-one",
+      "made_at": "2026-08-09T22:15:00Z",
+      "claim": "itch.io Release Announcements is the one surveyed venue measured to permit showing the paid product, and its rule_quoted states three requirements: a link to the page on itch.io, a quick summary of the game, and at least one embedded image or video — with the next sentence saying posts that are just links are locked and removed. The row's postable_when checked one of the three (state/itch.json game_count positive). The claim is that this would have cost something real and not merely been untidy: owner request 2026-08-09.itch-page-for-the-kit is pending, and on the day it lands the row would have read POSTABLE while the summary requirement had nothing behind it in the language the board reads. The Japanese summary existed in that same owner request since 11:33Z and language_fit could not see it, because it derives the artifact's language from assets/free-demo/index.html — the r/gamedev artifact, not this row's. It returned the right verdict here by coincidence: both files are Japanese.",
+      "metric": "scripts/venue-readiness.mjs, read from origin/main: the itch.io row's postable_when must remain an ARRAY whose members are the page and assets/announce/itch-release-announcement.en.md, and the row must read shut while either is unmet. tests/run-tests.mjs holds both directions as negative cases (page present + summary absent must NOT open the row; both present must open it), so a suite that passes with those assertions deleted does not count.",
+      "baseline": {
+        "measured_at": "2026-08-09T22:10:00Z",
+        "requirements_stated_by_the_venue_rule": 3,
+        "requirements_checked_by_postable_when_before": 1,
+        "summary_existed_in_japanese_since": "2026-08-09T11:33:00Z",
+        "board_audience_language": "en",
+        "artifact_language_derived_from": "assets/free-demo/index.html",
+        "itch_game_count": 0
+      },
+      "judge_on": "2026-08-23",
+      "judge_deadline": "2026-09-06",
+      "concurrent_changes": [
+        "Same session, one lap earlier and inseparable in motivation: paid_promotion_permitted established that itch.io is the payable venue and r/gamedev is not. This lap only exists because that reordering pointed at this row. Registered as 2026-08-09.the-open-door-cannot-be-paid-through.",
+        "Two laps earlier: audience_language / language_fit. This finding is partly a defect IN that instrument (one artifact_language derived for all rows), so neither can be judged as a clean success without saying so.",
+        "The owner request itself was NOT re-prepared and its Japanese step_2 was left in place. Nothing about the owner's cost changed this lap."
+      ],
+      "falsified_if": "The page is created and the announcement is posted in Japanese anyway and performs fine — which would mean the board's English audience was not a binding term and this row should stop carrying it. It is also falsified, more cheaply and more usefully, if posting to the board turns out to be an OWNER action rather than a lap action: state/itch.json proves API access, not forum-posting ability, and account.exists true on this row currently conflates the two. If it is an owner action, an English summary prepared by a lap saves the owner typing and nothing else, and the requirement belongs in the owner request rather than in postable_when. Nobody has separated those and this prediction does not assume the answer.",
+      "outcome": null
+    },
+    {
       "id": "2026-08-09.the-open-door-cannot-be-paid-through",
       "made_at": "2026-08-09T22:00:00Z",
       "claim": "The elected route's prerequisite is `account`, and exactly one surveyed venue binds on that term: r/gamedev. Its own rule_quoted forbids the act that would turn a post there into money — 'promoting paid assets (even on sale or in a giveaway) is forbidden' — and the only thing this account is paid for is the USD 25 gumroad kit. So clearing the prerequisite buys a permitted post and no permitted way to be paid for it. The claim registered is that this is a term and not a quibble: laps after this one stop treating 2026-08-09.reddit-account-create as the binding owner request for revenue and treat 2026-08-09.itch-page-for-the-kit as binding instead, because itch.io's own rule REQUIRES a link to an itch.io page and permits self-promotion at a reasonable level. Registered before the reordering so the reordering cannot be credited retroactively. What this does NOT claim: that r/gamedev is worthless. A free post there is still permitted, still cheap, and is still the only door whose blocker is one owner action — it is a way to be read, not a way to be paid, and those were the same field until now.",

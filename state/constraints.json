@@ -193,10 +193,21 @@
             "eligibility_threshold": "none stated — no karma, no account age, no day-of-week restriction",
             "live_slot_evidence": "an asset pack (CBORN Character Pack 01) posted 2026-08-09, the day of the survey",
             "postable_today": false,
-            "postable_when": {
-              "state_file": "state/itch.json",
-              "field": "game_count",
-              "is": "positive"
+            "postable_when": [
+              {
+                "state_file": "state/itch.json",
+                "field": "game_count",
+                "is": "positive"
+              },
+              {
+                "repo_file": "assets/announce/itch-release-announcement.en.md"
+              }
+            ],
+            "postable_when_became_an_array": {
+              "at": "2026-08-09T22:15:00Z",
+              "why": "rule_quoted on this row states THREE requirements for a post — 'A link to the page on itch.io / A quick summary of the game / At least one embedded image or video' — and the sentence beside it says posts that are just links are locked and removed. postable_when checked one of the three. So the moment owner request 2026-08-09.itch-page-for-the-kit lands, this row flips to POSTABLE with two of the venue's own stated requirements unmet and nothing would say so. The link is fixed in advance (username from state/itch.json plus the slug in that request) and the image is assets/itch-cover.png, already committed — the summary was the one requirement with nothing behind it. This is the same shape as the r/gamedev row's second blocker, which was missed for an hour for the same reason: a single-condition postable_when can only ever express the blocker whoever wrote it thought of first.",
+              "and_it_existed_in_the_wrong_language": "The summary was not missing. state/owner-requests.json step_2 has carried title_to_paste and body_to_paste since 11:33Z, in Japanese, for a board this same row measures as audience_language en. language_fit did not catch it because it derives the artifact's language from assets/free-demo/index.html — the artifact for the r/gamedev row, not for this one. It returned the right verdict here by coincidence: both files happen to be Japanese. THE GENERAL FORM, recorded and deliberately not fixed this lap because fixing it is a second change: one artifact_language is derived for all rows, but different venues receive different artifacts.",
+              "what_is_NOT_claimed": "That an English announcement sells anything. The board's rule requires a summary; this makes one exist, in the language the board reads, and makes its absence visible to a machine instead of to whoever happens to re-read rule_quoted next."
             },
             "postable_when_note": "This is the row the reader was added for. The blocker is an owner action that is already pending, so this venue flips to postable the moment the page exists — and until 2026-08-09 nothing would have noticed, because postable_today was hand-written and venues_postable_today_from_a_standing_start was hand-counted from it. game_count is the field state/itch.json actually carries; the survey prose says 'reports zero games', which is the same measurement in words.",
             "blocked_on": "the required link is to a page ON itch.io, and state/itch.json reports zero games. That page is owner request 2026-08-09.itch-page-for-the-kit, already pending.",
