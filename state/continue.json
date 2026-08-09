@@ -1,16 +1,19 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T07:02:18.934Z",
+  "fetched_at": "2026-08-09T07:59:00.000Z",
   "decision": "lap_complete",
   "reason": "assigned single lap finished; not a handoff for context",
-  "did": "fixed lap-cost measurement: window-roll compared resets_at as strings against a timestamp the collector re-derives every call, so 6 of 6 samples ever taken were discarded and pacing kept reserving the unmeasured 0.5% default.",
+  "did": "state/laps.json was committed to main in dc27015 with unresolved git conflict markers. record-lap.mjs read it through a catch-all that returns an empty history for any parse failure, and --phase=start writes that back immediately — so the next lap to clone main would have erased eight samples plus the pending-verification record and committed it, while printing 'lap start recorded' and exiting 0. Parse failures now abort with exit 5; missing files still fall back.",
   "observed_not_guessed": {
-    "gumroad_lifecycle": "dispatched gumroad-monitor.yml with probe_lifecycle=true at 06:53Z. Printed result: \"Sorry, you can only create 10 products per day.\" The daily cap has NOT reset. constraints.json recheck_after 2026-08-10 stands; do not re-probe before then.",
-    "resets_at_jitter": "12 consecutive collections 05:17Z-06:41Z all reported the same unmoved weekly window as .317/.265/.627/.324/.117/.435/.965/.281/21:59:59.937/.968/.180/.314",
-    "first_surviving_sample": "classified usable for the first time, then measured 0.000% — dropped as below_measurement_resolution rather than averaged in as free"
+    "corruption_is_on_main_not_local": "git show origin/main:state/laps.json throws at line 54 (position 1390). Markers at lines 54/61/68. Local HEAD 97db019 was clean, so this was only reachable by a fresh clone — which is how every automation runs.",
+    "silent_erasure_reproduced": "the old reader applied to the real origin/main blob returned samples: 0 and pending_verification: GONE. Two independent observations: direct JSON.parse throw, and the fallback's return value.",
+    "guard_verified_end_to_end": "with the corrupt blob in place, record-lap --phase=start exits 5 and leaves the file byte-identical (md5 before == after). With laps.json absent it still exits 0 and creates a fresh file, so a first-ever run is unaffected.",
+    "test_catches_its_own_regression": "mutation-tested: reverting parseStateFile to the swallowing behaviour makes tests/run-tests.mjs exit 1. Restored, it exits 0. A test asserting the committed laps.json parses would have caught dc27015 before it shipped.",
+    "lap_cost_this_lap": "not measurable — no_new_usage_reading (usage last collected 07:18:37Z, lap ran 07:52-07:59). Recorded as unusable, not as 0."
   },
-  "next_lap_should": "The classifier is fixed; the remaining blocker is resolution. A lap budget is 1.37% against a reading rounded to 0.1%, so one lap sits near the noise floor. Two untried routes: (a) measure across several laps — open once, close after N fires — or (b) find a usage field finer than the rounded percentage. Until one lands, every lap budget is still a residue of the 0.5% guess. state/laps.json pending_verification carries the indicator and a 2026-08-10 judgement date.",
-  "known_gap": "the below_measurement_resolution guard is not covered by tests/run-tests.mjs; only windowDidRoll is. Extracting the sample classifier into a pure module would close that.",
+  "next_lap_should": "The resolution problem the previous lap named is still open and is still the right next target, but check state/laps.json parses before trusting any of it. Two untried routes: (a) measure across several laps — one --phase=start, close after N fires — or (b) find a usage field finer than the 0.1%-rounded percentage. Note that route (a) now depends on the history surviving between laps, which is exactly what this lap fixed. Also worth 10 minutes: scripts/state-source.mjs readStateJson still returns { value: null, via: '... (unparseable)' } for a corrupt file, and every caller treats null as 'missing'. That is the same bug in a second place; it is non-destructive there (no write-back) but it silently blinds pacing.",
+  "known_gap": "verify-sanitized-state.mjs checks for credential leaks but not for parseability, and no CI step parses the state/*.json files that Actions commits. A pre-commit or workflow assertion that every state/*.json parses would close the class, not just this instance.",
+  "gumroad_note": "not re-probed this lap, per instruction. constraints.json recheck_after 2026-08-10 stands.",
   "owner_requests_this_lap": 0
 }
