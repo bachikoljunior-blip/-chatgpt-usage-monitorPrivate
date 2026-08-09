@@ -21,6 +21,7 @@ import {
 } from "../scripts/inbox-task.mjs";
 import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/revenue-rate.mjs";
 import { decideVerdict } from "../scripts/gate-verdict.mjs";
+import { checkAddressee, diffListing, readRepoListing } from "../scripts/sync-listing.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const temporary = await mkdtemp(join(tmpdir(), "usage-monitor-test-"));
@@ -850,6 +851,57 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       `${kind} admitted a claim that makes the ETA worse`,
     );
   }
+}
+
+// --- The listing must keep addressing the buyer the route change chose -------
+// 2026-08-09: codex/outbox/2026-08-09.l.md refuted the addressee of the live
+// Gumroad copy — shops, cafes, salons, streamers — by finding that every
+// confirmed purchase by that class was an operated monthly service and no
+// buy-once kit purchase by that class existed at all. The form itself sells; the
+// addressee was wrong. That decision is only worth taking once, so it is held
+// here rather than in anyone's memory: the copy ships from the repository and the
+// repository checks who it talks to.
+{
+  const repo = await readRepoListing();
+
+  const live = checkAddressee(repo);
+  assert(
+    live.ok,
+    `the committed listing copy drifted off its declared addressee: missing ${JSON.stringify(live.missing)}, forbidden present ${JSON.stringify(live.forbidden_present)}`,
+  );
+
+  // The check has to be able to fail, or it proves nothing. Lap 2 of the previous
+  // session reported a demo "reachable, HTTP 200" until a request for a UUID that
+  // cannot exist returned the same 200 — a test that cannot fail is a coincidence
+  // with a number beside it.
+  const reverted = { ...repo, description_html: `${repo.description_html}<p>自社ブランドに</p>` };
+  assert(
+    !checkAddressee(reverted).ok,
+    "the addressee check passed copy that had gone back to the refuted class",
+  );
+  assert(
+    !checkAddressee({ ...repo, description_html: "" }).ok,
+    "the addressee check passed copy missing every required term",
+  );
+
+  // Drift is byte equality against the live storefront, and it must notice both
+  // fields. Only the title changed on the route change's first push, and a
+  // comparison that watched the body alone would have called that in sync.
+  assert(diffListing({ name: repo.name, description: repo.description_html }, repo).in_sync,
+    "an identical live copy was reported as drifted");
+  assert(!diffListing({ name: "something else", description: repo.description_html }, repo).in_sync,
+    "a changed title was not reported as drift");
+  assert(!diffListing({ name: repo.name, description: "" }, repo).in_sync,
+    "a changed body was not reported as drift");
+
+  // The listing may restate the shipped licence for a different reader. It may
+  // not widen it: the kit is cut from a repository whose main branch is frozen by
+  // owner directive A2, so a wider promise here can never be honoured.
+  assert(
+    repo.description_html.includes("クライアントの案件へ納品する場合は、別途ご相談ください") &&
+      repo.description_html.includes("再販・再配布することはできません"),
+    "the listing dropped a licence restriction that the shipped LICENSE still imposes",
+  );
 }
 
 console.log("All usage monitor tests passed.");

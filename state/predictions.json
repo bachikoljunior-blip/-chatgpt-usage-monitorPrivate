@@ -300,6 +300,30 @@
       ],
       "falsified_if": "state/gumroad-history.json on origin/main still carries exactly one reading at the judge date, which would mean the hourly workflow appends and discards and the rate can never be derived — the same write-it-where-nobody-reads-it failure this repository keeps rediscovering, in its most expensive form yet, because it would look repaired while remaining pinned at ∞. Also falsified if a later lap finds another constant pinning the portfolio ETA, since the portfolio takes the minimum across channels and itch's idle_eta_days is still an unconditional null.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-09.listing-addresses-the-form-s-buyers",
+      "made_at": "2026-08-09T12:38:37.589Z",
+      "claim": "The live Gumroad listing addressed shops, cafes, salons, streamers and campaign pages, and codex/outbox/2026-08-09.l.md found that class buys operated monthly services and was never observed buying a buy-once, self-installed kit at all. The same survey set found the form does sell — to people who build things (codex/outbox/2026-08-09.k.md: itch Game Assets, 38 clicker listings among top sellers, USD 25 inside the observed band). This lap took branch A: keep the form, re-aim the copy at the person publishing their own idle game, and move the copy into the repository so it is a file rather than a thing only the storefront knows. The claim being judged is narrow and deliberately not about sales: that the change actually reaches the public storefront through .github/workflows/listing-sync.yml without a human touching a web form. Whether the new addressee buys cannot be judged until something refers traffic, and nothing does yet.",
+      "metric": "Read from origin/main and from the Gumroad API, not from a session's memory. (a) assets/listing/gumroad.ja.json on origin/main carries a previous.captured_at and a previous.description_html equal to the old shop-facing body, which only the workflow's --apply run can write — that is the proof the workflow ran and pushed rather than merely being committed. (b) `node scripts/sync-listing.mjs` exits 0, meaning the live name and body are byte-identical to the repo copy. Exit 1 means the PUT did not take and the storefront still says something else.",
+      "baseline": {
+        "live_name_before": "放置クリッカー制作キット 商用ライセンス｜設定1枚で自社ブランドに",
+        "live_body_addressed": "shops, cafes, salons, streamers, campaign pages, exhibition giveaways",
+        "previous_captured_at_before": null,
+        "gumroad_api_edit_verified": false,
+        "gumroad_api_create_verified": "create_supported_rate_limited (state/gumroad-capabilities.json, 2026-08-09)",
+        "lifetime_sales": 0,
+        "idle_eta_days_before": null,
+        "planned_eta_days_before": null
+      },
+      "judge_on": "2026-08-10",
+      "judge_deadline": "2026-08-16",
+      "concurrent_changes": [
+        "The same commit adds scripts/sync-listing.mjs, .github/workflows/listing-sync.yml, the addressee tests in tests/run-tests.mjs and the branch_chosen block on state/constraints.json. They are one change — the route change made durable — and cannot be separated when judging.",
+        "Nothing else touched the listing. The price, the files and the shipped LICENSE are unchanged, so a sales difference later cannot be attributed to them."
+      ],
+      "falsified_if": "PUT /v2/products/:id turns out not to exist or not to accept a description, so the workflow fails and the storefront keeps the shop-facing copy while the repository claims otherwise. That would be the worse outcome than an outright refusal: the repo would read as re-aimed and the public page would not be, and every later lap would reason from the file. It is also falsified if the workflow succeeds but writes nothing back, since then the replaced copy exists nowhere and branch A cannot be reverted. Note this prediction cannot be settled by a session that lacks network reach to the Gumroad API; (a) is readable from origin/main alone and is the half that must be checked first.",
+      "outcome": null
     }
   ]
 }

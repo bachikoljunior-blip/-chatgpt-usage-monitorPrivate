@@ -49,6 +49,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T12:27:16.009Z",
+      "candidate": "product_form_vs_addressed_buyer",
+      "kind": "route_change",
+      "mechanism": "Abandon the route 'sell a buy-once, self-installed config-file kit to shops, salons and streamers'. codex/outbox/2026-08-09.l.md found zero confirmed purchases of that form by that class, and every confirmed purchase by that class was an operated monthly service. Branch A keeps the form, which .k measured as selling (itch Game Assets, 38 clicker listings among top sellers, USD 25 inside the observed band), and changes the addressee to people who build their own idle/clicker game. The live Gumroad listing is the route: its title, body and licence paragraph all name the refuted class, so every downstream distribution act inherits the mismatch. Re-aiming the listing is what makes the pending itch request coherent, since itch Game Assets is a branch-A venue. No ETA number can be claimed to move yet because no channel feeds the listing, which is precisely why this is a route change and not a direct claim.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
