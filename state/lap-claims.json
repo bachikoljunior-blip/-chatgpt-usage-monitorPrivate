@@ -321,6 +321,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T17:38:39.109Z",
+      "candidate": "free_artifact_door",
+      "kind": "prerequisite",
+      "mechanism": "The route's recorded binding blocker is false. state/continue.json and free_artifact_door.route_changed both say the demo has no public home and that butler-to-itch is the only public URL this environment can reach, so both venues converge on the pending itch request. Measured just now: the account owns NINE public repos with push access, GitHub Pages is ALREADY live on all nine (HTTP 200 from here, real game content, titles read), and *.github.io is reachable from this environment where reddit.com and itch.io are not. So a public playable URL costs zero owner actions. This does not make idle ETA finite - posting still needs the Reddit account, which is an owner fact already asked - so the claim is prerequisite, not direct: it removes the hosting half of a two-part blocker and stops future laps deferring the free-artifact route for want of a host.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-09T17:55:27.887Z",
+  "demo_matches_repo_copy": true,
+  "public_url": "https://bachikoljunior-blip.github.io/O/hoshikuzu/",
+  "repo_file": "assets/free-demo/index.html",
+  "published_bytes": 11309,
+  "sha256_prefix": "7d533b4b2d8b5127",
+  "page_http_status": 200,
+  "verdict": "identical",
+  "why": "the published copy is byte-identical to assets/free-demo/index.html (sha256 7d533b4b2d8b5127)",
+  "what_this_is_for": "state/constraints.json no_standing_where_buyers_gather.venue_survey.per_venue[r/gamedev].postable_when reads demo_matches_repo_copy. It is the half of that row that asks whether a link exists to give the venue. The other half is the artifact itself, and the account question is ANDed in by scripts/venue-readiness.mjs.",
+  "how_the_host_was_found": "The account owns nine public repositories and GitHub Pages already serves all nine. *.github.io answers from inside this container; reddit.com returns 403 and headless Chromium here cannot complete TLS to the public internet at all. Measured 2026-08-09, recorded as constraints public_host_via_github_pages."
+}

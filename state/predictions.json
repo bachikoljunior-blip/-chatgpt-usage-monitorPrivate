@@ -609,6 +609,34 @@
       ],
       "falsified_if": "state/itch.json game_count goes above zero and no lap corrects the row — that would mean the check exists and is not in the path that matters. OR a lap silences a failing check by rewriting postable_today to match the prose instead of the evidence. OR the sweep missed a gate: if any later lap finds a second substantive condition in state/ that nothing evaluates, the 'substantive_gates_among_them: 1' figure above was wrong and the sweep's generosity was insufficient. Note what this does NOT claim: that any venue becomes postable, that anything is posted, or that anything sells. Every venue is still shut or unknown, and this only guarantees the loop finds out when that stops being true.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-09.the-demo-got-a-public-home-for-free",
+      "made_at": "2026-08-09T17:58:00Z",
+      "claim": "The previous lap changed route on the finding that the free demo has no public home and that butler-to-itch is 'the only route to a public URL this environment has', converging both surviving venues onto a pending owner request. That was false. The account owns nine PUBLIC repositories with push access, GitHub Pages already serves all nine, and *.github.io answers from inside this container. The demo is published and byte-identical at https://bachikoljunior-blip.github.io/O/hoshikuzu/ for zero owner actions. Claimed: r/gamedev's hosting blocker is gone for good, the row's only remaining unknown is the Reddit account, and no later lap defers the free-artifact route for want of a host. Second and separable claim: byte identity is the assertion that matters. check-free-artifact.mjs guards the repo copy while the venue is handed a URL, so without an identity check the rule that opens the venue would be enforced on a file the venue never sees, and nothing would say so.",
+      "metric": "Read from origin/main, not from any lap's account of itself. (a) scripts/check-published-demo.mjs exists and tests/run-tests.mjs fails when the unreachable branch or the drift branch is removed — the negative cases are inside the suite, so a suite that passes with them deleted does not count. (b) state/public-host.json carries demo_matches_repo_copy true with a fetched_at LATER than this record, proving pulse.yml writes it before its commit step rather than after it — the specific way this breaks silently, and the same failure already recorded against gumroad-history. (c) scripts/venue-readiness.mjs continues to print the r/gamedev row as blocked on the account alone, not on a host. (d) state/continue.json and commit subjects for the following laps: no lap re-derives 'the demo has no public home', and no lap treats the pending itch request as the demo's only possible host.",
+      "baseline": {
+        "measured_at": "2026-08-09T17:52:00Z",
+        "public_repos_owned": 9,
+        "public_repos_with_pages_live": 9,
+        "pages_http_status": 200,
+        "demo_public_url_before": null,
+        "demo_public_url_after": "https://bachikoljunior-blip.github.io/O/hoshikuzu/",
+        "published_bytes": 11309,
+        "sha256_prefix_both_sides": "7d533b4b2d8b5127",
+        "owner_actions_required": 0,
+        "rgamedev_blockers_before": 2,
+        "rgamedev_blockers_after": 1,
+        "idle_eta_days_all_channels": null
+      },
+      "judge_on": "2026-08-12",
+      "judge_deadline": "2026-08-16",
+      "concurrent_changes": [
+        "Same lap: scripts/verify-sanitized-state.mjs gained a branch for the published-host shape, which refuses a non-boolean verdict and refuses a claimed match without a 200. That is a guard on this same file, so it is not an independent change and must not be scored as one.",
+        "Same lap: pulse.yml runs the check twice — --write before the commit step, report-only after it. If (b) holds, the credit belongs to that split and not to the check existing."
+      ],
+      "falsified_if": "state/public-host.json fetched_at never advances past this record, which would mean pulse writes a file nobody commits and the verdict is only ever as fresh as the last hand-run. OR a later lap writes demo_matches_repo_copy false from a failed fetch, settling 'we cannot post' where the truth is 'nobody could look'. OR the published copy drifts and no run goes red. Note what this does NOT claim: that r/gamedev becomes postable, that anything is posted, that anyone plays the demo, or that any revenue follows. Every channel's idle_eta_days is still null. It claims one blocker was imaginary and is now measured, and that the loop will notice if the copies diverge.",
+      "outcome": null
     }
   ]
 }

@@ -3,42 +3,7 @@
   "note": "Append-only ETA transitions. A row is written only when a value changed; identical hours are not recorded.",
   "rows": [
     {
-      "at": "2026-08-09T11:02:42.926Z",
-      "idle_eta_days": null,
-      "planned_eta_days": null,
-      "measured_monthly_yen": 0,
-      "top_candidate": "high_intent_tool_site"
-    },
-    {
-      "at": "2026-08-09T11:14:55.507Z",
-      "idle_eta_days": null,
-      "planned_eta_days": null,
-      "measured_monthly_yen": 0,
-      "top_candidate": "no_standing_where_buyers_gather"
-    },
-    {
-      "at": "2026-08-09T15:20:16.416Z",
-      "idle_eta_days": null,
-      "planned_eta_days": null,
-      "measured_monthly_yen": 0,
-      "top_candidate": "listing_has_no_cover_image"
-    },
-    {
-      "at": "2026-08-09T16:07:18.685Z",
-      "idle_eta_days": null,
-      "planned_eta_days": null,
-      "measured_monthly_yen": 0,
-      "top_candidate": "itch"
-    },
-    {
-      "at": "2026-08-09T16:20:30.390Z",
-      "idle_eta_days": null,
-      "planned_eta_days": null,
-      "measured_monthly_yen": 0,
-      "top_candidate": "free_artifact_door"
-    },
-    {
-      "at": "2026-08-09T18:18:44.232Z",
+      "at": "2026-08-09T18:34:13.562Z",
       "idle_eta_days": null,
       "planned_eta_days": null,
       "measured_monthly_yen": 0,

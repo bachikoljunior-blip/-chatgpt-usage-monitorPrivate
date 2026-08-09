@@ -25,6 +25,7 @@ import { decideVerdict } from "../scripts/gate-verdict.mjs";
 import { constraintDue } from "../scripts/constraint-due.mjs";
 import { evaluateUnlock } from "../scripts/unlock-condition.mjs";
 import { checkFreeArtifact } from "../scripts/check-free-artifact.mjs";
+import { publishedDemoVerdict } from "../scripts/check-published-demo.mjs";
 import { venueReadiness } from "../scripts/venue-readiness.mjs";
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import {
@@ -1404,6 +1405,46 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     allowFailure: true,
   });
   assert(refusedDemo.status !== 0, "the CLI exited 0 on an artifact that violates the rule opening the venue");
+}
+
+// --- the copy the venue is handed must be the copy the rule is enforced on ----
+//
+// check-free-artifact.mjs guards assets/free-demo/index.html. What r/gamedev gets
+// is a URL. Once a published copy exists, those are two files, and every rule the
+// venue cares about is enforced on only one of them. Byte identity is the only
+// assertion that needs no opinion about which edits are safe.
+//
+// The branch that matters most is UNREACHABLE. Writing "no public host" because a
+// fetch failed records "we cannot post" where the truth is "nobody could look" —
+// the same error that let six venue surveys read as equally researched. So an
+// unreachable check must report matches: null and must not settle the row.
+{
+  const identical = publishedDemoVerdict({
+    localExists: true, localSha: "abc", reachable: true, httpStatus: 200, remoteSha: "abc",
+  });
+  assert(identical.matches === true, "identical copies were not reported as matching");
+  assert(identical.ok === true, "identical copies exited non-zero");
+
+  const drifted = publishedDemoVerdict({
+    localExists: true, localSha: "abc", reachable: true, httpStatus: 200, remoteSha: "def",
+  });
+  assert(drifted.matches === false, "a drifted published copy was not reported as a mismatch");
+  assert(drifted.ok === false, "a drifted published copy did not fail the check");
+
+  const unreachable = publishedDemoVerdict({
+    localExists: true, localSha: "abc", reachable: false, httpStatus: 503, remoteSha: null,
+  });
+  assert(unreachable.matches === null, "an unreachable url was settled as a verdict about the host");
+  assert(unreachable.ok === false, "an unreachable url passed silently");
+
+  // Absence of the local artifact is not failure, for the reason check-free-artifact
+  // gives: a check that fails while the thing it guards is being built has to be
+  // switched off during exactly the window it exists for.
+  const absent = publishedDemoVerdict({
+    localExists: false, localSha: null, reachable: false, httpStatus: null, remoteSha: null,
+  });
+  assert(absent.ok === true, "the check failed while the artifact does not exist yet");
+  assert(absent.matches === null, "an absent artifact was reported as a settled match");
 }
 
 // --- a venue is not a route until we can post from it -------------------------

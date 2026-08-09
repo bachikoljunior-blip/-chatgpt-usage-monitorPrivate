@@ -45,6 +45,13 @@ jobs:
         run: |
           node scripts/compute-eta.mjs --write
           node scripts/check-heartbeats.mjs --write
+          # Written here rather than in the reporting step below, which runs AFTER
+          # the commit: a --write there produces a file that the next run's
+          # `reset --hard` throws away, so the verdict would only ever be as fresh
+          # as the last lap that ran it by hand. Deliberately not allowed to fail
+          # the step — drift in the demo must not cost the ETA refresh, and the
+          # reporting step below is what turns it red.
+          node scripts/check-published-demo.mjs --write || echo "published demo check reported a problem; the reporting step fails on it"
 
       # fail closed, same as the collectors: a state file that failed its check
       # must never reach main.
@@ -54,6 +61,7 @@ jobs:
           node scripts/verify-sanitized-state.mjs state/eta.json
           node scripts/verify-sanitized-state.mjs state/heartbeat.json
           node scripts/verify-sanitized-state.mjs state/eta-history.json
+          node scripts/verify-sanitized-state.mjs state/public-host.json
 
       - name: Commit current state
         if: steps.compute.outcome == 'success' && steps.verify.outcome == 'success'
@@ -70,10 +78,12 @@ jobs:
             node scripts/verify-sanitized-state.mjs state/eta.json || exit 1
             node scripts/verify-sanitized-state.mjs state/heartbeat.json || exit 1
             node scripts/verify-sanitized-state.mjs state/eta-history.json || exit 1
+            node scripts/check-published-demo.mjs --write || echo "published demo check reported a problem"
+            node scripts/verify-sanitized-state.mjs state/public-host.json || exit 1
             # The history has to be staged here or the scheduled run computes a
             # transition and then throws it away on the next reset --hard, leaving a
             # file that only ever records whatever a lap happened to run by hand.
-            git add state/eta.json state/heartbeat.json state/eta-history.json
+            git add state/eta.json state/heartbeat.json state/eta-history.json state/public-host.json
             if git diff --cached --quiet; then
               echo "no change"
               exit 0
@@ -107,6 +117,11 @@ jobs:
           # and the rule that opens the venue can be broken by any later edit to it.
           # Silent while the file is absent.
           node scripts/check-free-artifact.mjs || rc=1
+          # The venue is handed a URL, and the rule above is enforced on a file in
+          # this repository. If those two ever differ, the guard guards the copy
+          # nobody can reach. No --write here: the writing copy runs before the
+          # commit. This one only reports, which is what makes the run red.
+          node scripts/check-published-demo.mjs || rc=1
           # Fails when a surveyed venue is carried as a route without saying whether
           # we can post from it. null is a legitimate answer; omission is not.
           node scripts/venue-readiness.mjs || rc=1

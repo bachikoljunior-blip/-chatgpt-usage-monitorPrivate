@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T18:18:44.232Z",
+  "fetched_at": "2026-08-09T18:34:13.562Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -50,14 +50,8 @@
   "planned_eta_note": "with up to 1 owner action per week, still never. The owner actions on offer unblock starting, not arriving — which says the shortage is demand, not permission, and that asking for more owner actions would not move this number.",
   "owner_actions_per_week_assumed": 1,
   "movement": {
-    "idle": {
-      "unchanged_since": "2026-08-09T11:02:42.926Z",
-      "days_unchanged": 0.3
-    },
-    "planned": {
-      "unchanged_since": "2026-08-09T11:02:42.926Z",
-      "days_unchanged": 0.3
-    },
+    "idle": null,
+    "planned": null,
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
   "channels": [

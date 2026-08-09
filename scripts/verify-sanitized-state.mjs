@@ -128,6 +128,24 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
   if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at)) {
     throw new Error("probe state has no valid fetched_at timestamp");
   }
+} else if (state.demo_matches_repo_copy !== undefined) {
+  // The published free demo. The one invariant worth enforcing is that the verdict
+  // is never written as a guess: scripts/check-published-demo.mjs must not store a
+  // value it did not measure, because state/constraints.json reads this field as
+  // the r/gamedev row's hosting blocker. A stored `false` shuts the only open
+  // venue, so an unreachable check leaves the file alone rather than writing one.
+  if (typeof state.demo_matches_repo_copy !== "boolean") {
+    throw new Error("published-host state must record a measured true or false, never null or a guess");
+  }
+  if (!/^https:\/\//.test(state.public_url ?? "")) {
+    throw new Error("published-host state has no public_url");
+  }
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at)) {
+    throw new Error("published-host state has no valid fetched_at timestamp");
+  }
+  if (state.demo_matches_repo_copy === true && state.page_http_status !== 200) {
+    throw new Error("published-host state claims a match without a 200 from the public url");
+  }
 } else if (Array.isArray(state.constraints)) {
   // The constraint registry. Every entry needs a recheck date or an explicit null,
   // because an undated "impossible" is how a limit outlives the thing that caused
