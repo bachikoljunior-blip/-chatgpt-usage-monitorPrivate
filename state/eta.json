@@ -1,9 +1,25 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T11:06:33.537Z",
+  "fetched_at": "2026-08-09T11:11:32.095Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
+  "portfolio_caveat": {
+    "claim_in_circulation": "28 published artifacts, no route to a buyer, ¥0 in eight months",
+    "verdict": "unsupported by anything enumerable from here, and NOT thereby refuted",
+    "enumerated": [
+      {
+        "source": "claude.ai published artifacts (Artifact action=list, scope=mine, limit=50 — 50 is above the count, so this is the whole set, not a page)",
+        "count": 5
+      },
+      {
+        "source": "GitHub repositories owned by the account (list_repos, limit=100, has_more=false, so complete)",
+        "count": 14
+      }
+    ],
+    "the_honest_gap": "The private youtube repository holds figures this environment cannot read — state/external-metrics.json has never been published, which is already recorded as a wiring exception. If '28' counted published videos, it could be right and unverifiable from here. So this entry does not say the number is wrong. It says the number has no list under it and the lists that do exist do not add up to it.",
+    "what_would_settle_it": "publish state/external-metrics.json from the repository that holds the YouTube credentials, or have whoever wrote 8eca5b1 name what was counted. Until then, treat 28 as an assertion, not an observation."
+  },
   "target_yen_per_month": 200000,
   "idle_eta_days": null,
   "idle_eta_note": "every measurable channel is infinite: zero revenue, zero growth, or blocked behind an owner action. This is the real baseline, not a measurement failure.",
@@ -13,11 +29,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T11:02:42.926Z",
-      "days_unchanged": 0
+      "days_unchanged": 0.01
     },
     "planned": {
       "unchanged_since": "2026-08-09T11:02:42.926Z",
-      "days_unchanged": 0
+      "days_unchanged": 0.01
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -199,7 +215,15 @@
       "recurring_owner_actions_per_month": 0,
       "estimate_reliability": "discredited_by_siblings",
       "estimate_reliability_note": "5 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
-      "eta_effect_basis": "no comparable estimate recorded"
+      "eta_effect_basis": "no comparable estimate recorded",
+      "blocked_on_rechecked": {
+        "at": "2026-08-09T11:12:00Z",
+        "was": "there is nothing to post about yet",
+        "found": "Yes, at least one. The cookie-clicker idle game is free, browser-playable and corroborated by a second source. Two more artifacts are games and are probably tryable, though neither page was opened.",
+        "still_blocked_on": "honest_post_where_buyers_gather was not blocked on having something to post. That half is answered and it was cheap — one tool call. What it is actually blocked on is the other half, which is still untouched: whether any of these reaches a community that contains BUYERS. A free browser idle game has players, and players are not the same as buyers. Do not read this entry as saying the route is now open.",
+        "do_not_overclaim": "Nobody has established that any of these five is worth posting. Established: something postable exists. Those are different sentences and the difference is the whole remaining question.",
+        "source": "state/portfolio.json"
+      }
     },
     {
       "kind": "zero_base_option",
