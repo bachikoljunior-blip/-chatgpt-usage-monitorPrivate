@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-09T11:33:00Z",
+  "why_this_file_exists": "RUNBOOK 6 gates an owner request on five conditions, and the fourth is that the request is prepared to the point where the owner only has to paste. Until now there was nowhere to put that. So the gate could never be satisfied, only asserted — which is the same failure this project keeps finding: a rule written in prose with no file under it and no machine reading it. compute-eta.mjs reads this file and attaches a pending request to the candidate it unblocks, so the picker sees that the preparation is already done instead of preparing it again.",
+  "how_to_use_this": "One entry per request. status pending means it is prepared and waiting on the owner. Nothing here should ever say 'please investigate' or 'please decide' — if a lap could not finish the preparation, the entry does not belong here yet.",
+  "requests": [
+    {
+      "id": "2026-08-09.itch-page-for-the-kit",
+      "created_at": "2026-08-09T11:33:00Z",
+      "status": "pending",
+      "candidate_id": "itch",
+      "owner_actions": 1,
+      "estimated_owner_minutes": 10,
+      "one_line": "itch.io に、有料キットの販売ページを1つ作ってください。フォームを埋めるだけです。あとは自動で回せます。",
+
+      "why_now_and_not_before": {
+        "what_changed": "codex/outbox/2026-08-09.k.md landed at 11:25Z. It is the first outward survey out of eight that did NOT come back refuted. Seven surveys before it fell on the same term — no case where a first buyer arrived unattended, with both calendar dates. This one found the case and the venue.",
+        "the_venue_with_the_rule_quoted": "itch.io の Release announcements 板は、規約原文で 'The Release announcements board is our designated place for creators to announce and show off their own work.' と、自作の告知用に指定されている。アカウント年齢・カルマ・過去の参加回数・事前承認の数値条件は、公開規約からは確認できなかった。",
+        "the_market_is_the_same_place": "itch.io の Game Assets には clicker タグだけで38商品が並び、top sellers として売られている。つまり告知先と市場が同じ場所にある。",
+        "the_zero_audience_case": "Invoker（2020-06-30 公開・同日 USD 90）。作者自身が audience は無かったと書き、Product Hunt・Reddit・Twitter へ同日に出した。公開日と初売上日が両方とも暦日で確認できる、記録上ただ一つの零観客の事例。",
+        "the_counter_cases_that_survive": "同じ調査が、同日複数投稿で届かなかった例も出している（Treelance 7日間で顧客0、Knallhart 1週間で有料顧客0、935表示38クリックで購入に届かず）。これは保証ではない。だから請求は「1ページ作る」であって「これで売れる」ではない。"
+      },
+
+      "the_ask": {
+        "step_1": {
+          "what": "itch.io にログインし、新しいプロジェクトページを1つ作る（Dashboard → Create new project）",
+          "kind": "Game assets を選ぶ",
+          "why_this_kind": "同種商品（clicker のソースコード・テンプレート）が実際に並んで売れているのがこの区分。ゲーム本体ではなく、素材・キットとして売られている。",
+          "fields_to_paste": {
+            "Title": "放置クリッカー制作キット｜設定1枚で自社ブランドに（商用ライセンス）",
+            "Short description": "設定ファイル1枚を書き換えるだけで、自分の店・商品・チャンネルの放置ゲームになります。ビルド不要・外部ライブラリなし・通信なし。フォルダを置くだけ。",
+            "Classification": "Assets",
+            "Kind of project": "Downloadable",
+            "Release status": "Released",
+            "Pricing": "Paid — $25 に設定（Gumroad と同額。理由は price_check を参照）",
+            "Tags": ["clicker", "idle", "html5", "javascript", "template", "source-code"],
+            "Community": "Comments を有効に（無効だと反応が一切見えません）",
+            "Visibility": "Public"
+          },
+          "description_body_to_paste": "お客さんに「もう一度サイトを開く理由」を作るための、小さなブラウザゲームです。\n\n設定ファイル1枚（brand.config.json）を書き換えるだけで、自分の店・商品・チャンネルの放置ゲームになります。題名・配色・数えるものの名前・増やすもの8種・強化6種・到達メッセージ・誘導ボタン・フッターまで、すべてそこから決まります。\n\n■ 入っているもの\n・ゲーム本体一式（HTML / CSS / JavaScript）\n・brand.config.json — 書き換えるのはここだけ\n・generator.html — フォームを埋めると設定ファイルが出てくるページ\n・書き換え例3種（珈琲店・サロン・配信者）\n・validate_config.py — 設定の誤りを日本語で指摘する検査\n・test_engine.py — 実ブラウザで20項目を自動検査（開発用）\n・日本語 README とライセンス\n\n■ 技術的なこと\n・ビルド不要。フォルダを置くだけです。Node も PHP も要りません\n・外部ライブラリなし・通信なし。あなたが設定したリンク以外へは何も送りません\n・セーブは端末内。サーバーもデータベースも要りません\n・スマホ縦画面前提。片手・タップだけで遊べます\n・GitHub Pages / Netlify / Cloudflare Pages / 自社サーバー、どこでも動きます\n\n■ ライセンス\n・あなたの店・自社・自分のチャンネルのために、公開先1つで使えます。商用可・改変自由\n・クライアントの案件へ納品する場合は、別途ご相談ください\n・キット自体を素材・テンプレート商品として再販・再配布することはできません\n\n効果音・BGM・画像素材は入っていません。表示は絵文字とCSSだけで作っています。売上や集客を保証するものではありません。",
+          "cover_image": "必要です。無いとインデックスに載りません（itch の Getting indexed 条件）。ゲーム画面のスクリーンショット1枚で足ります。",
+          "upload": "ここでファイルを上げなくて構いません。ページさえ在れば、以降のアップロードは butler（itch 公式CLI）で自動化できます。ただし butler が既存の ITCH の鍵で通るかは未検証です（下の unverified を参照）。"
+        },
+        "step_2": {
+          "what": "同じ日のうちに、itch.io の Community → Release announcements 板へ告知を1件投稿する",
+          "why_same_day": "零観客から初売上に届いた唯一の事例（Invoker）がやったのは、実績を積むことではなく、同じ日に複数の場所へ出すこと。実績（standing）の代わりに広さ（breadth）を使う、という筋。",
+          "title_to_paste": "設定1枚で自社ブランドになる放置クリッカーのキットを出しました",
+          "body_to_paste": "店舗サイトや配信者のリンク集に置ける、小さな放置クリッカーのキットを公開しました。\n\nbrand.config.json を1枚書き換えるだけで、題名・配色・数えるものの名前・増やすもの・強化・到達メッセージ・誘導ボタンまで全部変わります。ビルド不要、外部ライブラリなし、通信なし。フォルダを置くだけで動きます。\n\n設定を作るフォーム（generator.html）と、設定の誤りを日本語で指摘する検査、実ブラウザで20項目を回す自動検査を同梱しています。\n\nページはこちら： <ここに step_1 で作った itch のURL>\n\n感想でも、動かなかった報告でも助かります。",
+          "rule_that_permits_this": "'The Release announcements board is our designated place for creators to announce and show off their own work.'（itch.io Quality guidelines）",
+          "rule_that_forbids_doing_it_elsewhere": "'Comments and communities are not for advertisement or self-promotion unless explicitly specified.'（itch.io Community rules）。だから他の板には出さないでください。"
+        },
+        "step_3_optional_but_time_gated": {
+          "what": "Product Hunt の個人アカウントだけ、今日のうちに作っておく",
+          "why": "Product Hunt は自作の投稿（self-hunt）を公式に認めているが、**個人アカウントで作成から最低1週間**という条件がある。今日作れば1週間後に使える。作らなければ、1週間後に「また1週間待ち」になる。",
+          "cost": "アカウント作成のみ。投稿はしない。",
+          "not_required_for_step_1_or_2": true
+        }
+      },
+
+      "what_this_lap_could_not_do_and_why": {
+        "we_cannot_create_the_page": "itch には作成用の書き込みAPIが無い（state/constraints.json itch_no_write_api）。フォームだけ。だからここは自動化で置き換えられない。RUNBOOK 6 の関門①②はこれで満たされている。",
+        "we_cannot_reach_external_sites": "state/constraints.json playwright_cannot_reach_external。ページを見に行くこともできない。"
+      },
+
+      "unverified_and_stated_as_such": [
+        "butler が既存の itch の鍵で通るか。state/itch.json を書いている読み取りは api.itch.io に通っているが、butler は別経路で、試していない。通らなければ、アップロードもフォーム操作になり、owner_actions が増える。",
+        "無料で遊べるデモの公開状態。claude.ai の公開成果物 'クッキーストラテジャー｜無料ブラウザで遊べるクッキークリッカー系放置ゲーム'（https://claude.ai/code/artifact/eb826cb0-a94b-46b1-a763-963db5a50016）は、この持ち主の一覧には出るが、他人が開けるかは未確認。claude.ai の成果物は既定で非公開。**開けないなら、告知に貼っても意味がない。** 公開されている GitHub リポジトリ Simple-browser-cookie-clicker-game を GitHub Pages で出せば、確実に公開のデモになる。これはこちら側でできる可能性がある仕事で、まだ誰も手を付けていない。",
+        "新規販売者の最初の有料商品はモデレータ審査に入り、検索・Browse に載るまで数営業日かかり得る（itch Getting indexed）。ページ自体はURL経由で即時に公開・購入可能。だから step_2 の告知が最初の流入経路になる。"
+      ],
+
+      "price_check": {
+        "ours": "USD 25（state/gumroad.json）",
+        "comparables_from_the_survey": [
+          "Ice Cream Idle Tycoon Clicker — USD 2（itch, HTML5ソース込み）",
+          "React+TypeScript Idle Clicker Template — USD 19（itch, 商用利用権込み）",
+          "Banana Clicker — USD 19.95（Unity Asset Store）",
+          "Idle Tycoon Clicker — USD 24（Codester, 1案件ライセンス）",
+          "CodeCanyon の clicker 系に USD 12（48件販売表示）・USD 25（20件販売表示）・USD 199"
+        ],
+        "verdict": "市場外れではない。直接比較できる帯（19〜24）よりわずかに高く、CodeCanyon の25ドル帯と一致する。ただし itch には2〜4ドル帯も多いので、設定の容易さと商用ライセンスの範囲をページ上で明示しないと割高に見える、と調査は言っている。上の description_body はそこを明示してある。",
+        "recommendation": "値段は変えないこと。ここで下げると、次に売れなかったときに『値段のせいか経路のせいか』が分からなくなる。変えるのは1つだけ。"
+      },
+
+      "success_test": "state/itch.json が views を持ち、state/gumroad.json か itch 側で初売上が立つこと。ページが存在することは成功ではない — それは state/eta.json の itch 候補が not_success として名指ししている失敗の形そのもの。",
+      "judge_by": "2026-08-23",
+      "source": "codex/outbox/2026-08-09.k.md（規約原文・先例・比較価格の出典URLはすべてそこにある）"
+    }
+  ]
+}

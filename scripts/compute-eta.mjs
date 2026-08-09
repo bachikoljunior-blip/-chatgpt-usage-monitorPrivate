@@ -42,6 +42,7 @@ const [
   { value: blocked },
   { value: history },
   { value: portfolio },
+  { value: ownerRequests },
 ] = await Promise.all([
   readStateJson("state/gumroad.json", { preferLocal }),
   readStateJson("state/itch.json", { preferLocal }),
@@ -51,6 +52,7 @@ const [
   readStateJson("state/blocked.json", { preferLocal }),
   readStateJson("state/eta-history.json", { preferLocal }),
   readStateJson("state/portfolio.json", { preferLocal }),
+  readStateJson("state/owner-requests.json", { preferLocal }),
 ]);
 
 const channels = [];
@@ -259,6 +261,48 @@ candidates.push({
   owner_actions: 0,
   note: "move work to the non-scarce pool; stop loading the full directive into every session in 14 repos",
 });
+
+// Owner requests that are already prepared to the paste-ready state RUNBOOK 6
+// requires. Without this the preparation is invisible to the side that picks
+// work: a lap looks at the itch candidate, sees "1 owner action", and either
+// prepares the request again or defers it again. Neither is what should happen
+// when the request is written and waiting.
+//
+// The request rides on the candidate rather than becoming a candidate of its
+// own, because it is not separate work — it is the state of work already on the
+// list. A pending request also means the candidate is NOT actionable by a lap:
+// nothing here can create an itch page, so a lap that "takes" it would only
+// rewrite the request.
+const pendingOwnerRequests = (ownerRequests?.requests ?? []).filter(
+  (r) => r?.status === "pending",
+);
+for (const c of candidates) {
+  const req = pendingOwnerRequests.find((r) => r.candidate_id === c.id);
+  if (!req) continue;
+  c.owner_request = {
+    id: req.id,
+    status: req.status,
+    created_at: req.created_at ?? null,
+    one_line: req.one_line ?? null,
+    owner_actions: req.owner_actions ?? null,
+    estimated_owner_minutes: req.estimated_owner_minutes ?? null,
+    judge_by: req.judge_by ?? null,
+    source: req.source ?? null,
+    where: "state/owner-requests.json",
+    read_this_before_acting:
+      "The request is prepared. Do not prepare it again, and do not treat this " +
+      "candidate as work a lap can do — it waits on the owner. If it has been " +
+      "pending past judge_by with nothing happening, that is a finding about the " +
+      "request channel, not a reason to rewrite the request.",
+  };
+}
+const ownerRequestsPending = pendingOwnerRequests.map((r) => ({
+  id: r.id,
+  candidate_id: r.candidate_id ?? null,
+  created_at: r.created_at ?? null,
+  judge_by: r.judge_by ?? null,
+  one_line: r.one_line ?? null,
+}));
 
 // Rank the candidates by what they do to the ETA, not by the order they were
 // appended.
@@ -534,6 +578,9 @@ const report = {
     "back to the days estimate, then to owner actions.",
   repricings_with_no_candidate: unmatchedRepricings,
   portfolio_caveat: portfolioCaveat,
+  // Surfaced at the top as well as on the candidate, so a reader who never
+  // scrolls the candidate list still sees that something is waiting on a human.
+  owner_requests_pending: ownerRequestsPending,
   target_yen_per_month: TARGET_YEN_PER_MONTH,
   idle_eta_days: idlePortfolio,
   idle_eta_note:
@@ -607,6 +654,12 @@ for (const c of candidates) {
   console.log(`  [${c.kind}] ${c.id} (owner actions: ${c.owner_actions}) — ${c.why}`);
   if (c.success_test) console.log(`      succeeds if: ${c.success_test}`);
   if (c.not_success) console.log(`      NOT success: ${c.not_success}`);
+  if (c.owner_request) {
+    console.log(
+      `      OWNER REQUEST PENDING (${c.owner_request.id}, prepared, waiting on the owner ` +
+      `— not work a lap can take): ${c.owner_request.one_line ?? ""}`,
+    );
+  }
 }
 for (const id of unmatchedRepricings) {
   console.log(`  REPRICING NOT APPLIED: no candidate with id ${JSON.stringify(id)}`);
