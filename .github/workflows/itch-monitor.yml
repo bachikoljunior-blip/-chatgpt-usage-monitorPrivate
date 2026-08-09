@@ -1,0 +1,85 @@
+name: itch.io stats monitor
+
+on:
+  schedule:
+    - cron: "42 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/read-itch.mjs"
+      - ".github/workflows/itch-monitor.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: itch-monitor
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Require the itch.io secret
+        env:
+          ITCH_API_KEY: ${{ secrets.ITCH_API_KEY }}
+        run: |
+          if [ -z "$ITCH_API_KEY" ]; then
+            echo "ITCH_API_KEY is missing from repository secrets" >&2
+            exit 1
+          fi
+
+      - name: Collect sanitized itch.io state
+        id: collect
+        continue-on-error: true
+        env:
+          ITCH_API_KEY: ${{ secrets.ITCH_API_KEY }}
+        run: node scripts/read-itch.mjs state/itch.json
+
+      # fail closed。gumroad-monitor と同じ理由：2026-08-08 に検査が落ちても
+      # if: always() でコミットが走り、検査に落ちた状態ファイルが main に載った。
+      - name: Verify no credentials entered committed state
+        id: verify
+        run: node scripts/verify-sanitized-state.mjs state/itch.json
+
+      - name: Commit current state
+        if: steps.collect.outcome == 'success' && steps.verify.outcome == 'success'
+        env:
+          ITCH_API_KEY: ${{ secrets.ITCH_API_KEY }}
+        run: |
+          git config user.name "itch-monitor[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # 生成物なので履歴の統合は要らない。origin に合わせ直して作り直して載せ直す。
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            node scripts/read-itch.mjs state/itch.json || exit 1
+            node scripts/verify-sanitized-state.mjs state/itch.json || exit 1
+            git add state/itch.json
+            if git diff --cached --quiet; then
+              echo "no change"
+              exit 0
+            fi
+            git commit -m "chore: refresh sanitized itch.io state"
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "push rejected, retrying ($attempt)"
+          done
+          echo "could not push after 3 attempts" >&2
+          exit 1
+
+      - name: Propagate collection failure
+        if: steps.collect.outcome != 'success'
+        run: exit 1
