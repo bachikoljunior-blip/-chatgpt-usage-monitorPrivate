@@ -2,21 +2,10 @@
   "schema_version": 1,
   "status": "ok",
   "source": "codex-app-server",
-  "fetched_at": "2026-08-09T05:56:48.417Z",
-  "fresh_until": "2026-08-09T07:56:48.417Z",
+  "fetched_at": "2026-08-09T05:58:31.432Z",
+  "fresh_until": "2026-08-09T07:58:31.432Z",
   "plan_type": "pro",
   "quota_windows": [
-    {
-      "limit_id": "codex_bengalfox",
-      "limit_name": "GPT-5.3-Codex-Spark",
-      "slot": "primary",
-      "used_percent": 0,
-      "remaining_percent": 100,
-      "window_duration_minutes": 10080,
-      "resets_at": 1786859809,
-      "resets_at_iso": "2026-08-16T05:56:49.000Z",
-      "reached_type": null
-    },
     {
       "limit_id": "codex",
       "limit_name": null,
@@ -27,17 +16,28 @@
       "resets_at": 1786826371,
       "resets_at_iso": "2026-08-15T20:39:31.000Z",
       "reached_type": null
+    },
+    {
+      "limit_id": "codex_bengalfox",
+      "limit_name": "GPT-5.3-Codex-Spark",
+      "slot": "primary",
+      "used_percent": 0,
+      "remaining_percent": 100,
+      "window_duration_minutes": 10080,
+      "resets_at": 1786859912,
+      "resets_at_iso": "2026-08-16T05:58:32.000Z",
+      "reached_type": null
     }
   ],
   "governing_window": {
-    "limit_id": "codex_bengalfox",
-    "limit_name": "GPT-5.3-Codex-Spark",
+    "limit_id": "codex",
+    "limit_name": null,
     "slot": "primary",
-    "used_percent": 0,
-    "remaining_percent": 100,
+    "used_percent": 3,
+    "remaining_percent": 97,
     "window_duration_minutes": 10080,
-    "resets_at": 1786859809,
-    "resets_at_iso": "2026-08-16T05:56:49.000Z",
+    "resets_at": 1786826371,
+    "resets_at_iso": "2026-08-15T20:39:31.000Z",
     "reached_type": null
   },
   "available_reset_credits": 0,
