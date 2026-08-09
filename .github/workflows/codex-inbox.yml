@@ -1,0 +1,142 @@
+name: Run the ChatGPT inbox
+
+# The lane that spends the other quota pool.
+#
+# 2026-08-09: the Claude weekly window was at 42% with three live hourly loops
+# claiming 75% of what was left, while the Codex weekly window sat at 100% —
+# untouched, because nothing dispatched it. codex/INBOX.md, the transport, and
+# the answer-committing all already existed; only the schedule was missing, and
+# state/automations.json recorded the gap as "owner starts it by hand".
+#
+# The prompt here is one line on purpose. Instructions live in codex/INBOX.md,
+# so changing the work never means editing a workflow — a prompt with facts in
+# it goes stale the moment the repository moves and then hands out lies.
+
+on:
+  schedule:
+    # Daily. The inbox holds surveys of the outside world, which do not change
+    # hour to hour, and the marker below means a finished task costs one skipped
+    # job rather than a repeated survey.
+    - cron: "41 2 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Run even when the done_marker already exists"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+# Shared with the usage monitor so the encrypted vault is never written twice at once.
+concurrency:
+  group: chatgpt-usage-monitor
+  cancel-in-progress: false
+
+jobs:
+  inbox:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Decide whether the inbox task should run
+        id: task
+        run: node scripts/inbox-task.mjs >> "$GITHUB_OUTPUT"
+
+      - name: Say why the run is being skipped
+        if: steps.task.outputs.run != 'true' && !inputs.force
+        run: |
+          echo "## Inbox skipped" >> "$GITHUB_STEP_SUMMARY"
+          echo >> "$GITHUB_STEP_SUMMARY"
+          echo "${{ steps.task.outputs.reason }}" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Require encrypted bootstrap secret
+        if: steps.task.outputs.run == 'true' || inputs.force
+        env:
+          CODEX_AUTH_JSON: ${{ secrets.CODEX_AUTH_JSON }}
+        run: |
+          if [ -z "$CODEX_AUTH_JSON" ]; then
+            echo "CODEX_AUTH_JSON is missing" >&2
+            exit 1
+          fi
+
+      - name: Install Codex CLI
+        if: steps.task.outputs.run == 'true' || inputs.force
+        run: npm install --global @openai/codex@0.147.0
+
+      - name: Hand the inbox to ChatGPT
+        if: steps.task.outputs.run == 'true' || inputs.force
+        env:
+          CODEX_AUTH_JSON: ${{ secrets.CODEX_AUTH_JSON }}
+        run: |
+          mkdir -p state/answers
+          # The only instruction. Everything else is in the file it names.
+          printf '%s' 'codex/INBOX.md をこのリポジトリから読んで、そこに書かれている指示に従ってください。あなたの回答はワークフローが自動でコミットします。git push は試さないでください（サンドボックスからリポジトリには届きません）。完了マーカーもワークフローが置きます。' \
+            > "$RUNNER_TEMP/prompt.txt"
+          # danger-full-access: the default read-only sandbox cannot start on this
+          # runner (bwrap "loopback: Failed RTM_NEWADDR"), and a model that cannot
+          # run a command answers from the prompt alone — which for a task that is
+          # entirely "go read the outside world" means an invented answer. The
+          # runner is a throwaway VM and the vault is deleted by the script.
+          node scripts/ask-chatgpt.mjs \
+            --file "$RUNNER_TEMP/prompt.txt" \
+            --out state/answers/latest.md \
+            --record state/answers/latest.json \
+            --sandbox danger-full-access \
+            --persist-vault > "$RUNNER_TEMP/answer.txt"
+
+      - name: Leave the done marker
+        if: steps.task.outputs.run == 'true' || inputs.force
+        env:
+          MARKER: ${{ steps.task.outputs.done_marker }}
+        run: |
+          # Written from the committed answer, so the marker cannot claim a run
+          # that produced nothing. No answer means no marker means tomorrow tries
+          # again — the failure that repeats is the cheap one.
+          if [ -n "$MARKER" ] && [ -s state/answers/latest.md ]; then
+            mkdir -p "$(dirname "$MARKER")"
+            cp state/answers/latest.md "$MARKER"
+          fi
+
+      - name: Publish the answer to the run summary
+        if: always() && (steps.task.outputs.run == 'true' || inputs.force)
+        run: |
+          {
+            echo "## ChatGPT answer"
+            echo
+            if [ -s "$RUNNER_TEMP/answer.txt" ]; then
+              cat "$RUNNER_TEMP/answer.txt"
+            else
+              echo "No answer was produced; see the step logs for the failure code."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Verify no credentials entered committed state
+        if: always() && (steps.task.outputs.run == 'true' || inputs.force)
+        run: |
+          if [ -f state/answers/latest.json ]; then
+            node scripts/verify-sanitized-state.mjs state/answers/latest.json
+          fi
+
+      - name: Commit the answer, the marker, and refreshed authentication
+        if: always() && (steps.task.outputs.run == 'true' || inputs.force)
+        run: |
+          git config user.name "chatgpt-usage-monitor[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A state/auth.vault state/answers codex
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "chore: record the ChatGPT inbox run"
+          git pull --rebase origin main
+          git push origin HEAD:main

@@ -132,14 +132,20 @@
     {
       "id": "codex-loop",
       "label": "ChatGPT レーン（オーナーが手で起動）",
-      "kind": "chatgpt-lane",
+      "kind": "github-actions",
       "pool": "codex_week",
       "cadence_minutes": 1440,
       "enabled": true,
-      "note": "Separate lane so two loops never take the same candidate. Owns zero_base_option candidates; Claude's chain owns efficiency/constraint_recheck/channel_unblock. Different quota pool, so it is not reserved against the Claude weekly window. Branch codex/monthly-20k-automation, records under state/codex/. Prompt is in CODEX_LANE.md.",
+      "note": "Spends the Codex weekly pool, which is separate from the Claude window and was sitting at 100% unused on 2026-08-09 because nothing dispatched it. The mouth is codex/INBOX.md; scripts/inbox-task.mjs decides whether the task is live and unmarked before any model runs. Was \"owner starts it by hand\" until the schedule existed — that was an owner action standing in for a cron.",
       "avg_cost_percent": 0,
       "samples": 0,
-      "last_seen": null
+      "last_seen": null,
+      "workflow": "codex-inbox.yml",
+      "cron": "41 2 * * *",
+      "liveness": {
+        "state_file": "state/answers/latest.json",
+        "note": "The lane commits its answer here. No answer, no timestamp, no marker — so a lane that stops producing stops moving this and becomes overdue."
+      }
     }
   ],
   "reconciliation_note": "cadence/enabled for claude-trigger rows are reconciled against list_triggers, not asserted here. Actions cannot call that API, so a lap with MCP is the only thing that can refresh them — check observed_at before trusting these fields."

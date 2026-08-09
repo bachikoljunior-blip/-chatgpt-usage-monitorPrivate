@@ -15,6 +15,7 @@ import {
   deriveFromSegment, readingsFromHistory, segmentsWithoutRoll,
 } from "../scripts/derive-lap-cost.mjs";
 import { classify, resolveLastSeen } from "../scripts/check-heartbeats.mjs";
+import { decide, parseInboxHeader } from "../scripts/inbox-task.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const temporary = await mkdtemp(join(tmpdir(), "usage-monitor-test-"));
@@ -539,6 +540,54 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(
     unreconciled.length === 0,
     `claude-trigger rows never checked against list_triggers: ${unreconciled.join(", ")}`,
+  );
+}
+
+// The ChatGPT lane's cost control. A scheduled lane with a broken skip check
+// repeats an external survey every day until valid_until, so these are the
+// assertions standing between a daily cron and a wasted quota pool.
+{
+  const inbox = await readFile(join(root, "codex/INBOX.md"), "utf8");
+  const header = parseInboxHeader(inbox);
+  assert(!header.error, `the live INBOX header does not parse: ${header.error}`);
+  assert(
+    header.done_marker.includes(header.task_id),
+    "done_marker does not name its task_id, so a new task would inherit the old marker",
+  );
+
+  assert(decide(header, { today: "2026-08-10", markerExists: false }).run, "a live task was skipped");
+  assert(
+    !decide(header, { today: "2026-08-10", markerExists: true }).run,
+    "a task with its marker already present ran again",
+  );
+  assert(
+    !decide(header, { today: "2099-01-01", markerExists: false }).run,
+    "an expired task ran",
+  );
+  // The boundary belongs to the task: valid_until is inclusive.
+  assert(
+    decide(header, { today: header.valid_until, markerExists: false }).run,
+    "valid_until was treated as exclusive",
+  );
+  assert(
+    !decide({ error: "broken" }, { today: "2026-08-10", markerExists: false }).run,
+    "an unparseable header ran anyway",
+  );
+  assert(
+    Boolean(parseInboxHeader("no fence here").error),
+    "a file with no yaml fence parsed as a valid header",
+  );
+  assert(
+    Boolean(parseInboxHeader("```yaml\ntask_id: x\n```").error),
+    "a header missing valid_until and done_marker parsed as valid",
+  );
+
+  // The old INBOX told ChatGPT to push and to skip the work if it could not.
+  // The Actions transport keeps codex's workspace outside the checkout on
+  // purpose, so that instruction guaranteed the lane could only ever no-op.
+  assert(
+    !/git push/.test(inbox),
+    "the INBOX still asks ChatGPT to push, which this transport cannot do",
   );
 }
 
