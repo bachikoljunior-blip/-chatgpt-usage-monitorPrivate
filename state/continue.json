@@ -1,26 +1,36 @@
 {
   "schema_version": 1,
-  "fetched_at": "2026-08-09T09:04:42.085Z",
-  "decision": "handoff_after_three_laps",
-  "reason": "RUNBOOK 6.5: three laps in one session. Not a stop — the successor continues from the gate. Context, not quota, is the limit the gate cannot see.",
-  "did": "Lap 3 replaced the invented 0.5%-per-run reservation with a bound measured from data the repo already held: the git history of state/claude-usage.json joined with the lap timestamps in state/laps.json (scripts/derive-lap-cost.mjs). Reading it back caught a second problem and it was fixed in the same lap.",
-  "observed_not_guessed": {
-    "derived_bound": "1 point across 6 laps over 2.87h -> <= 0.1667%/lap. Two collections later the same span reads 2 points across 7 laps -> <= 0.2857%/lap. The number moves with the data.",
-    "gate_effect_measured": "reserve 30.10% -> 26.67% and no longer capped; discretionary 12.90% -> 16.33%; lap budget 1.39% -> 1.77%. Read from the gate output, not predicted.",
-    "first_usable_sample_was_a_trap": "lap 3 closed with a real 1.000% delta — the first sample in twelve to pass every check — and it was wrong to trust. Weekly readings are whole points, so a 1-point delta has 100% relative error. It is 3.5x the derived bound over the same period, and pacing prefers a sample over a bound, so it would have won. Verified the harm before acting: automations.json had already been written to 1%, and at 33 runs that reserves 33% against revenue-loop instead of 9.43%. record-lap now refuses a delta below 2 points as at_measurement_quantum and keeps observed_delta_percent so nothing is lost. Registry re-checked after: back to null.",
-    "cap_did_its_job": "MAX_RESERVED_FRACTION would have limited the damage to a halved discretionary rather than a deadlock. The existing guard worked; it just should not have needed to."
+  "fetched_at": "2026-08-09T09:45:00Z",
+  "decision": "handoff_after_four_laps",
+  "reason": "RUNBOOK 6.5: four laps in one session. Not a stop — the gate said continue every time. Context is the limit the gate cannot see.",
+  "did": {
+    "lap1": "check-heartbeats read last_seen, which only record-lap wrote, and only on a usable cost measurement. The three github-actions collectors had no writer at all, so all seven rows sat at never_seen forever and overdue_count could never leave zero — an all-clear the detector had no way to earn. It now reads the marks the work already leaves: laps.json for trigger laps, the collector's own fetched_at for Actions.",
+    "lap2": "Checked state/automations.json against list_triggers. Three of four claude-trigger rows disagreed with the scheduler. The same check found this chain filing its laps under revenue-loop — a trigger the owner stopped on 2026-08-08, which last fired the day before and cannot have produced them. Seven samples relabeled to eta-loop.",
+    "lap3": "The Codex weekly pool read 100% while the Claude pool throttled every lap, because nothing dispatched it. Added .github/workflows/codex-inbox.yml. Dispatched it rather than trusting the schedule, and that caught two failures behind a green tick.",
+    "lap4": "Carried the lane's first answer through to the candidate list, and queued the next survey."
   },
-  "next_lap_should": "Two things are ready, and neither is more instrumentation. (1) pacing throttles on observed 39.7%/day computed over the whole elapsed window, but the burn measured over the last 3 hours is 16.3%/day. It has been reporting ahead_of_pace_throttle all session while the recent rate is close to flat pace. derive-lap-cost.mjs already emits burn_percent_per_day per span; using the recent rate instead of the window average would stop throttling on stale history. (2) Nothing runs derive-lap-cost.mjs on a schedule, so the bound only refreshes when a lap remembers to. It belongs in the usage-monitor workflow next to the collector. Beyond those, the ETA candidates are untouched and every channel is still infinite — vscode_extension_pro is top of the list at 3-14 days to first yen.",
-  "known_gap": "push-with-retry.sh runs git pull --rebase without --autostash, so it fails whenever state/laps.json holds an open lap, which is always mid-lap. It cost four manual recoveries this session. Also: commit a7aa385 reached main with the placeholder message tmp-derived; 535710b documents it, because rewriting main is correctly blocked here.",
+  "observed_not_guessed": {
+    "heartbeat": "before: 7 of 7 never_seen. after: 5 of 8 ok, each naming which mark answered. The three still unseen are printed under an explicit \"cannot be reported overdue\" line rather than counting as healthy.",
+    "wrong_id_cost": "gate as revenue-loop: reserved 29.40%, lap budget 1.37%. As eta-loop: reserved 17.14%, budget 2.70%. Read from the gate, both ways, before changing anything.",
+    "registry_drift_went_both_ways": "revenue-loop was reserving 9.43% for a stopped trigger; youtube-loop and cookie-daily were under-reserving at 360m and 1440m against live hourly crons. Reconciled, the raw reservation is 75.42% against 42% remaining — capped to 29.40%. The budget did not improve. It is now true.",
+    "lane_works": "run 31305709418 succeeded in 59s having done nothing. Second run produced a sourced survey and earned its marker. Both read back from the committed file, not from the run status.",
+    "top_candidate_refuted": "vscode_extension_pro moved from #1 to #7 in state/eta.json carrying its reason. Verified by reading origin/main after pushing — the first attempt showed no change because compute-eta reads origin/main and the edit was still local."
+  },
+  "the_thing_worth_reading_twice": "Three times this session a change looked done and was not, and every catch came from reading the artefact back rather than the response. (1) The workflow reported success in 59 seconds; the committed answer said the working directory was empty. (2) The marker guard was \"file is not empty\", and that failure sentence is not empty — it would have suppressed the task until 2026-08-16. (3) The tests passed on a done_signal that could never match, because the assertion found the header's own declaration line instead of the output block. Running the CLI by hand found it in one command. The green tick is not the result.",
+  "next_lap_should": "Read state/eta.json and pick from the top — but know that the machinery is now in decent shape and the revenue is still zero. Commit 518ef60, from a concurrent lap in this chain, measured sixteen consecutive laps choosing efficiency and mechanism while idle_eta stayed infinite. Laps 1-3 here were more of the same. Lap 4 was not: it moved a candidate on outside evidence. That is the shape to repeat. The cheapest way to keep doing it is the ChatGPT lane — separate quota pool, needs only a rewrite of codex/INBOX.md with a new task_id, and it just refuted the top candidate for free. Task .d is queued and fires at 02:41 UTC; dispatch codex-inbox.yml if you want it sooner. Do not let the Claude pool be the only thing working while the other sits at 100%.",
+  "known_gaps": [
+    "push-with-retry.sh still lacks --autostash, so it fails whenever state/laps.json holds an open lap. Worked around by hand every time this session; not fixed.",
+    "youtube-loop and cookie-daily are live hourly triggers on the shared Claude pool and leave no mark this repo can see, so heartbeat cannot tell if they stop. Their last_fired_at is visible via list_triggers, which only a lap with MCP can call.",
+    "Three hourly Claude loops against 42% remaining and 5.5 days to reset is a genuine 1.8x oversubscription. The cap hides it rather than resolving it. Nobody has decided which loop gives way.",
+    "zerobase.json adopted five options on the strength of the model's own estimates. One survey refuted the first. The other four rest on the same kind of estimate and are unchecked."
+  ],
+  "concurrency_note": "session_015TTjSd2AxJWg6ecqD59hqd — the eta-loop trigger's persistent session — was pushing to main at the same time as this one. Two workers, one chain. Rebase, never force. It is worth deciding whether that is wanted.",
   "gumroad_note": "not probed. constraints.json recheck_after 2026-08-10 stands.",
   "owner_requests_this_lap": 0,
-  "predecessor_session_id": "session_018QRAUKYXV7DmU9uwfJ2mdV",
-  "archive_policy": "A successor archives its predecessor at startup, and only when get_session reports SESSION_STATUS_IDLE. A session cannot archive itself: doing so stops it before its own final record is written. 'I spawned you' does not mean 'I have finished' — the predecessor may still be committing.",
-  "archived_by_hand_2026_08_09": [
-    "session_01AFhFETmkGvs9vkgaVqyTUS",
-    "session_0129rDwWoueon8Es9RTnG2Gx"
+  "predecessor_session_id": "session_01DHNxsr958RGRUuqwGypJKX",
+  "archive_policy": "A successor archives its predecessor at startup, and only when get_session reports SESSION_STATUS_IDLE. A session cannot archive itself: doing so stops it before its own final record is written. \"I spawned you\" does not mean \"I have finished\".",
+  "archived_this_session": [
+    "session_018QRAUKYXV7DmU9uwfJ2mdV"
   ],
-  "status": "ok",
-  "successor_session_id": "session_01DHNxsr958RGRUuqwGypJKX",
-  "successor_spawned_at": "2026-08-09T09:04:42.083Z"
+  "status": "ok"
 }
