@@ -79,9 +79,18 @@ const modern = await attempt(
 // Only username and url are taken. /me also returns the account email, and that key
 // would be rejected by the sanitizer anyway — but the reason not to record it is
 // that it has no bearing on any decision here.
-const me = await attempt("api.itch.io/me", "https://api.itch.io/me", {
+// Two generations again, and the modern one is the wrong guess here: api.itch.io/me
+// answered 404 with {details, errors} on 2026-08-09, so it is not that the key was
+// refused — the route is not there for this key type. The legacy path is the one
+// this collector already uses successfully for my-games.
+const meModern = await attempt("api.itch.io/me", "https://api.itch.io/me", {
   Authorization: `Bearer ${key}`,
 });
+const meLegacy =
+  meModern.body?.user
+    ? meModern
+    : await attempt("itch.io/api/1/KEY/me", `https://itch.io/api/1/${encodeURIComponent(key)}/me`, {});
+const me = meLegacy.body?.user ? meLegacy : meModern;
 
 const legacy = await attempt(
   "itch.io/api/1/KEY/my-games",
@@ -135,6 +144,8 @@ if (source) {
       // three problems with three different fixes. Status and key names only; the
       // response carries an account email and no value from it is recorded.
       http_status: me.http_status,
+      tried: [meModern.label, meLegacy.label].filter((v, i, a) => a.indexOf(v) === i),
+      used: me.label,
       top_level_keys: shapeOf(me.body),
       user_keys: shapeOf(me.body?.user),
       error: me.error ?? null,
