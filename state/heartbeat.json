@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T10:19:16.888Z",
+  "fetched_at": "2026-08-09T10:27:51.953Z",
   "overdue_factor": 2,
   "overdue_count": 0,
   "never_seen_count": 2,
@@ -11,9 +11,9 @@
       "id": "eta-loop",
       "kind": "claude-trigger",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-09T10:15:02.461Z",
-      "last_seen_source": "laps.open",
-      "age_minutes": 4,
+      "last_seen": "2026-08-09T10:18:12.539Z",
+      "last_seen_source": "laps.samples",
+      "age_minutes": 10,
       "status": "ok"
     },
     {
@@ -40,7 +40,7 @@
       "cadence_minutes": 60,
       "last_seen": "2026-08-09T10:17:29.294Z",
       "last_seen_source": "state_file:state/usage.json",
-      "age_minutes": 2,
+      "age_minutes": 10,
       "status": "ok"
     },
     {
@@ -49,7 +49,7 @@
       "cadence_minutes": 60,
       "last_seen": "2026-08-09T10:17:35.235Z",
       "last_seen_source": "state_file:state/claude-usage.json",
-      "age_minutes": 2,
+      "age_minutes": 10,
       "status": "ok"
     },
     {
@@ -58,7 +58,7 @@
       "cadence_minutes": 60,
       "last_seen": "2026-08-09T10:07:41.166Z",
       "last_seen_source": "state_file:state/gumroad.json",
-      "age_minutes": 12,
+      "age_minutes": 20,
       "status": "ok"
     },
     {
@@ -67,7 +67,7 @@
       "cadence_minutes": 1440,
       "last_seen": "2026-08-09T10:15:20.127Z",
       "last_seen_source": "state_file:state/answers/latest.json",
-      "age_minutes": 4,
+      "age_minutes": 13,
       "status": "ok"
     }
   ]
