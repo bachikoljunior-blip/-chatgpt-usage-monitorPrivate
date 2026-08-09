@@ -74,7 +74,11 @@
       "enabled": true,
       "avg_cost_percent": 0,
       "samples": 0,
-      "note": "Actions minutes, not Claude quota."
+      "note": "Actions minutes, not Claude quota.",
+      "liveness": {
+        "state_file": "state/usage.json",
+        "note": "The collector stamps fetched_at when it reads, so this dates the run itself. A workflow that stops firing stops moving this timestamp."
+      }
     },
     {
       "id": "claude-usage-monitor",
@@ -84,7 +88,11 @@
       "cadence_minutes": 60,
       "enabled": true,
       "avg_cost_percent": 0,
-      "samples": 0
+      "samples": 0,
+      "liveness": {
+        "state_file": "state/claude-usage.json",
+        "note": "The collector stamps fetched_at when it reads, so this dates the run itself. A workflow that stops firing stops moving this timestamp."
+      }
     },
     {
       "id": "gumroad-monitor",
@@ -94,7 +102,11 @@
       "cadence_minutes": 60,
       "enabled": true,
       "avg_cost_percent": 0,
-      "samples": 0
+      "samples": 0,
+      "liveness": {
+        "state_file": "state/gumroad.json",
+        "note": "The collector stamps fetched_at when it reads, so this dates the run itself. A workflow that stops firing stops moving this timestamp."
+      }
     },
     {
       "id": "codex-loop",

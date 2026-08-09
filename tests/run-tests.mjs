@@ -14,6 +14,7 @@ import { describeFields, probeUsageFields, safeNumber } from "../scripts/usage-f
 import {
   deriveFromSegment, readingsFromHistory, segmentsWithoutRoll,
 } from "../scripts/derive-lap-cost.mjs";
+import { classify, resolveLastSeen } from "../scripts/check-heartbeats.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const temporary = await mkdtemp(join(tmpdir(), "usage-monitor-test-"));
@@ -444,6 +445,85 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(
     deriveFromSegment(flat, samples).upper_bound_percent_per_lap === null,
     "a zero drop was recorded as a zero cost",
+  );
+}
+
+// Heartbeat liveness: the detector must be able to see a stopped collector.
+{
+  const laps = {
+    open: { "eta-loop": { at: "2026-08-09T09:05:00Z" } },
+    samples: [
+      { id: "eta-loop", ended_at: "2026-08-09T08:00:00Z" },
+      // Unusable cost, but the lap still ran — that is the case the old
+      // self-report missed entirely.
+      { id: "revenue-loop", ended_at: "2026-08-09T09:02:00Z", usable: false },
+    ],
+  };
+  const stateFiles = new Map([
+    ["state/claude-usage.json", { fetched_at: "2026-08-09T09:03:00Z" }],
+    ["state/gumroad.json", { fetched_at: "2026-08-01T00:00:00Z" }],
+  ]);
+  const evidence = { laps, stateFiles };
+
+  const collector = {
+    id: "claude-usage-monitor",
+    last_seen: null,
+    liveness: { state_file: "state/claude-usage.json" },
+  };
+  const seenCollector = resolveLastSeen(collector, evidence);
+  assert(
+    seenCollector.last_seen === "2026-08-09T09:03:00Z",
+    "a collector with no self-report was still invisible",
+  );
+  assert(
+    seenCollector.source === "state_file:state/claude-usage.json",
+    "the answering mark was not reported",
+  );
+
+  // The whole point: a collector that stopped must become overdue, not stay
+  // never_seen. never_seen is excluded from overdue_count, so a detector that
+  // cannot leave it reports a clean bill of health it never earned.
+  const stopped = {
+    id: "gumroad-monitor",
+    last_seen: null,
+    liveness: { state_file: "state/gumroad.json" },
+  };
+  const stoppedSeen = resolveLastSeen(stopped, evidence);
+  const ageMinutes = (Date.parse("2026-08-09T09:05:00Z") - Date.parse(stoppedSeen.last_seen)) / 60_000;
+  assert(classify(ageMinutes, 60) === "overdue", "a collector dead for 8 days was not overdue");
+  assert(classify(null, 60) === "never_seen", "no evidence was reported as a state other than never_seen");
+  assert(classify(30, 60) === "ok", "a fresh automation was not ok");
+
+  assert(
+    resolveLastSeen({ id: "revenue-loop", last_seen: null }, evidence).source === "laps.samples",
+    "a lap whose cost was unmeasurable left no liveness mark",
+  );
+  // Most recent wins, so a self-report still counts when it is the freshest mark.
+  assert(
+    resolveLastSeen({ id: "eta-loop", last_seen: "2026-08-09T09:30:00Z" }, evidence).source ===
+      "registry",
+    "a fresher self-report lost to an older mark",
+  );
+  assert(
+    resolveLastSeen({ id: "eta-loop", last_seen: "2026-08-09T07:00:00Z" }, evidence).source ===
+      "laps.open",
+    "a stale self-report beat a running lap",
+  );
+  assert(
+    resolveLastSeen({ id: "nobody", last_seen: null }, evidence).last_seen === null,
+    "an automation with no marks invented one",
+  );
+
+  // Every enabled automation in the real registry must have some mark available,
+  // or it is one the detector structurally cannot watch.
+  const registry = JSON.parse(await readFile(join(root, "state/automations.json"), "utf8"));
+  const unwatchable = registry.automations
+    .filter((a) => a.enabled !== false && a.pool !== "codex_week")
+    .filter((a) => a.kind === "github-actions" && !a.liveness?.state_file)
+    .map((a) => a.id);
+  assert(
+    unwatchable.length === 0,
+    `github-actions automations with no liveness evidence: ${unwatchable.join(", ")}`,
   );
 }
 
