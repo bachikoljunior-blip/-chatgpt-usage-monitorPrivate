@@ -97,6 +97,7 @@ jobs:
           rc=0
           node scripts/check-predictions.mjs || rc=1
           node scripts/check-zerobase.mjs || rc=1
+          node scripts/check-wiring.mjs || rc=1
           if [ "$rc" != "0" ]; then
             echo "::error::something is owed or the zero-base round has stalled — see the output above"
           fi

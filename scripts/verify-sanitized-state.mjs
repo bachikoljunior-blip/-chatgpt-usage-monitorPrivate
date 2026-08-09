@@ -104,6 +104,21 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
       }
     }
   }
+} else if (Array.isArray(state.exceptions)) {
+  // Wiring exceptions. Every field here is load-bearing: without a reason the
+  // entry is an unexplained mute, and without a recheck_after it is permanent
+  // permission granted by whoever was in a hurry. Both are how a check quietly
+  // stops covering the thing it was written for.
+  for (const e of state.exceptions) {
+    if (typeof e.kind !== "string" || !e.kind) throw new Error("wiring exception has no kind");
+    if (typeof e.id !== "string" || !e.id) throw new Error("wiring exception has no id");
+    if (typeof e.reason !== "string" || e.reason.length < 20) {
+      throw new Error(`wiring exception ${e.id} has no substantive reason`);
+    }
+    if (e.recheck_after === undefined) {
+      throw new Error(`wiring exception ${e.id} has no recheck_after (use null only with cause)`);
+    }
+  }
 } else if (state.probe !== undefined) {
   // API capability probes. This shape predates the branch and was failing the
   // checker outright — which meant a file under state/ was exempt from the
