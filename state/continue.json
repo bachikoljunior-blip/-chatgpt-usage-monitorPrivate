@@ -1,18 +1,17 @@
 {
   "schema_version": 1,
-  "fetched_at": "2026-08-09T08:49:47.609Z",
+  "fetched_at": "2026-08-09T08:54:44.511Z",
   "decision": "lap_complete_continuing",
-  "reason": "one change made and verified; returning to the gate for the next lap in the same session (lap 1 of at most 3 before handoff)",
-  "did": "The collector read two fields per window (utilization, resets_at) and discarded the rest of the usage response, so nobody knew whether a finer signal was already being sent. scripts/usage-fields.mjs now records the unread fields — numbers only, key names filtered against the same pattern verify-sanitized-state.mjs enforces, bounded in count and length — and read-claude-usage.mjs writes it as field_probe, wrapped in a catch so an unexpected response shape cannot stop quota data being written.",
+  "reason": "lap 2 of at most 3 in this session; the probe answered its question, returning to the gate",
+  "did": "Widened the field probe to read plain-decimal strings as numbers and to name the type of anything it still cannot read. Pushed as ea33d15 and collected at 2026-08-09T08:53:27.084Z.",
   "observed_not_guessed": {
-    "resolution_wall_confirmed_again": "this lap opened at 43% and closed at 43%: below_measurement_resolution, the tenth consecutive unusable sample. Weekly percent is an integer, not 0.1-rounded as an older comment claimed.",
-    "five_hour_is_finer_but_only_5x": "over 06:01:44Z..08:37:32Z the weekly figure moved 44 -> 43 while five_hour moved 99 -> 94. Read from the git history of state/claude-usage.json, which is an hourly-or-better record nobody was using as a measurement source.",
-    "probe_answered_it": "dispatched claude-usage-monitor at 08:45Z; the 08:48:26.868Z collection on origin/main carries field_probe. Every window exposes limit_dollars, used_dollars and remaining_dollars, and the payload carries limits, spend, and four unmapped windows (seven_day_oauth_apps, seven_day_cowork, seven_day_omelette and a set of codenamed buckets).",
-    "dollars_are_not_numbers_yet": "used_dollars landed in other_field_names, not numeric_fields, so the API sends it as something other than a finite JSON number. The type is the next thing to establish; the probe deliberately does not copy string values.",
-    "mutation_tested": "removing the key-name filter from safeName makes tests/run-tests.mjs fail on \"field probe copied a forbidden key out of the API response\"; restored, the suite passes."
+    "dollars_are_null": "limit_dollars, used_dollars and remaining_dollars are all null on both five_hour and seven_day. Not a string, not a number — nothing. Route (b) as originally framed is dead: the endpoint sends no per-window figure finer than the integer utilization percentage.",
+    "what_is_left_unexplored": "top level still carries limits (array), spend (object), nimbus_quill (object) and extra_usage (object). The probe does not descend, so these are the only remaining places a finer figure could hide. Six other top-level windows (seven_day_oauth_apps, seven_day_cowork, seven_day_omelette and codenamed buckets) are all null on this account.",
+    "lap2_cost": "opened 43%, closed 43% against a genuinely newer reading (08:49:09Z -> 08:53:27Z): below_measurement_resolution again. Eleventh consecutive unusable sample.",
+    "mutation_tested": "widening PLAIN_DECIMAL to /\\d/ makes the suite fail on \"unsafe string was read as a number: 1e5\"; restored, it passes."
   },
-  "next_lap_should": "Capture used_dollars. The probe proves the field exists on every window; it is not a finite number, so the safe next step is to accept decimal-looking strings (/^-?\\d+(\\.\\d+)?$/) as numbers in usage-fields.mjs, or map used_dollars into quota_windows directly. A decimal string cannot be a credential, so this stays inside the numbers-only rule. If used_dollars carries cents or better, lap cost becomes measurable on the first try and pacing stops reserving 0.5% x 133 runs against unmeasured neighbours — which is currently what caps discretionary budget at 12.90% of a 43% pool. Do not widen the probe to arbitrary strings.",
-  "known_gap": "The probe records field names from an API response into a committed file. The key-name filter is a copy of the sanitizer pattern rather than a shared import, deliberately, so the checker stays an independent second opinion — but that means the two can drift. Nothing asserts they match.",
+  "next_lap_should": "Stop trying to make one lap show a delta. The data to measure cost already exists in two places nobody has joined: the git history of state/claude-usage.json is a per-collection record of the weekly percentage, and state/laps.json records started_at/ended_at for every lap including the unusable ones. Total points consumed over an interval, divided by the number of laps recorded inside it, is an upper bound on cost per lap — an upper bound is exactly what a reserve needs, and anything under 0.5% immediately loosens the gate. That is route (a), and it needs no new collection.",
+  "known_gap": "push-with-retry.sh runs git pull --rebase with no --autostash, so it fails whenever state/laps.json carries an open lap — which is always, mid-lap. It cost two manual recoveries this session.",
   "gumroad_note": "not probed this lap. constraints.json recheck_after 2026-08-10 stands.",
   "owner_requests_this_lap": 0,
   "predecessor_session_id": null,
