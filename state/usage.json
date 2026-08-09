@@ -2,8 +2,8 @@
   "schema_version": 1,
   "status": "ok",
   "source": "codex-app-server",
-  "fetched_at": "2026-08-09T14:11:21.170Z",
-  "fresh_until": "2026-08-09T16:11:21.170Z",
+  "fetched_at": "2026-08-09T14:39:26.931Z",
+  "fresh_until": "2026-08-09T16:39:26.931Z",
   "plan_type": "pro",
   "quota_windows": [
     {
@@ -24,8 +24,8 @@
       "used_percent": 0,
       "remaining_percent": 100,
       "window_duration_minutes": 10080,
-      "resets_at": 1786889482,
-      "resets_at_iso": "2026-08-16T14:11:22.000Z",
+      "resets_at": 1786891168,
+      "resets_at_iso": "2026-08-16T14:39:28.000Z",
       "reached_type": null
     }
   ],
