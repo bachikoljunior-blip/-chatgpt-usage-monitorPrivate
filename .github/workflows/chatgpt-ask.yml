@@ -22,6 +22,11 @@ on:
         required: false
         default: false
         type: boolean
+      sandbox:
+        description: "Codex sandbox mode. read-only fails on this runner (bwrap cannot create a loopback); use danger-full-access when the run needs to execute anything."
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: write
@@ -65,6 +70,7 @@ jobs:
           MODEL: ${{ inputs.model }}
           FORCE: ${{ inputs.force }}
           COLLECT_FILES: ${{ inputs.collect_files }}
+          SANDBOX: ${{ inputs.sandbox }}
         run: |
           mkdir -p state/answers
           printf '%s' "$PROMPT" > "$RUNNER_TEMP/prompt.txt"
@@ -80,6 +86,14 @@ jobs:
             mkdir -p "$RUNNER_TEMP/workspace"
             ARGS+=(--sandbox workspace-write --cd "$RUNNER_TEMP/workspace")
           fi
+          # 2026-08-09: the default read-only sandbox cannot start on this runner —
+          # bwrap fails with "loopback: Failed RTM_NEWADDR: Operation not permitted",
+          # so codex answers from the prompt alone and every command it tries is
+          # silently never run. A probe asked it to test four capabilities and it
+          # correctly reported all four as untested rather than as failures.
+          # The runner is already a throwaway VM, so the extra sandbox buys little
+          # here; this input lets a caller trade it away when the run must execute.
+          if [ -n "$SANDBOX" ]; then ARGS+=(--sandbox "$SANDBOX"); fi
           node scripts/ask-chatgpt.mjs "${ARGS[@]}" > "$RUNNER_TEMP/answer.txt"
 
       - name: Collect files the run produced
