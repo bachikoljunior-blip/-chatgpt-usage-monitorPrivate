@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T06:39:54.889Z",
+  "fetched_at": "2026-08-09T06:53:35.480Z",
   "probe": "POST /v2/products then GET then DELETE (creates a draft and removes it in the same run)",
   "http_status": 200,
-  "verdict": "create_refused",
-  "response_excerpt": "The API would not create a product. Listing still needs a person.",
+  "verdict": "create_supported_rate_limited",
+  "response_excerpt": "Creation is supported but capped right now: \"Sorry, you can only create 10 products per day.\". A daily cap is only imposed on something the API does. Treat listing as automatable and retry the lifecycle check after the cap resets before building on it.",
   "steps": [
     {
       "step": "create",
