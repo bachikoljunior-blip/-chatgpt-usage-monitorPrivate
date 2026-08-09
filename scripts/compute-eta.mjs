@@ -300,6 +300,34 @@ if (zerobase?.verdict === "adopt_for_next_test") {
                     "path from a surface that is already crawled. Building more pages buys nothing " +
                     "until that step exists."
                   : "See state/findable-surface.json.",
+              // The sentence above names a crawled surface without ever checking that
+              // one exists. That premise is now measured separately, and it must
+              // travel WITH the sentence: a lap that reads "build an inbound path"
+              // and not "there is no crawled surface to build it from" will go and
+              // add README links between two hosts that are both absent from the
+              // index. Attached here rather than left in the state file because the
+              // state file is not what the picker reads.
+              inbound_surface: findableSurface.inbound_surface
+                ? {
+                    verdict: findableSurface.inbound_surface.verdict,
+                    crawled_surface_exists: findableSurface.inbound_surface.crawled_surface_exists,
+                    controlled_observations: findableSurface.inbound_surface.controlled_observations,
+                    why: findableSurface.inbound_surface.why,
+                    qualifies_what_it_settles:
+                      findableSurface.inbound_surface.crawled_surface_exists === false
+                        ? "READ THIS BEFORE ACTING ON what_it_settles. The inbound path it calls " +
+                          "the missing step has no surface to start from: github.com/" +
+                          "bachikoljunior-blip returns nothing on a controlled query, so the " +
+                          "repository pages readme_links_page is collected for are not indexed " +
+                          "either. Linking one uncrawled host from another is not the missing " +
+                          "step — it is the missing step's prerequisite, unmet."
+                        : findableSurface.inbound_surface.crawled_surface_exists === true
+                          ? "The premise holds: a writable surface IS indexed, so an inbound link " +
+                            "is a step a crawler can take and what_it_settles names real work."
+                          : "The premise is UNMEASURED, so what_it_settles is an assumption. " +
+                            "Measure it before spending a lap on inbound links.",
+                  }
+                : null,
               source: "state/findable-surface.json",
             }
           : null,
@@ -763,6 +791,13 @@ for (const c of candidates) {
         `${c.measured_surface.pages_found_by_search ?? "unknown"} found by search — ${c.measured_surface.verdict}`,
     );
     console.log(`      what that settles: ${c.measured_surface.what_it_settles}`);
+    if (c.measured_surface.inbound_surface) {
+      console.log(
+        `      inbound surface: ${c.measured_surface.inbound_surface.verdict} ` +
+          `(${c.measured_surface.inbound_surface.controlled_observations} controlled)`,
+      );
+      console.log(`      ${c.measured_surface.inbound_surface.qualifies_what_it_settles}`);
+    }
   }
   if (c.success_test) console.log(`      succeeds if: ${c.success_test}`);
   if (c.not_success) console.log(`      NOT success: ${c.not_success}`);

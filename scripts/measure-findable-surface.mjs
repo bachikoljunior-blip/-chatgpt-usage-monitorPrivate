@@ -188,6 +188,95 @@ export function findableSurfaceVerdict(o) {
   };
 }
 
+/**
+ * The OTHER half of findability, and the one nobody had measured.
+ *
+ * published_but_not_findable concludes "the missing step is an inbound path from a
+ * surface that is already crawled", and compute-eta.mjs prints that sentence to the
+ * side that picks work. It names a surface without ever checking that one exists.
+ * Every observation on file targets bachikoljunior-blip.github.io; the surface the
+ * plan actually leans on is github.com/bachikoljunior-blip — the repository pages,
+ * which is what `readme_links_page` above is collected FOR. Different host,
+ * different crawl behaviour, never probed.
+ *
+ * This is deliberately a separate array and a separate verdict rather than more rows
+ * in search_index_observations. Those rows feed pages_found_by_search, which counts
+ * OUR PAGES; a github.com row would either be a false zero against the github.io
+ * surface or a false hit, depending on which way it went. Two questions, two
+ * instruments, two records.
+ *
+ * The control rule is the same one the sibling verdict learned the hard way: a zero
+ * counts only when the identical instrument, filter and QUERY SHAPE was shown able
+ * to return a hit for somebody else in the same session.
+ *
+ * @param {{
+ *   observations: Array<{observed_at: string, hits_on_our_surface: number}>,
+ *   now: Date,
+ * }} o
+ */
+export function inboundSurfaceVerdict(o) {
+  const all = o.observations ?? [];
+  const controlled = all.filter((s) => s?.control?.passed === true);
+  const uncontrolled = all.length - controlled.length;
+  const fresh = controlled.filter((s) => isFresh(s.observed_at, o.now));
+
+  if (!controlled.length) {
+    return {
+      verdict: "never_looked",
+      crawled_surface_exists: null,
+      hits: null,
+      controlled_observations: 0,
+      uncontrolled_observations: uncontrolled,
+      why:
+        "nobody has checked whether any surface this account can write to is in a search " +
+        "index at all" +
+        (uncontrolled ? ` (${uncontrolled} uncontrolled row(s) on file, not counted)` : "") +
+        ". Until this is measured, 'build an inbound path from a crawled surface' names a " +
+        "surface nobody has shown to exist.",
+    };
+  }
+  if (!fresh.length) {
+    return {
+      verdict: "observation_stale",
+      crawled_surface_exists: null,
+      hits: null,
+      controlled_observations: controlled.length,
+      uncontrolled_observations: uncontrolled,
+      why:
+        `the newest controlled inbound observation is older than ${OBSERVATION_MAX_AGE_DAYS} days. ` +
+        "Indexing changes with nobody acting, so this is a memory again.",
+    };
+  }
+
+  const hits = Math.max(0, ...fresh.map((s) => Number(s.hits_on_our_surface) || 0));
+  if (hits > 0) {
+    return {
+      verdict: "inbound_surface_is_crawled",
+      crawled_surface_exists: true,
+      hits,
+      controlled_observations: controlled.length,
+      uncontrolled_observations: uncontrolled,
+      why:
+        `a search index returned ${hits} page(s) on a surface this account can write to. ` +
+        "The inbound-path plan has a starting point: linking from here is a step a crawler " +
+        "can actually take.",
+    };
+  }
+  return {
+    verdict: "no_crawled_surface_found",
+    crawled_surface_exists: false,
+    hits: 0,
+    controlled_observations: controlled.length,
+    uncontrolled_observations: uncontrolled,
+    why:
+      `${controlled.length} CONTROLLED quer${controlled.length === 1 ? "y" : "ies"} against a ` +
+      "surface this account can write to returned none of it. The inbound-path step is not a " +
+      "task waiting to be done — its PREREQUISITE is missing, because the surface the link " +
+      "would come from is not itself in the index. Adding links between two uncrawled hosts " +
+      "moves nothing, and that is the specific work this verdict exists to stop.",
+  };
+}
+
 async function probe(url, { redirect = "manual" } = {}) {
   try {
     const res = await fetch(url, { redirect, signal: AbortSignal.timeout(30_000) });
@@ -212,6 +301,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   // is the whole reason this reads its own output before writing it.
   const previous = existsSync(STATE_PATH) ? JSON.parse(readFileSync(STATE_PATH, "utf8")) : null;
   const searchObservations = previous?.search_index_observations ?? [];
+  const inboundObservations = previous?.inbound_surface_observations ?? [];
 
   const pages = [];
   for (const repo of PUBLIC_REPOS) {
@@ -254,8 +344,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const root = await probe(`https://${OWNER}.github.io/`, { redirect: "follow" });
 
   const verdict = findableSurfaceVerdict({ pages, searchObservations, now });
+  const inbound = inboundSurfaceVerdict({ observations: inboundObservations, now });
 
-  if (asJson) console.log(JSON.stringify({ pages, root_http_status: root.status, ...verdict }, null, 2));
+  if (asJson) console.log(JSON.stringify({ pages, root_http_status: root.status, ...verdict, inbound_surface: inbound }, null, 2));
   else {
     console.log(`findable surface: ${verdict.verdict}`);
     for (const p of pages) {
@@ -268,6 +359,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.log(`  user root: ${root.status} (404 means the pages have no hub linking them)`);
     console.log(`  published: ${verdict.published_count} · found by search: ${verdict.pages_found_by_search ?? "never looked"}`);
     console.log(`  why: ${verdict.why}`);
+    console.log(`  inbound surface: ${inbound.verdict} (${inbound.controlled_observations} controlled)`);
+    console.log(`  why: ${inbound.why}`);
   }
 
   if (write) {
@@ -283,6 +376,14 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       verdict: verdict.verdict,
       why: verdict.why,
       pages,
+      inbound_surface: inbound,
+      inbound_surface_observations: inboundObservations,
+      inbound_surface_is_a_different_question:
+        "search_index_observations ask whether OUR PAGES are found. " +
+        "inbound_surface_observations ask whether the surface a link would come FROM is " +
+        "itself in the index — the premise published_but_not_findable rests on without " +
+        "stating it. They are kept apart because a github.com row folded into the first " +
+        "array would move pages_found_by_search, which counts github.io pages.",
       search_index_observations: searchObservations,
       how_to_add_an_observation:
         "Run a search tool from a lap, then append a row here and re-run this script with " +
@@ -296,6 +397,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       what_a_zero_here_does_and_does_not_mean:
         previous?.what_a_zero_here_does_and_does_not_mean ??
         "Set by the lap that recorded the observations: what the zero covers and what it does not.",
+      // Carried forward for the same reason the observations are. A lap wrote this
+      // by hand after a --write and the template did not know about it, so the next
+      // --write would have deleted the record of how the instrument was found
+      // broken — while leaving the observations that record intact and unexplained.
+      what_this_lap_learned_about_the_instrument:
+        previous?.what_this_lap_learned_about_the_instrument ?? null,
       what_this_is_for:
         "scripts/compute-eta.mjs annotates the findable_surface_at_scale candidate with " +
         "published_count and pages_found_by_search, so the side that picks work sees the " +

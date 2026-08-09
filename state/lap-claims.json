@@ -425,6 +425,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T20:56:14.748Z",
+      "candidate": "findable_surface_at_scale",
+      "kind": "prerequisite",
+      "mechanism": "The verdict published_but_not_findable states the missing step is an inbound path from a surface that is already crawled, and compute-eta annotates the candidate with that sentence. Nobody has measured whether ANY surface we can write to is crawled: every observation on file targets bachikoljunior-blip.github.io, never github.com/bachikoljunior-blip, which is the surface the README-link plan assumes. Measuring it with a control at the same allowed_domains granularity either gives the inbound plan a starting point or shows it has none, and wiring the result into the candidate is what makes the next lap pick differently.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

@@ -5,6 +5,31 @@
   "note": "Every change made because it was claimed to shorten the ETA. judge_on is set when the change lands, not when it is convenient. concurrent_changes is what else was in flight, so a later reader can tell a clean attribution from a confounded one.",
   "predictions": [
     {
+      "id": "2026-08-09.inbound-surface-has-no-starting-point",
+      "made_at": "2026-08-09T21:10:00Z",
+      "claim": "published_but_not_findable tells every lap that the missing step is 'an inbound path from a surface that is already crawled'. That sentence names a crawled surface and nobody had checked one exists. Measured now with a control: github.com/bachikoljunior-blip returns nothing on a bare account-name query, while the same query shape returns rank 1 for boyyutapone-blip — an obscure personal account taken out of our own zero's result list. So the repository pages are not indexed either. The claim registered is about CONSEQUENCE, not about the number: with this printed on the candidate, no lap adds the live url to the seven READMEs that lack it, because doing so links one uncrawled host from another. That work was explicitly named by the previous handoff as the obvious next move, so this is a real prediction about behaviour and not a safe one.",
+      "metric": "state/findable-surface.json inbound_surface.crawled_surface_exists, plus pages[].readme_links_page counts, both read from origin/main; and what the following laps actually chose, read from state/continue.json and commit subjects.",
+      "baseline": {
+        "measured_at": "2026-08-09T21:08:00Z",
+        "inbound_surface_verdict": "no_crawled_surface_found",
+        "crawled_surface_exists": false,
+        "controlled_inbound_queries": 2,
+        "readmes_linking_their_own_page": 3,
+        "readmes_not_linking_their_own_page": 7,
+        "pages_found_by_search": 0,
+        "note_on_the_three_that_do_link": "game2, Q and Gptgame already link their own page and are not found either. That was collected two laps ago and is the observation this measurement explains: the three links point FROM pages that are themselves absent from the index."
+      },
+      "judge_on": "2026-08-23",
+      "judge_deadline": "2026-09-06",
+      "concurrent_changes": [
+        "Same lap and the same commit: scripts/measure-findable-surface.mjs gained inboundSurfaceVerdict, scripts/compute-eta.mjs prints it on the candidate, scripts/verify-sanitized-state.mjs refuses an inbound answer with no controlled row, and tests/run-tests.mjs holds every branch. These are the wiring — they are what makes the measurement reach a picker, so they are not a confound for the behavioural half; they ARE the mechanism.",
+        "Also this lap, unrelated to the claim: measure-findable-surface.mjs now preserves what_this_lap_learned_about_the_instrument across --write, which the previous template silently dropped. Cannot touch this metric.",
+        "No public page was edited. No README was edited. That is the point."
+      ],
+      "falsified_if": "A lap adds the live url to any of the seven READMEs while crawled_surface_exists is false, without first re-measuring and finding a crawled surface — that is the exact work this was built to stop, and doing it anyway means the wiring did not reach the picker. ALSO falsified, in the more useful direction, if a re-measure before the judge date returns hits on github.com/bachikoljunior-blip: two controlled queries on one index is a thin basis for closing a route, the '-blip' substring relevance could be masking an exact-match path nobody tried, and being wrong here reopens the cheapest route on the board. What this does NOT claim: that the repository pages are absent from every index everywhere. One US-only index was queried; google.com and bing.com are unreachable from this container, and github.com itself returns 403 here.",
+      "outcome": null
+    },
+    {
       "id": "2026-08-09.derived-lap-cost",
       "claim": "Replacing the 0.5% guessed reservation with a bound derived from real consumption frees discretionary budget, so more laps fit in the same week.",
       "made_at": "2026-08-09T08:57:00Z",

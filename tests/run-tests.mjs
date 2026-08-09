@@ -28,7 +28,7 @@ import { constraintDue } from "../scripts/constraint-due.mjs";
 import { evaluateUnlock } from "../scripts/unlock-condition.mjs";
 import { checkFreeArtifact } from "../scripts/check-free-artifact.mjs";
 import { publishedDemoVerdict } from "../scripts/check-published-demo.mjs";
-import { findableSurfaceVerdict } from "../scripts/measure-findable-surface.mjs";
+import { findableSurfaceVerdict, inboundSurfaceVerdict } from "../scripts/measure-findable-surface.mjs";
 import { venueReadiness } from "../scripts/venue-readiness.mjs";
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import {
@@ -1771,6 +1771,99 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(
     liveObservations.some((o) => o?.control?.passed === true),
     "state/findable-surface.json carries no controlled search observation, so its verdict is uncounted",
+  );
+}
+
+// --- the inbound path needs a surface to come FROM ----------------------------
+//
+// published_but_not_findable concludes "the missing step is an inbound path from a
+// surface that is already crawled", and compute-eta.mjs prints that to the side
+// that picks work. It names a crawled surface without checking one exists. Every
+// observation on file targeted bachikoljunior-blip.github.io; the surface the plan
+// leans on is github.com/bachikoljunior-blip, and `readme_links_page` has been
+// collected for laps specifically to link from there.
+//
+// Measured 2026-08-09T21:05Z: a bare account-name query on allowed_domains
+// github.com returns nothing of ours, while the same query shape returns rank 1 for
+// boyyutapone-blip — an obscure personal account taken out of our own zero's result
+// list. So the repository pages are not indexed either, and "add README links" is
+// linking one uncrawled host from another.
+//
+// What this guard is really for: the false-zero direction is the expensive one on
+// the other verdict, but here it is the false-CONFIDENCE direction. An unmeasured
+// premise must read as unmeasured, because a lap that sees no answer assumes the
+// sentence above it is true — that is how this premise went unchecked for the whole
+// life of the candidate.
+{
+  const now = new Date("2026-08-09T21:30:00Z");
+  const at = "2026-08-09T21:05:00Z";
+  const row = (hits, control) => ({ observed_at: at, hits_on_our_surface: hits, control });
+
+  const never = inboundSurfaceVerdict({ observations: [], now });
+  assert(
+    never.crawled_surface_exists === null && never.verdict === "never_looked",
+    "an unmeasured inbound premise did not read as unmeasured",
+  );
+
+  const uncontrolled = inboundSurfaceVerdict({
+    observations: [row(0, undefined), row(0, { passed: false })],
+    now,
+  });
+  assert(
+    uncontrolled.crawled_surface_exists === null,
+    "an uncontrolled inbound zero was allowed to assert that no crawled surface exists",
+  );
+  assert(
+    uncontrolled.uncontrolled_observations === 2,
+    "uncontrolled inbound rows were dropped instead of reported as present-but-uncounted",
+  );
+
+  const measuredZero = inboundSurfaceVerdict({ observations: [row(0, { passed: true })], now });
+  assert(
+    measuredZero.verdict === "no_crawled_surface_found" && measuredZero.crawled_surface_exists === false,
+    "a controlled inbound zero was not carried through as a measurement",
+  );
+
+  const found = inboundSurfaceVerdict({ observations: [row(4, { passed: true })], now });
+  assert(
+    found.crawled_surface_exists === true && found.hits === 4,
+    "hits on a writable surface were not recognised as the inbound premise holding",
+  );
+
+  const stale = inboundSurfaceVerdict({
+    observations: [{ observed_at: "2026-06-01T00:00:00Z", hits_on_our_surface: 0, control: { passed: true } }],
+    now,
+  });
+  assert(
+    stale.verdict === "observation_stale" && stale.crawled_surface_exists === null,
+    "a months-old inbound reading still answered the premise",
+  );
+
+  // Same truthiness trap as the sibling verdict, and worth repeating rather than
+  // trusting that the two functions stay in step.
+  for (const control of [{}, { passed: "yes" }, { passed: 1 }, null]) {
+    assert(
+      inboundSurfaceVerdict({ observations: [row(0, control)], now }).crawled_surface_exists === null,
+      `an inbound control of ${JSON.stringify(control)} was accepted as passing`,
+    );
+  }
+
+  // The live file must actually carry the measurement, and it must be about a
+  // DIFFERENT surface from the github.io rows — folding it into the other array
+  // would move pages_found_by_search, which counts our pages.
+  const live = JSON.parse(readFileSync(join(root, "state/findable-surface.json"), "utf8"));
+  assert(
+    Array.isArray(live.inbound_surface_observations) &&
+      live.inbound_surface_observations.some((o) => o?.control?.passed === true),
+    "state/findable-surface.json carries no controlled inbound observation",
+  );
+  assert(
+    live.inbound_surface_observations.every((o) => typeof o.surface === "string" && o.surface),
+    "an inbound observation does not say which surface it probed",
+  );
+  assert(
+    !live.search_index_observations.some((o) => /github\.com/.test(o.query ?? "")),
+    "a github.com probe leaked into search_index_observations, where it would move pages_found_by_search",
   );
 }
 

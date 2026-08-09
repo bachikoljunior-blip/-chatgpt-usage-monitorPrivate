@@ -443,6 +443,42 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
       throw new Error("a search observation records no numeric hits_on_our_surface");
     }
   }
+  // The inbound-surface half. Same rule, applied to the premise rather than to the
+  // pages: a verdict that claims to know whether a writable surface is crawled must
+  // have controlled rows under it. crawled_surface_exists === false is the one that
+  // suppresses work, so it is the one that must not be assertable for free.
+  if (!Array.isArray(state.inbound_surface_observations)) {
+    throw new Error("findable-surface state has no inbound_surface_observations array");
+  }
+  if (
+    state.inbound_surface?.crawled_surface_exists !== null &&
+    state.inbound_surface?.crawled_surface_exists !== undefined &&
+    !state.inbound_surface_observations.some((o) => o?.control?.passed === true)
+  ) {
+    throw new Error(
+      "findable-surface state answers crawled_surface_exists with no CONTROLLED inbound observation behind it",
+    );
+  }
+  for (const o of state.inbound_surface_observations) {
+    if (!/^\d{4}-\d{2}-\d{2}T/.test(o.observed_at ?? "")) {
+      throw new Error("an inbound observation has no valid observed_at timestamp");
+    }
+    if (typeof o.query !== "string" || !o.query) {
+      throw new Error("an inbound observation records no query");
+    }
+    // Which host was probed. The whole point of this array is that it is NOT about
+    // the github.io pages, and a row that does not say what it looked at can be
+    // silently reread as one that is.
+    if (typeof o.surface !== "string" || !o.surface) {
+      throw new Error("an inbound observation records no surface");
+    }
+    if (typeof o.caveat !== "string" || !o.caveat) {
+      throw new Error("an inbound observation records no caveat limiting it");
+    }
+    if (!Number.isFinite(o.hits_on_our_surface)) {
+      throw new Error("an inbound observation records no numeric hits_on_our_surface");
+    }
+  }
 } else {
   if (!["ok", "error"].includes(state.status)) {
     throw new Error("usage state has an invalid schema");

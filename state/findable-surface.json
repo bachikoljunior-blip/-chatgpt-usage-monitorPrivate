@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T20:44:35.547Z",
+  "fetched_at": "2026-08-09T21:00:35.290Z",
   "enumerated_at": "2026-08-09T20:05:00Z",
   "enumerated_by": "list_repos (limit 100, has_more false): 14 repositories, 10 public, all can_push",
   "owner_root_http_status": 404,
@@ -121,6 +121,51 @@
       "serving": true
     }
   ],
+  "inbound_surface": {
+    "verdict": "no_crawled_surface_found",
+    "crawled_surface_exists": false,
+    "hits": 0,
+    "controlled_observations": 2,
+    "uncontrolled_observations": 0,
+    "why": "2 CONTROLLED queries against a surface this account can write to returned none of it. The inbound-path step is not a task waiting to be done — its PREREQUISITE is missing, because the surface the link would come from is not itself in the index. Adding links between two uncrawled hosts moves nothing, and that is the specific work this verdict exists to stop."
+  },
+  "inbound_surface_observations": [
+    {
+      "observed_at": "2026-08-09T21:05:00Z",
+      "instrument": "WebSearch tool (US-only index), run from a lap, using allowed_domains",
+      "surface": "github.com/bachikoljunior-blip — the repository pages, which is the surface readme_links_page assumes a crawler already reaches",
+      "query": "bachikoljunior-blip  [allowed_domains: github.com]",
+      "shape": "bare account name — the string that would return every repository page this account owns if any of them were indexed",
+      "hits_on_our_surface": 0,
+      "caveat": "the ten returned results all matched the substring 'blip' from unrelated projects, so the backend is doing substring relevance rather than exact-account matching. That is exactly why the control below uses the same shape.",
+      "control": {
+        "passed": true,
+        "ran_at": "2026-08-09T21:06:00Z",
+        "query": "boyyutapone-blip  [allowed_domains: github.com]",
+        "expected": "another obscure hyphenated personal account, of the same shape and same '-blip' suffix, returns its own repository page if the instrument can do this at all",
+        "got": "rank 1 of 10 was https://github.com/boyyutapone-blip/multi-helper-mcp — a personal repo with a Chinese one-line description and no visible following",
+        "conclusion": "The instrument DOES return an obscure personal account's repository page for a bare account-name query on this filter. The control was picked out of our own zero's result list, so it is the same query shape, same session, same relevance behaviour. Our zero is about our account, not about the query."
+      }
+    },
+    {
+      "observed_at": "2026-08-09T21:07:00Z",
+      "instrument": "WebSearch tool (US-only index), run from a lap, using allowed_domains",
+      "surface": "github.com/bachikoljunior-blip/Simple-browser-cookie-clicker-game",
+      "query": "Simple-browser-cookie-clicker-game  [allowed_domains: github.com]",
+      "shape": "exact repository name of the one repo serving the custom domain — a different failure mode from the account-name query, since a repo page can be indexed while the owner string is not a ranking term",
+      "hits_on_our_surface": 0,
+      "caveat": "WEAKER THAN THE ROW ABOVE, and the weakness is on difficulty rather than on the instrument. Our repo name is a generic occupied phrase — all ten results were other people's cookie-clicker repos — while the control name is distinctive. A zero here is consistent with 'indexed but outranked', which the row above is not.",
+      "control": {
+        "passed": true,
+        "ran_at": "2026-08-09T21:08:00Z",
+        "query": "multi-helper-mcp  [allowed_domains: github.com]",
+        "expected": "an exact obscure repository name returns that repository page",
+        "got": "rank 1 of 10 was https://github.com/boyyutapone-blip/multi-helper-mcp",
+        "conclusion": "The shape works. Counted, but read with the occupancy caveat above: this row corroborates the account-name row rather than standing on its own."
+      }
+    }
+  ],
+  "inbound_surface_is_a_different_question": "search_index_observations ask whether OUR PAGES are found. inbound_surface_observations ask whether the surface a link would come FROM is itself in the index — the premise published_but_not_findable rests on without stating it. They are kept apart because a github.com row folded into the first array would move pages_found_by_search, which counts github.io pages.",
   "search_index_observations": [
     {
       "observed_at": "2026-08-09T19:58:00Z",

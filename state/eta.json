@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T20:46:20.799Z",
+  "fetched_at": "2026-08-09T21:00:47.468Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -52,11 +52,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.09
+      "days_unchanged": 0.1
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.09
+      "days_unchanged": 0.1
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -241,8 +241,15 @@
         "published_count": 10,
         "pages_found_by_search": 0,
         "verdict": "published_but_not_findable",
-        "measured_at": "2026-08-09T20:44:35.547Z",
+        "measured_at": "2026-08-09T21:00:35.290Z",
         "what_it_settles": "Not a shortage of pages. Ten serve 200 and a search index returned none of them, so page COUNT is not the binding term — the missing step is an inbound path from a surface that is already crawled. Building more pages buys nothing until that step exists.",
+        "inbound_surface": {
+          "verdict": "no_crawled_surface_found",
+          "crawled_surface_exists": false,
+          "controlled_observations": 2,
+          "why": "2 CONTROLLED queries against a surface this account can write to returned none of it. The inbound-path step is not a task waiting to be done — its PREREQUISITE is missing, because the surface the link would come from is not itself in the index. Adding links between two uncrawled hosts moves nothing, and that is the specific work this verdict exists to stop.",
+          "qualifies_what_it_settles": "READ THIS BEFORE ACTING ON what_it_settles. The inbound path it calls the missing step has no surface to start from: github.com/bachikoljunior-blip returns nothing on a controlled query, so the repository pages readme_links_page is collected for are not indexed either. Linking one uncrawled host from another is not the missing step — it is the missing step's prerequisite, unmet."
+        },
         "source": "state/findable-surface.json"
       },
       "actionable_now": true,
