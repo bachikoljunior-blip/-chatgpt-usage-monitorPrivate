@@ -28,7 +28,15 @@
 //   node scripts/eta-gate.mjs --id=<candidate> --kind=direct|prerequisite \
 //     --after-idle=<days|inf> --after-planned=<days|inf> --mechanism="..." [--record]
 //
-// Exit 0 = go ahead. Exit 10 = do not do this; pick something else.
+// Exit 0 = go ahead. Exit 20 = reject THIS CANDIDATE, pick another.
+//
+// **This never ends a lap.** Exit 20 is deliberately not 10: scripts/pacing.mjs
+// exits 10 to mean "stop, the quota is spent", and the first version of this file
+// reused that code for "do not do this one". The same number meant opposite things
+// one runbook step apart, and the runbook told laps to end on one of them. Quota is
+// the only thing allowed to end a lap — that is the whole point of having a single
+// branch point. Rejecting a candidate is a routing decision, and the next move after
+// it is always another candidate, never silence.
 
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -76,7 +84,9 @@ if (!mechanism || mechanism.length < 20) {
 }
 if (problems.length) {
   for (const p of problems) console.log(`  ${p}`);
-  process.exit(10);
+  // 20, not 10, for the same reason as the verdict below: a malformed invocation is
+  // a reason to fix the invocation, never a reason to end the lap.
+  process.exit(20);
 }
 
 const [{ value: eta }, { value: history }, { value: claimsFile }] = await Promise.all([
@@ -88,7 +98,7 @@ const [{ value: eta }, { value: history }, { value: claimsFile }] = await Promis
 if (!eta) {
   console.log("  state/eta.json is unreadable, so there is no 'before' to improve on.");
   console.log("  Run scripts/compute-eta.mjs first. Guessing the baseline defeats the gate.");
-  process.exit(10);
+  process.exit(20);
 }
 
 const beforeIdle = eta.idle_eta_days ?? null;
@@ -121,8 +131,8 @@ let verdict;
 let reason;
 
 if (worsens) {
-  verdict = "stop";
-  reason = "the claim makes the ETA worse. Whatever this is for, it is not the goal.";
+  verdict = "reject";
+  reason = "the claim makes the ETA worse. Whatever this is for, it is not the goal. Take the next candidate.";
 } else if (improves) {
   verdict = "go";
   reason =
@@ -136,20 +146,27 @@ if (worsens) {
     "Prerequisites are how an infinite portfolio gets a finite path at all, and also how " +
     "a loop spends a month getting better at nothing. The count is the difference.";
 } else if (kind === "prerequisite") {
-  verdict = "stop";
+  verdict = "reject";
   reason =
     `${consecutivePrerequisites} prerequisite laps in a row and the ETA is unchanged. ` +
     "The rule is that three rounds without movement means the route is wrong, not the " +
-    "parameter. Take a candidate that claims to move the number, or change the route.";
+    "parameter. This is a redirection, not a stop: take a candidate that claims to move " +
+    "the number. If no candidate in state/eta.json can claim that, then the portfolio is " +
+    "the finding — run the zero-base round and produce candidates that can. Doing nothing " +
+    "is the one response this does not authorise.";
 } else {
-  verdict = "stop";
+  verdict = "reject";
   reason =
-    "a direct claim that does not improve either ETA is not a reason to spend a lap. " +
-    "If this is groundwork, say so with --kind=prerequisite and it will be counted.";
+    "a direct claim that does not improve either ETA is not a reason to spend a lap on it. " +
+    "If this is groundwork, say so with --kind=prerequisite and it will be counted. " +
+    "Either way the lap continues — pick again.";
 }
 
 console.log("");
 console.log(`  verdict: ${verdict}`);
+if (verdict === "reject") {
+  console.log("  (this rejects the candidate, not the lap — go back and pick another)");
+}
 console.log(`  ${reason}`);
 
 if (verdict === "go" && record) {
@@ -184,4 +201,4 @@ if (verdict === "go" && record) {
   console.log("  recorded in state/lap-claims.json");
 }
 
-process.exit(verdict === "go" ? 0 : 10);
+process.exit(verdict === "go" ? 0 : 20);
