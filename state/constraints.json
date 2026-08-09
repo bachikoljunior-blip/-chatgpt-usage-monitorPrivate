@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T16:16:00Z",
+  "fetched_at": "2026-08-09T16:25:00Z",
   "note": "Everything here is what was true when it was measured, not a permanent property of the world. Each entry carries a recheck date because on 2026-08-08 two items declared impossible were solved the same day. A constraint falling away usually moves the ETA more than any ordinary improvement does, so rechecks are ETA candidates in their own right.",
   "constraints": [
     {
@@ -431,6 +431,19 @@
       "not_actionable_reason": "the two known instances are fixed and both now have readers: scripts/sync-listing.mjs checkRequestsAddressee walks pending owner requests, checkAddressee takes the cover source, and tests/run-tests.mjs holds both including the negative cases.",
       "the_generalisable_half": "DO NOT ASK WHETHER A DECISION WAS APPLIED. ASK WHICH SURFACES CARRY IT, AND WHICH OF THOSE HAVE A READER. The ones without a reader are where the old version survives, and they are invisible precisely because nothing reports on them. This is RUNBOOK 8 stated from the failure end: a decision that is a file on one surface and a machine on another is not half-done, it is wrong on the surface without the machine.",
       "what_is_not_known": "Which other surfaces carry decisions with no reader. Two were found by asking the question once; nobody has enumerated them. Candidates worth checking: codex/INBOX.md task text, RUNBOOK prose that restates a rule a script also encodes, and the description copy inside state/predictions.json metrics."
+    },
+    {
+      "id": "free_artifact_door",
+      "claim": "SCOPED FOR THE FIRST TIME, NOT YET MEASURED: there is exactly one venue on record whose door opens with NO owner action, and it opens to a different PRODUCT FORM rather than to a better account. r/gamedev forbids promoting paid assets and permits free ones not locked behind a signup, in the same sentence. Six venue surveys never counted this as a candidate because the recorded blocker was that the kit source is not in this repository, so there is nothing here to make free. That is a fact about the KIT, not about the DOOR. A small original demo written from scratch opens it just as well, needs no owner, no browser, and no external site.",
+      "evidence": "codex/outbox/2026-08-09.o.md quoted the r/gamedev rule with both halves in one sentence. git ls-tree on origin/main shows only the monitor, so the kit is genuinely absent. codex/outbox/2026-08-09.m.md measured that this lane writes a JavaScript module with a node:test suite, and the lane proposed a dependency-free single-file HTML idle demo unprompted — the artifact this door needs, offered before anyone asked.",
+      "measured_at": null,
+      "recheck_after": "2026-08-11",
+      "measure_via": "codex_lane",
+      "actionable_now": true,
+      "what_is_being_measured": "Whether the lane returns a single self-contained playable HTML file, complete and uncut, through a transport already measured unable to carry a raster image. Commissioned as codex/INBOX.md task 2026-08-09.q on 2026-08-09; the answer lands at codex/outbox/2026-08-09.q.md.",
+      "why_it_costs_this_loop_nothing": "The Codex pool was 100% and 94% remaining while the Claude weekly pool was at 35%. A task in the INBOX is one file edit here and runs on the other quota.",
+      "what_would_falsify_the_whole_door": "A quoted r/gamedev rule that also bars free self-made assets, or a posting-eligibility threshold on that subreddit stated as a number this account cannot meet. Neither has been found; neither has been looked for since the door was reframed.",
+      "the_honest_gap": "Even with the artifact in hand, posting it is a route change and has to be gated as one. Nobody has measured this account standing on that subreddit, and no_standing_where_buyers_gather still says our standing anywhere is unmeasured. HAVING SOMETHING POSTABLE IS NOT THE SAME AS BEING ABLE TO POST IT."
     }
   ]
 }

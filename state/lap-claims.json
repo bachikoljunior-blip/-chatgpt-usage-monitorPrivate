@@ -225,6 +225,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T16:18:50.472Z",
+      "candidate": "free_artifact_door",
+      "kind": "prerequisite",
+      "mechanism": "Every venue found so far is blocked on something outside this loop: itch needs an owner form, and the paid form is forbidden outright by the one large developer community whose rules were quoted. That same sentence permits FREE assets not locked behind a signup, which is the only door measured open that needs no owner action at all. It has never been scoped, and the reason recorded was that the kit source is not in this repository so there is nothing here to make free. That reason is about the KIT, not about the door: a small original demo written from scratch would also open it. Task .m already measured that the lane writes a JavaScript module with a node:test suite, and the lane itself proposed a dependency-free single-file HTML idle demo unprompted. So this lap scopes the door as a constraint with its measured facts and commissions the artifact on the Codex quota, which is 100 percent unused while ours is at 35. No days are claimed: what is produced is the thing a route change would need to exist before it can be gated as one.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

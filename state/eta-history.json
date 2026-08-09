@@ -29,6 +29,13 @@
       "planned_eta_days": null,
       "measured_monthly_yen": 0,
       "top_candidate": "itch"
+    },
+    {
+      "at": "2026-08-09T16:20:30.390Z",
+      "idle_eta_days": null,
+      "planned_eta_days": null,
+      "measured_monthly_yen": 0,
+      "top_candidate": "free_artifact_door"
     }
   ]
 }

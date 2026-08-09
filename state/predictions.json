@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T16:16:00Z",
+  "fetched_at": "2026-08-09T16:25:00Z",
   "note": "Every change made because it was claimed to shorten the ETA. judge_on is set when the change lands, not when it is convenient. concurrent_changes is what else was in flight, so a later reader can tell a clean attribution from a confounded one.",
   "predictions": [
     {
@@ -500,6 +500,31 @@
         "assets/itch-cover.png changed bytes this lap while owner request 2026-08-09.itch-page-for-the-kit was already pending and unmodified. Anyone judging that request should note the file it points at is now a different image — a better one, but not the one the request was reviewed against."
       ],
       "falsified_if": "A later lap re-renders and the band is back, which would mean the binary preference is not what fixed it and the real cause is still unfound. It is ALSO falsified, differently, if the cover check never fires again on anything — a check that only ever passed is indistinguishable from one that is not wired, and the negative assertion inside the suite is the only thing currently proving otherwise.",
+      "outcome": null
+    },
+    {
+      "id": "2026-08-09.free-artifact-door-gets-an-artifact",
+      "made_at": "2026-08-09T16:25:00Z",
+      "claim": "The blocker on the only owner-free door was misattributed. It was recorded as \"the kit source is not in this repository, so there is nothing here to make free\", which is a fact about the kit; the door only needs SOMETHING free that is not behind a signup. Two things are claimed and they fail separately. FIRST, that the lane returns a complete, uncut, self-contained playable HTML file — the transport was measured on 2026-08-09 to be unable to carry a raster image, and a long single file is the next thing a text transport plausibly truncates. SECOND, that commissioning it costs this loop nothing that matters: the Codex pool sat at 100% and 94% while the Claude weekly pool was at 35%, so the artifact arrives on the quota that is not scarce.",
+      "metric": "Read from origin/main. (a) codex/outbox/2026-08-09.q.md exists and carries the ## 判定 heading. (b) Its HTML block is complete — opens and closes, and the 判定 answers whether it was cut and where. A file that ends mid-tag counts as FALSIFIED for the first half even if the 判定 is present. (c) The six numbered conditions each get a satisfied/not answer rather than prose. (d) state/usage.json shows the codex window still above 80% after the run, which is what \"costs nothing that matters\" means in numbers.",
+      "baseline": {
+        "codex_inbox_tasks_so_far": 13,
+        "of_which_outside_research": 9,
+        "of_which_production": "1 (.m, which produced copy, an SVG and a JS module inside a mixed task)",
+        "lane_measured_unable_to_return": "a raster image (task .p)",
+        "claude_weekly_remaining_percent": 35,
+        "codex_spark_remaining_percent": 100,
+        "codex_remaining_percent": 94,
+        "free_artifact_door_scoped_before": false,
+        "kit_source_present_in_this_repository": false
+      },
+      "judge_on": "2026-08-11",
+      "judge_deadline": "2026-08-14",
+      "concurrent_changes": [
+        "The same lap recorded state/constraints.json free_artifact_door, which is what puts the door on the candidate list at all. If the artifact arrives and no lap picks the door up, that is a failure of the ranking rather than of this prediction.",
+        "The prerequisite counter reached 3/3 on this lap. The successor therefore has route_change admitted, and posting a free artifact is a route change. The two are related on purpose but judged separately: this prediction is about the artifact existing, not about it being posted."
+      ],
+      "falsified_if": "The answer arrives truncated, or arrives as a description of how to write the demo instead of the demo. Either would mean the lane production range stops short of an artifact big enough to matter, and the repair is to split the artifact across tasks rather than to ask again. It is ALSO falsified, differently, if the 判定 claims the file is complete and the file in the outbox is not — that would repeat the .p failure exactly, and would mean self-report is unreliable for size as well as for images.",
       "outcome": null
     }
   ]
