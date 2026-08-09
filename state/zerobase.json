@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T10:32:14.903Z",
+  "fetched_at": "2026-08-09T10:38:49.941Z",
   "last_round_at": "2026-08-09T06:20:00.000Z",
   "cadence_days": 7,
   "note": "Zero-base round: options produced without sight of the current portfolio, then compared against the measured ETA. The proposal passed scripts/check-blind.mjs, so no name of ours appears in it.",
@@ -82,7 +82,16 @@
       "estimate_deliberately_absent": "No days-to-first-yen is recorded. The other five carried numbers produced by the same model in the same round, and three of the three checked were refuted on exactly those numbers. Writing one here would reproduce the error this option exists to correct.",
       "must_face_the_same_gauntlet": "This was proposed from inside the loop, not blind, so it is more prone to motivated reasoning than the five it joins. It gets the same outside survey the others got, and its speed claim is refutable on the same terms.",
       "known_failure_mode": "Mass-generated pages that are templated with nothing computed per page read as content farming. The youtube repository already carries this lesson from platform policy: templated bulk output is judged unmonetisable regardless of volume. Per-page substance is a requirement, not a quality preference.",
-      "refuted": null
+      "refuted": {
+        "at": "2026-08-09T10:36:00Z",
+        "by": "codex-loop (codex/outbox/2026-08-09.h.md)",
+        "claim_tested": "many individually findable pages, each carrying something computed rather than templated, reach a first buyer from zero audience with no recurring human posting, because a third party can discover and refer one",
+        "finding": "No case was found with the full causal chain and both calendar dates. The nearest fast case (PredictionJobs, first $100 within 10 days) is the one this candidate was modelled on, and its own author attributes the sale to a large X account's post, not to search: there is no evidence the referrer found a specific page through search, and the pages were combinatorial templates rather than computed. Three counter-examples hit the candidate directly. Causal mass-published ~1,800 low-originality pages and took a Google manual action: organic traffic -99.52% (307,158 -> 1,485) over 2023-08 to 2024-08. Datanyze is the closest counter-example, because it had exactly what this candidate proposes — genuine per-entity data on each page — and still lost 95.46% of organic traffic, with over 80% of the loss concentrated in the two programmatic directories; the pages stayed HTTP 200 and indexed and were re-ranked down anyway. Stripe Fee Auditor tested the computed-value premise on its own: three months, 4,230 search impressions, 5 clicks, 2 real users, ¥0 — and Hacker News sent more real users in three hours than three months of search did. Google's own position matches: scaled content abuse (2024-03-05) covers mass low-originality pages whether generated or hand-written, and Search Essentials states outright that meeting the requirements does not guarantee crawl, index or display, and lists telling relevant communities as a basic step.",
+        "verdict": "falls as a route to first yen from zero audience without recurring posting",
+        "sources_in": "codex/outbox/2026-08-09.h.md",
+        "not_refuted": "that many search surfaces can work as a long-term acquisition play, and that per-page substance matters. What was refuted is this candidate's role: a route that reaches a FIRST buyer unattended. Note the survey answered the sub-question too — no case supports 'one computed value per page is enough'. The near-successes carried a page that could be acted on by itself (BuiltWith's technology list, IPinfo's IP metadata, Tunebat's key/BPM), and even those cannot be attributed to search for the first sale.",
+        "what_it_leaves": "Four candidates have now been refuted by outside evidence and every one of them failed on the same term. In each near-success the first buyer arrived through a third party with reach posting about the thing — an X account, Hacker News, Product Hunt, Stack Overflow answers — and never through discovery working unattended. distribution_answer already elected route 2 (findable surfaces) over route 1 (post where the buyers already gather) not on evidence but on our own constraint that recurring owner actions are excluded; it said so plainly. This survey removes the evidence route 2 was resting on, so what remains is a constraint with no surviving route under it. That is a decision for a lap to take deliberately, not a gap to fill by proposing a sixth build candidate."
+      }
     }
   ],
   "ranked_last_by_blind_model": {
