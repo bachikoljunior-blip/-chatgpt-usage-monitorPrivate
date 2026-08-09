@@ -13,14 +13,17 @@
 //
 //   GUMROAD_TOKEN=... node scripts/read-gumroad.mjs state/gumroad.json
 
-import { writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { mkdir } from "node:fs/promises";
 
+import { appendReading } from "./revenue-rate.mjs";
+
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, "..");
 const out = resolve(REPO, process.argv[2] ?? "state/gumroad.json");
+const historyOut = resolve(REPO, process.argv[3] ?? "state/gumroad-history.json");
 
 const token = process.env.GUMROAD_TOKEN;
 if (!token) {
@@ -83,6 +86,49 @@ try {
 
 await mkdir(dirname(out), { recursive: true });
 await writeFile(out, JSON.stringify(payload, null, 2) + "\n", "utf8");
+
+// The dated series. state/gumroad.json holds one cumulative snapshot, and a single
+// cumulative total cannot express a rate — which is why compute-eta.mjs used to
+// pin this channel's ETA at ∞ even when sales existed. Two readings separated in
+// time can. A failed read is never appended: "could not measure" must not enter
+// the series as a measured value, or the flat trajectory it implies is fiction.
+if (payload.status === "ok") {
+  let existing = [];
+  try {
+    const parsed = JSON.parse(await readFile(historyOut, "utf8"));
+    if (Array.isArray(parsed?.readings)) existing = parsed.readings;
+  } catch {
+    // No history yet, or it is unreadable. Starting a fresh series is correct for
+    // the first case; for the second, overwriting a corrupt file beats refusing to
+    // ever measure again.
+  }
+  const readings = appendReading(existing, {
+    at: payload.fetched_at,
+    total_sales_count: payload.total_sales_count,
+    total_sales_usd_cents: payload.total_sales_usd_cents,
+  });
+  if (readings !== existing) {
+    await writeFile(
+      historyOut,
+      `${JSON.stringify(
+        {
+          schema_version: 1,
+          note:
+            "Dated cumulative Gumroad readings, appended by scripts/read-gumroad.mjs and read by " +
+            "scripts/compute-eta.mjs via scripts/revenue-rate.mjs. Readings are appended when the totals " +
+            "move or when enough time has passed that the flatness is itself the measurement. " +
+            "The key is `readings` and not `rows` so that scripts/verify-sanitized-state.mjs cannot " +
+            "confuse this series with state/eta-history.json, which it dispatches on shape alone. " +
+            "Counts and cents only — no buyer data, no token.",
+          readings,
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+  }
+}
 
 if (payload.status === "ok") {
   console.log(

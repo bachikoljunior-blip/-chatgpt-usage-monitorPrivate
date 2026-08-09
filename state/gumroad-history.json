@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "note": "Dated cumulative Gumroad readings, appended by scripts/read-gumroad.mjs and read by scripts/compute-eta.mjs via scripts/revenue-rate.mjs. Readings are appended when the totals move or when enough time has passed that the flatness is itself the measurement. The key is `readings` and not `rows` so that scripts/verify-sanitized-state.mjs cannot confuse this series with state/eta-history.json, which it dispatches on shape alone. Counts and cents only — no buyer data, no token.",
+  "readings": [
+    {
+      "at": "2026-08-09T12:07:10.605Z",
+      "total_sales_count": 0,
+      "total_sales_usd_cents": 0
+    }
+  ]
+}

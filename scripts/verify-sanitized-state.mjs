@@ -212,6 +212,32 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
       throw new Error(`lap claim for ${c.candidate} has no outcome field (use null while open)`);
     }
   }
+} else if (Array.isArray(state.readings)) {
+  // A dated revenue series (state/gumroad-history.json). It is keyed `readings`
+  // rather than `rows` on purpose: this file dispatches on shape, so a second
+  // series using `rows` would be validated against the ETA-history rules and
+  // rejected for missing idle_eta_days — which is exactly what happened when this
+  // series was first added.
+  //
+  // Cumulative counters may repeat but must never go backwards or lose their
+  // timestamp: scripts/revenue-rate.mjs divides by the elapsed window, so an
+  // unordered or undated reading silently corrupts every rate derived afterwards.
+  let previous = null;
+  for (const r of state.readings) {
+    if (!/^\d{4}-\d{2}-\d{2}T/.test(r.at ?? "")) {
+      throw new Error("revenue reading has no valid timestamp");
+    }
+    for (const k of ["total_sales_count", "total_sales_usd_cents"]) {
+      if (!Number.isFinite(Number(r[k]))) {
+        throw new Error(`revenue reading has a non-numeric ${k}`);
+      }
+      if (Number(r[k]) < 0) throw new Error(`revenue reading has a negative ${k}`);
+    }
+    if (previous && Date.parse(r.at) <= Date.parse(previous.at)) {
+      throw new Error("revenue readings are not in strictly increasing time order");
+    }
+    previous = r;
+  }
 } else if (Array.isArray(state.rows)) {
   // ETA history. null is the correct value for "never reaches the target" and must
   // survive here exactly as it does in the report: a history that coerced null to a

@@ -19,6 +19,7 @@ import { applyRepricings } from "../scripts/repricing.mjs";
 import {
   ATTACHMENTS, buildPrompt, decide, markerEarned, parseInboxHeader,
 } from "../scripts/inbox-task.mjs";
+import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/revenue-rate.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const temporary = await mkdtemp(join(tmpdir(), "usage-monitor-test-"));
@@ -709,6 +710,86 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       `repricing for ${repricing.candidate_id} is missing a candidate id, a success test, or its negative`,
     );
   }
+}
+
+// --- Revenue becomes visible as a rate --------------------------------------
+// The regression these guard is not a crash. Until 2026-08-09, compute-eta.mjs
+// hardcoded the Gumroad channel's monthly_yen_now to 0 and wrote
+// `idle_eta_days: sales === 0 ? null : null`, a conditional with identical
+// branches. Writing 500 sales and USD 12,500 into state/gumroad.json and running
+// `compute-eta --local` still printed "¥0/month" and "∞", so the loop could not
+// have registered a first sale — and eta-gate.mjs admits a direct claim only when
+// the claimed ETA beats the measured one. The whole loop was gated on a constant.
+{
+  // Millisecond arithmetic, not Date.UTC(y, m, 1 + n): the day argument is
+  // truncated to an integer, so fractional days would silently collapse onto the
+  // same instant and the heartbeat cases below would test nothing.
+  const day = (n) => new Date(Date.UTC(2026, 0, 1) + n * 86_400_000).toISOString();
+  const at = (n, cents, count) => ({
+    at: day(n),
+    total_sales_count: count ?? Math.round(cents / 2500),
+    total_sales_usd_cents: cents,
+  });
+  const TARGET = 200_000;
+
+  // One reading is a level, not a rate. Saying so is different from saying zero.
+  const single = deriveMonthlyRate([at(0, 0)]);
+  assert(single.derivable === false, "a single reading was treated as a rate");
+
+  // Measured, flat, and zero. This is the honest current position.
+  const flatZero = daysToTarget([at(0, 0), at(30, 0)], { targetYen: TARGET });
+  assert(flatZero.rate.derivable === true, "a two-reading zero series was not derivable");
+  assert(flatZero.rate.monthly_yen_now === 0, "a flat zero series produced revenue");
+  assert(flatZero.eta_days === null, "a flat zero series produced a finite ETA");
+
+  // The core repair: revenue that exists is visible. `hasTrajectory` in
+  // compute-eta.mjs keys off exactly this, and it decides whether planned_eta can
+  // ever be non-null.
+  const earning = deriveMonthlyRate([at(0, 0), at(30, 100_000)]);
+  assert(earning.derivable === true, "an earning series was not derivable");
+  assert(
+    earning.monthly_yen_now === 150_000,
+    `USD 1,000 over 30 days should read as ¥150,000/month at the assumed rate, got ${earning.monthly_yen_now}`,
+  );
+
+  // ...and the discipline that keeps the repair from becoming a wish. A rate that
+  // is positive but flat never reaches a target above it. Extrapolating a level as
+  // if it were a slope is the easiest way to manufacture a finite ETA from nothing.
+  const flatEarning = daysToTarget([at(0, 0), at(15, 50_000), at(30, 100_000)], { targetYen: TARGET });
+  assert(flatEarning.rate.monthly_yen_now > 0, "a steadily earning series showed no revenue");
+  assert(flatEarning.eta_days === null, "a flat non-zero rate was extrapolated to a finite ETA");
+
+  // Growth is what makes it finite, and only growth. The overall rate here stays
+  // well below the target (¥60,000/month) so this tests extrapolation and not the
+  // already-arrived branch: ¥15,000/month in the first half, ¥105,000 in the second.
+  const growing = daysToTarget([at(0, 0), at(15, 5_000), at(30, 40_000)], { targetYen: TARGET });
+  assert(Number.isFinite(growing.eta_days), "a series whose rate is accelerating stayed infinite");
+  assert(growing.eta_days > 0, "an accelerating series claimed the target was already reached");
+
+  // Already at or above the target is 0 days, not null.
+  const arrived = daysToTarget([at(0, 0), at(30, 20_000_00)], { targetYen: TARGET });
+  assert(arrived.eta_days === 0, "a rate above the target did not report arrival");
+
+  // A cumulative counter that falls means a reset or a refund, not negative growth.
+  const backwards = deriveMonthlyRate([at(0, 100_000), at(30, 0)]);
+  assert(backwards.derivable === false, "a series that went backwards was read as a rate");
+
+  // Appending: unchanged totals inside the heartbeat add nothing, so the hourly
+  // collector does not turn a flat month into 700 identical rows.
+  const seed = appendReading([], at(0, 0));
+  assert(seed.length === 1, "the first reading was not seeded");
+  const same = appendReading(seed, { ...at(0, 0), at: day(0.1) });
+  assert(same === seed, "an unchanged reading inside the heartbeat was appended anyway");
+  // ...but flatness that persists IS the measurement, so the window still grows.
+  const later = appendReading(seed, at(1, 0));
+  assert(later.length === 2, "a stale unchanged reading did not extend the window");
+  // A sale is always worth recording immediately.
+  const sold = appendReading(seed, { ...at(0, 2500), at: day(0.01) });
+  assert(sold.length === 2, "a changed reading inside the heartbeat was dropped");
+  // Undated or out-of-order readings would corrupt every window derived later.
+  assert(appendReading(seed, { at: "nonsense", total_sales_count: 1, total_sales_usd_cents: 1 }) === seed,
+    "an undated reading was appended");
+  assert(appendReading(later, at(0, 0)) === later, "an out-of-order reading was appended");
 }
 
 console.log("All usage monitor tests passed.");

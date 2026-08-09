@@ -268,6 +268,38 @@
       ],
       "falsified_if": "a later lap does venue or announcement work aimed at shops, salons or streamers without addressing the form mismatch, or the candidate fails to appear in the bot-written eta.json at all. Presence in constraints.json is not the claim — being read by the picker and changing what a lap does is.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-09.eta-can-represent-revenue",
+      "made_at": "2026-08-09T12:12:00Z",
+      "claim": "The ETA that gates every lap could not become finite for any channel this loop controls, regardless of what happened in the world. compute-eta.mjs hardcoded the Gumroad channel's monthly_yen_now to 0 and set idle_eta_days to `sales === 0 ? null : null`, a conditional whose two branches are the same value. Measured, not inferred: writing 500 sales and USD 12,500 into state/gumroad.json and running compute-eta --local still printed '¥0/month' and '∞'. Because eta-gate.mjs admits a direct claim only when the claimed ETA beats the measured one, and the prerequisite lane had just closed at 3/3, no candidate of any kind could pass the gate — both lanes were observed rejecting on this lap. The repair gives the channel a dated series (state/gumroad-history.json, appended hourly by read-gumroad.mjs) and derives the rate from it. The claim is that a first sale can now move the number, and that the series actually accumulates rather than being appended and thrown away.",
+      "metric": "Two things read from origin/main, not from a working tree. (a) state/gumroad-history.json carries strictly more readings than the 1 it is seeded with, proving gumroad-monitor.yml commits the append it makes — this is the half that historically breaks, because the workflow does `git reset --hard origin/main` before regenerating, so an uncommitted append is discarded and the series would sit at one row forever. (b) state/eta.json channels[] for gumroad carries revenue_rate_derivable true and a non-null revenue_window_days once two readings exist, where before it carried a hardcoded zero.",
+      "baseline": {
+        "gumroad_history_readings": 1,
+        "revenue_rate_derivable": false,
+        "monthly_yen_now_before": 0,
+        "idle_eta_days_before": null,
+        "lifetime_sales": 0,
+        "simulated_500_sales_produced_eta": null,
+        "simulated_accelerating_series_produces_eta_days": 23.3,
+        "consecutive_prerequisite_laps": 3,
+        "gate_lanes_observed_rejecting": 2
+      },
+      "judge_on": "2026-08-11",
+      "min_observations": {
+        "source": "state/gumroad-history.json",
+        "path": "readings",
+        "min": 2,
+        "usable_only": false
+      },
+      "judge_deadline": "2026-08-16",
+      "concurrent_changes": [
+        "state/gumroad.json was refreshed by this lap's own read-gumroad.mjs run, so its fetched_at moved for a reason unrelated to the repair.",
+        "scripts/verify-sanitized-state.mjs gained a branch for the new `readings` shape in the same commit. It had to: the sanitizer dispatches on shape alone and read the series as eta-history, rejecting it for a missing idle_eta_days. That is a coupled change, not an independent one.",
+        "No other lap ran between this record and its judge date unless the chain continues, and the chain is expected to continue, so later laps may also touch compute-eta.mjs."
+      ],
+      "falsified_if": "state/gumroad-history.json on origin/main still carries exactly one reading at the judge date, which would mean the hourly workflow appends and discards and the rate can never be derived — the same write-it-where-nobody-reads-it failure this repository keeps rediscovering, in its most expensive form yet, because it would look repaired while remaining pinned at ∞. Also falsified if a later lap finds another constant pinning the portfolio ETA, since the portfolio takes the minimum across channels and itch's idle_eta_days is still an unconditional null.",
+      "outcome": null
     }
   ]
 }

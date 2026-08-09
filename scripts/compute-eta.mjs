@@ -23,6 +23,7 @@ import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { readStateJson, REPO } from "./state-source.mjs";
 import { applyRepricings } from "./repricing.mjs";
+import { daysToTarget } from "./revenue-rate.mjs";
 
 const write = process.argv.includes("--write");
 // Reads come from origin/main so a stale checkout cannot drive the ranking. That
@@ -35,6 +36,7 @@ const TARGET_YEN_PER_MONTH = 200_000;
 
 const [
   { value: gumroad },
+  { value: gumroadHistory },
   { value: itch },
   { value: constraints },
   { value: external },
@@ -45,6 +47,7 @@ const [
   { value: ownerRequests },
 ] = await Promise.all([
   readStateJson("state/gumroad.json", { preferLocal }),
+  readStateJson("state/gumroad-history.json", { preferLocal }),
   readStateJson("state/itch.json", { preferLocal }),
   readStateJson("state/constraints.json", { preferLocal }),
   readStateJson("state/external-metrics.json", { preferLocal }),
@@ -61,19 +64,30 @@ const channels = [];
 if (gumroad?.status === "ok") {
   const sales = Number(gumroad.total_sales_count ?? 0);
   const cents = Number(gumroad.total_sales_usd_cents ?? 0);
+  // Derived from the dated series in state/gumroad-history.json, not from this
+  // snapshot. Until 2026-08-09 both of the following were constants: monthly_yen_now
+  // was hardcoded 0 and idle_eta_days was `sales === 0 ? null : null`, whose two
+  // branches are the same value. That was verified to be load-bearing by writing 500
+  // sales and USD 12,500 into state/gumroad.json and re-running: still "¥0/month",
+  // still "∞". A first sale could not have moved this number, which meant eta-gate
+  // could never admit a direct claim and — once the prerequisite lane closed — no
+  // lap could pass the gate at all. See scripts/revenue-rate.mjs.
+  const projection = daysToTarget(gumroadHistory?.readings, { targetYen: TARGET_YEN_PER_MONTH });
+  const rate = projection.rate;
   channels.push({
     id: "gumroad",
     measured_at: gumroad.fetched_at,
-    monthly_yen_now: 0, // no dated sales history yet, so no rate can be claimed
+    monthly_yen_now: rate.derivable ? rate.monthly_yen_now : 0,
+    revenue_rate_derivable: rate.derivable === true,
+    revenue_window_days: rate.window_days ?? null,
+    revenue_readings: rate.readings ?? (gumroadHistory?.readings?.length ?? 0),
+    fx_usd_jpy_assumed: rate.fx_usd_jpy_assumed ?? null,
     lifetime_sales: sales,
     lifetime_usd_cents: cents,
-    // Zero sales and zero traffic means zero growth. A path with no growth never
-    // reaches the target, however long you wait.
-    idle_eta_days: sales === 0 ? null : null,
-    idle_eta_reason:
-      sales === 0
-        ? "measured zero sales; no traffic source feeds it, so the trajectory is flat"
-        : "sales exist but no dated history yet to derive a rate",
+    idle_eta_days: projection.eta_days,
+    idle_eta_reason: rate.derivable
+      ? projection.reason
+      : `${projection.reason} (lifetime sales measured: ${sales})`,
     owner_actions_required: 0,
     automatable: true,
   });

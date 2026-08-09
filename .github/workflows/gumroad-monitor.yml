@@ -61,7 +61,7 @@ jobs:
       # 資格情報を守る検査が、守らないまま通過を許す形になっていた。
       - name: Verify no credentials entered committed state
         id: verify
-        run: node scripts/verify-sanitized-state.mjs state/gumroad.json
+        run: node scripts/verify-sanitized-state.mjs state/gumroad.json state/gumroad-history.json
 
       - name: Probe the full create/read/delete lifecycle
         if: always() && inputs.probe_lifecycle
@@ -97,12 +97,19 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             node scripts/read-gumroad.mjs state/gumroad.json || exit 1
-            node scripts/verify-sanitized-state.mjs state/gumroad.json || exit 1
+            node scripts/verify-sanitized-state.mjs state/gumroad.json state/gumroad-history.json || exit 1
             # Restore anything a probe produced before the reset above removed it.
             if [ -f "$RUNNER_TEMP/gumroad-capabilities.json" ]; then
               cp "$RUNNER_TEMP/gumroad-capabilities.json" state/gumroad-capabilities.json
             fi
             git add state/gumroad.json
+            # The dated series. state/gumroad.json is regenerated whole every run and
+            # carries only the latest snapshot, which is why the ETA could never see a
+            # rate. gumroad-history.json is the append-only half, and staging it is the
+            # entire point: the reset --hard above reloads it from origin, so a run that
+            # appends without committing throws the reading away and the series stays
+            # one row long forever.
+            git add state/gumroad-history.json
             git add state/gumroad-capabilities.json 2>/dev/null || true
             if git diff --cached --quiet; then
               echo "no change"
