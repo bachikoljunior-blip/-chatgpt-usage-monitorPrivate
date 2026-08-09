@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "status": "error",
+  "fetched_at": "2026-08-09T03:54:34.029Z",
+  "game_count": null,
+  "total_views": null,
+  "total_downloads": null,
+  "total_purchases": null,
+  "error": {
+    "code": "no_games_payload",
+    "attempts": [
+      {
+        "endpoint": "api.itch.io/profile/games",
+        "http_status": 200,
+        "parsed": true,
+        "failed": false
+      },
+      {
+        "endpoint": "itch.io/api/1/KEY/my-games",
+        "http_status": 200,
+        "parsed": true,
+        "failed": false
+      }
+    ]
+  }
+}
