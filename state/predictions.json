@@ -581,6 +581,34 @@
       ],
       "falsified_if": "A later lap adds a promotional link or a signup wall to the artifact and it reaches origin/main anyway — that would mean the reader exists and is not in the path that matters. OR the check is weakened or excused rather than the artifact fixed, without state/constraints.json free_artifact_door recording that the route changed. OR a seventh venue survey is commissioned, which would mean the narrowing of the gap did not reach the side that picks work. Note what this does NOT claim: that anything sells. Nothing here reaches a buyer, and the door is still shut on two named unknowns.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-09.postable-today-gets-a-reader",
+      "made_at": "2026-08-09T17:10:00Z",
+      "claim": "postable_today decides whether a venue is a live route, and venues_postable_today_from_a_standing_start is the count built from it — the number that closed the breadth route and drove a route_change on 2026-08-09. Both were hand-written and read by nothing. Claimed: the itch.io row is the one that costs, because its blocker is an owner action ALREADY PENDING, so the venue flips to postable the moment that page exists and nothing would have noticed — the count would have stayed 0 and the loop's one remaining distribution route stayed shut until a human re-read a sentence. Deriving the field from the account evidence AND the venue's own blocker is what makes that flip arrive by itself. Second and separable claim: three-valued is the right shape. r/gamedev is shut on the artifact today, but the moment the free demo lands it becomes UNKNOWN rather than postable, because the Reddit account has never been established — and the check failing at that point is the intended behaviour, not a defect.",
+      "metric": "Read from origin/main, not from any lap's account of itself. (a) scripts/venue-readiness.mjs derives postable_today and tests/run-tests.mjs fails when the stale-verdict assertion or the three-valued AND is removed — the negative cases are inside the suite, so a suite that passes with them deleted does not count. Both mutations were run at 17:11Z before this was written: disabling the mismatch branch failed on 'a stale postable_today was accepted after the blocker cleared', and collapsing the AND to two-valued failed on 'an unknown account produced false instead of unknown'. (b) If state/itch.json game_count goes above zero before the judge date, the itch.io row's stored postable_today is corrected to true by whichever lap sees the check fail, and the correction cites the check rather than the prose. (c) If assets/free-demo/index.html arrives, the r/gamedev row goes to null and the lap that handles it confronts the account question rather than writing false back.",
+      "baseline": {
+        "measured_at": "2026-08-09T17:06:00Z",
+        "gatey_key_names_in_state": 49,
+        "of_which_no_line_of_code_reads": 33,
+        "substantive_gates_among_them": 1,
+        "substantive_gate": "postable_today, and the count derived from it",
+        "the_rest": "narrative keys in predictions.json and continue.json — records of what was found, not gates anything waits on. Checked by reading them, not assumed from the name.",
+        "venues_surveyed": 3,
+        "postable_today_count_derived": 0,
+        "postable_today_count_stored": 0,
+        "itch_game_count": 0,
+        "free_demo_present": false,
+        "reddit_account_known": false
+      },
+      "judge_on": "2026-08-12",
+      "judge_deadline": "2026-08-16",
+      "concurrent_changes": [
+        "state/constraints.json GameDev.net row: postable_today changed false -> null. That row was 'counted as not-postable on purpose' — a conservative treatment written into a field that records a measurement. The conservative behaviour is unchanged because the count counts settled yeses only, so this does not move any number and must not be scored as if it did.",
+        "Same session lineage, commit b1f0224 (a previous lap): unlock conditions became machine-evaluated. Same defect class — a decision living only on a surface nothing reads. If both hold, that is one finding twice, not two findings, and the sweep recorded here is the reason to stop calling it a coincidence."
+      ],
+      "falsified_if": "state/itch.json game_count goes above zero and no lap corrects the row — that would mean the check exists and is not in the path that matters. OR a lap silences a failing check by rewriting postable_today to match the prose instead of the evidence. OR the sweep missed a gate: if any later lap finds a second substantive condition in state/ that nothing evaluates, the 'substantive_gates_among_them: 1' figure above was wrong and the sweep's generosity was insufficient. Note what this does NOT claim: that any venue becomes postable, that anything is posted, or that anything sells. Every venue is still shut or unknown, and this only guarantees the loop finds out when that stops being true.",
+      "outcome": null
     }
   ]
 }

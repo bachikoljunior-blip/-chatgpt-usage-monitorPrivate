@@ -186,6 +186,12 @@
             "eligibility_threshold": "none stated — no karma, no account age, no day-of-week restriction",
             "live_slot_evidence": "an asset pack (CBORN Character Pack 01) posted 2026-08-09, the day of the survey",
             "postable_today": false,
+            "postable_when": {
+              "state_file": "state/itch.json",
+              "field": "game_count",
+              "is": "positive"
+            },
+            "postable_when_note": "This is the row the reader was added for. The blocker is an owner action that is already pending, so this venue flips to postable the moment the page exists — and until 2026-08-09 nothing would have noticed, because postable_today was hand-written and venues_postable_today_from_a_standing_start was hand-counted from it. game_count is the field state/itch.json actually carries; the survey prose says 'reports zero games', which is the same measurement in words.",
             "blocked_on": "the required link is to a page ON itch.io, and state/itch.json reports zero games. That page is owner request 2026-08-09.itch-page-for-the-kit, already pending.",
             "the_reason_this_venue_matters_most": "It is the only surveyed venue with no eligibility threshold AND a dated live slot AND rules that permit a paid asset pack. Its only blocker is an owner action already asked for.",
             "account": {
@@ -202,6 +208,10 @@
             "eligibility_threshold": "48 hours minimum account age, observed in a 2026 auto-removal notice",
             "live_slot_evidence": null,
             "postable_today": false,
+            "postable_when": {
+              "repo_file": "assets/free-demo/index.html"
+            },
+            "postable_when_note": "The venue's rule forbids the paid kit and permits a free unwalled artifact in the same sentence, so what decides this row is whether such an artifact exists. It does not: task .q commissioned one from the codex lane and codex/outbox/2026-08-09.q.md has not arrived. False beats unknown in the AND, so this row reads shut on the artifact even though the account answer is unknown — which is correct, and also why the account question is not yet the binding blocker here. WHEN THE ARTIFACT LANDS THIS ROW TURNS unknown, NOT postable, and scripts/venue-readiness.mjs will fail until somebody answers the account question or records that it cannot be answered. That failure is the feature: it is the loop refusing to carry r/gamedev as an open route on an account nobody has established.",
             "blocked_on": "the rule, not the account. A USD 25 paid kit is forbidden here regardless of standing, and no paid-product day thread or dedicated slot was found.",
             "what_it_opens_instead": "A free artifact with no signup wall is explicitly permitted by the same sentence. This is the one venue whose door is open to a different product form rather than to a better-standing account.",
             "account": {
@@ -218,7 +228,9 @@
             "rule_quoted": "Use Your Announcements to make your web site or game project known to everyone. If you are going to spam our board, this is the place to do it",
             "eligibility_threshold": "could not be established from public rules — no number published for account age, post count, or free-member posting limits",
             "live_slot_evidence": "post dates were not retrievable from the listing, so the slot could not be shown to be active",
-            "postable_today": false,
+            "postable_today": null,
+            "postable_not_evaluable": "the venue does not publish an eligibility threshold, so no predicate over anything readable here can settle it. Six surveys established this is a property of the instrument, not of this venue: 3 of 3 in the second batch failed on the same term.",
+            "postable_today_changed_from_false_to_null": "2026-08-09. It was false, and blocked_on says it was 'counted as not-postable on purpose' — a deliberately conservative TREATMENT, written into the field that records a MEASUREMENT. Nobody measured a refusal here; the threshold is simply unpublished. The conservative treatment is unchanged and now comes from the machine rather than from the value: venues_postable_today_from_a_standing_start counts settled yeses only, so unknown is still not a route. What changes is that the file stops asserting a fact it never had, which is the same correction the account field made to this same row set.",
             "blocked_on": "unverified eligibility. Counted as not-postable on purpose: the measured failure mode in the evidence is a standing-start account being auto-removed, and an unverified threshold is exactly the condition under which that happened before.",
             "account": {
               "exists": null,
@@ -526,7 +538,19 @@
         "min_observations_and_judge_deadline": "READ. scripts/check-predictions.mjs counts observations at the declared source/path, honours usable_only, and forces at judge_deadline. Not prose.",
         "wiring_exception_recheck_dates": "READ. scripts/check-wiring.mjs parses recheck_after and re-reports an expired exception as unexcused.",
         "codex_inbox_done_marker": "READ. scripts/inbox-task.mjs decides on markerEarned and tests/run-tests.mjs covers it.",
-        "what_is_still_unknown": "Everything outside those three. The search was a list somebody wrote down, not a sweep — nobody has enumerated the conditions in this repository and asked of each which line of code decides it."
+        "what_is_still_unknown": "Everything outside those three. The search was a list somebody wrote down, not a sweep — nobody has enumerated the conditions in this repository and asked of each which line of code decides it.",
+        "superseded_by": "the_sweep_was_done, below. That gap is closed; read the sweep's own limits instead of this sentence."
+      },
+      "the_sweep_was_done": {
+        "swept_at": "2026-08-09T17:06:00Z",
+        "method": "Mechanical, not a list. Every key name appearing anywhere in state/*.json was collected (recursively, arrays included), filtered to names that say something is waiting, blocked, permitted, due or settled, and each surviving name was checked for a literal occurrence anywhere in scripts/, tests/ or .github/. The filter was deliberately generous: a false positive costs one reading, a false negative is the defect this exists to find. That is the same question the hand-grep for recheck_after asked, asked of every key at once.",
+        "result": "49 gate-shaped key names, 33 with no occurrence in any code. Each of the 33 was read. 32 are narrative — keys in predictions.json and continue.json that RECORD what a lap found, which nothing is waiting on. One was a real gate.",
+        "the_one": "postable_today on state/constraints.json no_standing_where_buyers_gather.venue_survey.per_venue[], and venues_postable_today_from_a_standing_start, the count built from it. Confirmed by three independent observations: the sweep; a grep for both names outside state/ returning nothing; and scripts/venue-readiness.mjs, which consumes these very rows and never mentioned either field.",
+        "why_it_mattered_more_than_the_others": "It is not a dormant field. venues_postable_today_from_a_standing_start: 0 is the number that closed the breadth route and was cited in the route_change at 15:20Z, and the itch.io row's blocker is an owner action that is ALREADY PENDING. So the single most likely event in this repository's near future — the owner creating that page — flips a venue to postable, and every reader would have gone on seeing 0.",
+        "fixed_by": "scripts/venue-readiness.mjs now derives postable_today from the account evidence AND the venue's own blocker declared as data (postable_when: { state_file, field, is } or { repo_file }), or a stated postable_not_evaluable — the same two-way choice unlock-condition.mjs offers, borrowing its PREDICATES table rather than defining a second vocabulary. It fails when a stored verdict disagrees with the evidence, and checks the survey's stored count against the derived one.",
+        "measured_not_claimed": "Three seeded runs at 17:09Z against the real rows. game_count 0 -> 1: itch.io goes true and the stored false is reported wrong. Free demo present, Reddit account still unknown: r/gamedev goes null, NOT true. Neither seeded: matches the file, exit 0. Two implementation mutations at 17:11Z were caught by tests/run-tests.mjs — disabling the mismatch branch, and collapsing the three-valued AND to two-valued.",
+        "the_three_valued_part_is_the_subtle_one": "false beats unknown, because one settled refusal settles the question; but unknown AND true is unknown, not false. Writing false where the truth is 'nobody looked' is the same error the account field was added to fix, and this row set had it twice: GameDev.net carried postable_today false as a deliberately conservative TREATMENT of an unpublished threshold, in the field that records a MEASUREMENT. Corrected to null. Nothing about the loop's behaviour changes, because the count counts settled yeses only.",
+        "what_this_sweep_still_does_not_cover": "Conditions expressed somewhere other than a JSON key name in state/ — prose inside a value, a condition in RUNBOOK.md or a workflow, or a gate whose key name does not sound like one. The generous filter helps but does not close it. And the sweep proves a name is UNREAD, not that a name which appears in code is read CORRECTLY: recheck_after appeared in three scripts and was still not evaluated as a condition by any of them, which is exactly how this defect class hid the first time."
       }
     }
   ]

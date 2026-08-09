@@ -1414,15 +1414,24 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
 // pending owner request. Both rows read as equally researched, because every field
 // described the venue and no field described us.
 {
+  const shut = { state_file: "state/itch.json", field: "game_count", is: "positive" };
   const itch = {
     venue: "itch.io",
     blocked_on: "needs a page on itch.io first",
+    postable_today: false,
+    postable_when: shut,
     account: { exists: true, evidence_state_file: "state/itch.json" },
   };
-  const reddit = { venue: "r/gamedev", account: { exists: null, evidence_state_file: null } };
-  const evidence = { "state/itch.json": { status: "ok", profile: { username: "someone" } } };
+  const reddit = {
+    venue: "r/gamedev",
+    postable_today: false,
+    postable_when: { repo_file: "assets/free-demo/index.html" },
+    account: { exists: null, evidence_state_file: null },
+  };
+  const evidence = { "state/itch.json": { status: "ok", game_count: 0, profile: { username: "someone" } } };
+  const repoFiles = { "assets/free-demo/index.html": false };
 
-  const ok = venueReadiness([itch, reddit], evidence);
+  const ok = venueReadiness([itch, reddit], evidence, repoFiles);
   assert(ok.ok === true, `declared venues were rejected: ${JSON.stringify(ok.rows)}`);
   assert(ok.postable_with_a_measured_account === 1, "the measured account was not counted, or the unmeasured one was");
   assert(
@@ -1432,29 +1441,91 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
 
   // Undeclared is the failure this exists for: a missing field and an unmeasured
   // account are indistinguishable when the field is optional.
-  const missing = venueReadiness([{ venue: "somewhere" }], evidence);
+  const missing = venueReadiness([{ venue: "somewhere" }], evidence, repoFiles);
   assert(missing.ok === false, "a venue carried as a route never said whether we can post from it");
   assert(missing.rows[0].problem === "no account field", "the undeclared account was not named as the problem");
 
   // An asserted account is exactly the thing no_standing_where_buyers_gather says
   // has never been measured, so a claim has to point at something readable.
-  const asserted = venueReadiness([{ venue: "x", account: { exists: true } }], evidence);
+  const asserted = venueReadiness([{ venue: "x", account: { exists: true } }], evidence, repoFiles);
   assert(asserted.ok === false, "a claimed account with no evidence file was accepted");
   assert(asserted.rows[0].account_exists === null, "an unevidenced claim was reported as a measured account");
 
   const unreadable = venueReadiness(
     [{ venue: "x", account: { exists: true, evidence_state_file: "state/nope.json" } }],
     { "state/nope.json": null },
+    repoFiles,
   );
   assert(unreadable.ok === false, "an account whose evidence file could not be read was accepted");
 
   const errored = venueReadiness(
     [{ venue: "x", account: { exists: true, evidence_state_file: "state/itch.json" } }],
     { "state/itch.json": { status: "error" } },
+    repoFiles,
   );
   assert(errored.ok === false, "an account was accepted on an evidence file reporting an error");
 
+  // --- and postable_today has to be derived, not asserted ---------------------
+  //
+  // The sweep that produced this half found postable_today, and the count built
+  // from it, read by nothing at all. These are the negative cases: delete any one
+  // of them and the suite still passes while the field goes back to being prose.
+
+  // 1. A row that never says what would open it is the same defect as a condition
+  //    written as a sentence — it cannot come true, and it looks exactly like a row
+  //    that is merely still shut.
+  const noCondition = venueReadiness(
+    [{ venue: "x", postable_today: false, account: { exists: null, evidence_state_file: null } }],
+    evidence,
+    repoFiles,
+  );
+  assert(noCondition.ok === false, "a venue declared postable_today with nothing evaluating it was accepted");
+  assert(
+    noCondition.rows[0].problem.includes("no reader"),
+    `the unread postable_today was not named as the problem: ${noCondition.rows[0].problem}`,
+  );
+
+  // 2. The one that costs laps: the blocker clears and the hand-written verdict
+  //    still reads shut. This is itch.io the moment the pending owner action lands.
+  const opened = venueReadiness([itch], { "state/itch.json": { status: "ok", game_count: 1 } }, repoFiles);
+  assert(opened.rows[0].postable_today === true, "a venue whose blocker cleared did not become postable");
+  assert(opened.ok === false, "a stale postable_today was accepted after the blocker cleared");
+  assert(opened.postable_today_count === 1, "the derived count did not follow the evidence");
+
+  // 3. Three-valued on purpose. Unknown AND true is unknown, not false: recording
+  //    "cannot post" where the truth is "nobody looked" is the original error.
+  const unknownAccount = venueReadiness([reddit], evidence, { "assets/free-demo/index.html": true });
+  assert(
+    unknownAccount.rows[0].postable_today === null,
+    `an unknown account produced ${JSON.stringify(unknownAccount.rows[0].postable_today)} instead of unknown`,
+  );
+  assert(unknownAccount.postable_today_count === 0, "an unknown venue was counted as a route");
+
+  // 4. But a settled refusal still beats unknown, or every shut venue would read
+  //    unknown the moment its account question went unasked.
+  const settledNo = venueReadiness([reddit], evidence, repoFiles);
+  assert(settledNo.rows[0].postable_today === false, "a settled blocker was softened to unknown by an unknown account");
+
+  // 5. A condition no machine can settle has to say so rather than be omitted —
+  //    the same two-way choice unlock-condition.mjs offers.
+  const declaredUnevaluable = venueReadiness(
+    [
+      {
+        venue: "x",
+        postable_today: null,
+        postable_not_evaluable: "the venue publishes no threshold",
+        account: { exists: null, evidence_state_file: null },
+      },
+    ],
+    evidence,
+    repoFiles,
+  );
+  assert(declaredUnevaluable.ok === true, "a declared not-evaluable condition was rejected");
+  assert(declaredUnevaluable.rows[0].postable_today === null, "a not-evaluable row did not report unknown");
+
   // And the real rows pass, which is what keeps this honest as venues are added.
+  // The CLI also checks the survey's stored count against the derived one, so the
+  // number a reader acts on cannot drift from the rows underneath it.
   run(process.execPath, [join(root, "scripts/venue-readiness.mjs")]);
 }
 

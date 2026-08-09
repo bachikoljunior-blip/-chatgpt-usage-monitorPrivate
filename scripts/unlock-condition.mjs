@@ -37,7 +37,12 @@
 // Predicates are deliberately few. A condition nobody can express in these terms is
 // a condition to write as `unlock_not_evaluable` with a reason, not a reason to grow
 // an expression language nothing else needs.
-const PREDICATES = {
+//
+// Exported because scripts/venue-readiness.mjs evaluates the same KIND of thing — a
+// condition a row is waiting on — against a state file rather than a channel. It
+// borrows this table rather than defining a second one, so there is one vocabulary
+// of predicates in the repository and not two that drift.
+export const PREDICATES = {
   non_null: {
     holds: (v) => v !== null && v !== undefined,
     describe: (field) => `${field} is not null on some channel`,

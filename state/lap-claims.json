@@ -273,6 +273,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T17:06:42.931Z",
+      "candidate": "no_standing_where_buyers_gather",
+      "kind": "prerequisite",
+      "mechanism": "postable_today is the field that decides whether a venue is a live route, and the sweep found no line of code reads it (three independent observations: key-name sweep across scripts/tests/.github, grep outside state/, and reading venue-readiness.mjs which consumes the same rows and never mentions it). venues_postable_today_from_a_standing_start:0 is the count that closed the breadth route and drove a route_change, and it is hand-written with no reader. So when the pending itch owner action lands, itch.io becomes postable and nothing will notice: the count stays 0 and the route stays closed until a human happens to re-read the prose. This gives the field a reader that derives it from the account evidence AND the venue's own blocker as data, and fails when the stored value disagrees. It does not claim days; it stops the one distribution decision the loop has left from silently freezing shut.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
