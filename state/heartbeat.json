@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-09T03:59:40.929Z",
+  "overdue_factor": 2,
+  "overdue_count": 0,
+  "never_seen_count": 6,
+  "repair": null,
+  "automations": [
+    {
+      "id": "revenue-loop",
+      "kind": "claude-trigger",
+      "cadence_minutes": 240,
+      "last_seen": null,
+      "age_minutes": null,
+      "status": "never_seen"
+    },
+    {
+      "id": "youtube-loop",
+      "kind": "claude-trigger",
+      "cadence_minutes": 360,
+      "last_seen": null,
+      "age_minutes": null,
+      "status": "never_seen"
+    },
+    {
+      "id": "cookie-daily",
+      "kind": "claude-trigger",
+      "cadence_minutes": 1440,
+      "last_seen": null,
+      "age_minutes": null,
+      "status": "never_seen"
+    },
+    {
+      "id": "usage-monitor",
+      "kind": "github-actions",
+      "cadence_minutes": 60,
+      "last_seen": null,
+      "age_minutes": null,
+      "status": "never_seen"
+    },
+    {
+      "id": "claude-usage-monitor",
+      "kind": "github-actions",
+      "cadence_minutes": 60,
+      "last_seen": null,
+      "age_minutes": null,
+      "status": "never_seen"
+    },
+    {
+      "id": "gumroad-monitor",
+      "kind": "github-actions",
+      "cadence_minutes": 60,
+      "last_seen": null,
+      "age_minutes": null,
+      "status": "never_seen"
+    }
+  ]
+}

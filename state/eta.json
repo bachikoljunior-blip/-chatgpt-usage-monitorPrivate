@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-09T03:59:40.275Z",
+  "target_yen_per_month": 200000,
+  "idle_eta_days": null,
+  "idle_eta_note": "every measurable channel is infinite: zero revenue, zero growth, or blocked behind an owner action. This is the real baseline, not a measurement failure.",
+  "channels": [
+    {
+      "id": "gumroad",
+      "measured_at": "2026-08-09T02:37:23.868Z",
+      "monthly_yen_now": 0,
+      "lifetime_sales": 0,
+      "lifetime_usd_cents": 0,
+      "idle_eta_days": null,
+      "idle_eta_reason": "measured zero sales; no traffic source feeds it, so the trajectory is flat",
+      "owner_actions_required": 0,
+      "automatable": true
+    },
+    {
+      "id": "itch",
+      "measured_at": "2026-08-09T03:57:48.022Z",
+      "monthly_yen_now": 0,
+      "games": 0,
+      "total_views": 0,
+      "idle_eta_days": null,
+      "idle_eta_reason": "no game pages exist; creating one is a web form with no API, so idle it never starts",
+      "owner_actions_required": 1,
+      "planned_unblock": "create one game page (form only); butler automates everything after",
+      "automatable": false
+    },
+    {
+      "id": "youtube",
+      "measured_at": null,
+      "idle_eta_days": null,
+      "idle_eta_reason": "no external-metrics.json published yet; YouTube figures live in another repo and are not readable here",
+      "unmeasured": true
+    }
+  ],
+  "candidates": [
+    {
+      "kind": "constraint_recheck",
+      "id": "chatgpt_reach_from_automation",
+      "why": "large: Claude is the scarce pool and ChatGPT is not; moving review/audit/ETA work there raises laps per week",
+      "owner_actions": 0,
+      "note": "UNMEASURED: whether the automated ChatGPT path (chatgpt-ask.yml, codex exec in a read-only sandbox) can read our repositories."
+    },
+    {
+      "kind": "constraint_recheck",
+      "id": "itch_profile_games_fields",
+      "why": "medium: decides whether the three funnel stages can be separated at all",
+      "owner_actions": 0,
+      "note": "UNMEASURED: which fields itch.io actually returns for our account (views, downloads, purchases)."
+    },
+    {
+      "kind": "channel_unblock",
+      "id": "itch",
+      "why": "turns an infinite path finite",
+      "owner_actions": 1,
+      "note": "create one game page (form only); butler automates everything after"
+    },
+    {
+      "kind": "efficiency",
+      "id": "reduce_lap_cost",
+      "why": "more laps per week from the same quota means more attempts at every other candidate",
+      "owner_actions": 0,
+      "note": "move work to the non-scarce pool; stop loading the full directive into every session in 14 repos"
+    }
+  ],
+  "measured_current_monthly_yen": 0
+}

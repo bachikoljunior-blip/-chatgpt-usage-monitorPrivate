@@ -48,6 +48,62 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
   if (typeof state.prompt !== "string" || typeof state.answer !== "string" || !state.answer) {
     throw new Error("answer record is missing its prompt or answer");
   }
+} else if (state.probe !== undefined) {
+  // API capability probes. This shape predates the branch and was failing the
+  // checker outright — which meant a file under state/ was exempt from the
+  // credential scan in practice while the rule said otherwise. The walk() above is
+  // the part that matters here, since response_excerpt carries API output.
+  if (typeof state.probe !== "string") throw new Error("probe state has no probe description");
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at)) {
+    throw new Error("probe state has no valid fetched_at timestamp");
+  }
+} else if (Array.isArray(state.constraints)) {
+  // The constraint registry. Every entry needs a recheck date or an explicit null,
+  // because an undated "impossible" is how a limit outlives the thing that caused
+  // it: on 2026-08-08 two items declared impossible were solved the same day.
+  // A null date is allowed only for standing owner instructions, which are not
+  // environmental limits and must never be scheduled for retesting.
+  for (const c of state.constraints) {
+    if (typeof c.id !== "string" || !c.id) throw new Error("constraint has no id");
+    if (c.recheck_after === undefined) {
+      throw new Error(`constraint ${c.id} has no recheck_after (use null only for owner rules)`);
+    }
+    if (c.measured_at === undefined) {
+      throw new Error(`constraint ${c.id} has no measured_at (use null when unmeasured)`);
+    }
+  }
+} else if (state.overdue_count !== undefined) {
+  // Heartbeat report. Checked before the registry branch below: both carry an
+  // `automations` array, but these rows describe liveness rather than cost, so the
+  // registry's cost checks would reject a perfectly valid heartbeat file.
+  if (!Number.isFinite(Number(state.overdue_count))) {
+    throw new Error("heartbeat state has a non-numeric overdue_count");
+  }
+  if (!Array.isArray(state.automations)) {
+    throw new Error("heartbeat state has no automations array");
+  }
+  for (const a of state.automations) {
+    if (!["ok", "overdue", "never_seen"].includes(a.status)) {
+      throw new Error(`heartbeat row ${a.id} has an invalid status`);
+    }
+  }
+} else if (state.target_yen_per_month !== undefined) {
+  // ETA report. idle_eta_days is allowed to be null and that is the whole point:
+  // null means "never reaches the target on the current trajectory". Coercing it
+  // to a large number would turn an honest impossibility into apparent progress,
+  // which is the specific self-deception this loop exists to prevent.
+  if (!Array.isArray(state.channels)) {
+    throw new Error("eta state has no channels array");
+  }
+  if (state.idle_eta_days !== null && !Number.isFinite(Number(state.idle_eta_days))) {
+    throw new Error("eta state has a non-numeric idle_eta_days");
+  }
+  for (const c of state.channels) {
+    if (typeof c.id !== "string" || !c.id) throw new Error("eta channel has no id");
+    if (c.idle_eta_days !== null && !Number.isFinite(Number(c.idle_eta_days))) {
+      throw new Error(`eta channel ${c.id} has a non-numeric idle_eta_days`);
+    }
+  }
 } else if (Array.isArray(state.samples) && state.open !== undefined) {
   // Lap cost samples. cost_percent is null exactly when usable is false, and that
   // pairing is the point: an unusable lap must not carry a number, because a

@@ -60,12 +60,12 @@
     },
     {
       "id": "itch_profile_games_fields",
-      "claim": "UNMEASURED: which fields itch.io actually returns for our account (views, downloads, purchases).",
-      "evidence": "Two API generations exist; the collector tries both and records fields_present. Not yet run against the real key.",
-      "measured_at": null,
-      "recheck_after": "2026-08-09",
+      "claim": "PARTLY MEASURED: api.itch.io/profile/games authenticates and returns a games collection. Which per-game fields it carries is still unknown, because the account currently has zero games.",
+      "evidence": "2026-08-09: three dispatched runs. First two returned 200 with a games key that was not an array; the collector now accepts either container. Third returned status ok, game_count 0. The legacy itch.io/api/1/KEY/my-games endpoint returned 429 under repeated calls. fields_present is [] only because there are no games to describe.",
+      "measured_at": "2026-08-09",
+      "recheck_after": "first game published",
       "blocks": ["itch_funnel_measurement"],
-      "eta_effect_if_lifted": "medium: decides whether the three funnel stages can be separated at all"
+      "eta_effect_if_lifted": "medium: decides whether the three funnel stages (found / opened / bought) can be separated at all. Cannot be resolved by testing — only by publishing a game."
     },
     {
       "id": "simple_main_frozen",

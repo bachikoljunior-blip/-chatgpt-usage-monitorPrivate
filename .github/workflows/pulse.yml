@@ -1,0 +1,83 @@
+name: Pulse (ETA and heartbeats)
+
+# The judgement half of the loop, kept in Actions rather than in a Claude lap.
+#
+# Actions minutes are not the scarce resource; the Claude weekly window is. Every
+# computation that does not need judgement lives here, so that when the window is
+# tight the target and the candidate list are still current and a lap only has to
+# execute the top item. It also keeps observing through an outage that stops every
+# lap, which is exactly when a stop-detector matters.
+
+on:
+  schedule:
+    - cron: "52 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/compute-eta.mjs"
+      - "scripts/check-heartbeats.mjs"
+      - ".github/workflows/pulse.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pulse
+  cancel-in-progress: false
+
+jobs:
+  pulse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Compute ETA and check heartbeats
+        id: compute
+        run: |
+          node scripts/compute-eta.mjs --write
+          node scripts/check-heartbeats.mjs --write
+
+      # fail closed, same as the collectors: a state file that failed its check
+      # must never reach main.
+      - name: Verify no credentials entered committed state
+        id: verify
+        run: |
+          node scripts/verify-sanitized-state.mjs state/eta.json
+          node scripts/verify-sanitized-state.mjs state/heartbeat.json
+
+      - name: Commit current state
+        if: steps.compute.outcome == 'success' && steps.verify.outcome == 'success'
+        run: |
+          git config user.name "pulse[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Generated wholesale each run, so two overlapping runs always differ and
+          # a rebase always conflicts. Reset to origin, regenerate, push.
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            node scripts/compute-eta.mjs --write || exit 1
+            node scripts/check-heartbeats.mjs --write || exit 1
+            node scripts/verify-sanitized-state.mjs state/eta.json || exit 1
+            node scripts/verify-sanitized-state.mjs state/heartbeat.json || exit 1
+            git add state/eta.json state/heartbeat.json
+            if git diff --cached --quiet; then
+              echo "no change"
+              exit 0
+            fi
+            git commit -m "chore: refresh ETA and heartbeat state"
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "push rejected, retrying ($attempt)"
+          done
+          echo "could not push after 3 attempts" >&2
+          exit 1
