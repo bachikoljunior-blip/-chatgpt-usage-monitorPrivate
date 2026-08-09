@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T04:00:00.000Z",
+  "fetched_at": "2026-08-09T06:59:35.981Z",
   "note": "Live automations and their measured cost per run. pacing.mjs reserves each one's expected consumption before the reset, so a lap plans with what is genuinely spare rather than with the whole pool. avg_cost_percent is filled in by scripts/record-lap.mjs from real start/end readings; null means never measured and is reserved at a high default.",
   "automations": [
     {
@@ -27,8 +27,7 @@
       "cadence_minutes": 240,
       "enabled": true,
       "avg_cost_percent": null,
-      "samples": 0,
-      "last_seen": null
+      "samples": 0
     },
     {
       "id": "youtube-loop",

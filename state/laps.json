@@ -1,13 +1,6 @@
 {
   "schema_version": 1,
-  "open": {
-    "revenue-loop": {
-      "at": "2026-08-09T06:58:39.481Z",
-      "usage_fetched_at": "2026-08-09T06:41:57.994Z",
-      "remaining_percent": 43,
-      "resets_at": "2026-08-14T22:00:00.314Z"
-    }
-  },
+  "open": {},
   "samples": [
     {
       "id": "revenue-loop",
@@ -56,16 +49,24 @@
       "cost_percent": null,
       "usable": false,
       "reason": "no_new_usage_reading"
+    },
+    {
+      "id": "revenue-loop",
+      "started_at": "2026-08-09T06:58:39.481Z",
+      "ended_at": "2026-08-09T06:59:35.981Z",
+      "cost_percent": null,
+      "usable": false,
+      "reason": "below_measurement_resolution"
     }
   ],
   "pending_verification": {
-    "claim": "Lap-cost measurement can now produce a usable sample.",
-    "changed": "scripts/window-roll.mjs — resets_at compared with a 5-minute tolerance instead of string equality.",
-    "why": "The collector re-derives resets_at every call, so one unmoved weekly window reported .314Z/.180Z/.968Z/21:59:59.937Z across 12 consecutive collections on 2026-08-09. String equality called that a reset. Laps spanning a collection died as window_reset_mid_lap; laps not spanning one died as no_new_usage_reading. Together those cover every lap, so 6 of 6 samples were unusable and no cost was ever measured.",
-    "not_yet_verified": "No usable sample has been observed since the fix. Do not call this fixed until one exists.",
+    "claim": "Lap-cost measurement can survive the window-roll check. VERIFIED 2026-08-09T06:59Z.",
+    "verified": "record-lap --phase=end classified a lap spanning the 06:41:57Z -> 06:58:41Z collections as usable. Under the old string comparison the same lap would have been discarded as window_reset_mid_lap, because resets_at moved .314Z -> a fresh value. That branch is no longer the blocker.",
+    "but_still_unmeasured": "The very first surviving sample measured 0.000% and wrote avg_cost_percent 0 into state/automations.json, which is worse than null: pacing would reserve nothing and let the automation eat the pool unaccounted. Both ends read 43% because read-claude-usage.mjs rounds to one decimal, and the five_hour window also sat unchanged at 4%/96%, which looks like upstream reporting lag rather than a free lap. That sample is now reclassified below_measurement_resolution and the registry entry is back to null.",
+    "next_blocker": "resolution, not classification. A lap budget is 1.37% and the reading resolves to 0.1%, so a single lap sits near the noise floor. Two routes, neither tried: measure across several laps instead of one (start once, close after N fires), or find a usage field with finer granularity than the rounded percentage.",
     "verify_by": "2026-08-10T07:00:00Z",
-    "indicator": "state/automations.json shows avg_cost_percent != null with samples >= 1 for eta-loop, and scripts/pacing.mjs stops printing UNMEASURED default for it.",
-    "if_still_unmeasured": "The remaining killer is no_new_usage_reading: laps shorter than the collection interval compare a reading to itself. Next move would be to have the lap read usage directly at both ends rather than waiting on the hourly commit.",
+    "indicator": "state/automations.json shows avg_cost_percent != null with samples >= 1 for any claude-trigger automation, and scripts/pacing.mjs stops printing UNMEASURED default for it.",
+    "why_it_matters": "pacing.mjs reserves 0.5% per run for three unmeasured automations — 81% raw, capped to 30.10% — against a 12.90% discretionary pool. Every lap budget is a residue of that guess.",
     "baseline_at_fix": {
       "samples_total": 6,
       "usable_total": 0,

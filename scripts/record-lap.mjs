@@ -115,6 +115,15 @@ if (windowRolled) {
 } else if (confounded) {
   usable = false;
   reason = "overlapping_lap";
+} else if (delta === 0) {
+  // The collector rounds percentages to one decimal, so a zero delta means
+  // "cost below 0.05%, or the upstream number has not caught up yet" — never
+  // "this lap was free". Recording it as 0 is the specific failure this file's
+  // header warns about: pacing would reserve nothing for the automation and let
+  // it eat the pool unaccounted. Measured 2026-08-09 the first time a sample
+  // ever survived: both ends read 43% and the average went straight to 0.
+  usable = false;
+  reason = "below_measurement_resolution";
 } else if (!Number.isFinite(delta) || delta < 0) {
   usable = false;
   reason = "non_monotonic_reading";
