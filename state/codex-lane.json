@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "checked_at": "2026-08-09T22:03:50.703Z",
+  "checked_at": "2026-08-09T23:05:14.315Z",
   "ran": true,
-  "task_id": "2026-08-09.r",
-  "reason": "task 2026-08-09.r is live and unmarked",
+  "task_id": "2026-08-09.s",
+  "reason": "task 2026-08-09.s is live and unmarked",
   "note": "Written by every run of .github/workflows/codex-inbox.yml, including the runs that skip because the task already carries its done marker. state/automations.json points codex-loop's liveness here for that reason."
 }
