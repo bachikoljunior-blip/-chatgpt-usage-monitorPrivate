@@ -846,6 +846,15 @@ for (const c of candidates) {
           "shuts no row — decides whether the one post lands.",
       );
     }
+    const unpayable = c.route_alignment.binding_venues_without_a_revenue_path;
+    if (unpayable?.length) {
+      console.log(
+        `      NO REVENUE PATH at the venue(s) this route is waiting on: ${unpayable.join(", ")}. ` +
+          "The prerequisite clears into a permitted post with no permitted way to be paid for it. " +
+          "Breaks no rule and shuts no row — it prices the prerequisite, and the price is that " +
+          "clearing it buys attention rather than a buyer.",
+      );
+    }
   }
   // Printed, not just written into state/eta.json: a lap picking work reads this
   // list, and a measurement the picker never sees changes nothing.

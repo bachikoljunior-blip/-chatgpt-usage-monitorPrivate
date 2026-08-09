@@ -5,6 +5,33 @@
   "note": "Every change made because it was claimed to shorten the ETA. judge_on is set when the change lands, not when it is convenient. concurrent_changes is what else was in flight, so a later reader can tell a clean attribution from a confounded one.",
   "predictions": [
     {
+      "id": "2026-08-09.the-open-door-cannot-be-paid-through",
+      "made_at": "2026-08-09T22:00:00Z",
+      "claim": "The elected route's prerequisite is `account`, and exactly one surveyed venue binds on that term: r/gamedev. Its own rule_quoted forbids the act that would turn a post there into money — 'promoting paid assets (even on sale or in a giveaway) is forbidden' — and the only thing this account is paid for is the USD 25 gumroad kit. So clearing the prerequisite buys a permitted post and no permitted way to be paid for it. The claim registered is that this is a term and not a quibble: laps after this one stop treating 2026-08-09.reddit-account-create as the binding owner request for revenue and treat 2026-08-09.itch-page-for-the-kit as binding instead, because itch.io's own rule REQUIRES a link to an itch.io page and permits self-promotion at a reasonable level. Registered before the reordering so the reordering cannot be credited retroactively. What this does NOT claim: that r/gamedev is worthless. A free post there is still permitted, still cheap, and is still the only door whose blocker is one owner action — it is a way to be read, not a way to be paid, and those were the same field until now.",
+      "metric": "scripts/venue-readiness.mjs open_but_no_revenue_path and prerequisiteCheck().binding_venues_without_a_revenue_path, read from origin/main; and which owner request each following lap treats as binding, read from state/lap-claims.json mechanisms and state/continue.json. Both sides are derived from paid_promotion_permitted on the rows, which is itself quoted from each venue's own rule_quoted rather than asserted, so the finding cannot be edited away without editing the quoted rule.",
+      "baseline": {
+        "measured_at": "2026-08-09T21:57:00Z",
+        "venues_surveyed": 3,
+        "venues_with_a_revenue_path": 2,
+        "open_but_no_revenue_path": ["r/gamedev"],
+        "binding_venues_without_a_revenue_path": ["r/gamedev"],
+        "laps_on_this_route_before_anyone_asked_whether_the_venue_could_pay": 5,
+        "owner_requests_pending_both_ways": [
+          "2026-08-09.reddit-account-create",
+          "2026-08-09.itch-page-for-the-kit"
+        ]
+      },
+      "judge_on": "2026-08-16",
+      "judge_deadline": "2026-08-30",
+      "concurrent_changes": [
+        "Same lap and inseparable: paid_promotion_permitted became a required field on every venue row, revenue_path is derived from it, venue-readiness prints NO REVENUE PATH per row plus a route-level line, and compute-eta prints it on the elected candidate. Those are the mechanism, not a separate change.",
+        "One lap earlier and still in flight: audience_language / language_fit, registered as 2026-08-09.the-artifact-does-not-speak-the-venue. Both findings point at the same venue and both were found by asking what column a row lacks, so a later reader must not credit either one alone for a change in which venue a lap picks.",
+        "Both owner requests were already pending before this lap and neither was filed or re-prepared by it. Nothing about the owner's behaviour is being predicted — only which request the LOOP treats as binding."
+      ],
+      "falsified_if": "A post of the free demo into r/gamedev produces a sale, or produces traffic that can be attributed to a sale, without the paid product ever being shown at that venue. That would mean a venue can pay without permitting promotion — via profile, via the host URL, via someone else linking it — and the field is measuring the wrong thing. It is also falsified more cheaply if the venue's rule turns out to permit an indirect path this reading missed: the quoted sentence forbids PROMOTING paid assets and says nothing about a free artifact whose own site links a paid one, and nobody has established how r/gamedev treats that. That gap is why the field is three-valued rather than a boolean, and why r/gamedev is recorded false on the direct act rather than the route being called dead.",
+      "outcome": null
+    },
+    {
       "id": "2026-08-09.the-elected-route-gets-a-reader",
       "made_at": "2026-08-09T21:20:00Z",
       "claim": "The distribution route was elected on 2026-08-09T10:19Z in zerobase.distribution_answer.route_2_is_the_one_that_survives, and no script read that field. Three findings then landed on it and none moved the ranking: task .h refuted route 2's evidence; route_1_exclusion_corrected withdrew the ground route 1 was excluded on, in the same file, twenty-six minutes later; and a lap measured that route 2 has no starting point here. The claim registered is that giving the election a READER changes which candidates laps pick — not that route 1 is right. Specifically: laps after this one stop spending themselves on unattended-discovery work (more pages, inbound links, findability instruments) and spend themselves on standing or breadth instead.",

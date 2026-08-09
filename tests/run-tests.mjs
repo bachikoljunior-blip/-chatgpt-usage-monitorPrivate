@@ -1977,6 +1977,7 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     postable_when: shut,
     account: { exists: true, evidence_state_file: "state/itch.json" },
     audience_language: "en",
+    paid_promotion_permitted: true,
   };
   const reddit = {
     venue: "r/gamedev",
@@ -1984,6 +1985,7 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     postable_when: { repo_file: "assets/free-demo/index.html" },
     account: { exists: null, evidence_state_file: null },
     audience_language: "en",
+    paid_promotion_permitted: false,
   };
   const evidence = { "state/itch.json": { status: "ok", game_count: 0, profile: { username: "someone" } } };
   const repoFiles = { "assets/free-demo/index.html": false };
@@ -1998,7 +2000,7 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
 
   // Undeclared is the failure this exists for: a missing field and an unmeasured
   // account are indistinguishable when the field is optional.
-  const missing = venueReadiness([{ venue: "somewhere" }], evidence, repoFiles);
+  const missing = venueReadiness([{ venue: "somewhere", paid_promotion_permitted: null }], evidence, repoFiles);
   assert(missing.ok === false, "a venue carried as a route never said whether we can post from it");
   assert(missing.rows[0].problem === "no account field", "the undeclared account was not named as the problem");
 
@@ -2072,6 +2074,7 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
         postable_today: null,
         postable_not_evaluable: "the venue publishes no threshold",
         account: { exists: null, evidence_state_file: null },
+        paid_promotion_permitted: null,
       },
     ],
     evidence,
@@ -2095,6 +2098,7 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
           { not_evaluable: "nothing records a public URL" },
         ],
         account: { exists: true, evidence_state_file: "state/itch.json" },
+        paid_promotion_permitted: null,
       },
     ],
     evidence,
@@ -2224,6 +2228,71 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   // The artifact's language is derived from the file, never asserted on a row.
   assert(declaredLanguage('<!doctype html>\n<html lang="ja">') === "ja", "the declared language was not read from <html lang>");
   assert(declaredLanguage("<html>") === null, "an undeclared language was invented");
+
+  // --- and whether a post there could ever be paid for --------------------------
+  //
+  // One layer under the language question and found the same way: by asking what
+  // column the rows lack. Every field answered "may we post"; audience_language
+  // added "can they read it"; nothing answered "may the reader then be shown the
+  // thing we are paid for". On the venue this route is elected on, the answer was
+  // inside rule_quoted the whole time — "promoting paid assets ... is forbidden" —
+  // and six sessions read that sentence only for what it permits.
+  //
+  // Like language_fit it must NEVER shut a row. A venue that permits a free post is
+  // genuinely open; what it is not is a place to be paid, and merging those two is
+  // how a route came to wait on the one door it cannot be paid through.
+  const unpayable = venueReadiness([{ ...reddit, postable_today: null }], evidence, { "assets/free-demo/index.html": true }, "en");
+  assert(unpayable.rows[0].revenue_path === false, "a venue forbidding paid promotion was not reported as unpayable");
+  assert(unpayable.ok === true, `a declared-unpayable venue was treated as a defect: ${unpayable.rows[0].problem}`);
+  assert(unpayable.venues_with_a_revenue_path.length === 0, "a forbidden revenue path was counted as one");
+  assert(unpayable.open_but_no_revenue_path.length === 1, "an open-but-unpayable venue was not counted");
+
+  // The combination that is the actual finding, and the reason this is derived
+  // rather than written in a note: the route waits on `account`, and the only venue
+  // whose binding cause is `account` is the one that forbids the revenue step.
+  const payable = venueReadiness([itch, { ...reddit, postable_today: null }], evidence, { "assets/free-demo/index.html": true }, "en");
+  const priced = prerequisiteCheck(
+    { route: "r", prerequisite_term: "account", prerequisite_measured_by: { script: "scripts/venue-readiness.mjs" } },
+    payable,
+  );
+  assert(priced.ok === true, `pricing the prerequisite turned a well-formed election into a failure: ${priced.problem}`);
+  assert(
+    priced.binding_venues_without_a_revenue_path.includes("r/gamedev"),
+    "the venue the route is waiting on was not reported as one it cannot be paid through",
+  );
+  assert(
+    !priced.binding_venues_without_a_revenue_path.includes("itch.io"),
+    "a venue the route is NOT waiting on was blamed for the prerequisite's price",
+  );
+
+  // And it has to reach the candidate a lap picks from. Left in the venue file it
+  // would be true, readable, and read by nobody who chooses work — which is the
+  // failure this repository has now measured three laps running.
+  const pricedCandidate = [{ id: "c", serves_route: "r" }];
+  applyRouteElection(pricedCandidate, { route: "r" }, priced);
+  assert(
+    pricedCandidate[0].route_alignment.binding_venues_without_a_revenue_path?.includes("r/gamedev"),
+    "the revenue-path finding never reached the candidate list",
+  );
+
+  // Unmeasured stays unmeasured. "Nobody read the rule for this" and "the rule
+  // forbids it" must not collapse into one value, for the same reason the account
+  // field exists.
+  const unreadRule = venueReadiness([{ ...reddit, paid_promotion_permitted: null }], evidence, repoFiles, "en");
+  assert(unreadRule.rows[0].revenue_path === null, "an unread rule produced a verdict");
+  assert(unreadRule.ok === true, "a declared-null revenue path was rejected");
+  assert(unreadRule.open_but_no_revenue_path.length === 0, "an unknown revenue path was counted as a forbidden one");
+
+  // Omission is not a legitimate answer. Same rule as the account and language
+  // fields, for the same reason: an optional field makes "nobody asked" invisible.
+  const withoutPaid = { ...reddit };
+  delete withoutPaid.paid_promotion_permitted;
+  const noPaid = venueReadiness([withoutPaid], evidence, repoFiles, "en");
+  assert(noPaid.ok === false, "a venue with no paid_promotion_permitted field was accepted");
+  assert(
+    noPaid.rows[0].problem.includes("paid_promotion_permitted"),
+    `the missing field was not named: ${noPaid.rows[0].problem}`,
+  );
 
   // And the real rows pass, which is what keeps this honest as venues are added.
   // The CLI also checks the survey's stored count against the derived one, so the

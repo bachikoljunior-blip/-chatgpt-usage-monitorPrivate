@@ -505,6 +505,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T21:54:51.265Z",
+      "candidate": "honest_post_where_buyers_gather",
+      "kind": "route_change",
+      "mechanism": "Every venue row answers may-we-post and, since last lap, can-they-read-it. No row answers whether a reader who liked the artifact may lawfully be shown the thing we are paid for. r/gamedev's own quoted rule forbids exactly that act, and r/gamedev is the single row whose binding cause is account — the door the route is elected on. So the cheapest open door is the one where a successful post cannot become revenue by the venue's own text, while itch.io Release Announcements requires a link to an itch.io page and permits self-promotion at a reasonable level. This does not move a day count today and must not claim to: it redirects which pending owner request is binding, from reddit-account-create to itch-page-for-the-kit, and adds paid_promotion_permitted as a required venue field with a derived revenue-path count, so the redirection is carried by a machine rather than by this sentence.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

@@ -85,6 +85,14 @@ export function applyRouteElection(candidates, election, prerequisiteMeasured = 
       // decision it bears on — whether to spend the one post on this artifact — is
       // taken from the candidate list and nowhere else.
       language_mismatches: isElected ? prerequisiteMeasured?.language_mismatches ?? null : null,
+      // Same reason as language_mismatches, one question deeper. Whether the venue the
+      // route is waiting on can pay at all is a fact about the ROUTE, and the route is
+      // chosen from this list. Left in the venue file it would be true, readable and
+      // read by nobody who picks work — which is the failure this repository has now
+      // measured three laps running under three different names.
+      binding_venues_without_a_revenue_path: isElected
+        ? prerequisiteMeasured?.binding_venues_without_a_revenue_path ?? null
+        : null,
     };
     if (isElected) aligned.push(c.id);
     if (isAbandoned) onAbandoned.push(c.id);

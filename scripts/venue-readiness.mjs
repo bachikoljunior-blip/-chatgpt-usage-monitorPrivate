@@ -179,12 +179,23 @@ export function prerequisiteCheck(election, result) {
   for (const row of result?.rows ?? []) {
     if (Object.prototype.hasOwnProperty.call(counts, row.binding)) counts[row.binding] += 1;
   }
+  // The venues the route is actually waiting on — the ones whose binding cause is the
+  // term the election named. This is where the revenue question has to be asked,
+  // because these are the rows a lap would act on the moment they clear.
+  const onTheTerm = (result?.rows ?? []).filter((r) => r.binding === term);
   const base = {
     term,
     instrument: election?.prerequisite_measured_by ?? null,
     counts,
     venues_on_the_named_term: term && counts[term] !== undefined ? counts[term] : null,
     language_mismatches: result?.language_mismatches ?? [],
+    venues_with_a_revenue_path: result?.venues_with_a_revenue_path ?? [],
+    // Named separately from the global count because this is the one that reprices the
+    // election: a route waiting on a door it cannot be paid through is waiting for
+    // nothing, however cheap the door.
+    binding_venues_without_a_revenue_path: onTheTerm
+      .filter((r) => r.revenue_path !== true)
+      .map((r) => r.venue),
   };
   if (!election?.route) return { ...base, ok: true, problem: null };
   if (!term) {
@@ -290,6 +301,35 @@ export function venueReadiness(venues, evidence = {}, repoFiles = {}, artifactLa
         ? null
         : audience === artifactLanguage;
 
+    // May a reader who liked the artifact lawfully be shown the thing we are paid for?
+    //
+    // Added 2026-08-09, one layer under audience_language and found the same way: by
+    // asking what the rows have no column for. Every field on a venue row answers
+    // "may we post" (rule_quoted, eligibility_threshold, account, postable_when) and,
+    // since the lap before this one, "can they read it" (audience_language). None
+    // answers whether a successful post can become revenue AT THAT VENUE.
+    //
+    // On the venue the route is elected on it cannot. r/gamedev's quoted rule is
+    // "promoting paid assets (even on sale or in a giveaway) is forbidden", and the
+    // only thing this account is paid for is a USD 25 kit. The row is right that we
+    // may post the free demo there — it was never asked whether the act that makes
+    // posting worth doing is permitted too.
+    //
+    // Like language_fit, this NEVER shuts a row. Permission to post and permission to
+    // sell are different questions and collapsing them would make a venue that is
+    // genuinely open read as closed. It decides what a post there is WORTH, and worth
+    // is what the ranking spends the one post on.
+    const paidPromotion = Object.prototype.hasOwnProperty.call(v ?? {}, "paid_promotion_permitted")
+      ? v.paid_promotion_permitted ?? null
+      : undefined;
+    if (paidPromotion === undefined && !problem) {
+      problem =
+        "no paid_promotion_permitted field. Say whether this venue's own quoted rule permits showing " +
+        "a reader the paid product — null is a legitimate answer and means nobody read the rule for " +
+        "that question; leaving it out is how a route came to be elected on the one venue where its " +
+        "revenue step is forbidden in writing.";
+    }
+
     const computed = andKleene(exists, blocker.holds);
     const stored = Object.prototype.hasOwnProperty.call(v ?? {}, "postable_today") ? v.postable_today : undefined;
     if (stored === undefined) {
@@ -317,6 +357,12 @@ export function venueReadiness(venues, evidence = {}, repoFiles = {}, artifactLa
       audience_language: audience ?? null,
       artifact_language: artifactLanguage ?? null,
       language_fit: languageFit,
+      paid_promotion_permitted: paidPromotion ?? null,
+      // Three-valued and kept distinct from postable_today for the same reason
+      // venue_blocker is: a venue we may post at but may not sell at, and a venue we
+      // may not post at at all, are different things and the route depends on telling
+      // them apart. Only a settled `true` counts as a revenue path; unknown is not one.
+      revenue_path: paidPromotion === undefined ? null : paidPromotion,
       postable_today: computed,
       postable_declared: stored ?? null,
       postable_reason: blocker.reason,
@@ -339,6 +385,17 @@ export function venueReadiness(venues, evidence = {}, repoFiles = {}, artifactLa
     // Counted, not just printed. A route can be open at a venue whose readers cannot
     // read what it posts, and that combination is worth a number of its own.
     language_mismatches: rows.filter((r) => r.language_fit === false).map((r) => r.venue),
+    // Settled yeses only, exactly like postable_today_count: unknown is not a revenue
+    // path any more than it is a route.
+    venues_with_a_revenue_path: rows.filter((r) => r.revenue_path === true).map((r) => r.venue),
+    // The combination that is the whole finding, and the reason this is a derived
+    // number rather than a sentence in a note: a venue that is open to us and closed
+    // to our revenue is the most expensive kind of open door, because everything about
+    // it reads like progress. If the route's binding venue is in here, the route is
+    // spending its one post somewhere it cannot be paid.
+    open_but_no_revenue_path: rows
+      .filter((r) => r.revenue_path === false && r.venue_blocker !== false)
+      .map((r) => r.venue),
     // Derived, so the survey's stored count can be checked against it instead of
     // being believed. Counts settled yeses only: unknown is not a route.
     postable_today_count: rows.filter((r) => r.postable_today === true).length,
@@ -415,14 +472,38 @@ if (isMain) {
           "Not a rule breach and not a blocker — it decides whether the post lands on people who can read it.",
       );
     }
+    if (r.revenue_path === false) {
+      console.log(
+        "      NO REVENUE PATH: this venue's own quoted rule does not permit showing a reader the " +
+          "paid product. Posting here is permitted and cannot be paid for — not a blocker, a price.",
+      );
+    } else if (r.revenue_path === null) {
+      console.log("      revenue path: nobody has read this venue's rule for whether the paid product may be shown");
+    }
     if (r.problem) console.log(`      PROBLEM: ${r.problem}`);
   }
+
+  console.log(
+    `\nrevenue path: ${result.venues_with_a_revenue_path.length} of ${result.rows.length} venue(s) permit showing the paid product` +
+      (result.open_but_no_revenue_path.length
+        ? ` · open but unpayable: ${result.open_but_no_revenue_path.join(", ")}`
+        : ""),
+  );
 
   const prereq = prerequisiteCheck(zerobase?.elected_distribution_route ?? null, result);
   console.log(
     `\nelected route prerequisite: ${prereq.term ?? "PROSE ONLY"} · ` +
       BINDING_CAUSES.map((c) => `${c}=${prereq.counts[c]}`).join(" "),
   );
+  if (prereq.binding_venues_without_a_revenue_path.length) {
+    console.log(
+      `\nTHE ROUTE IS WAITING ON A DOOR IT CANNOT BE PAID THROUGH: ` +
+        `${prereq.binding_venues_without_a_revenue_path.join(", ")}. ` +
+        `The elected route's prerequisite is "${prereq.term}", and every venue whose binding cause is ` +
+        "that term forbids or has never been read for showing the paid product. Clearing the " +
+        "prerequisite there buys a permitted post and no way to be paid for it.",
+    );
+  }
   if (prereq.problem) console.error(`\n${prereq.problem}`);
 
   // The count is what a reader acts on, and it was hand-written. Checking it here is

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T21:48:09.366Z",
+  "fetched_at": "2026-08-09T21:58:28.081Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -52,11 +52,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.13
+      "days_unchanged": 0.14
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.13
+      "days_unchanged": 0.14
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -238,7 +238,8 @@
         "why": "Route 2's evidence was refuted by task .h — Datanyze lost 95.46% of organic traffic with exactly what this route proposes (genuine per-entity data per page), and Stripe Fee Auditor ran the premise directly for three months to 5 clicks and zero revenue. On 2026-08-09T21:08Z the route was also measured to have no starting point HERE: our ten pages return nothing from a controlled search, and github.com/bachikoljunior-blip returns nothing either, so the surface an inbound link would come from is not in the index. Refuted in general and unstartable in particular.",
         "prerequisite": null,
         "prerequisite_measured": null,
-        "language_mismatches": null
+        "language_mismatches": null,
+        "binding_venues_without_a_revenue_path": null
       }
     },
     {
@@ -264,7 +265,7 @@
         "published_count": 10,
         "pages_found_by_search": 0,
         "verdict": "published_but_not_findable",
-        "measured_at": "2026-08-09T21:31:21.004Z",
+        "measured_at": "2026-08-09T21:48:10.956Z",
         "what_it_settles": "Not a shortage of pages. Ten serve 200 and a search index returned none of them, so page COUNT is not the binding term — the missing step is an inbound path from a surface that is already crawled. Building more pages buys nothing until that step exists.",
         "inbound_surface": {
           "verdict": "no_crawled_surface_found",
@@ -289,7 +290,8 @@
         "why": "Route 2's evidence was refuted by task .h — Datanyze lost 95.46% of organic traffic with exactly what this route proposes (genuine per-entity data per page), and Stripe Fee Auditor ran the premise directly for three months to 5 clicks and zero revenue. On 2026-08-09T21:08Z the route was also measured to have no starting point HERE: our ten pages return nothing from a controlled search, and github.com/bachikoljunior-blip returns nothing either, so the surface an inbound link would come from is not in the index. Refuted in general and unstartable in particular.",
         "prerequisite": null,
         "prerequisite_measured": null,
-        "language_mismatches": null
+        "language_mismatches": null,
+        "binding_venues_without_a_revenue_path": null
       }
     },
     {
@@ -368,6 +370,13 @@
             "r/gamedev",
             "GameDev.net — Your Announcements"
           ],
+          "venues_with_a_revenue_path": [
+            "itch.io — Release Announcements",
+            "GameDev.net — Your Announcements"
+          ],
+          "binding_venues_without_a_revenue_path": [
+            "r/gamedev"
+          ],
           "ok": true,
           "problem": null
         },
@@ -375,6 +384,9 @@
           "itch.io — Release Announcements",
           "r/gamedev",
           "GameDev.net — Your Announcements"
+        ],
+        "binding_venues_without_a_revenue_path": [
+          "r/gamedev"
         ]
       },
       "blocked_on_rechecked": {
