@@ -24,6 +24,11 @@ import { resolve } from "node:path";
 import { readStateJson, REPO } from "./state-source.mjs";
 
 const write = process.argv.includes("--write");
+// Reads come from origin/main so a stale checkout cannot drive the ranking. That
+// is right for the hourly run and wrong for the moment before a push: without
+// this, a change to zerobase.json can only be checked after it is published,
+// which is the wrong order. --local is for that moment and nothing else.
+const preferLocal = process.argv.includes("--local");
 const now = new Date();
 const TARGET_YEN_PER_MONTH = 200_000;
 
@@ -35,12 +40,12 @@ const [
   { value: zerobase },
   { value: blocked },
 ] = await Promise.all([
-  readStateJson("state/gumroad.json"),
-  readStateJson("state/itch.json"),
-  readStateJson("state/constraints.json"),
-  readStateJson("state/external-metrics.json"),
-  readStateJson("state/zerobase.json"),
-  readStateJson("state/blocked.json"),
+  readStateJson("state/gumroad.json", { preferLocal }),
+  readStateJson("state/itch.json", { preferLocal }),
+  readStateJson("state/constraints.json", { preferLocal }),
+  readStateJson("state/external-metrics.json", { preferLocal }),
+  readStateJson("state/zerobase.json", { preferLocal }),
+  readStateJson("state/blocked.json", { preferLocal }),
 ]);
 
 const channels = [];
@@ -228,6 +233,37 @@ const worstCaseDays = (range) => {
   return Math.max(...nums.map(Number)); // conservative end of the estimate
 };
 
+// How many recurring owner actions a candidate needs, per month. Zero is not a
+// nicety here: the owner has said outright that instructions may go unread, so a
+// route that needs a human every month is a route that can stall indefinitely.
+// Unparseable means unknown, and unknown is scored as needing one — the
+// conservative direction, since guessing zero would flatter every vague entry.
+const recurringPerMonth = (spec) => {
+  if (typeof spec === "number") return 0; // a bare count is an initial action
+  if (typeof spec !== "string") return 1;
+  if (/\b0\s*recurring\b/i.test(spec)) return 0;
+  const monthly = spec.match(/(\d+)(?:\s*-\s*(\d+))?\s*monthly/i);
+  if (monthly) return Math.max(Number(monthly[1]), Number(monthly[2] ?? monthly[1]));
+  if (/\binitial\b/i.test(spec)) return 0;
+  return 1;
+};
+
+// Three of the zero-base options were checked against outside evidence and all
+// three failed on the very number they were ranked by. The other estimates in
+// that round came from the same model, in the same round, made the same way, so
+// treating a surviving number as comparable to a measurement is what the third
+// refutation should have stopped.
+//
+// This does not delete the numbers or reorder them among themselves. It stops a
+// discredited estimate from outranking an option that honestly carries none —
+// otherwise the only way for a new option to compete is to invent a figure, and
+// inventing figures is the defect being corrected. Among options with no usable
+// number, the tiebreak is recurring owner actions, which is measured rather than
+// estimated.
+const zeroBase = candidates.filter((c) => c.kind === "zero_base_option");
+const refutedSiblings = zeroBase.filter((c) => c.refuted).length;
+const roundEstimatesDiscredited = refutedSiblings >= 3;
+
 const constraintById = new Map((constraints?.constraints ?? []).map((c) => [c.id, c]));
 
 for (const c of candidates) {
@@ -240,6 +276,16 @@ for (const c of candidates) {
   if (gatedOnEvent) c.not_actionable_reason = `waits on an event: ${constraint.recheck_after}`;
 
   c.eta_effect_days = worstCaseDays(c.days_to_first_yen_estimate);
+  if (c.kind === "zero_base_option") {
+    c.recurring_owner_actions_per_month = recurringPerMonth(c.owner_actions);
+    if (roundEstimatesDiscredited) {
+      c.estimate_reliability = "discredited_by_siblings";
+      c.estimate_reliability_note =
+        `${refutedSiblings} options from this same round were checked against outside ` +
+        "evidence and refuted on exactly this number. It is still shown, but it no longer " +
+        "outranks an option that records no estimate at all.";
+    }
+  }
   c.eta_effect_basis =
     c.eta_effect_days !== null
       ? `portfolio idle ETA is ${idlePortfolio === null ? "infinite" : idlePortfolio + "d"}; ` +
@@ -321,9 +367,20 @@ candidates.sort((a, b) => {
   const bRef = Boolean(b.refuted);
   if (aRef !== bRef) return aRef ? 1 : -1;
   if (a.actionable_now !== b.actionable_now) return a.actionable_now ? -1 : 1;
+  // Between two options from the discredited round, the number is not evidence and
+  // must not decide. Fall through to recurring owner actions, which is the one
+  // thing here that was measured rather than estimated.
+  const bothDiscredited =
+    a.estimate_reliability === "discredited_by_siblings" &&
+    b.estimate_reliability === "discredited_by_siblings";
+  if (bothDiscredited) {
+    const ar = a.recurring_owner_actions_per_month ?? 1;
+    const br = b.recurring_owner_actions_per_month ?? 1;
+    if (ar !== br) return ar - br;
+  }
   const ad = a.eta_effect_days ?? Infinity;
   const bd = b.eta_effect_days ?? Infinity;
-  if (ad !== bd) return ad - bd;
+  if (!bothDiscredited && ad !== bd) return ad - bd;
   const ao = typeof a.owner_actions === "number" ? a.owner_actions : 99;
   const bo = typeof b.owner_actions === "number" ? b.owner_actions : 99;
   return ao - bo;

@@ -70,6 +70,19 @@
       "months_to_target": "4-9",
       "owner_actions": "1 initial",
       "why": "captures validator/converter/generator searches with a free tool and sells the full version"
+    },
+    {
+      "id": "findable_surface_at_scale",
+      "days_to_first_yen": "unmeasured",
+      "months_to_target": "unmeasured",
+      "owner_actions": "0 recurring",
+      "why": "the only route in the evidence that reaches a buyer without an audience and without recurring human posting: many individually findable pages, each carrying something computed rather than templated, so a third party can discover and refer one",
+      "added_at": "2026-08-09T10:30:00Z",
+      "added_because": "the round contained five build acts and no distribution act, while every refutation landed on distribution. This is the missing class, not a sixth instance of the same one.",
+      "estimate_deliberately_absent": "No days-to-first-yen is recorded. The other five carried numbers produced by the same model in the same round, and three of the three checked were refuted on exactly those numbers. Writing one here would reproduce the error this option exists to correct.",
+      "must_face_the_same_gauntlet": "This was proposed from inside the loop, not blind, so it is more prone to motivated reasoning than the five it joins. It gets the same outside survey the others got, and its speed claim is refutable on the same terms.",
+      "known_failure_mode": "Mass-generated pages that are templated with nothing computed per page read as content farming. The youtube repository already carries this lesson from platform policy: templated bulk output is judged unmonetisable regardless of volume. Per-page substance is a requirement, not a quality preference.",
+      "refuted": null
     }
   ],
   "ranked_last_by_blind_model": {
@@ -86,11 +99,23 @@
   "outcome_note": "Two of the five options have now been checked against the outside world, and both failed — vscode_extension_pro on 3-14 days, wordpress_plugin_pro on 7-21. Neither was refuted on whether the product can be sold; both were refuted on speed, and both for the same reason. The remaining three rest on the same kind of estimate and are unchecked.",
   "premise_under_strain": {
     "premise": "structural_insight above: the fast options are fast because they borrow an existing marketplace's search demand instead of building an audience.",
-    "status": "three of five checked, all three refuted on speed. The premise as written is now too narrow to describe what was found.",
+    "status": "three of five checked, all three refuted on speed. The discriminating survey this block asked for was run and is recorded in distribution_answer: the missing term is distribution, and the round contained no option that supplied one.",
     "what_three_surveys_found": "Refutation is no longer about marketplaces. vscode_extension_pro and wordpress_plugin_pro borrow marketplace search demand; maintained_data_or_api does not borrow any marketplace at all, and was picked precisely because it tests a different axis. All three came back the same way: the complaint was real and sourced, and the speed claim had no case behind it. In every one of them the only fast first-yen example on record launched into an audience that already existed — Independent Analytics to its own user base, Canopy API via an Indie Hackers post recruiting users with a discount. Two of three also found a free incumbent already serving the exact complaint (free VS Code extensions plus the editor itself; Order Limit for WooCommerce at 800+ installs; Portkey Models at 2,000+ models, free and auth-free).",
     "what_this_says_instead": "The estimates price building the product and treat reaching a buyer as free. That is the error they share, and it does not depend on where the demand comes from. 'Borrowed marketplace demand' was one guess at why the estimates were wrong; the evidence says the missing term is distribution, on both marketplace and non-marketplace candidates alike.",
     "implication_if_it_holds": "Days-to-first-yen for any candidate that starts with zero audience is dominated by how a first buyer is reached, not by what is built. If that is right, the two unrefuted options inherit the same defect — their estimates were produced the same way, by the same model, in the same round — and surveying them one at a time will keep returning the same verdict at one survey per lap.",
     "next_test_that_would_actually_discriminate": "Not another candidate. The question that separates the options is which of them comes with a way to reach a first buyer that does not require an audience we do not have. A survey aimed at candidates will keep answering 'the product is real, the speed is not'. Nobody has yet asked for cases of first yen reached with no pre-existing list, sorted by how the buyer was reached — which is the axis every refutation has landed on.",
     "do_not_rediscover": "The next zero-base round must be told: three of its five options were checked against outside evidence and all three failed on time-to-first-yen, for want of distribution rather than product. A round allowed to re-propose 'build X, the marketplace brings buyers' will spend itself re-deriving this."
+  },
+  "distribution_answer": {
+    "answered_at": "2026-08-09T10:19:00Z",
+    "answered_by": "codex-loop (codex/outbox/2026-08-09.g.md)",
+    "question_it_closes": "premise_under_strain.next_test_that_would_actually_discriminate — cases of first yen with no pre-existing list, sorted by how the buyer was reached.",
+    "finding": "No case satisfied every condition at once (verifiably no audience AND both calendar dates confirmed). What the survey could establish is which routes carried a buyer at all. Two did: (1) a single honest post inside the community where the buyers already gather — one case sold the next morning off ~31k views and a dozen site visits; (2) long-tail searchable pages that a third party discovered and referred — PredictionJobs took $100 in about 10 days when a large account found its pages unprompted.",
+    "what_was_shown_not_to_work": "Publishing and waiting, with no route to a buyer. Product Hunt, general social posting, broad community posting and small-volume cold email each produced 1-6 months at zero on record. The strongest counter-example is Krumzi: about 1,200 signups and still no revenue, because the free users were not the payers. Signup count is not a proxy for reaching a buyer.",
+    "why_this_settles_the_ranking": "Every option in this round is a build act. None carries a distribution act. The portfolio has the identical defect measured in reality: 28 published artifacts, no route to a buyer, zero yen in eight months. That is the refuted pattern executed 28 times, so the refutations are not about the wrong marketplace being chosen.",
+    "route_1_is_excluded_for_us_and_why": "Reaching buyers by posting where they gather requires an account and repeated human posting. Recurring owner operations are excluded by design (the owner may not read instructions at all), and automating the posting gets the account banned, which destroys the asset it depends on. It is excluded on our constraints, not on its evidence — which is the stronger of the two.",
+    "route_2_is_the_one_that_survives": "Long-tail findable pages are the only evidence-carrying route that runs with zero recurring owner actions: generation, publication and measurement are all things this operation already does unattended.",
+    "honest_weakness": "Neither route has a case with both calendar dates confirmed, and route 2's one concrete case had a founder with a prior exit, so 'no audience' is unproven there. This is the least-unsupported route, not a demonstrated one.",
+    "it_reprices_the_weekly_owner_action": "The itch.io game page is itself a route-2 surface on a marketplace that has its own search. The recommended weekly action does not change. Its success test does: it is judged on whether anyone finds and refers the page, not on the page existing."
   }
 }

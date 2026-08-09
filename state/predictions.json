@@ -9,9 +9,14 @@
       "claim": "Replacing the 0.5% guessed reservation with a bound derived from real consumption frees discretionary budget, so more laps fit in the same week.",
       "made_at": "2026-08-09T08:57:00Z",
       "metric": "discretionary_percent reported by scripts/pacing.mjs, and laps per day in state/laps.json",
-      "baseline": { "discretionary_percent": 13.0, "reservation_basis": "unmeasured_default 0.5%" },
+      "baseline": {
+        "discretionary_percent": 13.0,
+        "reservation_basis": "unmeasured_default 0.5%"
+      },
       "judge_on": "2026-08-10",
-      "concurrent_changes": ["2026-08-09.revenue-loop-disabled-in-registry"],
+      "concurrent_changes": [
+        "2026-08-09.revenue-loop-disabled-in-registry"
+      ],
       "outcome": null
     },
     {
@@ -19,9 +24,13 @@
       "claim": "The registry listed revenue-loop as enabled after the owner stopped it, so the gate reserved quota for a trigger that cannot fire. Marking it disabled returns that share.",
       "made_at": "2026-08-09T09:11:00Z",
       "metric": "reserved_for_others_percent reported by scripts/pacing.mjs",
-      "baseline": { "reserved_percent_including_dead_trigger": 9.43 },
+      "baseline": {
+        "reserved_percent_including_dead_trigger": 9.43
+      },
       "judge_on": "2026-08-10",
-      "concurrent_changes": ["2026-08-09.derived-lap-cost"],
+      "concurrent_changes": [
+        "2026-08-09.derived-lap-cost"
+      ],
       "outcome": null
     },
     {
@@ -29,10 +38,33 @@
       "claim": "Ranking efficiency last while every path is infinite stops the loop spending laps on acceleration, so the next laps pick a candidate that could make a path finite.",
       "made_at": "2026-08-09T09:20:00Z",
       "metric": "the kind of candidate chosen by each lap, read from state/continue.json and commit subjects",
-      "baseline": { "consecutive_laps_choosing_efficiency_or_machinery": 16 },
+      "baseline": {
+        "consecutive_laps_choosing_efficiency_or_machinery": 16
+      },
       "judge_on": "2026-08-11",
       "concurrent_changes": [],
       "outcome": null
+    },
+    {
+      "id": "2026-08-09.distribution-class-added",
+      "made_at": "2026-08-09T10:35:00Z",
+      "claim": "Every candidate was a build act and none was a distribution act, while all three outside refutations landed on distribution. Adding findable_surface_at_scale and stopping discredited estimates from outranking honest blanks should change which candidate a lap actually executes.",
+      "metric": "state/continue.json / state/laps.json show the next lap that selects work choosing a distribution-class candidate (findable_surface_at_scale, or the itch page judged on being found and referred) rather than a fifth build candidate. Falsified if laps keep selecting build candidates or machinery while the reranking sits unread.",
+      "baseline": {
+        "top_candidate_before": "npm_pypi_cli_pro (build act, estimate 30d)",
+        "top_candidates_after": [
+          "high_intent_tool_site",
+          "findable_surface_at_scale"
+        ],
+        "revenue_yen": 0,
+        "idle_eta_days": null
+      },
+      "judge_on": "2026-08-11",
+      "concurrent_changes": [
+        "codex INBOX task 2026-08-09.h aims the outside survey at the new candidate, so a refutation may arrive before the judge date and settle it the other way"
+      ],
+      "outcome": null,
+      "note": "The candidate deliberately carries no days-to-first-yen. Judging this on a day count would reproduce the exact error the change corrects, so it is judged on what gets executed."
     }
   ]
 }
