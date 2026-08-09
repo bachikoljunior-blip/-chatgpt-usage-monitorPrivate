@@ -43,6 +43,14 @@ jobs:
       - name: Compute ETA and check heartbeats
         id: compute
         run: |
+          # BEFORE compute-eta, because compute-eta reads what this writes. It only
+          # divides a committed snapshot — the fetch that produces that snapshot needs
+          # cross-repo GitHub access, which a lap has and Actions does not. So this
+          # goes red when the snapshot ages out, which is the correct alarm: the route
+          # elected on reach is resting on a number nobody has refreshed. Allowed to
+          # fail here for the same reason as the two below — a stale reach number must
+          # not cost the ETA refresh — and the reporting step turns it red.
+          node scripts/measure-reach.mjs --write || echo "reach check reported a problem; the reporting step fails on it"
           node scripts/compute-eta.mjs --write
           node scripts/check-heartbeats.mjs --write
           # Written here rather than in the reporting step below, which runs AFTER
@@ -66,6 +74,8 @@ jobs:
           node scripts/verify-sanitized-state.mjs state/eta-history.json
           node scripts/verify-sanitized-state.mjs state/public-host.json
           node scripts/verify-sanitized-state.mjs state/findable-surface.json
+          node scripts/verify-sanitized-state.mjs state/youtube-scan.json
+          node scripts/verify-sanitized-state.mjs state/external-metrics.json
 
       - name: Commit current state
         if: steps.compute.outcome == 'success' && steps.verify.outcome == 'success'
@@ -77,6 +87,8 @@ jobs:
           for attempt in 1 2 3; do
             git fetch origin main
             git reset --hard origin/main
+            node scripts/measure-reach.mjs --write || echo "reach check reported a problem"
+            node scripts/verify-sanitized-state.mjs state/external-metrics.json || exit 1
             node scripts/compute-eta.mjs --write || exit 1
             node scripts/check-heartbeats.mjs --write || exit 1
             node scripts/verify-sanitized-state.mjs state/eta.json || exit 1
@@ -145,6 +157,12 @@ jobs:
           # when the only measurement of whether anything can FIND our public surface
           # has gone stale — which is the state it silently sat in for months.
           node scripts/measure-findable-surface.mjs || rc=1
+          # The elected route rests on this number. It goes red when the snapshot ages
+          # past 7 days or the day series stops yielding a rate — the two ways the reach
+          # election is falsified by the world rather than by an argument. Only a lap
+          # can refresh the snapshot (cross-repo read), so red here means "a lap owes a
+          # fetch", not "the workflow is broken".
+          node scripts/measure-reach.mjs || rc=1
           # The two files laps EDIT BY HAND that the gate then reads. Nothing ran the
           # checker on either, and it showed: verify-sanitized-state kept its own copy
           # of the lap-claim kinds, never learned about route_change, and rejected every

@@ -885,6 +885,37 @@
       ],
       "falsified_if": "The owner creates the itch.io page and the itch.io row still does not read POSTABLE — that would mean venue_rule was not one owner action away and the term was re-pointed at a door with unmet conditions nobody had enumerated, which is the same defect as the r/gamedev row's second blocker being missed for an hour. Also falsified, and more usefully: if r/gamedev is established to tolerate an INDIRECT path (a free artifact whose own site links a paid one), its revenue path reopens and `account` was never the wrong term — only under-read. What this does NOT claim: that itch.io produces a buyer, or that any post has been made. Nothing has been posted anywhere yet and revenue is still ¥0; this changes which door the loop is standing at, not whether anyone walks through it.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-09.the-lift-was-already-owned-and-uncounted",
+      "made_at": "2026-08-09T23:00:00Z",
+      "claim": "The elected route was blocked on LIFT, not on a door. Route 1 was elected because 'every near-success had a third party with reach, or several venues the same day, or an audience that already existed' — and the loop then spent five laps refining WHICH VENUE DOOR to wait at (standing -> account -> venue_rule) without ever checking whether it held any of the three lifts those cases depended on. Two were measured absent. The third was never measured, because state/eta.json asserted the YouTube figures were 'not readable here'. That assertion is false: bachikoljunior-blip/youtube is in the owner's own repo set and its committed analytics log is readable in two calls with no owner action and no credential. Measured: 1,208.75 views/day and 394.75 engaged views/day over 2026-08-04..08-07, unattended and hourly. The prediction is that this is the binding term rather than another instrument story — that the loop's inability to reach anyone was never a shortage of permission, and that the venue queue was work on the wrong constraint.",
+      "metric": "Read from origin/main, not from any lap's account of itself. (a) state/external-metrics.json exists and carries a youtube channel with a non-null reach block and idle_eta_days null — the file compute-eta.mjs had read since it was written and nothing had ever written. (b) node scripts/measure-reach.mjs exits 0, and exits 1 when state/youtube-scan.json is aged past MAX_SNAPSHOT_AGE_DAYS. (c) state/lap-claims.json mechanisms recorded after this row: whether any lap is still spending itself on which venue door to wait at, versus on whether the reach converts. (d) The one that decides it: a click count from the channel to a Gumroad or demo URL. Zero clicks across a fair trial refutes the route and is a real answer, not a setback.",
+      "baseline": {
+        "measured_at": "2026-08-09T22:50:00Z",
+        "channels_with_a_measured_reach_before": 0,
+        "youtube_channel_status_before": "unmeasured, with the reason 'not readable here'",
+        "views_per_day_measured": 1208.75,
+        "engaged_views_per_day_measured": 394.75,
+        "subscribers_net_over_the_window": 1,
+        "subscriber_conversion": 0.000207,
+        "days_to_ypp_gate_at_this_rate": 4000,
+        "clicks_from_the_channel_to_anything_of_ours": null,
+        "idle_eta_days_all_channels": null,
+        "gumroad_lifetime_sales": 0,
+        "laps_spent_repointing_the_venue_door": 5,
+        "owner_requests_pending": 3
+      },
+      "judge_on": "2026-08-13",
+      "judge_deadline": "2026-08-27",
+      "concurrent_changes": [
+        "Same lap and inseparable: scripts/measure-reach.mjs is both the measurement and the writer state/external-metrics.json never had. The finding and the instrument are the same object here, so neither can be credited without the other.",
+        "Same lap, and a real second effect: compute-eta.mjs's coercion of an external idle_eta_days was fixed. `Number(null)` is 0 and `Number.isFinite(0)` is true, so the first honest write of this file made the portfolio report ¥200,000/month as ALREADY REACHED. The bug was unreachable for the reader's whole life because nothing wrote the file. A later reader must not treat that fix as part of the route argument — it is a bug this change exposed, and it would have been there for any writer.",
+        "Same lap: prerequisiteCheck stopped hard-failing every term outside the venue vocabulary. That guard made a non-venue route unelectable, so this route change could not have been recorded without it. It is therefore not independent evidence for the route — it is what made the route sayable.",
+        "One lap earlier and still in flight: the prerequisite was re-pointed account -> venue_rule (2026-08-09.the-route-was-waiting-at-the-unpayable-door). That lap and this one point away from r/gamedev for different reasons, so its deprioritisation is over-determined and neither may claim it alone."
+      ],
+      "falsified_if": "Any of four. (1) The reach is not addressable by this loop — if the sibling repository's credentials are the only way to change what that channel links to, and the two automations cannot coordinate, then the reach is measured and unusable, and the honest reading is that this lap found a number rather than a route. That question is explicitly NOT settled here and is the first thing the next lap should establish. (2) A fair trial produces zero clicks: the audience mismatch is real (Japanese consumers reading money-and-work calculations, versus a USD 25 English-market developer kit) and 1 subscriber per 4,835 views says engagement is weak even on a free ask. (3) The rate collapses — measure-reach.mjs goes red and the reach turns out to have been four days of one upload's tail rather than a standing surface. (4) A venue door opens with no owner action, which would mean route 1 was one measurement away all along. WHAT THIS DOES NOT CLAIM: that anyone buys anything. Revenue is ¥0, no link has been placed, no click has been counted, and reach is not demand. What changed is that the term the route is blocked on is now a number we hold instead of a permission we were queuing for.",
+      "outcome": null
     }
   ]
 }

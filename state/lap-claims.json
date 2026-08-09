@@ -569,6 +569,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T22:57:55.256Z",
+      "candidate": "honest_post_where_buyers_gather",
+      "kind": "route_change",
+      "mechanism": "Route 1 was elected because every recorded near-success had a lift: a third party with reach, several venues the same day, or an audience that already existed. Two of those three were already measured absent (no referrer ever; breadth measured 0/6 postable over two batches and abandoned 15:20Z). The third was never measured, because state/eta.json asserts the YouTube figures are 'not readable here'. That assertion is false and it was load-bearing: bachikoljunior-blip/youtube is in the owner's own repo set, add_repo attached it in one call, and its data/scan.jsonl on branch claude/youtube-auto-post-revenue-ggedij (commit f29a052, last record 2026-08-09T22:21:51Z) reports 4835 views, 1579 engaged views, 667 estimated watch-minutes and 1 subscriber gained over 2026-08-04..08-07, with zero owner actions and an hourly automation behind it. So the loop owns a measured distribution surface of roughly 1200 views/day while spending its laps trying to buy reach at venue doors that all cost an owner action. The route changes from obtaining a place to post to using reach already owned and never counted. That produces candidates whose success is a countable funnel — YouTube view to link click to Gumroad sale — which is the only path on the board that can make gumroad's revenue rate non-zero without an owner action, and a non-zero rate is exactly what the top-priority goal needs.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

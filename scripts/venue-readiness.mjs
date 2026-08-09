@@ -60,6 +60,27 @@ import { FREE_ARTIFACT_PATH, artifactLanguage } from "./check-free-artifact.mjs"
 // pulse.yml, for the same reason a condition in prose is: it cannot be wrong out loud.
 export const BINDING_CAUSES = ["postable", "venue_rule", "venue_unsettled", "account"];
 
+// The vocabulary above is this instrument's, and for a while it was silently treated
+// as the vocabulary of EVERY possible route. prerequisiteCheck hard-failed any term
+// outside the four, which made a non-venue route unelectable — not by argument, but by
+// the guard that exists to keep elections honest. So "change the route" was only ever
+// available WITHIN venue-land, and the two route changes on record both stayed there.
+//
+// That is the gate's own input deciding the gate's answer, the shape RUNBOOK 3.9 calls
+// circular. The guarantee worth keeping is not "the term is a venue term" — it is "the
+// term is one some named machine actually reports, so it can turn out to be wrong."
+// This registry states that guarantee directly. Adding a route means adding the
+// instrument that can contradict it, which is the price, and it should be.
+export const PREREQUISITE_INSTRUMENTS = {
+  "scripts/venue-readiness.mjs": BINDING_CAUSES,
+  // Reported by deriveReach(): usable/not, and the per-day rates under it. The route
+  // elected on reach is falsified by that snapshot going stale or the rate going to
+  // zero, and measure-reach.mjs exits 1 on both, from pulse.yml, hourly.
+  "scripts/measure-reach.mjs": ["reach"],
+};
+
+export const termsForInstrument = (script) => PREREQUISITE_INSTRUMENTS[script] ?? null;
+
 // The second half, added 2026-08-09 after a sweep for gates nothing evaluates.
 //
 // `postable_today` is the field that decides whether a venue is a live route, and
@@ -215,21 +236,52 @@ export function prerequisiteCheck(election, result) {
         "can actually report — or the ranking is waiting on a word nothing measures.",
     };
   }
-  if (!BINDING_CAUSES.includes(term)) {
-    return {
-      ...base,
-      ok: false,
-      problem:
-        `the elected route names prerequisite_term "${term}", which this instrument never produces. ` +
-        `It reports ${BINDING_CAUSES.join(", ")} and nothing else, so no row can ever confirm or ` +
-        "refute that prerequisite.",
-    };
-  }
   if (!election?.prerequisite_measured_by?.script) {
     return {
       ...base,
       ok: false,
       problem: `prerequisite_term "${term}" names no prerequisite_measured_by.script, so nothing says which reader settles it.`,
+    };
+  }
+  const instrument = election.prerequisite_measured_by.script;
+  const reportable = termsForInstrument(instrument);
+  if (!reportable) {
+    return {
+      ...base,
+      ok: false,
+      problem:
+        `the elected route says its prerequisite is measured by "${instrument}", which is not a ` +
+        `registered instrument. Add it to PREREQUISITE_INSTRUMENTS with the terms it reports, or the ` +
+        "election is resting on a reader nobody can name.",
+    };
+  }
+  if (!reportable.includes(term)) {
+    return {
+      ...base,
+      ok: false,
+      problem:
+        `the elected route names prerequisite_term "${term}", which ${instrument} never produces. ` +
+        `It reports ${reportable.join(", ")} and nothing else, so nothing can ever confirm or ` +
+        "refute that prerequisite.",
+    };
+  }
+  // Everything below is about VENUE rows, so it only applies to a route whose
+  // prerequisite this instrument owns. A route measured elsewhere has no rows on its
+  // term, and running the venue revenue-path test against an empty set would return a
+  // vacuous pass that reads exactly like a real one. Its own instrument carries its own
+  // falsifier — measure-reach.mjs exits 1 on a stale or unusable snapshot — and that is
+  // stated here so the skip is a declared boundary rather than a silent gap.
+  if (instrument !== "scripts/venue-readiness.mjs") {
+    return {
+      ...base,
+      ok: true,
+      problem: null,
+      measured_elsewhere: instrument,
+      note:
+        `the elected route's prerequisite is "${term}", measured by ${instrument}. The venue ` +
+        "revenue-path test below does not apply and was NOT run — it would have passed vacuously " +
+        "on zero rows. The venue rows are still derived and printed above, because a route change " +
+        "does not delete the evidence the previous route was elected on.",
     };
   }
   // The finding this instrument already computed and nobody enforced.
@@ -581,7 +633,16 @@ if (isMain) {
     `\nelected route prerequisite: ${prereq.term ?? "PROSE ONLY"} · ` +
       BINDING_CAUSES.map((c) => `${c}=${prereq.counts[c]}`).join(" "),
   );
-  if (prereq.owner_requests_clearing_the_term.length) {
+  if (prereq.measured_elsewhere) {
+    // Without this branch the counts above read as the elected route's blockers, which
+    // they are not any more, and the "nobody wrote down the owner action" line below
+    // would fire on a term that has no owner action by construction.
+    console.log(
+      `  measured by ${prereq.measured_elsewhere}, NOT by these rows. The venue counts above ` +
+        "describe the abandoned route and are printed because it reopens the moment a door opens " +
+        "without an owner action.",
+    );
+  } else if (prereq.owner_requests_clearing_the_term.length) {
     console.log(
       `the pending owner action that clears it: ${prereq.owner_requests_clearing_the_term.join(", ")}`,
     );

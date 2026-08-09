@@ -17,6 +17,13 @@
     {
       "id": "external_repos_unreachable",
       "claim": "This environment cannot reach repositories outside the owner's own set.",
+      "and_the_half_nobody_wrote_down": {
+        "at": "2026-08-09T22:50:00Z",
+        "what": "Repositories INSIDE the owner's set but outside the session's initial Repository Scope list are reachable, in two calls: mcp__claude-code-remote__add_repo, then the GitHub MCP read tools. No owner action and no credential. Measured on bachikoljunior-blip/youtube, whose committed analytics log was read this lap.",
+        "why_it_matters_more_than_the_claim_above": "The claim was always about OTHER PEOPLE'S repositories and was never wrong. But it was the only recorded sentence on the subject, so 'unreachable' became the ambient answer, and state/eta.json spent its whole life telling every lap that the YouTube figures 'live in another repo and are not readable here'. Six sessions read that and stopped. The scope list at session start shows one repository, which makes the wrong reading look confirmed.",
+        "the_general_form": "A true statement about a narrow case, left as the only statement in the neighbourhood, is read as the answer to the wider question. That is not the same failure as a correction with no reader — nothing here was ever corrected, because nothing was ever wrong. It is cheaper to cause and harder to see.",
+        "what_to_do_with_it": "Before recording that something is unreachable, name WHICH thing and check the adjacent case. state/youtube-scan.json carries the working recipe."
+      },
       "evidence": "git ls-remote on a public repo failed with no credentials; api.github.com/repos/facebook/react returned 403 through the proxy; GitHub MCP is scoped to the owner's repos.",
       "measured_at": "2026-08-08",
       "recheck_after": "2026-08-22",

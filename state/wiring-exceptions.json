@@ -8,13 +8,16 @@
       "reason": "Written by a lap at the moment it stops mid-work for want of budget, and by nothing else. Writing it in advance would defeat what it is for. Its absence is not silent: compute-eta reports escape_hatch_status NEVER ARMED on the efficiency candidate, so a reader can tell 'no lap has ever hit the wall' from 'this does not apply right now'.",
       "recheck_after": "2026-09-06",
       "recheck_asks": "has any lap written it yet? If none has by then, the mechanism depends on laps remembering, and remembering is what keeps failing here — replace it with something the gate writes automatically."
-    },
+    }
+  ],
+  "retired": [
     {
       "kind": "phantom_state",
       "id": "state/external-metrics.json",
-      "reason": "Published by runs in another repository that hold the YouTube credentials; nothing here can write it. compute-eta reports the youtube channel as UNMEASURED rather than guessing, which is the correct behaviour when it is absent.",
-      "recheck_after": "2026-08-23",
-      "recheck_asks": "is anything actually publishing it yet? If not, YouTube has been unmeasured for two weeks and the ETA has a hole in it that nobody is filling."
+      "retired_at": "2026-08-09T23:15:00Z",
+      "retired_because": "It now has a writer: scripts/measure-reach.mjs, run from pulse.yml. check-wiring reported the exception itself as STALE, which is the mechanism working — an argument that has stopped being true announces itself instead of quietly persisting.",
+      "was": "Published by runs in another repository that hold the YouTube credentials; nothing here can write it. compute-eta reports the youtube channel as UNMEASURED rather than guessing, which is the correct behaviour when it is absent.",
+      "what_the_exception_got_wrong": "Its first clause was true — the credentials really are in the other repository — and its second did not follow. Writing this file needs the NUMBERS, not the credentials, and the numbers were sitting in that repository's own committed analytics log, readable in two calls with no owner action. The exception's recheck_asks even pointed at the hole ('is anything actually publishing it yet?') and would have asked on 2026-08-23, two weeks late, having framed the question as waiting for someone else. Kept here rather than deleted: an exception that was wrong is more instructive than one that expired, and the instructive part is that it was wrong about WHOSE job it was."
     }
   ]
 }

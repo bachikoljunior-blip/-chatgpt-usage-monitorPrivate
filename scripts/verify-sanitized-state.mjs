@@ -419,6 +419,57 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
     // measure" lead to different decisions, and one of them is not a diagnosis.
     throw new Error("itch state reports error but still carries a game_count");
   }
+} else if (state.record !== undefined && state.provenance !== undefined) {
+  // The reach snapshot: a verbatim subset of ANOTHER repository's analytics log.
+  // Everything enforced here is about that word "verbatim". A number copied out of a
+  // file in a repo nobody in this one can see is worthless without the coordinates to
+  // go and contradict it — and the elected distribution route rests on these numbers,
+  // so an unfalsifiable copy would be the most expensive kind of measurement.
+  if (!["ok", "error"].includes(state.status)) {
+    throw new Error("reach snapshot has an invalid status");
+  }
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at)) {
+    throw new Error("reach snapshot has no valid fetched_at timestamp");
+  }
+  for (const field of ["repo", "branch", "commit", "path"]) {
+    if (!state.provenance?.[field]) {
+      throw new Error(`reach snapshot provenance is missing ${field}, so the numbers cannot be re-checked`);
+    }
+  }
+  if (!/^[0-9a-f]{40}$/.test(state.provenance.commit)) {
+    throw new Error("reach snapshot provenance names no full commit sha — a branch moves and a sha does not");
+  }
+  // The window is derived from these keys, never from `since`. Two dated days is the
+  // minimum for a rate rather than a level, and the route was elected on the rate.
+  const dayKeys = Object.keys(state.record?.views_by_day ?? {});
+  if (dayKeys.length < 2) {
+    throw new Error("reach snapshot carries fewer than two dated days, so it holds a level and not a rate");
+  }
+} else if (Array.isArray(state.channels) && state.source_snapshot !== undefined) {
+  // The derived reach metrics compute-eta reads. idle_eta_days must be null or a
+  // finite number and NEVER the string "0" or an empty string, because the reader
+  // coerces and `Number(null)` is 0 — which reported the ¥200,000/month goal as
+  // already met on the first run after this file finally had a writer.
+  if (!["ok", "error"].includes(state.status)) {
+    throw new Error("external-metrics state has an invalid status");
+  }
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at)) {
+    throw new Error("external-metrics state has no valid fetched_at timestamp");
+  }
+  for (const ch of state.channels) {
+    if (!ch.id) throw new Error("an external-metrics channel has no id");
+    if (ch.idle_eta_days !== null && !Number.isFinite(ch.idle_eta_days)) {
+      throw new Error(
+        `external-metrics channel ${ch.id} has an idle_eta_days that is neither null nor a number`,
+      );
+    }
+    if (!ch.reason) {
+      throw new Error(
+        `external-metrics channel ${ch.id} states no reason. A channel with no ETA and no reason is ` +
+          "indistinguishable from one nobody measured, which is the confusion this file was written to end.",
+      );
+    }
+  }
 } else if (Array.isArray(state.pages) && state.published_count !== undefined) {
   // Findable-surface measurement. The one thing worth enforcing here is the
   // distinction the file exists for: published (a 200 to someone who has the url)

@@ -2163,11 +2163,62 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   const prose = prerequisiteCheck({ route: "r" }, bindings);
   assert(prose.ok === false, "an election stating its prerequisite only in prose was accepted");
 
-  const unmeasurable = prerequisiteCheck({ route: "r", prerequisite_term: "standing", prerequisite_measured_by: { script: "x" } }, bindings);
+  // Two ways to name a term nothing reports, and they are DIFFERENT failures. Before
+  // 2026-08-09T22:5xZ both collapsed into "not one of the four venue causes", which is
+  // why a non-venue route was unelectable: the guard that keeps elections honest was
+  // also, silently, a rule that every route must be a venue route.
+  const unregistered = prerequisiteCheck(
+    { route: "r", prerequisite_term: "standing", prerequisite_measured_by: { script: "x" } },
+    bindings,
+  );
+  assert(unregistered.ok === false, "an election naming an unregistered instrument was accepted");
+  assert(
+    unregistered.problem.includes("not a registered instrument"),
+    `the unregistered instrument was rejected for the wrong reason: ${unregistered.problem}`,
+  );
+
+  const unmeasurable = prerequisiteCheck(
+    {
+      route: "r",
+      prerequisite_term: "standing",
+      prerequisite_measured_by: { script: "scripts/venue-readiness.mjs" },
+    },
+    bindings,
+  );
   assert(unmeasurable.ok === false, "a prerequisite this instrument cannot produce was accepted");
   assert(
     unmeasurable.problem.includes("never produces"),
     `the unmeasurable prerequisite was rejected for the wrong reason: ${unmeasurable.problem}`,
+  );
+
+  // The positive case for the registry, and the reason it is not just a wider
+  // vocabulary: a term another named machine reports is admitted, and the venue
+  // revenue-path test is DECLARED skipped rather than passing vacuously on zero rows.
+  const elsewhere = prerequisiteCheck(
+    {
+      route: "route_3_use_the_reach_already_owned",
+      prerequisite_term: "reach",
+      prerequisite_measured_by: { script: "scripts/measure-reach.mjs" },
+    },
+    bindings,
+  );
+  assert(elsewhere.ok === true, `a term measured by a registered instrument was rejected: ${elsewhere.problem}`);
+  assert(
+    elsewhere.measured_elsewhere === "scripts/measure-reach.mjs",
+    "a prerequisite measured elsewhere passed without saying which instrument owns it, which is a vacuous pass wearing a real one's clothes",
+  );
+  // And it must NOT become a way to dodge the revenue-path finding for a venue term.
+  const dodge = prerequisiteCheck(
+    {
+      route: "r",
+      prerequisite_term: "account",
+      prerequisite_measured_by: { script: "scripts/measure-reach.mjs" },
+    },
+    bindings,
+  );
+  assert(
+    dodge.ok === false,
+    "a venue term was admitted by pointing prerequisite_measured_by at an instrument that does not report it",
   );
 
   const unread = prerequisiteCheck({ route: "r", prerequisite_term: "account" }, bindings);
@@ -2576,6 +2627,99 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     !/[ぁ-んァ-ヶ一-龠]/.test(request.the_ask.step_2.body_to_paste),
     "the text to paste into an English-language board contains Japanese",
   );
+}
+
+// --- reach: the writer that state/external-metrics.json never had -----------
+//
+// compute-eta.mjs has read that file since it was written and nothing has ever
+// written it, so the `if (!external)` fallback was the only branch that ever ran —
+// and it announced "YouTube figures live in another repo and are not readable here",
+// which is false. A reader with no writer does not merely miss data; when its
+// fallback states a REASON, it manufactures a finding.
+{
+  const { deriveReach, toChannelRow, YPP_GATE, externalEta } = await import(
+    "../scripts/measure-reach.mjs"
+  );
+
+  const snap = {
+    record: {
+      at: "2026-08-10T07:21:51+09:00",
+      since: "2026-08-04",
+      totals: {
+        views: 4835,
+        engagedViews: 1579,
+        estimatedMinutesWatched: 667,
+        subscribersGained: 1,
+        subscribersLost: 0,
+      },
+      views_by_day: {
+        "2026-08-04": 2070,
+        "2026-08-05": 560,
+        "2026-08-06": 1739,
+        "2026-08-07": 466,
+      },
+    },
+  };
+
+  const reach = deriveReach(snap);
+  assert(reach.usable === true, `the committed-shape snapshot did not derive: ${reach.why_not}`);
+
+  // THE WINDOW COMES FROM THE DAY KEYS, NOT FROM `since`. YouTube Analytics lags
+  // about two days, so a scan taken on the 9th with since=08-04 holds four days of
+  // data, not six. Dividing by six understates the rate by a third, and the rate is
+  // the whole output. This assertion is the difference between 1208.75 and 805.83.
+  assert(reach.window_days === 4, `the window was taken from the wrong field: ${reach.window_days}`);
+  assert(reach.views_per_day === 1208.75, `views/day is wrong: ${reach.views_per_day}`);
+
+  // The gate is BOTH halves and the slower one decides. At 0.25 subs/day and
+  // 2.78 watch-hours/day the subscriber half is the binding one, and reporting the
+  // faster half would say the channel is four years from being paid when it is eleven.
+  assert(
+    reach.ypp_gate_binding_half === "subscribers",
+    `the binding half of the YPP gate is wrong: ${reach.ypp_gate_binding_half}`,
+  );
+  assert(
+    reach.days_to_ypp_gate === YPP_GATE.subscribers / 0.25,
+    `days to the YPP gate is wrong: ${reach.days_to_ypp_gate}`,
+  );
+
+  // A level is not a rate. One dated day says how many people arrived; it does not
+  // say whether that is growing, shrinking, or a single upload's tail.
+  const oneDay = deriveReach({ record: { totals: snap.record.totals, views_by_day: { "2026-08-04": 2070 } } });
+  assert(oneDay.usable === false, "a single dated day was accepted as a rate");
+
+  // A zero rate must read as never, and never must not read as unmeasured. Infinity
+  // collapsing to null here would put this channel back in the same bucket as the
+  // fallback sentence this whole file exists to delete.
+  const flat = deriveReach({
+    record: {
+      totals: { views: 10, engagedViews: 0, estimatedMinutesWatched: 0, subscribersGained: 0, subscribersLost: 0 },
+      views_by_day: { "2026-08-04": 5, "2026-08-05": 5 },
+    },
+  });
+  assert(flat.usable === true, "a two-day window with real views failed to derive");
+  assert(flat.days_to_ypp_gate === null, "a zero growth rate produced a finite distance to the gate");
+
+  // idle_eta_days stays null even though days_to_ypp_gate is finite. The gate is a
+  // threshold for being paid AT ALL, not the ¥200,000/month target, and the far side
+  // of it is priced in the ¥1,000s/month. Writing the gate distance into idle_eta_days
+  // would make the loop's top-priority goal report success on a number that is not the
+  // goal — the same substitution unlocks_when exists to prevent.
+  const row = toChannelRow(snap, reach);
+  assert(row.idle_eta_days === null, "the YPP gate distance was passed off as the ETA to the revenue target");
+  assert(row.reason.includes("measured, not unreadable"), "the channel row still reads as unmeasured");
+
+  // And the coercion that made the first real write report the goal as ACHIEVED.
+  // `Number(null)` is 0 and `Number.isFinite(0)` is true, so a null ETA became 0 days;
+  // the portfolio takes the minimum, so one null said ¥200,000/month arrives today.
+  // Unreachable for the reader's whole life precisely because nothing wrote the file.
+  // This is the function scripts/compute-eta.mjs imports — asserting a copy of it here
+  // would have gone green while the real reader stayed broken.
+  assert(externalEta(null) === null, "a null external ETA coerced to 0 days — the goal would read as met");
+  assert(externalEta(undefined) === null, "an absent external ETA coerced to 0 days");
+  assert(externalEta("") === null, "an empty external ETA coerced to 0 days");
+  assert(externalEta(0) === 0, "a genuine zero was thrown away with the nulls");
+  assert(externalEta(12.5) === 12.5, "a real finite ETA was discarded");
 }
 
 console.log("All usage monitor tests passed.");

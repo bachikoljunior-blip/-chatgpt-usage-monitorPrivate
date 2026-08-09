@@ -25,6 +25,7 @@ import { readStateJson, REPO } from "./state-source.mjs";
 import { applyRepricings, applyRouteElection } from "./repricing.mjs";
 import { loadVenueRows, prerequisiteCheck } from "./venue-readiness.mjs";
 import { daysToTarget } from "./revenue-rate.mjs";
+import { externalEta } from "./measure-reach.mjs";
 import { constraintDue } from "./constraint-due.mjs";
 import { evaluateUnlock } from "./unlock-condition.mjs";
 import { blockedByDirective, directiveBlockers } from "./directive-block.mjs";
@@ -147,17 +148,23 @@ if (itch?.status === "ok") {
 // plainly when it is absent or stale. An ETA built on a remembered number is how
 // a plan starts drifting from reality.
 const EXTERNAL_MAX_AGE_DAYS = 3;
+// externalEta is imported from scripts/measure-reach.mjs rather than written here.
+// This file does its work at import time, so a test cannot import it, and a copy of
+// the rule asserted in the suite would only ever have tested the copy. See that
+// export's comment for the bug it pins: a null ETA coercing to 0 days, which made the
+// portfolio minimum report ¥200,000/month as already reached.
 for (const ch of external?.channels ?? []) {
   const age = ch.measured_at ? (now - Date.parse(ch.measured_at)) / 86_400_000 : Infinity;
   channels.push({
     id: ch.id,
     measured_at: ch.measured_at ?? null,
     monthly_yen_now: ch.monthly_yen_now ?? 0,
-    idle_eta_days: Number.isFinite(Number(ch.idle_eta_days)) ? Number(ch.idle_eta_days) : null,
+    idle_eta_days: externalEta(ch.idle_eta_days),
     idle_eta_reason: ch.reason ?? null,
     owner_actions_required: ch.owner_actions_required ?? 0,
     stale: age > EXTERNAL_MAX_AGE_DAYS,
     stale_days: Number.isFinite(age) ? Number(age.toFixed(1)) : null,
+    reach: ch.reach ?? null,
   });
 }
 if (!external) {

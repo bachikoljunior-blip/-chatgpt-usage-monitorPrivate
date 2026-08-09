@@ -6,15 +6,28 @@
   "cadence_days": 7,
   "note": "Zero-base round: options produced without sight of the current portfolio, then compared against the measured ETA. The proposal passed scripts/check-blind.mjs, so no name of ours appears in it.",
   "elected_distribution_route": {
-    "route": "route_1_post_where_buyers_gather",
-    "elected_at": "2026-08-09T21:15:00Z",
+    "route": "route_3_use_the_reach_already_owned",
+    "elected_at": "2026-08-09T22:55:00Z",
     "elected_by": "a lap admitted under --kind=route_change after the prerequisite lane closed 3/3 with the ETA unmoved",
-    "supersedes": "distribution_answer.route_2_is_the_one_that_survives (2026-08-09T10:19Z)",
-    "abandoned": ["route_2_unattended_findable_pages"],
-    "why": "Every near-success in six surveys had a third party with reach point at the thing, or several venues on the same day. Route 1 is also the fastest thing on the board by a wide margin — three of the recorded cases reached first revenue within 0-1 days of publishing, against zero cases anywhere of unattended discovery producing a first buyer. It is elected on being the only route with a case behind it, not on being easy.",
-    "abandoned_because": "Route 2's evidence was refuted by task .h — Datanyze lost 95.46% of organic traffic with exactly what this route proposes (genuine per-entity data per page), and Stripe Fee Auditor ran the premise directly for three months to 5 clicks and zero revenue. On 2026-08-09T21:08Z the route was also measured to have no starting point HERE: our ten pages return nothing from a controlled search, and github.com/bachikoljunior-blip returns nothing either, so the surface an inbound link would come from is not in the index. Refuted in general and unstartable in particular.",
-    "prerequisite": "THE VENUE'S OWN RULE REQUIREMENT at the one surveyed venue that can be paid through — itch.io Release Announcements, whose rule requires 'A link to the page on itch.io' and where no such page exists yet. Corrected from ACCOUNT at 2026-08-09T22:3xZ — see prerequisite_repointed_to_a_payable_door. Corrected from STANDING at 2026-08-09T21:30Z before that — see prerequisite_correction. Like ACCOUNT and unlike STANDING it is binary, settleable and priced: one owner action, already pending as 2026-08-09.itch-page-for-the-kit.",
-    "prerequisite_term": "venue_rule",
+    "supersedes": "elected_distribution_route.route_1_post_where_buyers_gather (2026-08-09T21:15Z), recorded verbatim below as superseded_route_1",
+    "abandoned": ["route_2_unattended_findable_pages", "route_1_post_where_buyers_gather"],
+    "why": "Route 1's own justification names the thing that makes a first post work: 'every near-success in six surveys had a third party with reach point at the thing, or several venues on the same day' — and all_options_refuted.the_term_they_all_failed_on adds the third form, 'an audience that already existed'. That is a LIFT, and the route was elected on cases that had one. Two of the three were already measured absent here: no third party has ever pointed at anything of ours, and breadth was measured 0 postable across 6 venues in two batches and abandoned at 15:20Z. The third was never measured — because state/eta.json asserted the YouTube figures were 'not readable here'. Measured this lap: 1,208.75 views/day and 394.75 engaged views/day over 2026-08-04..08-07, unattended, hourly, zero owner actions. The loop has been trying to BUY reach at venue doors that each cost an owner action while owning reach it never counted.",
+    "the_number_and_where_it_came_from": "state/youtube-scan.json carries the snapshot and its provenance (bachikoljunior-blip/youtube, branch claude/youtube-auto-post-revenue-ggedij, commit f29a052e832db27703c95ba447a325cfbd738a50, data/scan.jsonl last record, scanned 2026-08-09T22:21:51Z). scripts/measure-reach.mjs derives the rates; nothing here is asserted. Reached with add_repo + get_file_contents — two calls, no owner action, no credential.",
+    "what_this_route_does_NOT_claim": "That this audience buys. It does not: 1 subscriber from 4,835 views is 0.02% on the cheapest possible ask, the viewers are Japanese consumers reading money-and-work calculations, and the priced product is a USD 25 developer kit. Reach is not demand. What changes is that the term route 1 was blocked on is now a measured quantity we HOLD rather than one we were queuing to buy, and the candidates under this route have a countable funnel — view, click, sale — instead of a pending owner form.",
+    "and_youtube_ad_revenue_is_explicitly_not_the_path": "At the observed rate the YouTube Partner gate is ~4,000 days away, binding on subscribers, and the sibling loop prices the far side of it in the ¥1,000s/month against a ¥200,000 target. measure-reach.mjs therefore leaves idle_eta_days null on that channel on purpose. Electing this route is about the 1,200 views a day, not about monetising them where they are.",
+    "how_to_falsify_this_election": "Three ways, all machine-checked rather than remembered. (1) The reach stops: measure-reach.mjs exits 1 when the snapshot goes stale past 7 days or the day series stops yielding a rate, and pulse.yml runs it hourly. (2) The reach turns out to be unusable for this product — measured as clicks from the channel to the Gumroad or demo URL, which is the first candidate under this route and is countable. Zero clicks across a fair trial refutes it, and that is a real outcome, not a setback. (3) A venue door opens without an owner action, which would reopen route 1 on its own merits; venue-readiness.mjs still derives and prints every venue row, so that stays visible rather than being deleted along with the election.",
+    "what_it_does_NOT_withdraw": "The venue rows, the two pending owner requests, and the itch.io announcement all stand. itch.io remains the one surveyed venue measured to permit showing the paid product, its English announcement is written and paste-ready, and if the owner performs that action the route-1 door opens and should be walked through. Abandoning a route here means the loop stops SPENDING LAPS waiting at it, not that the work already done is thrown away.",
+    "superseded_route_1": {
+      "route": "route_1_post_where_buyers_gather",
+      "elected_at": "2026-08-09T21:15:00Z",
+      "prerequisite_term_at_supersession": "venue_rule",
+      "why_it_was_elected": "Every near-success in six surveys had a third party with reach point at the thing, or several venues on the same day. Three of the recorded cases reached first revenue within 0-1 days of publishing, against zero cases anywhere of unattended discovery producing a first buyer. It was elected on being the only route with a case behind it, not on being easy.",
+      "why_it_is_being_left": "Not because the evidence was wrong. Because the enabling condition of that evidence — the lift — was never something we had, and the loop spent five laps repointing WHICH DOOR to wait at (standing -> account -> venue_rule) without ever asking whether it held the thing that makes a door worth walking through. Each repointing was correct and none of them changed the number.",
+      "the_pattern_worth_keeping": "prerequisite_correction, prerequisite_repointed_to_a_payable_door, and this record are three consecutive laps that each found the previous lap's term wrong. A term that has to be corrected three times is not a term being refined; it is the wrong QUESTION being asked more precisely."
+    },
+    "abandoned_because": "route_2_unattended_findable_pages: refuted by task .h — Datanyze lost 95.46% of organic traffic with exactly what that route proposes, and Stripe Fee Auditor ran the premise directly for three months to 5 clicks and zero revenue; it was additionally measured to have no starting point here (our ten pages return nothing from a controlled search). route_1_post_where_buyers_gather: not refuted, LEFT — see superseded_route_1.why_it_is_being_left. The two are abandoned for different reasons and the difference matters: route 2 was shown not to work for anyone, route 1 was shown to require a lift we did not have and now do.",
+    "prerequisite": "REACH THAT WE ALREADY HOLD, reported as a rate rather than as a state. It is satisfied today: 1,208.75 views/day and 394.75 engaged views/day over a four-day window, unattended. Unlike every prerequisite before it (standing, account, venue_rule) this one costs zero owner actions and is already met, so the route's blocker is no longer permission — it is whether the reach converts, which is a countable experiment rather than a queue.",
+    "prerequisite_term": "reach",
     "prerequisite_repointed_to_a_payable_door": {
       "at": "2026-08-09T22:3xZ",
       "what_changed": "prerequisite_term account -> venue_rule. The route is unchanged and still route_1_post_where_buyers_gather; what changed is which door it waits at. `account` binds exactly one row, r/gamedev, and `venue_rule` binds exactly one row, itch.io — Release Announcements.",
@@ -26,12 +39,20 @@
       "and_the_two_venues_that_arrived_this_lap_do_not_change_it": "codex/outbox/2026-08-09.r.md landed and names DEV Community and Hashnode as venues reachable with a GitHub or Google sign-in. Read for what it MEASURED rather than what it was hoped to prove: it established that a sign-in BUTTON exists on a login screen. It did not establish that a lap can drive that OAuth flow (we hold no owner credentials, and account.exists conflating 'an account exists' with 'a lap can post from it' is already a known gap), and it never asked either venue whether paid promotion is permitted — the task was commissioned before that question existed. Both are therefore paid_promotion_permitted UNKNOWN, and an unknown is not a revenue path. Adding either as a row today would import exactly the trap this repointing is leaving. They are worth surveying for that one question; they are not worth electing on."
     },
     "prerequisite_measured_by": {
+      "script": "scripts/measure-reach.mjs",
+      "function": "deriveReach",
+      "state_file": "state/youtube-scan.json",
+      "path": "record.views_by_day and record.totals",
+      "vocabulary": ["reach"],
+      "note": "Registered in scripts/venue-readiness.mjs PREREQUISITE_INSTRUMENTS, which is what makes a non-venue term admissible at all. Until this lap prerequisiteCheck hard-failed every term outside the venue vocabulary, so a non-venue route was unelectable — not by argument but by the guard meant to keep elections honest. The guarantee kept is the one that matters: the term must be something a NAMED machine reports, so it can turn out to be wrong. This one goes red when the snapshot is stale past 7 days or the day series stops yielding a rate."
+    },
+    "prerequisite_measured_by_at_supersession": {
       "script": "scripts/venue-readiness.mjs",
       "function": "prerequisiteCheck",
       "state_file": "state/constraints.json",
       "path": "no_standing_where_buyers_gather.venue_survey.per_venue",
       "vocabulary": ["postable", "venue_rule", "venue_unsettled", "account"],
-      "note": "A prerequisite_term outside that vocabulary fails venue-readiness.mjs and pulse.yml. The point is not the word: it is that the route's prerequisite has to be a thing some row can report, so it can be counted and can turn out to be wrong. STANDING could do neither."
+      "note": "Kept because the venue rows are still derived and printed every hour, and route 1 reopens on its own merits the moment a door opens without an owner action. Abandoning a route does not delete its instrument."
     },
     "prerequisite_correction": {
       "at": "2026-08-09T21:30:00Z",
@@ -48,8 +69,8 @@
       }
     },
     "why_the_original_exclusion_does_not_apply": "distribution_answer excluded route 1 for requiring 'repeated human posting', and its own route_1_exclusion_corrected withdrew that ground the same morning: the evidence describes ONE post plus a few hours of replies, not a recurring operation. The no-recurring-owner-actions constraint therefore never covered this route. That correction has sat in the same file as the election it contradicts for eleven hours without moving anything, because both were prose.",
-    "what_this_does_not_claim": "That route 1 is executable today. It is not — 0 of 3 surveyed venues are postable from a standing start, and whether a Reddit account exists is still a pending owner request. Electing it says the loop stops spending laps on unattended discovery and starts spending them on standing and breadth. A route that is blocked on an accruable prerequisite is a different thing from a route that is refuted, and the ranking should not treat them alike.",
-    "how_to_falsify_this_election": "Show one case of a first buyer arriving unattended with both calendar dates confirmed, or measure any writable surface of ours into a search index. Either reopens route 2. state/findable-surface.json inbound_surface is the live instrument and goes stale in 14 days, so this is checked rather than remembered.",
+    "what_route_1_did_not_claim_when_it_was_elected": "That route 1 was executable then. It was not — 0 of 3 surveyed venues postable from a standing start. Kept because it is the sentence that should have been read as a warning: a route was elected while its own election record said it could not be run, and five laps then went into refining which door it could not run through.",
+    "how_to_falsify_route_2_back_open": "Show one case of a first buyer arriving unattended with both calendar dates confirmed, or measure any writable surface of ours into a search index. state/findable-surface.json inbound_surface is the live instrument and goes stale in 14 days, so this is checked rather than remembered.",
     "read_by": "scripts/repricing.mjs applyRouteElection, called from scripts/compute-eta.mjs, which stamps route_alignment onto every candidate declaring serves_route. Written this way because the field it replaces had no reader for eleven hours and three separate findings failed to move it."
   },
   "route": "chatgpt-ask.yml with danger-full-access; the account cannot read our private repos (measured 404), so it is blind to the portfolio while still able to research",
@@ -161,6 +182,20 @@
         "not_refuted": "that many search surfaces can work as a long-term acquisition play, and that per-page substance matters. What was refuted is this candidate's role: a route that reaches a FIRST buyer unattended. Note the survey answered the sub-question too — no case supports 'one computed value per page is enough'. The near-successes carried a page that could be acted on by itself (BuiltWith's technology list, IPinfo's IP metadata, Tunebat's key/BPM), and even those cannot be attributed to search for the first sale.",
         "what_it_leaves": "Four candidates have now been refuted by outside evidence and every one of them failed on the same term. In each near-success the first buyer arrived through a third party with reach posting about the thing — an X account, Hacker News, Product Hunt, Stack Overflow answers — and never through discovery working unattended. distribution_answer already elected route 2 (findable surfaces) over route 1 (post where the buyers already gather) not on evidence but on our own constraint that recurring owner actions are excluded; it said so plainly. This survey removes the evidence route 2 was resting on, so what remains is a constraint with no surviving route under it. That is a decision for a lap to take deliberately, not a gap to fill by proposing a sixth build candidate."
       }
+    },
+    {
+      "id": "point_the_reach_we_own_at_the_thing_we_sell",
+      "serves_route": "route_3_use_the_reach_already_owned",
+      "days_to_first_yen": "unmeasured",
+      "months_to_target": "unmeasured",
+      "owner_actions": "0",
+      "why": "The channel delivers ~1,200 views/day unattended and currently points at nothing of ours. Putting a link in front of that traffic — description, pinned comment, end screen, or one short built from the kit — is a repo-side act with no venue rule, no account to create and no owner form. It is the only candidate on the board whose whole funnel is countable end to end: views (already measured), clicks (measurable), sales (state/gumroad-history.json, already collected hourly).",
+      "added_at": "2026-08-09T22:55:00Z",
+      "added_because": "The route change needs a candidate under it or applyRouteElection has nothing to elect, and a route with no candidate is the same empty gesture as a correction with no reader.",
+      "estimate_deliberately_absent": "No days-to-first-yen. Every number produced by estimate in this round was refuted on exactly those numbers. The first measurement this candidate owes is a click count, not a forecast.",
+      "the_honest_objection_to_it": "Audience mismatch. The viewers came for Japanese money-and-work calculations; the product is a USD 25 English-market developer kit. The conversion could well be zero, and 1 subscriber per 4,835 views says the audience is not strongly engaged even with the free ask. This is written here rather than discovered later because a candidate whose weakest point is only in the successor's notes gets picked on its strongest point forever.",
+      "what_would_settle_it_cheaply": "A click count. One link, one fair trial, one number — and unlike every venue candidate, nothing has to be granted before the trial can start.",
+      "not_settled_here": "Whether a lap can edit that channel's video metadata at all. The credentials live in the sibling repo's environment, not in this session, so the ACT may belong to the sibling loop rather than to this one. That is a coordination question between two automations chasing the same target, and it has never been asked. It does not block the election — the reach is measured either way — but it is the first thing the next lap should establish, and it is cheaper than any venue survey."
     },
     {
       "id": "honest_post_where_buyers_gather",

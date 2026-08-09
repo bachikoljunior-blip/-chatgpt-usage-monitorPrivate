@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-09T23:22:20.550Z",
+  "note": "Derived by scripts/measure-reach.mjs from state/youtube-scan.json. Do not hand-edit: the numbers here are a division of the snapshot, and editing them detaches the claim from the commit that can contradict it.",
+  "source_snapshot": {
+    "fetched_at": "2026-08-09T22:50:00.000Z",
+    "age_days": 0.02,
+    "stale": false,
+    "provenance": {
+      "repo": "bachikoljunior-blip/youtube",
+      "visibility": "private, and in the owner's own repo set",
+      "branch": "claude/youtube-auto-post-revenue-ggedij",
+      "commit": "f29a052e832db27703c95ba447a325cfbd738a50",
+      "commit_at": "2026-08-09T22:22:27Z",
+      "path": "data/scan.jsonl",
+      "record": "last line of the file at that commit",
+      "how_it_was_reached": "mcp__claude-code-remote__add_repo {owner: bachikoljunior-blip, repo: youtube} then mcp__github__get_file_contents. Two calls, no owner action, no credential. The repo does NOT appear in the session's initial Repository Scope list, which is why six sessions took 'not readable here' at face value.",
+      "not_on_main": "main's newest commit is 2026-08-08T05:58Z and carries no analytics. The live work is on the branch above. A reader who checks main alone will conclude the sibling loop is dead; it is not — it committed 40 minutes before this snapshot."
+    }
+  },
+  "channels": [
+    {
+      "id": "youtube",
+      "measured_at": "2026-08-10T07:21:51+09:00",
+      "monthly_yen_now": 0,
+      "owner_actions_required": 0,
+      "idle_eta_days": null,
+      "reason": "measured, not unreadable: 1208.75/day views and 394.75/day engaged over 4 days (2026-08-04..2026-08-07), zero owner actions. Ad revenue is not the path — at this rate the YouTube Partner gate is 4000 days away on subscribers, and the sibling loop prices the far side of it in the ¥1,000s/month against a ¥200,000 target. What is worth the ranking's attention is the REACH, which the elected route was blocked on and which nothing here had counted.",
+      "reach": {
+        "usable": true,
+        "window_days": 4,
+        "window_first_day": "2026-08-04",
+        "window_last_day": "2026-08-07",
+        "views": 4835,
+        "views_per_day": 1208.75,
+        "engaged_views_per_day": 394.75,
+        "watch_hours": 11.12,
+        "watch_hours_per_day": 2.78,
+        "subscribers_net": 1,
+        "subscribers_per_day": 0.25,
+        "subscriber_conversion": 0.000207,
+        "days_to_ypp_subscribers": 4000,
+        "days_to_ypp_watch_hours": 1439,
+        "days_to_ypp_gate": 4000,
+        "ypp_gate_binding_half": "subscribers"
+      }
+    }
+  ]
+}

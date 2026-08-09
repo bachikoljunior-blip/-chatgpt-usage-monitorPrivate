@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-09T22:50:00.000Z",
+  "what_this_is": "A verbatim subset of ONE record from a sibling repository's own analytics log. It is copied here, with the provenance needed to re-fetch it, because state/eta.json asserted for its whole life that 'YouTube figures live in another repo and are not readable here' and that assertion was false. compute-eta.mjs has read state/external-metrics.json since it was written; the reader existed and the writer never did. scripts/measure-reach.mjs is that writer, and this file is its input.",
+  "why_a_subset_and_not_the_file": "data/scan.jsonl is 191KB of 38 records with per-video, per-country, per-device and per-traffic-source breakdowns. Only the channel totals and the daily view series are used here. Everything needed to re-derive or contradict this is in provenance below — a reader who thinks the subset is wrong can fetch the same commit and check.",
+  "provenance": {
+    "repo": "bachikoljunior-blip/youtube",
+    "visibility": "private, and in the owner's own repo set",
+    "branch": "claude/youtube-auto-post-revenue-ggedij",
+    "commit": "f29a052e832db27703c95ba447a325cfbd738a50",
+    "commit_at": "2026-08-09T22:22:27Z",
+    "path": "data/scan.jsonl",
+    "record": "last line of the file at that commit",
+    "how_it_was_reached": "mcp__claude-code-remote__add_repo {owner: bachikoljunior-blip, repo: youtube} then mcp__github__get_file_contents. Two calls, no owner action, no credential. The repo does NOT appear in the session's initial Repository Scope list, which is why six sessions took 'not readable here' at face value.",
+    "not_on_main": "main's newest commit is 2026-08-08T05:58Z and carries no analytics. The live work is on the branch above. A reader who checks main alone will conclude the sibling loop is dead; it is not — it committed 40 minutes before this snapshot."
+  },
+  "record": {
+    "at": "2026-08-10T07:21:51+09:00",
+    "since": "2026-08-04",
+    "totals": {
+      "views": 4835,
+      "engagedViews": 1579,
+      "estimatedMinutesWatched": 667,
+      "subscribersGained": 1,
+      "subscribersLost": 0,
+      "likes": 8,
+      "shares": 1,
+      "averageViewPercentage": 42.85
+    },
+    "views_by_day": {
+      "2026-08-04": 2070,
+      "2026-08-05": 560,
+      "2026-08-06": 1739,
+      "2026-08-07": 466
+    }
+  },
+  "read_the_lag": "The scan ran at 2026-08-09T22:21Z and its newest day is 2026-08-07. YouTube Analytics lags roughly two days, so the window is four days (08-04..08-07) and NOT the six days between `since` and the scan time. Dividing by six would understate the rate by a third. scripts/measure-reach.mjs derives the window from the day keys for exactly this reason and never from `since`.",
+  "what_this_is_not": "It is not evidence that this audience buys anything. The channel publishes money-and-work calculations to a Japanese consumer audience; the priced product is a USD 25 development kit for developers. One subscriber from 4,835 views is a 0.02% conversion on the cheapest possible ask. The value claimed here is REACH, which the elected route was blocked on and which nothing in this repository had ever counted — not that the reach is already pointed at a buyer."
+}
