@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T11:24:04.915Z",
+  "fetched_at": "2026-08-09T11:34:21.260Z",
   "note": "Every change made because it was claimed to shorten the ETA. judge_on is set when the change lands, not when it is convenient. concurrent_changes is what else was in flight, so a later reader can tell a clean attribution from a confounded one.",
   "predictions": [
     {
@@ -194,6 +194,29 @@
         "2026-08-09.standing-recorded-as-the-real-constraint and 2026-08-09.distribution-class-added judge on the same date and overlap on what laps pick."
       ],
       "falsified_if": "the answer comes back with venue names but no quoted rules or posting preconditions, which is the failure the task text names explicitly and would mean the instruction did not bind. Also falsified if the lane does not run at all by the judge date, or if the answer never mentions the priced product and answers about the free game instead — that would mean attaching the files did not redirect the question.",
+      "outcome": null
+    },
+    {
+      "id": "2026-08-09.owner-request-gets-a-home",
+      "made_at": "2026-08-09T11:36:00Z",
+      "claim": "RUNBOOK 6 gate 4 requires an owner request be prepared to the paste-ready state, and there was no file for it, so the gate could be asserted but never satisfied — the same failure shape as blocked.json and the zerobase repricing. state/owner-requests.json plus a reader in compute-eta.mjs should change two things: the request survives this session, and the next lap that looks at the itch candidate sees OWNER REQUEST PENDING instead of either re-preparing it or deferring it again.",
+      "metric": "state/eta.json read back from origin/main after a bot recompute this session did not perform: candidates[].owner_request present on the itch candidate and owner_requests_pending non-empty at the top level. Then state/continue.json and commit subjects for the following laps: whether any lap re-prepares an itch request, defers itch for want of preparation, or reports the request as pending.",
+      "baseline": {
+        "owner_requests_ever_recorded_in_a_file": 0,
+        "runbook6_gate4_satisfiable_before": false,
+        "laps_that_deferred_itch_for_want_of_preparation": "at least 2 recorded in state/continue.json handoffs",
+        "outward_surveys_returning_refuted": 7,
+        "outward_surveys_returning_not_refuted": 1,
+        "itch_games_published": 0,
+        "lifetime_sales": 0
+      },
+      "judge_on": "2026-08-11",
+      "concurrent_changes": [
+        "the same lap read the Gumroad description for the first time and corrected the buyer class; the request text is built from that description, so a better request cannot be attributed to the file mechanism alone.",
+        "codex/outbox/2026-08-09.k.md landed in the same hour and is the evidence the request rests on. Without it there would be no request to file, so the mechanism and the content arrived together.",
+        "2026-08-09.buyer-question-aimed-at-the-priced-artifact judges on the same date and reads the same .k answer."
+      ],
+      "falsified_if": "a later lap prepares an itch request again, or defers itch on the ground that nothing is prepared, or the owner_request annotation is dropped by a bot recompute so the picker stops seeing it. Presence in the file is not the claim — being seen by the side that picks work is.",
       "outcome": null
     }
   ]
