@@ -62,14 +62,34 @@
       "days_to_first_yen": "7-30",
       "months_to_target": "3-7",
       "owner_actions": "1 initial + 0-1 monthly",
-      "why": "package search and README funnel to a commercial licence"
+      "why": "package search and README funnel to a commercial licence",
+      "refuted": {
+        "at": "2026-08-09T11:15:00Z",
+        "by": "codex-loop (codex/outbox/2026-08-09.j.md)",
+        "claim_tested": "first yen within 7-30 days: a free CLI found through npm/PyPI package search and its README, converting to a commercial licence",
+        "finding": "No matching public case was found at all — not a slow one, a missing one. Sidekiq Pro confirms open source converting to paid but was excluded: it is a RubyGem, not an npm/PyPI CLI, and its first purchase cannot be traced to package search. A second near-case was excluded because its free version had accumulated seven years and three million downloads first, so nothing came from package search unattended. The strongest counter-case is Kite, which hits the premise rather than the speed: free from 2014, Pro from 2020-05, shut down 2022-11, with 500,000 active developers whom the founder says would not pay — mass free developer usage did not convert. pypistats-cli is the closest live instance of the exact shape (0.1.0 published 2026-03-06, free 10 req/min, Pro 60, Enterprise 300, README to pricing) and 156 days later no paying purchaser could be confirmed — which is absence of evidence, not evidence of zero, and the survey says so. Mechanically, npm search ranks on quality, popularity and maintenance rather than recency, so a package with no usage starts behind; npm and PyPI both allow related paid links but remove content that is advertising-primary, placeholder or bulk promotion. And download counts are not buyers: CI, mirrors and dependency resolution are mixed into them.",
+        "verdict": "does not meet the 7-30 day claim as stated",
+        "sources_in": "codex/outbox/2026-08-09.j.md",
+        "first_buyer_arrived_from_listing_unattended": "なし",
+        "not_refuted": "that a free CLI can convert to a paid licence. What is missing is any recorded instance of it happening from npm/PyPI discovery at all, which is weaker ground than the candidates whose monetisation was at least confirmed elsewhere."
+      }
     },
     {
       "id": "high_intent_tool_site",
       "days_to_first_yen": "14-60",
       "months_to_target": "4-9",
       "owner_actions": "1 initial",
-      "why": "captures validator/converter/generator searches with a free tool and sells the full version"
+      "why": "captures validator/converter/generator searches with a free tool and sells the full version",
+      "refuted": {
+        "at": "2026-08-09T11:15:00Z",
+        "by": "codex-loop (codex/outbox/2026-08-09.j.md)",
+        "claim_tested": "first yen within 14-60 days: free validator/converter/generator tools found through search, converting to a paid full version",
+        "finding": "No case was found with the full causal chain and both calendar dates. The closest in shape — an operator who built four free tools instead of blog posts and describes the path as organic search -> free tool -> signup -> paid — took about 90 days, past the 60-day ceiling, and neither date is confirmable; a Reddit post after the fact exists but whether anything was posted before it is unverified. Watashi Colorizer reaches about USD 200/week by month six and its operator attributes it to SEO, but carries no first-sale date and so says nothing about days 14-60. OneUp is a traffic case, not a first-sale case: organic up 10x in a year, off-page work alongside it, no individual conversion confirmed. Two counter-cases test the exact premise. Stripe Fee Auditor ran the candidate directly: about 90 days, 4,230 search impressions, 5 clicks, average position 26, CTR about 0.1%, 2 real users, revenue 0 — and Hacker News sent more real users in three hours than three months of search did. A new SEO SaaS shipping four free tools (snippet preview, meta tag checker, robots.txt generator, JSON-LD generator) recorded about 320 impressions, 1 click, average position about 51 and 0 paying users over about three months. Google separates meeting the requirements from ranking, and mass-generating near-duplicate query pages can meet doorway or scaled-content abuse.",
+        "verdict": "does not meet the 14-60 day claim as stated",
+        "sources_in": "codex/outbox/2026-08-09.j.md",
+        "first_buyer_arrived_from_search_unattended": "なし",
+        "not_refuted": "that free tools can funnel to a paid version, or that search can carry revenue over years. Only this candidate speed from a standing start on a new domain with no links. The survey also notes it could not judge occupancy per query, because the candidate never named which validator or converter it would build — an unspecified candidate cannot be checked for competition."
+      }
     },
     {
       "id": "findable_surface_at_scale",
@@ -168,5 +188,12 @@
       "what_is_still_weak_about_the_route": "g.md called its one route-1 case a single self-report with the product name, launch date and purchase record withheld, and rated the evidence weak. The same survey found broad or low-effort community posting produced one to six months at zero. The distinction the evidence draws is between an honest post into the specific community that has the buyers, with the poster present for the replies, and posting widely and waiting. Only the first has a case behind it, and only one.",
       "what_it_does_not_supply": "Something to post about. Route 1 is a way of reaching buyers for a thing that exists and is worth their attention; it does not produce the thing. The portfolio's 28 artifacts were never checked for whether any of them is worth an honest post to a community that has buyers in it. Nobody has looked, which is different from having looked and found nothing."
     }
+  },
+  "all_options_refuted": {
+    "at": "2026-08-09T11:15:00Z",
+    "count": "7 of 7",
+    "the_term_they_all_failed_on": "no case where a first buyer arrived unattended — through search, a listing, a marketplace or a directory — with both calendar dates. Every near-success on record had a third party with reach post about it, or several venues on the same day, or an audience that already existed.",
+    "what_this_settles": "This round has stopped being a source of plans. It produced five build acts and two distribution acts and outside evidence took all seven, each on the same term. The failure is therefore not that the wrong marketplace was picked, and the correct response is not an eighth option from the same generator. It is what state/constraints.json no_standing_where_buyers_gather now records: the binding constraint is standing, and the untried substitute is breadth.",
+    "do_not_read_as": "that these products cannot be sold. Five of the seven had monetisation confirmed by the same surveys. What fell every time was reaching the FIRST buyer with nobody pointing at it."
   }
 }

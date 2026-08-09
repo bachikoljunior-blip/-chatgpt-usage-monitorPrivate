@@ -113,7 +113,15 @@
         "2026-08-09.i landed the same hour and moved honest_post_where_buyers_gather from #4 to #7, which is what promoted these two to the top of the actionable list"
       ],
       "falsified_if": "either candidate produces a case with both calendar dates where the first buyer arrived from search or a listing with no simultaneous post, referral or existing following. One such case is enough to falsify this and it becomes the plan.",
-      "outcome": null
+      "outcome": {
+        "judged_at": "2026-08-09T11:15:00Z",
+        "judged_early_because": "judge_on was 2026-08-10, but the metric is codex/outbox/2026-08-09.j.md read directly, and it landed. Waiting for the date would have added nothing except a chance of nobody reading it — which is the failure this chain already made once with 2026-08-09.g.md.",
+        "measured": "Both candidates returned なし on the question of whether a first buyer ever arrived from search or a listing unattended, and the survey marked both 落ちる.",
+        "result": "CONFIRMED, in the strong form. The prediction allowed a partial pass if only one fell; both fell, and on the stated term rather than on some other weakness.",
+        "what_it_forces": "The prediction stated its own consequence in advance: if it held, all seven zero-base options are refuted and the round stops being a source of plans, and that decision should be taken rather than answered with an eighth candidate. All seven are now refuted. The decision was taken this hour and is recorded as state/constraints.json no_standing_where_buyers_gather plus state/zerobase.json all_options_refuted.",
+        "attribution": "Clean. The metric is a single external document produced before this lap read it, and nothing this loop did could change what it contained. This is the one prediction on the page whose confounders do not matter.",
+        "what_it_does_not_establish": "That these products are unsellable. Monetisation was confirmed for five of the seven. Only unattended first-buyer arrival fell — and for npm_pypi_cli_pro the survey found no matching case in either direction, which is weaker than a refutation and is recorded as such on the option."
+      }
     },
     {
       "id": "2026-08-09.eta-becomes-observable",
