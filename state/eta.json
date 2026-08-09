@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T10:41:58.877Z",
+  "fetched_at": "2026-08-09T10:51:51.554Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "target_yen_per_month": 200000,
@@ -53,7 +53,7 @@
       "eta_effect_days": 60,
       "recurring_owner_actions_per_month": 0,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "4 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "5 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 60 days at the conservative end (estimate, not measured)"
     },
     {
@@ -69,7 +69,7 @@
       "eta_effect_days": 30,
       "recurring_owner_actions_per_month": 1,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "4 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "5 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 30 days at the conservative end (estimate, not measured)"
     },
     {
@@ -85,22 +85,6 @@
       "not_success": "the page exists and is well made. That is the pattern the portfolio already ran 28 times: 28 published artifacts, no route to a buyer, ¥0 in eight months. Publishing and waiting was checked against outside evidence and produced one to six months at zero every time, and signup counts do not substitute — about 1,200 accounts and still no revenue in the clearest case on record.",
       "repriced_by": "state/zerobase.json distribution_answer.it_reprices_the_weekly_owner_action",
       "repriced_because": "distribution_answer elected route 2 — long-tail findable pages a third party can discover and refer — as the only evidence-carrying route that runs with zero recurring owner actions. The itch.io page is a route-2 surface on a marketplace with its own search, so the action does not change but what counts as success does."
-    },
-    {
-      "kind": "zero_base_option",
-      "id": "honest_post_where_buyers_gather",
-      "why": "the one route in the evidence where a first buyer actually arrived from something we could do: a single honest post into the specific community the buyers are in, with the poster answering replies that day",
-      "owner_actions": "1 initial + several hours of replies the same day, per attempt, not recurring",
-      "days_to_first_yen_estimate": "unmeasured",
-      "estimate_not_measurement": true,
-      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
-      "refuted": null,
-      "actionable_now": true,
-      "eta_effect_days": null,
-      "recurring_owner_actions_per_month": 0,
-      "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "4 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
-      "eta_effect_basis": "no comparable estimate recorded"
     },
     {
       "kind": "constraint_recheck",
@@ -134,7 +118,7 @@
       "eta_effect_days": 21,
       "recurring_owner_actions_per_month": 0,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "4 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "5 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 21 days at the conservative end (estimate, not measured)"
     },
     {
@@ -159,7 +143,32 @@
       "eta_effect_days": null,
       "recurring_owner_actions_per_month": 0,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "4 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "5 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "eta_effect_basis": "no comparable estimate recorded"
+    },
+    {
+      "kind": "zero_base_option",
+      "id": "honest_post_where_buyers_gather",
+      "why": "the one route in the evidence where a first buyer actually arrived from something we could do: a single honest post into the specific community the buyers are in, with the poster answering replies that day",
+      "owner_actions": "1 initial + several hours of replies the same day, per attempt, not recurring",
+      "days_to_first_yen_estimate": "unmeasured",
+      "estimate_not_measurement": true,
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "refuted": {
+        "at": "2026-08-09T10:52:00Z",
+        "by": "codex-loop (codex/outbox/2026-08-09.i.md)",
+        "claim_tested": "from zero existing readers, ONE honest post into the community the buyers are in, with the poster answering replies that day, reaches a first sale — with publish date and first-sale date both confirmable as calendar days",
+        "finding": "No case was found meeting the whole chain. The near cases all break the 'one post' term, and they break it in the same direction. TypeGenie: Product Hunt 2023-04-13, Hacker News 2023-04-14, first sale 2023-04-14 — at least two venues. Invoker: published 2020-06-30, USD 90 the same day, and the author records having had no audience at all — but posted to Product Hunt, Reddit and their own Twitter, at least three venues, and the buyer cannot be attributed to any one of them. Hacker News Front Page Explorer: published and first sale both 2020-12-29, with Product Hunt sending 1,000+ people, plus r/SideProject the same day. Optiwing is the closest in posting STYLE — starting a conversation about the problem in r/SEO and naming the tool in passing — but the author cannot attribute the buyer, and used multiple subreddits, Facebook and LinkedIn groups, Indie Hackers, Capterra and ads. Pinger is the closest to a single post, and it converted through a free trial plus ongoing dialogue and feature additions over about a month, with no confirmable dates. Two counter-cases hit the premise head-on, and both are about STANDING rather than frequency: an r/Entrepreneur post removed 2026-02-19 under Rule 2 'No Promotion' — being honest that it is your own work is not an exemption when the post's purpose is promotion — and a post auto-removed 2026-03-20 for the author having under 10 comment karma in that community, i.e. the single post from a standing start was never shown to anyone. A third case (SaaS published 2026-04-24) was banned from Reddit and reached zero sales across Reddit, LinkedIn, cold email and Product Hunt combined.",
+        "verdict": "falls as stated: zero audience plus exactly one post is not supported by any case on record",
+        "sources_in": "codex/outbox/2026-08-09.i.md",
+        "not_refuted": "that posting into a buyer community reaches a first buyer — it does, and it is by far the fastest route on record here: three of the cases reached first revenue within 0-1 days of publishing. What fell is this candidate's specific shape, and the survey also returned two positive findings the candidate did not contain. First, what the fast cases posted was a finished artifact the reader could try immediately (a working Zendesk tool, a desktop app, a searchable database of real data) — no case was found where a bare 'I built a thing' announcement sufficed. Second, no evidence either way on price: nothing showed that being free, or under some price, makes one post enough.",
+        "what_it_leaves": "Five of the seven checked options are now refuted, and the term that keeps failing has moved. It is no longer 'unattended discovery does not work' (that was 2026-08-09.h) but 'a standing start does not work'. The blocker the evidence actually names is STANDING, not recurring posting: prior participation in the community, or several venues hit at once, or an existing following. That distinction matters because the constraint this loop excluded route 1 on was 'recurring owner actions', and standing is not a recurring action — it is a prerequisite that accrues before the post. Invoker is the one case with zero audience, both dates, and a first sale on day zero, and it substituted breadth (three venues at once) for standing. Recording this is not a proposal: per 2026-08-09.h, a lap should take this deliberately rather than fill the gap with an eighth candidate."
+      },
+      "actionable_now": true,
+      "eta_effect_days": null,
+      "recurring_owner_actions_per_month": 0,
+      "estimate_reliability": "discredited_by_siblings",
+      "estimate_reliability_note": "5 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "no comparable estimate recorded"
     },
     {
@@ -183,7 +192,7 @@
       "eta_effect_days": 21,
       "recurring_owner_actions_per_month": 1,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "4 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "5 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 21 days at the conservative end (estimate, not measured)"
     },
     {
@@ -207,7 +216,7 @@
       "eta_effect_days": 14,
       "recurring_owner_actions_per_month": 1,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "4 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "5 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 14 days at the conservative end (estimate, not measured)"
     },
     {
