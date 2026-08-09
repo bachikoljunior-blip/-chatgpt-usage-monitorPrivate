@@ -1,20 +1,20 @@
 {
   "schema_version": 1,
-  "fetched_at": "2026-08-09T08:54:44.511Z",
-  "decision": "lap_complete_continuing",
-  "reason": "lap 2 of at most 3 in this session; the probe answered its question, returning to the gate",
-  "did": "Widened the field probe to read plain-decimal strings as numbers and to name the type of anything it still cannot read. Pushed as ea33d15 and collected at 2026-08-09T08:53:27.084Z.",
+  "fetched_at": "2026-08-09T09:03:24.061Z",
+  "decision": "handoff_after_three_laps",
+  "reason": "RUNBOOK 6.5: three laps in one session. Not a stop — the successor continues from the gate. Context, not quota, is the limit the gate cannot see.",
+  "did": "Lap 3 replaced the invented 0.5%-per-run reservation with a bound measured from data the repo already held: the git history of state/claude-usage.json joined with the lap timestamps in state/laps.json (scripts/derive-lap-cost.mjs). Reading it back caught a second problem and it was fixed in the same lap.",
   "observed_not_guessed": {
-    "dollars_are_null": "limit_dollars, used_dollars and remaining_dollars are all null on both five_hour and seven_day. Not a string, not a number — nothing. Route (b) as originally framed is dead: the endpoint sends no per-window figure finer than the integer utilization percentage.",
-    "what_is_left_unexplored": "top level still carries limits (array), spend (object), nimbus_quill (object) and extra_usage (object). The probe does not descend, so these are the only remaining places a finer figure could hide. Six other top-level windows (seven_day_oauth_apps, seven_day_cowork, seven_day_omelette and codenamed buckets) are all null on this account.",
-    "lap2_cost": "opened 43%, closed 43% against a genuinely newer reading (08:49:09Z -> 08:53:27Z): below_measurement_resolution again. Eleventh consecutive unusable sample.",
-    "mutation_tested": "widening PLAIN_DECIMAL to /\\d/ makes the suite fail on \"unsafe string was read as a number: 1e5\"; restored, it passes."
+    "derived_bound": "1 point across 6 laps over 2.87h -> <= 0.1667%/lap. Two collections later the same span reads 2 points across 7 laps -> <= 0.2857%/lap. The number moves with the data.",
+    "gate_effect_measured": "reserve 30.10% -> 26.67% and no longer capped; discretionary 12.90% -> 16.33%; lap budget 1.39% -> 1.77%. Read from the gate output, not predicted.",
+    "first_usable_sample_was_a_trap": "lap 3 closed with a real 1.000% delta — the first sample in twelve to pass every check — and it was wrong to trust. Weekly readings are whole points, so a 1-point delta has 100% relative error. It is 3.5x the derived bound over the same period, and pacing prefers a sample over a bound, so it would have won. Verified the harm before acting: automations.json had already been written to 1%, and at 33 runs that reserves 33% against revenue-loop instead of 9.43%. record-lap now refuses a delta below 2 points as at_measurement_quantum and keeps observed_delta_percent so nothing is lost. Registry re-checked after: back to null.",
+    "cap_did_its_job": "MAX_RESERVED_FRACTION would have limited the damage to a halved discretionary rather than a deadlock. The existing guard worked; it just should not have needed to."
   },
-  "next_lap_should": "Stop trying to make one lap show a delta. The data to measure cost already exists in two places nobody has joined: the git history of state/claude-usage.json is a per-collection record of the weekly percentage, and state/laps.json records started_at/ended_at for every lap including the unusable ones. Total points consumed over an interval, divided by the number of laps recorded inside it, is an upper bound on cost per lap — an upper bound is exactly what a reserve needs, and anything under 0.5% immediately loosens the gate. That is route (a), and it needs no new collection.",
-  "known_gap": "push-with-retry.sh runs git pull --rebase with no --autostash, so it fails whenever state/laps.json carries an open lap — which is always, mid-lap. It cost two manual recoveries this session.",
-  "gumroad_note": "not probed this lap. constraints.json recheck_after 2026-08-10 stands.",
+  "next_lap_should": "Two things are ready, and neither is more instrumentation. (1) pacing throttles on observed 39.7%/day computed over the whole elapsed window, but the burn measured over the last 3 hours is 16.3%/day. It has been reporting ahead_of_pace_throttle all session while the recent rate is close to flat pace. derive-lap-cost.mjs already emits burn_percent_per_day per span; using the recent rate instead of the window average would stop throttling on stale history. (2) Nothing runs derive-lap-cost.mjs on a schedule, so the bound only refreshes when a lap remembers to. It belongs in the usage-monitor workflow next to the collector. Beyond those, the ETA candidates are untouched and every channel is still infinite — vscode_extension_pro is top of the list at 3-14 days to first yen.",
+  "known_gap": "push-with-retry.sh runs git pull --rebase without --autostash, so it fails whenever state/laps.json holds an open lap, which is always mid-lap. It cost four manual recoveries this session. Also: commit a7aa385 reached main with the placeholder message tmp-derived; 535710b documents it, because rewriting main is correctly blocked here.",
+  "gumroad_note": "not probed. constraints.json recheck_after 2026-08-10 stands.",
   "owner_requests_this_lap": 0,
-  "predecessor_session_id": null,
+  "predecessor_session_id": "session_018QRAUKYXV7DmU9uwfJ2mdV",
   "archive_policy": "A successor archives its predecessor at startup, and only when get_session reports SESSION_STATUS_IDLE. A session cannot archive itself: doing so stops it before its own final record is written. 'I spawned you' does not mean 'I have finished' — the predecessor may still be committing.",
   "archived_by_hand_2026_08_09": [
     "session_01AFhFETmkGvs9vkgaVqyTUS",

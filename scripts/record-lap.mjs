@@ -48,6 +48,13 @@ const LAPS = resolve(REPO, "state/laps.json");
 const REGISTRY = resolve(REPO, "state/automations.json");
 const MAX_SAMPLES = 20;
 
+// Smallest drop worth calling a measurement. The usage endpoint reports whole
+// percentage points, so a delta of 1 carries 100% relative error; 2 halves that.
+// Below it, scripts/derive-lap-cost.mjs — which divides a multi-point drop
+// across many laps — is the better number, and this refuses rather than
+// overriding it with something coarser.
+const MIN_TRUSTWORTHY_DELTA_PERCENT = 2;
+
 // A file that is missing and a file that is damaged are not the same event, and
 // collapsing them is how the lap history nearly deleted itself — see
 // scripts/state-file.mjs for the incident. Missing gets the fallback; damaged
@@ -132,14 +139,26 @@ if (windowRolled) {
   usable = false;
   reason = "overlapping_lap";
 } else if (delta === 0) {
-  // The collector rounds percentages to one decimal, so a zero delta means
-  // "cost below 0.05%, or the upstream number has not caught up yet" — never
+  // The endpoint sends whole percentage points (measured 2026-08-09; an earlier
+  // version of this comment claimed one decimal and was wrong), so a zero delta
+  // means "cost below a point, or the upstream number has not caught up" — never
   // "this lap was free". Recording it as 0 is the specific failure this file's
   // header warns about: pacing would reserve nothing for the automation and let
   // it eat the pool unaccounted. Measured 2026-08-09 the first time a sample
   // ever survived: both ends read 43% and the average went straight to 0.
   usable = false;
   reason = "below_measurement_resolution";
+} else if (delta < MIN_TRUSTWORTHY_DELTA_PERCENT) {
+  // A one-point drop on an integer scale means true cost is somewhere in (0, 2):
+  // the error is as large as the reading. The first sample that ever survived
+  // read exactly 1.000% and would have been written to the registry as an
+  // average, three and a half times the 0.2857% upper bound derived from the
+  // same period across seven laps — and pacing prefers a sample over a derived
+  // bound, so the coarser number would have won and roughly halved every other
+  // automation's discretionary budget. A measurement is not better than a bound
+  // merely by being direct.
+  usable = false;
+  reason = "at_measurement_quantum";
 } else if (!Number.isFinite(delta) || delta < 0) {
   usable = false;
   reason = "non_monotonic_reading";
@@ -150,6 +169,9 @@ laps.samples.push({
   started_at: open.at,
   ended_at: now,
   cost_percent: usable ? Number(delta.toFixed(3)) : null,
+  // Kept even when unusable: the derivation in scripts/derive-lap-cost.mjs works
+  // from spans, and a discarded delta is still evidence about the span.
+  observed_delta_percent: Number.isFinite(delta) ? Number(delta.toFixed(3)) : null,
   usable,
   reason,
 });
