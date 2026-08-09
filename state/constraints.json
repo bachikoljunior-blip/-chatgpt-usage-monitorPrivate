@@ -297,6 +297,19 @@
       "eta_effect_if_lifted": "low and indirect. The intermittent refusals cost retries, not outcomes: all three laps that reported it still committed and pushed. It matters because a lap that cannot push records nothing and a session that cannot create_session breaks the chain, but neither has actually happened — retrying after doing something else works.",
       "what_to_do_instead": "Stop escalating it to the parent. Record it once as an owner request if it ever costs an outcome rather than retries, and otherwise keep retrying — the refusal is a coin flip, not a wall. Do not route around it by weakening what a lap does.",
       "why_recheck_after_is_null": "This is a permission boundary of the harness, not an environmental limit that might lapse. Scheduling a retest would be scheduling a retry of something that is supposed to refuse."
+    },
+    {
+      "id": "session_chain_hits_lineage_depth_limit",
+      "claim": "A worker session deep in the successor chain cannot create its own successor. create_session fails structurally at lineage depth 8, and the chain is at 8.",
+      "evidence": "Measured 2026-08-09T14:47Z, verbatim: \"create_session: caller session is at lineage depth 8 (limit 8); cannot spawn or re-arm further child sessions\". This arrived AFTER three refusals whose text was the ordinary permission-classifier message, so the first three readings were indistinguishable from the documented intermittent refusal and the RUNBOOK's advice - do something else and retry - produced the real error on the fourth try. The two failures look the same and are not the same.",
+      "measured_at": "2026-08-09",
+      "recheck_after": "2026-09-09",
+      "blocks": [
+        "worker_creates_own_successor"
+      ],
+      "the_chain_is_not_broken": "Measured in the same run, not assumed. list_triggers shows trig_01HKmX99VZRkuBjMbjqdqHE3 enabled, cron 50 * * * *, next_run_at 2026-08-09T14:50:00Z, firing into persistent_session_id session_015TTjSd2AxJWg6ecqD59hqd. That session is the SPAWNER - its own instructions say it does not run laps, it checks whether the chain is alive and creates a child when it is not. A child created by the spawner starts a fresh lineage rather than extending this one, which is why the ceiling is a worker problem and not a loop problem.",
+      "what_a_worker_should_do": "Record the handoff in state/continue.json with successor_session_id null AND the reason, then end. Do not retry create_session past the depth error - it is not a coin flip and it will not clear. Do not escalate it to the owner either: the hourly spawner is the designed fallback and it is enabled.",
+      "eta_effect_if_lifted": "small: the spawner already covers it within the hour. What the limit costs is latency between laps, not laps."
     }
   ]
 }
