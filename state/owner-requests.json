@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T16:10:00Z",
+  "fetched_at": "2026-08-09T16:15:00Z",
   "why_this_file_exists": "RUNBOOK 6 gates an owner request on five conditions, and the fourth is that the request is prepared to the point where the owner only has to paste. Until now there was nowhere to put that. So the gate could never be satisfied, only asserted — which is the same failure this project keeps finding: a rule written in prose with no file under it and no machine reading it. compute-eta.mjs reads this file and attaches a pending request to the candidate it unblocks, so the picker sees that the preparation is already done instead of preparing it again.",
   "how_to_use_this": "One entry per request. status pending means it is prepared and waiting on the owner. Nothing here should ever say 'please investigate' or 'please decide' — if a lap could not finish the preparation, the entry does not belong here yet.",
   "requests": [
@@ -26,8 +26,8 @@
           "kind": "Game assets を選ぶ",
           "why_this_kind": "同種商品（clicker のソースコード・テンプレート）が実際に並んで売れているのがこの区分。ゲーム本体ではなく、素材・キットとして売られている。",
           "fields_to_paste": {
-            "Title": "放置クリッカー制作キット｜設定1枚で自社ブランドに（商用ライセンス）",
-            "Short description": "設定ファイル1枚を書き換えるだけで、自分の店・商品・チャンネルの放置ゲームになります。ビルド不要・外部ライブラリなし・通信なし。フォルダを置くだけ。",
+            "Title": "放置クリッカー制作キット｜設定ファイル1枚でリスキンできる HTML/CSS/JS 一式（商用可）",
+            "Short description": "放置クリッカーを1本、自分の作品として出すための土台一式。触るのは brand.config.json だけ。ビルド不要・外部ライブラリなし・通信なし。",
             "Classification": "Assets",
             "Kind of project": "Downloadable",
             "Release status": "Released",
@@ -44,15 +44,15 @@
             "Visibility": "Public",
             "Project URL": "idle-clicker-kit"
           },
-          "description_body_to_paste": "お客さんに「もう一度サイトを開く理由」を作るための、小さなブラウザゲームです。\n\n設定ファイル1枚（brand.config.json）を書き換えるだけで、自分の店・商品・チャンネルの放置ゲームになります。題名・配色・数えるものの名前・増やすもの8種・強化6種・到達メッセージ・誘導ボタン・フッターまで、すべてそこから決まります。\n\n■ 入っているもの\n・ゲーム本体一式（HTML / CSS / JavaScript）\n・brand.config.json — 書き換えるのはここだけ\n・generator.html — フォームを埋めると設定ファイルが出てくるページ\n・書き換え例3種（珈琲店・サロン・配信者）\n・validate_config.py — 設定の誤りを日本語で指摘する検査\n・test_engine.py — 実ブラウザで20項目を自動検査（開発用）\n・日本語 README とライセンス\n\n■ 技術的なこと\n・ビルド不要。フォルダを置くだけです。Node も PHP も要りません\n・外部ライブラリなし・通信なし。あなたが設定したリンク以外へは何も送りません\n・セーブは端末内。サーバーもデータベースも要りません\n・スマホ縦画面前提。片手・タップだけで遊べます\n・GitHub Pages / Netlify / Cloudflare Pages / 自社サーバー、どこでも動きます\n\n■ ライセンス\n・あなたの店・自社・自分のチャンネルのために、公開先1つで使えます。商用可・改変自由\n・クライアントの案件へ納品する場合は、別途ご相談ください\n・キット自体を素材・テンプレート商品として再販・再配布することはできません\n\n効果音・BGM・画像素材は入っていません。表示は絵文字とCSSだけで作っています。売上や集客を保証するものではありません。",
+          "description_body_to_paste": "放置クリッカーを1本、自分の作品として出すための土台一式です。\n\n触るのは brand.config.json だけ。題名・配色・数えるものの名前・増やすもの8種・強化6種・到達メッセージ・誘導ボタン・フッターまで、すべてそこから決まります。ゲームロジックに手を入れずに別の作品になります。\n\n数値バランスは調整済みです。値段と毎秒の増加量は釣り合いを取った既定値が入っているので、名前と配色を変えた時点で遊べる状態になります。放置ゲームで一番時間を取られるところを飛ばせます。\n\n■ 入っているもの\n・ゲーム本体一式（HTML / CSS / JavaScript）\n・brand.config.json — 書き換えるのはここだけ\n・generator.html — フォームを埋めると設定ファイルが出てくるページ\n・リスキン例3種（珈琲店・サロン・配信者）— 設定だけで見た目と文言がどこまで変わるかの実例\n・validate_config.py — 設定の誤りを日本語で指摘する検査\n・test_engine.py — 実ブラウザで20項目を自動検査（開発用）\n・日本語 README とライセンス\n\n■ 技術的なこと\n・ビルド不要。フォルダを置くだけです。Node も PHP も要りません。あなたのビルド手順やフレームワークに合わせる必要がありません\n・外部ライブラリなし・通信なし。あなたが設定したリンク以外へは何も送りません\n・セーブは端末内（localStorage）。サーバーもデータベースも要りません\n・スマホ縦画面前提。片手・タップだけで遊べます\n・GitHub Pages / Netlify / Cloudflare Pages / 自前のサーバー、どこでも動きます\n\n■ 動作確認\nChromium で20項目を自動検査しています（起動・タップ加算・購入で自動収入が発生する・放置で増える・再読込で進行が残る・設定差し替えで題名と配色と通貨名が変わる・壊れた設定では止まって理由を出す、ほか）。検査スクリプトも同梱しているので、改造したあとも同じ検査を回せます。\n\n■ ライセンス（商用可）\n・あなたの作品・自社サイトなど、公開先1つで使えます。商用可・改変自由\n・クライアントの案件へ納品する場合は、別途ご相談ください\n・キット自体を素材・テンプレート商品として再販・再配布することはできません\n\n効果音・BGM・画像素材は入っていません。表示は絵文字とCSSだけで作っています。README・設定検査の出力・ライセンスは日本語です。売上や集客を保証するものではありません。",
           "cover_image": "assets/itch-cover.png をアップロードするだけ。630x500 で生成済み（node scripts/render-cover.mjs で再生成できる）。スクリーンショットを撮る必要はありません。",
           "upload": "ここでファイルを上げなくて構いません。ページさえ在れば、以降のアップロードは butler（itch 公式CLI）で自動化できます。ただし butler が既存の ITCH の鍵で通るかは未検証です（下の unverified を参照）。"
         },
         "step_2": {
           "what": "同じ日のうちに、itch.io の Community → Release announcements 板へ告知を1件投稿する",
           "why_same_day": "零観客から初売上に届いた唯一の事例（Invoker）がやったのは、実績を積むことではなく、同じ日に複数の場所へ出すこと。実績（standing）の代わりに広さ（breadth）を使う、という筋。",
-          "title_to_paste": "設定1枚で自社ブランドになる放置クリッカーのキットを出しました",
-          "body_to_paste": "店舗サイトや配信者のリンク集に置ける、小さな放置クリッカーのキットを公開しました。\n\nbrand.config.json を1枚書き換えるだけで、題名・配色・数えるものの名前・増やすもの・強化・到達メッセージ・誘導ボタンまで全部変わります。ビルド不要、外部ライブラリなし、通信なし。フォルダを置くだけで動きます。\n\n設定を作るフォーム（generator.html）と、設定の誤りを日本語で指摘する検査、実ブラウザで20項目を回す自動検査を同梱しています。\n\nページはこちら： https://bachikoljunior-blip.itch.io/idle-clicker-kit\n\n感想でも、動かなかった報告でも助かります。",
+          "title_to_paste": "設定ファイル1枚でリスキンできる放置クリッカーのキットを出しました（HTML/CSS/JS・商用可）",
+          "body_to_paste": "放置クリッカーを1本、自分の作品として出すための土台一式を公開しました。\n\n触るのは brand.config.json だけです。題名・配色・数えるものの名前・増やすもの8種・強化6種・到達メッセージ・誘導ボタンまで、すべてそこから決まります。ゲームロジックに手を入れずに別の作品になります。\n\n数値バランスは調整済みです。値段と毎秒の増加量は釣り合いの取れた既定値が入っているので、名前と配色を変えた時点で遊べます。放置ゲームで一番時間を取られるところを飛ばせます。\n\nビルド不要、外部ライブラリなし、通信なし。フォルダを置くだけで動きます。設定を作るフォーム（generator.html）と、設定の誤りを日本語で指摘する検査、実ブラウザで20項目を回す自動検査を同梱しています。\n\nページはこちら： https://bachikoljunior-blip.itch.io/idle-clicker-kit\n\n感想でも、動かなかった報告でも助かります。",
           "rule_that_permits_this": "'The Release announcements board is our designated place for creators to announce and show off their own work.'（itch.io Quality guidelines）",
           "rule_that_forbids_doing_it_elsewhere": "'Comments and communities are not for advertisement or self-promotion unless explicitly specified.'（itch.io Community rules）。だから他の板には出さないでください。",
           "corrected_at": "2026-08-09T15:20:00Z",
@@ -89,7 +89,7 @@
           "CodeCanyon の clicker 系に USD 12（48件販売表示）・USD 25（20件販売表示）・USD 199"
         ],
         "verdict": "市場外れではない。直接比較できる帯（19〜24）よりわずかに高く、CodeCanyon の25ドル帯と一致する。ただし itch には2〜4ドル帯も多いので、設定の容易さと商用ライセンスの範囲をページ上で明示しないと割高に見える、と調査は言っている。上の description_body はそこを明示してある。",
-        "recommendation": "値段は変えないこと。ここで下げると、次に売れなかったときに『値段のせいか経路のせいか』が分からなくなる。変えるのは1つだけ。"
+        "recommendation": "値段は変えないこと。ここで下げると、次に売れなかったときに「値段のせいか経路のせいか」が分からなくなる。変えるのは1つだけ。2026-08-09 16:15Z に変えたのは宛先の文言だけで、価格・区分・タグ・slug・画像・手順は一切変えていない。"
       },
       "success_test": "state/itch.json が views を持ち、state/gumroad.json か itch 側で初売上が立つこと。ページが存在することは成功ではない — それは state/eta.json の itch 候補が not_success として名指ししている失敗の形そのもの。",
       "judge_by": "2026-08-23",
@@ -118,6 +118,15 @@
         "why_the_others_failed": "r/gamedev forbids paid-asset promotion by written rule — a fact about the product's form, not the account's history. GameDev.net, Blender Artists, r/SideProject and Indie Hackers all failed on the same term: posting eligibility could not be established from public rules, and an unverified threshold is exactly the condition under which the auto-removals already on record happened. Not one venue refused for lack of standing.",
         "what_that_changes_for_the_owner": "Nothing about the work being asked for, which is unchanged and still two steps. It changes what follows from not doing it: there is no second venue waiting behind this one.",
         "what_it_does_not_claim": "That the post will sell anything. The success test below is unchanged and still measures a first sale, not a published page or an accepted post."
+      },
+      "addressee_corrected_at": "2026-08-09T16:15:00Z",
+      "what_the_addressee_correction_is": {
+        "what_changed": "Title, short description, page body and the announcement post now address the same reader as the Gumroad copy: someone who builds and publishes their own idle game. They previously addressed shops, cafes, salons and streamers — 自社ブランド, 店舗サイト, 配信者のリンク集, もう一度サイトを開く理由.",
+        "why": "codex/outbox/2026-08-09.l.md measured that class and found ZERO buy-once kit purchases by it. Every purchase it could confirm was an operated monthly service with an admin panel, a 15-minute setup and support — Le Petit Comptoir at EUR 29/month, an Italian shop at USD 29/month. The form this product has is not the form that class buys.",
+        "why_it_was_still_here": "The route change was applied where it was easy to apply — assets/listing/gumroad.ja.json, pushed by scripts/sync-listing.mjs, enforced by tests/run-tests.mjs addressee_terms. This request is a JSON blob no test reads, so it kept the refuted copy while the storefront moved. THE CORRECTION REACHED THE SURFACE NOBODY ARRIVES AT AND MISSED THE ONLY DOOR THAT IS LEFT.",
+        "why_this_is_not_re_preparing_the_request": "The ask is unchanged: two steps, same venue, same slug, same price, same image, same owner cost. Only who the words talk to changed, and it changed to match a measurement that predates the request.",
+        "what_it_does_not_claim": "That the corrected copy sells. It claims the venue and the wording now name the same buyer — itch Game Assets, where the survey counted 38 clicker listings among top sellers, sells to people who build games.",
+        "the_market_evidence_already_in_this_request": "the_market_is_the_same_place, unchanged and now consistent with the copy: itch.io Game Assets carries 38 clicker listings as top sellers. That was always a developer market; the words pointed somewhere else."
       }
     },
     {

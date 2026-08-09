@@ -25,7 +25,8 @@ import { decideVerdict } from "../scripts/gate-verdict.mjs";
 import { constraintDue } from "../scripts/constraint-due.mjs";
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import {
-  checkAddressee, copyChanged, diffListing, readCoverSource, readRepoListing,
+  checkAddressee, checkRequestsAddressee, copyChanged, diffListing, pasteableStrings,
+  readCoverSource, readOwnerRequests, readRepoListing,
 } from "../scripts/sync-listing.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -1125,6 +1126,38 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     assert(/headless_shell/.test(renderer) &&
       renderer.indexOf("headless_shell") < renderer.indexOf("chrome-linux/chrome"),
       "render-cover.mjs no longer prefers headless_shell; full chrome lays the page out 90px short and the band comes back");
+  }
+
+  // The addressee correction has to reach every surface, not just the one this
+  // script pushes. On 2026-08-09 it did not: assets/listing/gumroad.ja.json was
+  // rewritten for people who build games and enforced by the assertions above,
+  // while state/owner-requests.json went on asking the owner to paste the refuted
+  // wording onto the ONLY venue still open. The storefront nobody arrives at got
+  // the fix; the one door left kept the defect, for the single reason that a JSON
+  // blob had no reader. This is the reader.
+  {
+    const requests = (await readOwnerRequests())?.requests ?? [];
+    assert(requests.some((r) => r.status === "pending"),
+      "no pending owner request, so this check is passing on an empty set");
+    assert(checkRequestsAddressee(requests, repo.addressee_terms).length === 0,
+      `a pending owner request asks the owner to paste the refuted addressee: ${JSON.stringify(checkRequestsAddressee(requests, repo.addressee_terms))}`);
+
+    // Scope, in both directions. Pasteable copy must be caught; the surrounding
+    // explanation must not be — these entries QUOTE the forbidden terms when
+    // recording what was corrected, and a checker that counted those would force
+    // the record to lie about its own history.
+    const forbidden = repo.addressee_terms.forbidden[0];
+    const pending = requests.find((r) => r.status === "pending");
+    assert(checkRequestsAddressee(
+      [{ ...pending, the_ask: { step_2: { body_to_paste: forbidden } } }],
+      repo.addressee_terms,
+    ).length === 1, "a forbidden term in pasteable copy was not caught");
+    assert(checkRequestsAddressee(
+      [{ ...pending, why_now_and_not_before: { note: forbidden } }],
+      repo.addressee_terms,
+    ).length === 0, "a forbidden term quoted in explanatory prose was counted as pasteable copy");
+    assert(pasteableStrings({ fields_to_paste: { Title: forbidden } }).join("").includes(forbidden),
+      "values inside fields_to_paste were not treated as pasteable");
   }
 
   // The revert target must survive a push that is not a change of copy. Before

@@ -209,6 +209,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T16:10:19.235Z",
+      "candidate": "itch",
+      "kind": "prerequisite",
+      "mechanism": "The one door left points at a buyer class this repository already measured as refuted. codex/outbox/2026-08-09.l.md found zero buy-once kit purchases by shops, cafes, salons and streamers — every confirmed purchase by that class was an operated monthly service with an admin panel. assets/listing/gumroad.ja.json acted on that: branch A rewrote the Gumroad copy to address someone who builds and publishes their own game, and put 自社ブランド and 店舗サイト on a forbidden list a test enforces. The pending itch request never got that correction. Its page title, short description, body and announcement post all address the refuted class, in the venue whose market is Game Assets and whose board is for creators announcing their own work. So the route change was applied to the storefront nobody arrives at and not to the one venue that is left. This lap does not claim days: it makes the two surfaces address the same reader, and the reader is the measured one.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

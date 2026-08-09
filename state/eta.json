@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T16:07:18.685Z",
+  "fetched_at": "2026-08-09T16:16:09.027Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -45,18 +45,18 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T11:02:42.926Z",
-      "days_unchanged": 0.21
+      "days_unchanged": 0.22
     },
     "planned": {
       "unchanged_since": "2026-08-09T11:02:42.926Z",
-      "days_unchanged": 0.21
+      "days_unchanged": 0.22
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-09T15:04:12.455Z",
+      "measured_at": "2026-08-09T16:01:30.698Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": false,
       "revenue_window_days": null,
@@ -73,7 +73,7 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-09T15:06:03.992Z",
+      "measured_at": "2026-08-09T16:03:34.337Z",
       "monthly_yen_now": 0,
       "games": 0,
       "total_views": 0,

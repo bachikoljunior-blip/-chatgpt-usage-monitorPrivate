@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T16:10:00Z",
+  "fetched_at": "2026-08-09T16:16:00Z",
   "note": "Every change made because it was claimed to shorten the ETA. judge_on is set when the change lands, not when it is convenient. concurrent_changes is what else was in flight, so a later reader can tell a clean attribution from a confounded one.",
   "predictions": [
     {
@@ -459,7 +459,22 @@
         "verify-sanitized-state.mjs gained a branch for the new shape. If state/codex-lane.json is ever absent, check whether the sanitizer rejected it before concluding the schedule did not fire."
       ],
       "falsified_if": "The judge date arrives with no schedule-event run on codex-inbox.yml, which would mean GitHub is not running this workflow on a cron at all and the daily-to-hourly edit was cosmetic — in which case the repair is not another cron but a dispatcher that does not depend on a lap holding MCP, and the finding is that this repository cannot rely on GitHub schedules for anything. It is ALSO falsified, differently, if schedule runs appear but no committed state/codex-lane.json ever carries ran:false, which would mean the skip path does not commit and the lane is only visible on the runs that were already visible.",
-      "outcome": null
+      "outcome": {
+        "judged_at": "2026-08-09T16:12:00Z",
+        "judged_early_because": "All four metrics became measurable before judge_on 2026-08-10, and the reading is unambiguous. Waiting would have added nothing but a day.",
+        "verdict": "CORRECT on all four halves.",
+        "measured": {
+          "schedule_runs_before": 0,
+          "schedule_runs_now": 1,
+          "the_run": "id 31322713613, run_number 14, event schedule, run_started_at 2026-08-09T16:02:07Z, conclusion success. Read from the Actions API filtered to event=schedule, which returned total_count 1 — the first scheduled run in this workflow entire history.",
+          "mark_advanced_with_no_lap_dispatching": "state/codex-lane.json checked_at moved 15:16:23Z to 16:02:14Z, committed by chatgpt-usage-monitor[bot] in 29782ad. No lap dispatched anything in that window: the predecessor session had already handed off at 15:25Z and this session did not dispatch at all.",
+          "skip_path_committed": "The same record carries ran:false with reason \"already done: codex/outbox/2026-08-09.p.md exists\". That is metric (c): an idle run marks itself instead of going silent, which is the property that makes a dead schedule detectable.",
+          "heartbeat": "codex-loop ok, last seen 7m ago via state_file:state/codex-lane.json at cadence 60. Metric (d)."
+        },
+        "what_was_wrong_in_the_reasoning": "Nothing in the claim, but one incidental expectation was off and is worth writing down: the cron reads 41 * * * * and the run started at :02, about 21 minutes late. GitHub schedules drift under load. A later check that looks for a run NEAR the cron minute rather than WITHIN the hour would call a working schedule dead.",
+        "what_this_does_not_settle": "That the lane delivers ANSWERS on a schedule. Every scheduled run so far has skipped on the done marker, so what is proven is that the schedule fires and that a skip is visible — not that a live task gets picked up by a scheduled run. The next task written into codex/INBOX.md settles that half.",
+        "consequence": "The falsified_if branch — that this repository cannot rely on GitHub schedules and needs a dispatcher not depending on a lap holding MCP — does NOT apply. Do not build one."
+      }
     },
     {
       "id": "2026-08-09.cover-copy-is-checked-like-copy",

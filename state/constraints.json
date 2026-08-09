@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T16:10:00Z",
+  "fetched_at": "2026-08-09T16:16:00Z",
   "note": "Everything here is what was true when it was measured, not a permanent property of the world. Each entry carries a recheck date because on 2026-08-08 two items declared impossible were solved the same day. A constraint falling away usually moves the ETA more than any ordinary improvement does, so rechecks are ETA candidates in their own right.",
   "constraints": [
     {
@@ -419,6 +419,18 @@
       "not_actionable_reason": "already fixed: the candidate order is reversed, headless_shell is preferred, the renderer verifies the PNG header before reporting success, and tests/run-tests.mjs asserts the preference order and the committed size.",
       "the_generalisable_half": "AN EXIT CODE SAYS THE TOOL RAN. A DIMENSION CHECK SAYS THE CONTAINER IS THE RIGHT SIZE. NEITHER SAYS THE ARTIFACT IS RIGHT. This is the same shape as the codex lane self-reporting a PNG it never sent, and as the heartbeat that read a hand-dispatched file as proof a cron was alive: the thing watched and the thing cared about were different. For anything a human will look at, a machine check is a floor and somebody still has to look.",
       "what_is_not_known": "Whether any other committed artifact was produced by the same path. The only two images in this repository are the covers, and both were re-rendered and viewed this lap."
+    },
+    {
+      "id": "a_correction_reaches_only_the_surface_that_has_a_reader",
+      "claim": "MEASURED 2026-08-09 ON THIS REPOSITORY, TWICE IN ONE DAY: when a decision is applied, it lands on whichever surface already has a machine watching it, and stops there. The route change from the refuted buyer class was applied to assets/listing/gumroad.ja.json — pushed by scripts/sync-listing.mjs, enforced by tests/run-tests.mjs addressee_terms — and NOT to state/owner-requests.json, which is a JSON blob nothing reads. The corrected surface is the Gumroad storefront that no measured buyer arrives at; the uncorrected one is the itch page and announcement, which the same day was recorded as the only remaining door. The second instance is the same shape: the covers were treated as assets rather than as copy, so the picture kept the refuted wording while the body was policed.",
+      "evidence": "state/owner-requests.json 2026-08-09.itch-page-for-the-kit as of commit 5faa5c2 carried the refuted addressee in fields_to_paste.Title, Short description, description_body_to_paste, step_2.title_to_paste and step_2.body_to_paste. assets/itch-cover.html led with it. assets/listing/gumroad.ja.json had listed those exact phrases as forbidden since the route change earlier the same day, with a passing test.",
+      "measured_at": "2026-08-09T16:16:00Z",
+      "recheck_after": "2026-09-09",
+      "measure_via": "here",
+      "actionable_now": false,
+      "not_actionable_reason": "the two known instances are fixed and both now have readers: scripts/sync-listing.mjs checkRequestsAddressee walks pending owner requests, checkAddressee takes the cover source, and tests/run-tests.mjs holds both including the negative cases.",
+      "the_generalisable_half": "DO NOT ASK WHETHER A DECISION WAS APPLIED. ASK WHICH SURFACES CARRY IT, AND WHICH OF THOSE HAVE A READER. The ones without a reader are where the old version survives, and they are invisible precisely because nothing reports on them. This is RUNBOOK 8 stated from the failure end: a decision that is a file on one surface and a machine on another is not half-done, it is wrong on the surface without the machine.",
+      "what_is_not_known": "Which other surfaces carry decisions with no reader. Two were found by asking the question once; nobody has enumerated them. Candidates worth checking: codex/INBOX.md task text, RUNBOOK prose that restates a rule a script also encodes, and the description copy inside state/predictions.json metrics."
     }
   ]
 }
