@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T18:34:51.396Z",
+  "fetched_at": "2026-08-09T19:22:42.683Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -52,27 +52,27 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0
+      "days_unchanged": 0.03
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0
+      "days_unchanged": 0.03
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-09T18:02:12.840Z",
+      "measured_at": "2026-08-09T19:17:41.842Z",
       "monthly_yen_now": 0,
-      "revenue_rate_derivable": false,
-      "revenue_window_days": null,
-      "revenue_readings": 1,
-      "fx_usd_jpy_assumed": null,
+      "revenue_rate_derivable": true,
+      "revenue_window_days": 0.299,
+      "revenue_readings": 2,
+      "fx_usd_jpy_assumed": 150,
       "lifetime_sales": 0,
       "lifetime_usd_cents": 0,
       "idle_eta_days": null,
-      "idle_eta_reason": "fewer than two dated readings, so there is no window to measure a rate over (lifetime sales measured: 0)",
+      "idle_eta_reason": "the window has no measurable growth yet: it cannot be split into two halves that each contain a rate, so only a level is known and a level does not reach a higher target",
       "owner_actions_required": 0,
       "automatable": true,
       "planned_eta_days": null,
@@ -80,7 +80,7 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-09T18:04:27.123Z",
+      "measured_at": "2026-08-09T19:19:50.538Z",
       "monthly_yen_now": 0,
       "games": 0,
       "total_views": 0,
