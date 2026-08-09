@@ -46,7 +46,16 @@
       "days_to_first_yen": "7-21",
       "months_to_target": "3-6",
       "owner_actions": "1 initial",
-      "why": "CI turns public data into a normalised, diffable feed people pay monthly for"
+      "why": "CI turns public data into a normalised, diffable feed people pay monthly for",
+      "refuted": {
+        "at": "2026-08-09T10:05:00Z",
+        "by": "codex-loop (codex/outbox/2026-08-09.f.md)",
+        "claim_tested": "first yen within 7-21 days from a maintained, normalised, diffable public-data feed sold by subscription",
+        "finding": "The complaint is real and sourced — LiteLLM's price table is measurably incomplete (15 models missing, GitHub issue #22646, 2026-03-03), custom model prices do not reach cost calculation so spend reads $0.00 (#11975, 2025-06-23, re-reported 2026-03-11 and 2026-05-19), and per-provider dimensions such as cache read/write break a plain input/output table (#27191). But the space is occupied by a free incumbent, and not a thin one: Portkey Models is a free, auth-free API covering 2,000+ models across 40+ providers with normalised pricing including cache, image, video and search dimensions, used by 200+ companies for cost calculation on 400B tokens/day. It already solves most of the complaint the estimate rested on. No case was found of a normalised LLM-pricing feed converting free users to paid at all. The nearest first-yen example in an adjacent data API is Canopy API at about 12 days (public 2023-01-24, first organic paying customer 2023-02-05) — and that launch was an Indie Hackers post recruiting users with a discount offer, with any pre-existing readership unverified.",
+        "verdict": "does not meet the 7-21 day claim as stated",
+        "sources_in": "codex/outbox/2026-08-09.f.md",
+        "not_refuted": "that maintained data feeds can be sold. Only this candidate's speed from a standing start with no audience — and note nobody has yet shown paid demand for this particular feed at all, which is weaker than the other two, where monetisation was confirmed."
+      }
     },
     {
       "id": "npm_pypi_cli_pro",
@@ -77,10 +86,11 @@
   "outcome_note": "Two of the five options have now been checked against the outside world, and both failed — vscode_extension_pro on 3-14 days, wordpress_plugin_pro on 7-21. Neither was refuted on whether the product can be sold; both were refuted on speed, and both for the same reason. The remaining three rest on the same kind of estimate and are unchecked.",
   "premise_under_strain": {
     "premise": "structural_insight above: the fast options are fast because they borrow an existing marketplace's search demand instead of building an audience.",
-    "what_two_surveys_found": "Borrowed demand came with an occupant. In both markets the specific complaint the estimate rested on was already served — by the platform itself plus free extensions (VS Code), and by a free plugin at 800+ installs whose paid tier is exactly the missing feature (WordPress). Monetisation was confirmed real in both. Speed was not: neither survey could find a single case of first yen from directory traffic alone without a pre-existing list, and the one same-day sale on record had a mailing list behind it.",
-    "implication_if_it_holds": "'Borrows existing search demand' and 'reaches a buyer within weeks from zero' may not be satisfiable together — a marketplace with enough traffic to borrow has had time to grow an incumbent for any complaint specific enough to charge for. If the third survey lands the same way, the next zero-base round should be told this axis failed twice rather than being allowed to rediscover it.",
-    "status": "two of two checked; not yet enough to call.",
-    "next_test_of_this_axis": "npm_pypi_cli_pro — package search is borrowed marketplace demand, so it tests the same premise. Note it is NOT the next candidate to be surveyed: with wordpress_plugin_pro demoted, the top of state/eta.json is maintained_data_or_api, whose demand does not come from a marketplace at all. So the next survey tests a different premise, and this one stays open until npm_pypi_cli_pro is reached.",
-    "decide_after": "npm_pypi_cli_pro is surveyed, not merely after a third survey of anything"
+    "status": "three of five checked, all three refuted on speed. The premise as written is now too narrow to describe what was found.",
+    "what_three_surveys_found": "Refutation is no longer about marketplaces. vscode_extension_pro and wordpress_plugin_pro borrow marketplace search demand; maintained_data_or_api does not borrow any marketplace at all, and was picked precisely because it tests a different axis. All three came back the same way: the complaint was real and sourced, and the speed claim had no case behind it. In every one of them the only fast first-yen example on record launched into an audience that already existed — Independent Analytics to its own user base, Canopy API via an Indie Hackers post recruiting users with a discount. Two of three also found a free incumbent already serving the exact complaint (free VS Code extensions plus the editor itself; Order Limit for WooCommerce at 800+ installs; Portkey Models at 2,000+ models, free and auth-free).",
+    "what_this_says_instead": "The estimates price building the product and treat reaching a buyer as free. That is the error they share, and it does not depend on where the demand comes from. 'Borrowed marketplace demand' was one guess at why the estimates were wrong; the evidence says the missing term is distribution, on both marketplace and non-marketplace candidates alike.",
+    "implication_if_it_holds": "Days-to-first-yen for any candidate that starts with zero audience is dominated by how a first buyer is reached, not by what is built. If that is right, the two unrefuted options inherit the same defect — their estimates were produced the same way, by the same model, in the same round — and surveying them one at a time will keep returning the same verdict at one survey per lap.",
+    "next_test_that_would_actually_discriminate": "Not another candidate. The question that separates the options is which of them comes with a way to reach a first buyer that does not require an audience we do not have. A survey aimed at candidates will keep answering 'the product is real, the speed is not'. Nobody has yet asked for cases of first yen reached with no pre-existing list, sorted by how the buyer was reached — which is the axis every refutation has landed on.",
+    "do_not_rediscover": "The next zero-base round must be told: three of its five options were checked against outside evidence and all three failed on time-to-first-yen, for want of distribution rather than product. A round allowed to re-propose 'build X, the marketplace brings buyers' will spend itself re-deriving this."
   }
 }
