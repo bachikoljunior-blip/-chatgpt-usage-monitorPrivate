@@ -632,6 +632,22 @@
         "the_three_valued_part_is_the_subtle_one": "false beats unknown, because one settled refusal settles the question; but unknown AND true is unknown, not false. Writing false where the truth is 'nobody looked' is the same error the account field was added to fix, and this row set had it twice: GameDev.net carried postable_today false as a deliberately conservative TREATMENT of an unpublished threshold, in the field that records a MEASUREMENT. Corrected to null. Nothing about the loop's behaviour changes, because the count counts settled yeses only.",
         "what_this_sweep_still_does_not_cover": "Conditions expressed somewhere other than a JSON key name in state/ — prose inside a value, a condition in RUNBOOK.md or a workflow, or a gate whose key name does not sound like one. The generous filter helps but does not close it. And the sweep proves a name is UNREAD, not that a name which appears in code is read CORRECTLY: recheck_after appeared in three scripts and was still not evaluated as a condition by any of them, which is exactly how this defect class hid the first time."
       }
+    },
+    {
+      "id": "custom_domain_is_an_unmeasured_distribution_surface",
+      "claim": "UNMEASURED, AND IT IS THE FIRST SURFACE FOUND THAT IS NEITHER A VENUE NOR BLOCKED ON AN OWNER ACTION: the account holds a registered domain, cookiestrateger.com, serving a finished free browser game with its own meta description. It is a CNAME on Simple-browser-cookie-clicker-game, a public repository this environment can already push to — so anything we can publish to GitHub Pages can be served from a real domain instead of a github.io subpath, with zero owner actions. No file in this repository mentioned this domain until 2026-08-09T20:05Z.",
+      "evidence": "https://bachikoljunior-blip.github.io/Simple-browser-cookie-clicker-game/ answers 301 to http://cookiestrateger.com/, which answers 200 with title クッキーストラテジャー and a meta description. Found by following the one redirect in a ten-page probe; the earlier probe counted 200s and therefore never saw it, which is why the public repository count read nine instead of ten. Recorded per page in state/findable-surface.json.",
+      "measured_at": null,
+      "recheck_after": "2026-08-16",
+      "measure_via": "here",
+      "what_needs_measuring": [
+        "Can we serve an arbitrary NEW path on it? Pushing a file to the repo and fetching it at cookiestrateger.com/<path> settles it in one lap and does not touch the live game. If yes, every future artifact gets a product-looking url instead of a code-host subpath, which is the form the fast cases in codex/outbox/2026-08-09.i.md posted.",
+        "Does HTTPS work on it? The redirect target is http://, which means Enforce HTTPS may be off. A http:// link in a post reads as broken to some readers and some venues rewrite or block it.",
+        "Who registered it, what does it cost, and when does it expire? This one is owner-only and is NOT yet an owner request — RUNBOOK 6 gate 1 asks whether automation was attempted first, and the two questions above have not been tried."
+      ],
+      "what_it_is_not": "Findable. Four search queries returned it zero times, including a bare query for the domain string itself, which is the cleanest zero available because a domain name has no competing meaning. Owning a domain is not distribution either — see state/findable-surface.json.",
+      "why_this_is_registered_rather_than_acted_on": "RUNBOOK 3 says an unmeasured capability belongs here with measured_at null, because compute-eta.mjs then lists it as a candidate automatically and no separate file or mechanism is needed. Acting on it in the same lap that found it would be two changes.",
+      "eta_effect_if_lifted": "high if it holds: it is the only distribution surface found that needs no owner action and no venue permission. Every other route is blocked on a form only the owner can fill, a rule against paid promotion, or an eligibility threshold no outside reader can verify. Two of the three questions cost one lap and no owner minutes."
     }
   ]
 }

@@ -369,6 +369,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T20:10:33.267Z",
+      "candidate": "distribution_route_decision",
+      "kind": "route_change",
+      "mechanism": "Both surviving distribution routes ended their refutations with the same sentence: a lap must take this deliberately rather than propose another candidate. Route 2 (unattended discovery) is refuted twice now — by outside survey, and by this session's measurement of our own ten live pages at 0 found. Route 1 was excluded on 'recurring owner actions', and the survey says the term that actually decides is STANDING, which is not a recurring action. So the exclusion was aimed at the wrong term and it is the reason no route survives. The number moves by ranking on the term the evidence names — how many venues can be posted to on the same day, breadth substituting for standing — instead of on the term that excluded every route.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
