@@ -762,6 +762,52 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       `repricing for ${repricing.candidate_id} is missing a candidate id, a success test, or its negative`,
     );
   }
+
+  // A measurement must be able to reprice too, not only a zero-base conclusion.
+  // Until 2026-08-09 compute-eta fed applyRepricings from zerobase alone, so a
+  // survey that changed what a candidate's success MEANS — task .o measured that
+  // none of three venues is postable today, two for reasons that are not about
+  // standing at all — had nowhere to land but prose. Constraints carry the
+  // measurements, so constraints reprice; and because they are applied second, a
+  // measurement overrides a conclusion drawn before it rather than losing to it.
+  const constraintsNow = JSON.parse(await readFile(join(root, "state/constraints.json"), "utf8"));
+  const fromConstraints = constraintsNow.constraints.flatMap((c) => c.reprices_candidates ?? []);
+  assert(
+    fromConstraints.length > 0,
+    "no constraint reprices any candidate, so the measurement path added for task .o is dead code",
+  );
+  for (const repricing of fromConstraints) {
+    assert(
+      repricing.candidate_id && repricing.success_test && repricing.not_success && repricing.by,
+      `constraint repricing for ${repricing.candidate_id} is missing a required field`,
+    );
+  }
+
+  // Order, stated as a test because it is invisible in the data: both sources can
+  // name the same candidate, and the later measurement is the one that must win.
+  const ordered = [{ id: "itch" }];
+  applyRepricings(ordered, [
+    { candidate_id: "itch", success_test: "the older conclusion", not_success: "x", by: "zerobase" },
+    { candidate_id: "itch", success_test: "the newer measurement", not_success: "y", by: "constraint" },
+  ]);
+  assert(
+    ordered[0].success_test === "the newer measurement" && ordered[0].repriced_by === "constraint",
+    "a zero-base conclusion outranked a measurement taken after it",
+  );
+
+  // And every candidate a constraint reprices has to exist, or the correction is
+  // recorded and believed and reaches nobody — the failure this whole block is
+  // about. compute-eta reports unmatched ids, but only a lap reading its output
+  // would notice; this fails the build instead.
+  const etaNow = JSON.parse(await readFile(join(root, "state/eta.json"), "utf8"));
+  const candidateIds = new Set((etaNow.candidates ?? []).map((c) => c.id));
+  const orphaned = fromConstraints
+    .map((r) => r.candidate_id)
+    .filter((id) => !candidateIds.has(id));
+  assert(
+    orphaned.length === 0,
+    `constraints reprice candidates that do not exist: ${orphaned.join(", ")}`,
+  );
 }
 
 // --- Revenue becomes visible as a rate --------------------------------------

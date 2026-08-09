@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T14:21:26.861Z",
+  "fetched_at": "2026-08-09T15:08:52.453Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -38,18 +38,18 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T11:02:42.926Z",
-      "days_unchanged": 0.14
+      "days_unchanged": 0.17
     },
     "planned": {
       "unchanged_since": "2026-08-09T11:02:42.926Z",
-      "days_unchanged": 0.14
+      "days_unchanged": 0.17
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-09T14:17:27.104Z",
+      "measured_at": "2026-08-09T15:04:12.455Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": false,
       "revenue_window_days": null,
@@ -271,6 +271,10 @@
       "estimate_reliability": "discredited_by_siblings",
       "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "no comparable estimate recorded",
+      "success_test": "A post exists in a venue whose self-promotion rules permit it as quoted, made from an account that met that venue eligibility threshold stated as a number or an explicit none, linking an artifact the reader can try without paying and without signing up. Measured from the post URL and the venue rule text, not from the pack being prepared.",
+      "not_success": "A paste-ready venue pack sitting in state/owner-requests.json. That is preparation, and this candidate has been blocked on execution rather than preparation since it was written. Also not success: a post into GameDev.net, whose eligibility could not be established — posting there tests nothing, because a removal would be indistinguishable from the auto-removals already on record.",
+      "repriced_by": "state/constraints.json no_standing_where_buyers_gather.venue_survey (codex/outbox/2026-08-09.o.md)",
+      "repriced_because": "The candidate was carrying the route adopted at 3555e97 with no test of whether the act it names can be performed. It can not, today: 0 of 3 surveyed venues are postable from a standing start, and neither of the two hard refusals is about standing. Recorded on the candidate rather than in the constraint alone because the constraint is not what a lap picks from.",
       "blocked_on_rechecked": {
         "at": "2026-08-09T11:28:00.123Z",
         "was": "there is nothing to post about yet",

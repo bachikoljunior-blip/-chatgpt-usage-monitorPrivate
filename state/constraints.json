@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T14:01:47.791Z",
+  "fetched_at": "2026-08-09T15:10:00Z",
   "note": "Everything here is what was true when it was measured, not a permanent property of the world. Each entry carries a recheck date because on 2026-08-08 two items declared impossible were solved the same day. A constraint falling away usually moves the ETA more than any ordinary improvement does, so rechecks are ETA candidates in their own right.",
   "constraints": [
     {
@@ -145,7 +145,7 @@
       "eta_effect_if_lifted": "large: all seven zero-base options are now refuted and every one failed on the term this constraint names. This is the only route in the whole evidence set where a first buyer actually arrived, and the fastest on record. Written as 'five of the seven' when this entry was created at 11:05; codex/outbox/2026-08-09.j.md took the remaining two an hour later, which is why this constraint sorts first — nothing was moved by hand to put it there.",
       "corrects": "Route 1 (post where the buyers already gather) was excluded in state/zerobase.json distribution_answer on the ground that it needs recurring owner actions. That ground did not cover it. The exclusion elected route 2 (findable_surface_at_scale), which 2026-08-09.h then refuted, leaving the excluding constraint with no surviving route under it. Both surveys ended by asking a lap to take this deliberately rather than propose another build candidate. This entry is that decision: the recurring-actions ground is withdrawn, and standing is recorded as the real blocker in the file the picker reads. Until now it lived only as prose in zerobase.json, where no machine reads it.",
       "two_ways_it_lifts": "Acquire standing — participation that accrues over time, an owner action that repeats, and therefore genuinely expensive under this loop's constraints. Or substitute breadth, which is what the one zero-audience case on record did: several venues on the same day. Breadth is a single bounded act, so it does not fall foul of the recurring-actions constraint at all. Breadth is the cheaper test and has never been tried.",
-      "prerequisite_the_evidence_adds": "In every fast case what was posted was a finished artifact the reader could try immediately — a working tool, a desktop app, a searchable database of real data. No case was found where a bare announcement sufficed. So this constraint cannot be tested until there is something to post, and whether any existing artifact qualifies is the cheap unexamined half.",
+      "prerequisite_the_evidence_adds": "UPGRADED FROM INFERENCE TO A QUOTED RULE 2026-08-09. It was: in every fast case what was posted was a finished artifact the reader could try immediately, and no case was found where a bare announcement sufficed. That was a pattern across case studies, which a reader could discount. It is now also a written venue rule — r/gamedev: \"If you want to share assets make sure they are entirely free and not locked behind anything such as requiring account sign ups or emails\", and itch.io: \"Release posts that show little to no effort, or are just links, will be locked and removed.\" A link to a paid Gumroad page fails both as written, not as interpreted.",
       "note": "measured_at is null on purpose: it records that OUR side is unmeasured, which is what makes this actionable now rather than a scheduled recheck. Do not backfill it with the survey dates — those are in evidence, and confusing the two would turn 'we never looked' into 'we looked and found nothing'.",
       "lift_mechanism_chosen": {
         "chosen_at": "2026-08-09T14:05:00Z",
@@ -159,7 +159,56 @@
       },
       "owner_action_required": true,
       "owner_request_prepared": false,
-      "owner_action_note": "The act needs real accounts in real communities, which is the one thing a lap cannot do - the counter-cases show a standing-start account is auto-removed or rule-removed. Everything else is preparable here: venue selection with rules checked, the post text per venue, and the artifact link. owner_request_prepared stays false until state/owner-requests.json holds it paste-ready per venue. compute-eta.mjs ranks it as owner_action_owed until then (the mechanism added the same day for listing_has_no_cover_image)."
+      "owner_action_note": "The act needs real accounts in real communities, which is the one thing a lap cannot do - the counter-cases show a standing-start account is auto-removed or rule-removed. Everything else is preparable here: venue selection with rules checked, the post text per venue, and the artifact link. owner_request_prepared stays false until state/owner-requests.json holds it paste-ready per venue. compute-eta.mjs ranks it as owner_action_owed until then (the mechanism added the same day for listing_has_no_cover_image).",
+      "venue_survey": {
+        "measured_at": "2026-08-09T15:07:00Z",
+        "source": "codex/outbox/2026-08-09.o.md — three venues, promotion rules QUOTED rather than summarised, eligibility asked for as a number or an explicit none, and a live dated slot asked for as evidence the venue is not dormant.",
+        "venues_postable_today_from_a_standing_start": 0,
+        "venues_surveyed": 3,
+        "per_venue": [
+          {
+            "venue": "itch.io — Release Announcements",
+            "url": "https://itch.io/board/10022/release-announcements",
+            "rule_quoted": "Please keep self promotion to a reasonable level. / Release posts that show little to no effort, or are just links, will be locked and removed. / Each topic should include: A link to the page on itch.io, A quick summary of the game, At least one embedded image or video",
+            "eligibility_threshold": "none stated — no karma, no account age, no day-of-week restriction",
+            "live_slot_evidence": "an asset pack (CBORN Character Pack 01) posted 2026-08-09, the day of the survey",
+            "postable_today": false,
+            "blocked_on": "the required link is to a page ON itch.io, and state/itch.json reports zero games. That page is owner request 2026-08-09.itch-page-for-the-kit, already pending.",
+            "the_reason_this_venue_matters_most": "It is the only surveyed venue with no eligibility threshold AND a dated live slot AND rules that permit a paid asset pack. Its only blocker is an owner action already asked for."
+          },
+          {
+            "venue": "r/gamedev",
+            "url": "https://www.reddit.com/r/gamedev/",
+            "rule_quoted": "promoting paid assets (even on sale or in a giveaway) is forbidden on r/gamedev. / If you want to share assets make sure they are entirely free and not locked behind anything such as requiring account sign ups or emails.",
+            "eligibility_threshold": "48 hours minimum account age, observed in a 2026 auto-removal notice",
+            "live_slot_evidence": null,
+            "postable_today": false,
+            "blocked_on": "the rule, not the account. A USD 25 paid kit is forbidden here regardless of standing, and no paid-product day thread or dedicated slot was found.",
+            "what_it_opens_instead": "A free artifact with no signup wall is explicitly permitted by the same sentence. This is the one venue whose door is open to a different product form rather than to a better-standing account."
+          },
+          {
+            "venue": "GameDev.net — Your Announcements",
+            "url": "https://gamedev.net/forums/forum/28-your-announcements/",
+            "rule_quoted": "Use Your Announcements to make your web site or game project known to everyone. If you are going to spam our board, this is the place to do it",
+            "eligibility_threshold": "could not be established from public rules — no number published for account age, post count, or free-member posting limits",
+            "live_slot_evidence": "post dates were not retrievable from the listing, so the slot could not be shown to be active",
+            "postable_today": false,
+            "blocked_on": "unverified eligibility. Counted as not-postable on purpose: the measured failure mode in the evidence is a standing-start account being auto-removed, and an unverified threshold is exactly the condition under which that happened before."
+          }
+        ],
+        "what_this_does_to_the_lift_mechanism": "The route adopted at 3555e97 was substitute breadth for standing. Breadth is now measured rather than assumed, and it did not substitute: 0 of 3. But the reason is NOT that standing turned out to be required after all — no venue refused us for lack of standing. Two refused for reasons that have nothing to do with reputation: one wants a page on its own platform, one forbids the product form. Standing remains unmeasured on our side, as the claim above says. What has changed is that the next blocker is no longer reputational and is no longer unknown.",
+        "the_two_doors_it_leaves": "Either the itch.io page exists (an owner action already pending, which turns the single best venue postable), or the artifact becomes free and tryable with no signup wall (which turns r/gamedev postable by its own quoted rule, and satisfies the finished-artifact-the-reader-can-try bar that every fast case in the survey met). These are not alternatives to each other in cost: the first is waiting on someone else, the second is work this loop could do and has not scoped.",
+        "what_was_not_measured": "Whether the owner holds standing anywhere — still nobody has looked. And whether a free tryable build can be produced at all: the kit source is NOT in this repository (git ls-tree on origin/main shows only the monitor), so hosting a playable demo needs product files this environment has never had. Do not write the second door up as available until that is checked."
+      },
+      "reprices_candidates": [
+        {
+          "candidate_id": "honest_post_where_buyers_gather",
+          "by": "state/constraints.json no_standing_where_buyers_gather.venue_survey (codex/outbox/2026-08-09.o.md)",
+          "because": "The candidate was carrying the route adopted at 3555e97 with no test of whether the act it names can be performed. It can not, today: 0 of 3 surveyed venues are postable from a standing start, and neither of the two hard refusals is about standing. Recorded on the candidate rather than in the constraint alone because the constraint is not what a lap picks from.",
+          "success_test": "A post exists in a venue whose self-promotion rules permit it as quoted, made from an account that met that venue eligibility threshold stated as a number or an explicit none, linking an artifact the reader can try without paying and without signing up. Measured from the post URL and the venue rule text, not from the pack being prepared.",
+          "not_success": "A paste-ready venue pack sitting in state/owner-requests.json. That is preparation, and this candidate has been blocked on execution rather than preparation since it was written. Also not success: a post into GameDev.net, whose eligibility could not be established — posting there tests nothing, because a removal would be indistinguishable from the auto-removals already on record."
+        }
+      ]
     },
     {
       "id": "simple_main_frozen",

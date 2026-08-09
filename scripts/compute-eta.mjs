@@ -516,11 +516,24 @@ candidates.sort((a, b) => {
 // being found and referred rather than on existing, and wrote it in zerobase.json
 // — where the side that picks and executes work never reads it. Reasoning in
 // scripts/repricing.mjs.
+//
+// Repricings arrive from two places, and until 2026-08-09 only one of them could
+// reach a candidate. A zero-base round could change how a candidate is judged; a
+// MEASUREMENT could not, and measurement is the thing this loop keeps commissioning.
+// Task .o came back with three venues' promotion rules quoted verbatim and the
+// finding that none of them is postable today — a result that changes what the
+// venue candidate's success even means — and there was no path for it to land
+// anywhere but prose. Constraints carry the measurements, so constraints can
+// reprice too. Order matters: constraint repricings are applied after the zero-base
+// ones, so a measurement overrides a conclusion drawn before it.
 let portfolioCaveat = null;
-const { unmatched: unmatchedRepricings } = applyRepricings(
-  candidates,
-  zerobase?.distribution_answer?.reprices_candidates,
+const constraintRepricings = (constraints?.constraints ?? []).flatMap(
+  (c) => c.reprices_candidates ?? [],
 );
+const { unmatched: unmatchedRepricings } = applyRepricings(candidates, [
+  ...(zerobase?.distribution_answer?.reprices_candidates ?? []),
+  ...constraintRepricings,
+]);
 
 // A blocker that was never checked reads exactly like a blocker that was checked
 // and found solid. honest_post_where_buyers_gather carried blocked_on "there is

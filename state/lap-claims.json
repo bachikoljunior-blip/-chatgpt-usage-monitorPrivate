@@ -161,6 +161,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T15:07:05.249Z",
+      "candidate": "no_standing_where_buyers_gather",
+      "kind": "prerequisite",
+      "mechanism": "Task .o came back and it measures the adopted route rather than describing it: of three venues with rules quoted verbatim, zero are postable today from a standing start. r/gamedev forbids paid assets by written rule and permits free ones only when not locked behind signup; itch.io Release Announcements imposes no karma or account-age threshold and has a live dated slot (an asset pack on 2026-08-09) but requires an itch.io project page we do not have; GameDev.net's eligibility could not be established from public rules so it does not count as postable. That does not move a days figure - both stay inf - but it changes which candidate is next, which is what this constraint's fields drive. Two things get recorded where compute-eta reads them: the artifact bar stops being an inference from case studies and becomes a quoted venue rule, and the pending itch owner request stops being storefront tuning and becomes the precondition of the only venue that permits this product with a proven live slot.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
