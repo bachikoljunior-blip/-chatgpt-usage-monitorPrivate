@@ -190,6 +190,11 @@ if (zerobase?.verdict === "adopt_for_next_test") {
         "Days-to-first-yen is the falsifiable part; measure that. The month-count " +
         "figures in the round are the model's estimates and must not be carried " +
         "forward as observations.",
+      // An option that has been checked against the outside world and failed.
+      // It travels with the candidate rather than staying in zerobase.json,
+      // because the side that picks work reads this file — a refutation the
+      // picker never sees is a refutation that changes nothing.
+      refuted: o.refuted ?? null,
     });
   }
 }
@@ -307,6 +312,14 @@ candidates.sort((a, b) => {
   const aDead = a.kind === "efficiency" && etaIsInfinite && !capacityIsBinding;
   const bDead = b.kind === "efficiency" && etaIsInfinite && !capacityIsBinding;
   if (aDead !== bDead) return aDead ? 1 : -1;
+  // A refuted estimate sinks below every unrefuted one, but is never dropped.
+  // Its days_to_first_yen still says 14 and the sort below is on that number, so
+  // without this the option that was just disproved stays at the top of the list
+  // and the next lap picks it again. Kept visible with its reason, because a list
+  // that quietly shrinks reads as "this is everything" when it is not.
+  const aRef = Boolean(a.refuted);
+  const bRef = Boolean(b.refuted);
+  if (aRef !== bRef) return aRef ? 1 : -1;
   if (a.actionable_now !== b.actionable_now) return a.actionable_now ? -1 : 1;
   const ad = a.eta_effect_days ?? Infinity;
   const bd = b.eta_effect_days ?? Infinity;

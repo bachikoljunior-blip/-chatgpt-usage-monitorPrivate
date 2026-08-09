@@ -1,6 +1,13 @@
 {
   "schema_version": 1,
-  "open": {},
+  "open": {
+    "eta-loop": {
+      "at": "2026-08-09T09:41:01.952Z",
+      "usage_fetched_at": "2026-08-09T09:36:55.176Z",
+      "remaining_percent": 42,
+      "resets_at": "2026-08-14T21:59:59.765Z"
+    }
+  },
   "samples": [
     {
       "id": "eta-loop",

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T09:35:41.354Z",
+  "fetched_at": "2026-08-09T09:41:59.116Z",
   "ranking": "candidates are sorted by estimated days to first yen (conservative end), actionable ones first",
   "target_yen_per_month": 200000,
   "idle_eta_days": null,
@@ -47,6 +47,7 @@
       "days_to_first_yen_estimate": "3-14",
       "estimate_not_measurement": true,
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "refuted": null,
       "actionable_now": true,
       "eta_effect_days": 14,
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 14 days at the conservative end (estimate, not measured)"
@@ -59,6 +60,7 @@
       "days_to_first_yen_estimate": "7-21",
       "estimate_not_measurement": true,
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "refuted": null,
       "actionable_now": true,
       "eta_effect_days": 21,
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 21 days at the conservative end (estimate, not measured)"
@@ -71,6 +73,7 @@
       "days_to_first_yen_estimate": "7-21",
       "estimate_not_measurement": true,
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "refuted": null,
       "actionable_now": true,
       "eta_effect_days": 21,
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 21 days at the conservative end (estimate, not measured)"
@@ -83,6 +86,7 @@
       "days_to_first_yen_estimate": "7-30",
       "estimate_not_measurement": true,
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "refuted": null,
       "actionable_now": true,
       "eta_effect_days": 30,
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 30 days at the conservative end (estimate, not measured)"
@@ -95,6 +99,7 @@
       "days_to_first_yen_estimate": "14-60",
       "estimate_not_measurement": true,
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "refuted": null,
       "actionable_now": true,
       "eta_effect_days": 60,
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 60 days at the conservative end (estimate, not measured)"

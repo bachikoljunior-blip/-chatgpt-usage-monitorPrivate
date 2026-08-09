@@ -21,7 +21,16 @@
       "days_to_first_yen": "3-14",
       "months_to_target": "2-5",
       "owner_actions": "1 initial + 0-1 monthly",
-      "why": "CI can publish and update it; a concrete time-saver reaches the English-speaking developer market directly"
+      "why": "CI can publish and update it; a concrete time-saver reaches the English-speaking developer market directly",
+      "refuted": {
+        "at": "2026-08-09T09:33:00Z",
+        "by": "codex-loop (codex/outbox/2026-08-09.c.md)",
+        "claim_tested": "first yen within 3-14 days, borrowing Marketplace search traffic",
+        "finding": "The recurring complaint the estimate rested on — approval fatigue in agent extensions — is already solved by VS Code itself (chat.tools.terminal.autoApprove, per-command allow/deny and a management UI) and by at least three free extensions. Those competitors sit at 95-1,472 installs, so the search traffic being borrowed is thin. Paid VS Code extensions do exist and were confirmed with sources (DV Quick Run, $19/mo via Lemon Squeezy licence keys; VSCode Maestro MCP, Gumroad one-off), so monetisation is real — but no case of first yen within 14 days was found.",
+        "verdict": "does not meet the 3-14 day claim as stated",
+        "sources_in": "codex/outbox/2026-08-09.c.md",
+        "not_refuted": "that VS Code extensions can be sold at all. Only this candidate's speed."
+      }
     },
     {
       "id": "maintained_data_or_api",
@@ -54,5 +63,7 @@
   "structural_insight": "Every fast option borrows an existing marketplace's search demand instead of building an audience. The slow ones all start from zero attention. That is the axis, not the medium.",
   "verdict": "adopt_for_next_test",
   "verdict_reason": "Measured incumbent idle ETA is infinite on every channel. These are estimates rather than measurements, but any finite path beats infinity, and the capability they need (writing and shipping software) is the one thing this operation has demonstrated repeatedly.",
-  "caution": "The month-count figures are the model's estimates, not observations. Treat first-yen as the falsifiable claim and measure it; do not carry the month figures forward as if measured."
+  "caution": "The month-count figures are the model's estimates, not observations. Treat first-yen as the falsifiable claim and measure it; do not carry the month figures forward as if measured.",
+  "outcome_reviewed_at": "2026-08-09T09:33:00Z",
+  "outcome_note": "The first option to be checked against the outside world failed the check. The round produced five options and adopted all five on the strength of the model's own estimates; one survey refuted the top one. The other four rest on the same kind of estimate and have not been checked."
 }
