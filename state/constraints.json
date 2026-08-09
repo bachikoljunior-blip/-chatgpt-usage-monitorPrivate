@@ -5,6 +5,16 @@
   "note": "Everything here is what was true when it was measured, not a permanent property of the world. Each entry carries a recheck date because on 2026-08-08 two items declared impossible were solved the same day. A constraint falling away usually moves the ETA more than any ordinary improvement does, so rechecks are ETA candidates in their own right.",
   "constraints": [
     {
+      "id": "gumroad_listing_is_automatable",
+      "claim": "Creating a product on Gumroad over the API is supported. It is capped at 10 per day, not unavailable.",
+      "evidence": "2026-08-09 lifecycle probe: POST /v2/products returned HTTP 200 with \"Sorry, you can only create 10 products per day.\" A daily cap is only imposed on an operation the API performs. The account still shows product_count 1, so nothing was created and there is no residue to clean up. The full create/read/delete path has NOT yet been observed end to end — retry after the cap resets before relying on delete.",
+      "measured_at": "2026-08-09",
+      "recheck_after": "2026-08-10",
+      "blocks": [],
+      "eta_effect_if_lifted": "already large: removes the assumed 'one owner action to list a product' from every option that sells through this rail, which was the main reason some zero-base options ranked below others",
+      "note": "The first classification of this same measurement was wrong: it recorded create_refused, which reads as 'the API cannot create products'. Rate limiting is evidence for a capability, not against it. The probe now separates the two."
+    },
+    {
       "id": "external_repos_unreachable",
       "claim": "This environment cannot reach repositories outside the owner's own set.",
       "evidence": "git ls-remote on a public repo failed with no credentials; api.github.com/repos/facebook/react returned 403 through the proxy; GitHub MCP is scoped to the owner's repos.",

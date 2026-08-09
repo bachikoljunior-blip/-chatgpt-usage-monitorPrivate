@@ -114,15 +114,31 @@ try {
 
 const created = steps.find((s) => s.step === "create");
 const deleted = steps.find((s) => s.step === "confirm_deleted");
+
+// A refusal is not one thing, and the difference decides whether a whole class of
+// options is viable. 2026-08-09 the first run returned "you can only create 10
+// products per day" and this classified it as create_refused — which reads as
+// "the API cannot create products" and would have told the next lap that listing
+// needs a person. It says the opposite: a daily cap only exists on an operation
+// that is supported. Rate limiting is evidence for the capability, not against it.
+const RATE_LIMITED = /per day|rate limit|too many/i;
+const rateLimited = created && !created.got_id && RATE_LIMITED.test(created.message ?? "");
+
 if (created?.got_id && deleted && deleted.still_present === false) {
   verdict = "full_lifecycle_over_api";
   note = "Create, read and delete all worked. Listing a product needs no owner action.";
 } else if (created?.got_id) {
   verdict = "create_works_cleanup_uncertain";
   note = "A product was created. Deletion did not confirm — check the account for a leftover draft named 'capability probe'.";
+} else if (rateLimited) {
+  verdict = "create_supported_rate_limited";
+  note =
+    `Creation is supported but capped right now: "${created.message}". ` +
+    "A daily cap is only imposed on something the API does. Treat listing as automatable " +
+    "and retry the lifecycle check after the cap resets before building on it.";
 } else {
   verdict = "create_refused";
-  note = "The API would not create a product. Listing still needs a person.";
+  note = `The API would not create a product: "${created?.message ?? "no message"}". Listing still needs a person.`;
 }
 
 const payload = {
