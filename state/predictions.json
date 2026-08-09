@@ -323,7 +323,13 @@
         "Nothing else touched the listing. The price, the files and the shipped LICENSE are unchanged, so a sales difference later cannot be attributed to them."
       ],
       "falsified_if": "PUT /v2/products/:id turns out not to exist or not to accept a description, so the workflow fails and the storefront keeps the shop-facing copy while the repository claims otherwise. That would be the worse outcome than an outright refusal: the repo would read as re-aimed and the public page would not be, and every later lap would reason from the file. It is also falsified if the workflow succeeds but writes nothing back, since then the replaced copy exists nowhere and branch A cannot be reverted. Note this prediction cannot be settled by a session that lacks network reach to the Gumroad API; (a) is readable from origin/main alone and is the half that must be checked first.",
-      "outcome": null
+      "outcome": {
+        "settled_at": "2026-08-09T13:19:51.017Z",
+        "verdict": "correct",
+        "measured": "(a) origin/main assets/listing/gumroad.ja.json carries previous.captured_at 2026-08-09T12:54:41.206Z and a previous.description_html of 1454 bytes whose text is the shop-facing body (自社ブランド / 店舗サイト / キャンペーンページ present) - only the workflow --apply run writes that field, so the workflow ran and pushed. (b) node scripts/sync-listing.mjs exited 0 this lap: live name and body are byte-identical to the repo copy, 1537 bytes, published true, price 2500.",
+        "what_it_does_not_show": "That the new addressee is the RIGHT one. This prediction only ever judged whether the change reached the storefront, and it did. Judging the addressee needs traffic, and until this lap there was none possible: the same GET that confirmed the copy also showed tags: [] and category other, i.e. the corrected copy was sitting outside Gumroad Discover entirely. Sales remain 0.",
+        "settled_one_day_early": "judge_on was 2026-08-10. Both criteria are pure reads and both were already satisfiable; settling early costs nothing and stops it becoming tomorrow OWED. Nothing was measured differently from how the metric was written."
+      }
     },
     {
       "id": "2026-08-09.codex-range-changes-what-gets-delegated",
@@ -344,6 +350,37 @@
         "The lap before this one re-aimed the Gumroad listing, which is the most likely source of the first delegated copy task, so a later English-copy task cannot be attributed to this measurement alone."
       ],
       "falsified_if": "Every task after .m is outside research again, which would mean the range was measured, written into the file the picker reads, and changed nothing - the write-it-where-nobody-acts failure in its cheapest-looking form. Note the specific next step that would settle it fastest is already identified and NOT done: scripts/inbox-task.mjs ATTACHMENTS does not include assets/listing/gumroad.ja.json, so the lane cannot see the live listing copy and cannot be asked to localise it without someone copying prose into the instruction, which RUNBOOK forbids. If a later lap adds that one line and sends the task, this prediction settles true.",
+      "outcome": null
+    },
+    {
+      "id": "2026-08-09.tagging-puts-the-listing-in-discover",
+      "made_at": "2026-08-09T13:19:51.017Z",
+      "claim": "NECESSARY, EXPLICITLY NOT CLAIMED SUFFICIENT. The route change fixed WHO the copy addresses and left WHERE it can be found untouched: measured this lap, the live product carried tags: [] and category other while the corrected copy had been live for twenty minutes. Gumroad Discover browses and searches by tag, so the listing was addressed to idle-game developers in a place no idle-game developer could reach it. state/constraints.json no_standing_where_buyers_gather names two ways it lifts - acquire standing (recurring owner actions, expensive) or substitute breadth (a single bounded act, never tried) - and Discover is the only venue this account reaches with zero standing AND zero owner actions. Eight tags were pushed via PUT /v2/products/:id with repeated tags[] params and read back on an independent GET. The claim is that this removes a precondition, not that it produces a sale.",
+      "metric": "Read from origin/main and the Gumroad API, not from any session memory. (a) node scripts/sync-listing.mjs exits 0 with the eight tags still live - drift back to untagged is the specific failure this is guarding, and it would be silent. (b) state/gumroad.json sales_count and state/gumroad-history.json, for whether any first arrival happens at all.",
+      "baseline": {
+        "tags_before": [],
+        "tags_after": [
+          "idle game",
+          "clicker game",
+          "game template",
+          "html5 game",
+          "javascript",
+          "game development",
+          "gamedev",
+          "source code"
+        ],
+        "category": "other, unchanged - taxonomy_id 266, deliberately not guessed",
+        "sales_count": 0,
+        "gumroad_history_readings": 1,
+        "venues_referring_traffic": 0
+      },
+      "judge_on": "2026-08-13",
+      "judge_deadline": "2026-08-20",
+      "concurrent_changes": [
+        "The lap immediately before this one replaced the listing copy for a different addressee. Any arrival after today is downstream of BOTH the new copy and the new tags, and the two cannot be separated by sales alone - there is one product and one storefront.",
+        "codex/INBOX.md task .n was dispatched the same lap and asks for English copy plus the Discover category. If a later lap sets a real taxonomy_id from that answer, that is a third change on the same surface and must be recorded as such."
+      ],
+      "falsified_if": "Either (a) the tags are gone or reduced at judge time, which would mean a later push dropped them because pushLive or the repo copy lost them - the drift this lap added a test for; or (b) the honest negative: tags persist, Discover lists the product, and nothing arrives. (b) does NOT falsify the necessity claim, and must not be written up as if it did. It would falsify the hope that Discover is enough on its own, and would move the constraint back to its expensive half - acquiring standing - with breadth then measured rather than untried, which is worth more than the guess it replaces.",
       "outcome": null
     }
   ]

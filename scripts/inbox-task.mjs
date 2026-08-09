@@ -114,6 +114,14 @@ export const ATTACHMENTS = [
   // shape again.
   "state/portfolio.json",
   "state/gumroad.json",
+  // Added 2026-08-09 with task .n. Task .m proved the lane can write English
+  // copy, but it had to write it from scratch out of portfolio.json facts
+  // because the actual live wording was attached nowhere. Localising the real
+  // listing is a different and cheaper job than composing a new one, and it was
+  // impossible to ask for without pasting prose into the instruction — which
+  // RUNBOOK 5.5 forbids, because a premise copied into the instruction goes
+  // stale the moment the file changes and then hands out a lie.
+  "assets/listing/gumroad.ja.json",
 ];
 
 export function buildPrompt(inboxText, attachments) {

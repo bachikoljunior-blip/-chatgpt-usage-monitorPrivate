@@ -25,6 +25,23 @@
     "forbidden_note": "These are the ADDRESSEE phrases of the refuted route, not every mention of a shop. The kit genuinely ships three reskin examples named 珈琲店・サロン・配信者, and naming those files is a statement of contents, not of who the copy is talking to. A checker that forbade the words outright would force the copy to lie about what is in the download.",
     "licence_must_stay_true_to_shipped_file": "The shipped LICENSE grants one publish target, commercial use and modification, forbids reselling the kit itself, and refers client delivery to a separate arrangement. The listing restates exactly those terms for a different reader. It must never widen them, because the kit lives in a repository whose main branch is frozen (owner directive A2) and cannot be re-cut to match a promise made here."
   },
+  "tags": [
+    "idle game",
+    "clicker game",
+    "game template",
+    "html5 game",
+    "javascript",
+    "game development",
+    "gamedev",
+    "source code"
+  ],
+  "tags_note": "MEASURED 2026-08-09: the live product carried tags: [] while the copy above was already addressed correctly — the listing was talking to the right buyer in a place none of them could find it. Gumroad Discover browses and searches by tag, and it is the only venue this account can reach with ZERO standing and ZERO owner actions, which is the 'substitute breadth' half of state/constraints.json no_standing_where_buyers_gather and is recorded there as never tried. PUT /v2/products/:id with repeated tags[] params returns 200 success:true and the tags read back on a separate GET; that was not previously known — state/gumroad-capabilities.json had only ever probed create. The tags are English on purpose: Discover is English-dominant, and these are the words a person who builds an idle game would search, not a translation of the Japanese title.",
+  "taxonomy_unresolved": {
+    "live_taxonomy_id": 266,
+    "live_category": "other",
+    "why_it_is_still_other": "Discover ranks within a category as well as by tag, and this product sits in 'other', which is the weakest place to be. The correct id is not guessable from here: Gumroad exposes no taxonomy-listing endpoint in v2, and probing ids blind against a live published product risks filing it under something wrong. Delegated to the ChatGPT lane as task .n rather than guessed — that lane can read Gumroad's public Discover pages, which this environment cannot.",
+    "do_not": "do not set taxonomy_id by trial and error against the live product. A wrong category is worse than 'other' because it is confidently wrong."
+  },
   "description_html": "<p><strong>放置クリッカーを1本、自分の作品として出すための土台一式です。</strong>ゲーム本体（HTML / CSS / JavaScript）、設定の誤りを指摘する検査、実ブラウザでの自動検査20項目、リスキン例3種が入っています。購入後すぐ手元で動かして中身を確かめられます。</p><p><strong>触るのは <code>brand.config.json</code> だけです。</strong>題名・配色・数えるものの名前・増やすもの8種・強化6種・到達メッセージ・誘導ボタン・フッターまで、すべてそこから決まります。ゲームロジックに手を入れずに別の作品になります。</p><p><strong>数値バランスは調整済みです。</strong>値段と毎秒の増加量は釣り合いを取った既定値が入っているので、名前と配色を変えた時点で遊べる状態になります。放置ゲームで一番時間を取られるところを飛ばせます。</p><h3>入っているもの</h3><ul>\n<li>ゲーム本体一式（HTML / CSS / JavaScript）</li>\n<li>\n<code>brand.config.json</code> — 書き換えるのはここだけ</li>\n<li>\n<code>generator.html</code> — フォームを埋めると設定ファイルが出てくるページ</li>\n<li>リスキン例3種（珈琲店・サロン・配信者）— 設定だけで見た目と文言がどこまで変わるかの実例</li>\n<li>\n<code>validate_config.py</code> — 設定の誤りを日本語で指摘する検査</li>\n<li>\n<code>test_engine.py</code> — 実ブラウザで20項目を自動検査（開発用）</li>\n<li>日本語 README とライセンス</li>\n</ul><h3>技術的なこと</h3><ul>\n<li>\n<strong>ビルド不要。</strong>フォルダを置くだけです。Node も PHP も要りません。あなたのビルド手順やフレームワークに合わせる必要がありません</li>\n<li>\n<strong>外部ライブラリなし・通信なし。</strong>あなたが設定したリンク以外へは何も送りません</li>\n<li>セーブは端末内（localStorage）。サーバーもデータベースも要りません</li>\n<li>スマホ縦画面前提。片手・タップだけで遊べます</li>\n<li>GitHub Pages / Netlify / Cloudflare Pages / 自前のサーバー、どこでも動きます</li>\n</ul><h3>ライセンス（商用可）</h3><ul>\n<li>あなたの作品・自社サイトなど、公開先1つで使えます。商用可・改変自由</li>\n<li>クライアントの案件へ納品する場合は、別途ご相談ください</li>\n<li>キット自体を素材・テンプレート商品として再販・再配布することはできません</li>\n</ul><h3>動作確認</h3><p>Chromium で20項目を自動検査しています（起動・タップ加算・購入で自動収入が発生する・放置で増える・再読込で進行が残る・設定差し替えで題名と配色と通貨名が変わる・壊れた設定では止まって理由を出す、ほか）。検査スクリプトも同梱しているので、改造したあとも同じ検査を回せます。</p><p>効果音・BGM・画像素材は入っていません。表示は絵文字とCSSだけで作っています。README・設定検査の出力・ライセンスは日本語です。</p>",
   "previous": {
     "replaced_at": "2026-08-09T12:40:00Z",

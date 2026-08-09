@@ -81,6 +81,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T13:13:29.945Z",
+      "candidate": "no_standing_where_buyers_gather",
+      "kind": "prerequisite",
+      "mechanism": "The live Gumroad product carries tags=[] and category=other (measured via GET /v2/products this lap). Gumroad Discover ranks and browses by tag and taxonomy, so an untagged product in 'other' is absent from the only venue this account can reach with zero standing and zero owner actions. Populating tags and taxonomy is the 'substitute breadth' half of this constraint's two_ways_it_lifts, which the constraint records as never tried. It does not shorten a measured ETA on its own - no channel has a derivable rate yet - so it is admitted as prerequisite, not direct.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

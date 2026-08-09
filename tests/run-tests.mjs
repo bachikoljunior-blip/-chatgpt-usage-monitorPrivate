@@ -21,7 +21,7 @@ import {
 } from "../scripts/inbox-task.mjs";
 import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/revenue-rate.mjs";
 import { decideVerdict } from "../scripts/gate-verdict.mjs";
-import { checkAddressee, diffListing, readRepoListing } from "../scripts/sync-listing.mjs";
+import { checkAddressee, copyChanged, diffListing, readRepoListing } from "../scripts/sync-listing.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const temporary = await mkdtemp(join(tmpdir(), "usage-monitor-test-"));
@@ -887,12 +887,60 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   // Drift is byte equality against the live storefront, and it must notice both
   // fields. Only the title changed on the route change's first push, and a
   // comparison that watched the body alone would have called that in sync.
-  assert(diffListing({ name: repo.name, description: repo.description_html }, repo).in_sync,
+  const liveSame = { name: repo.name, description: repo.description_html, tags: repo.tags };
+  assert(diffListing(liveSame, repo).in_sync,
     "an identical live copy was reported as drifted");
-  assert(!diffListing({ name: "something else", description: repo.description_html }, repo).in_sync,
+  assert(!diffListing({ ...liveSame, name: "something else" }, repo).in_sync,
     "a changed title was not reported as drift");
-  assert(!diffListing({ name: repo.name, description: "" }, repo).in_sync,
+  assert(!diffListing({ ...liveSame, description: "" }, repo).in_sync,
     "a changed body was not reported as drift");
+
+  // Being addressed to the right buyer and being findable by them are two
+  // different properties, and on 2026-08-09 the listing had the first without the
+  // second: the copy was rewritten for people who build idle games while the
+  // product sat with tags: [] and therefore out of Gumroad Discover entirely.
+  // state/constraints.json no_standing_where_buyers_gather names breadth as the
+  // cheap untried half of that blocker, and Discover is the only venue this
+  // account reaches with no standing and no owner action. So "findable" is held
+  // here next to "correctly addressed" rather than left to whoever pushes next.
+  assert(Array.isArray(repo.tags) && repo.tags.length > 0,
+    "the listing declares no tags, so nothing can surface it in Gumroad Discover");
+  assert(!diffListing({ ...liveSame, tags: [] }, repo).in_sync,
+    "an untagged live product was not reported as drift");
+  assert(!diffListing({ ...liveSame, tags: repo.tags.slice(1) }, repo).in_sync,
+    "a live product missing one tag was not reported as drift");
+  assert(diffListing({ ...liveSame, tags: [...repo.tags].reverse() }, repo).in_sync,
+    "tag order was treated as drift; Gumroad does not promise an order");
+
+  // The revert target must survive a push that is not a change of copy. Before
+  // this guard, listing-sync.yml ran --apply on every push touching
+  // assets/listing and captured the live copy unconditionally — so adding tags
+  // would have re-captured the branch-A body over the shop-facing body stored in
+  // previous, and committed it. The old copy exists in exactly one place, and a
+  // route change that cannot be reverted is a bet rather than an experiment.
+  assert(!copyChanged({ name: repo.name, description: repo.description_html }, repo),
+    "an identical copy was treated as a change, which would overwrite the revert target");
+  assert(!copyChanged({ name: repo.name, description: repo.description_html, tags: [] }, repo),
+    "a tags-only difference was treated as a change of copy; it must not clobber previous");
+  assert(copyChanged({ name: repo.name, description: "something else" }, repo),
+    "a changed body was not treated as a change of copy, so nothing would be captured to revert to");
+  assert(copyChanged({ name: "something else", description: repo.description_html }, repo),
+    "a changed title was not treated as a change of copy");
+  // Held by what previous IS, not by one phrase inside it — the first version of
+  // this test looked for 自社ブランド in the body, where it never was: it is in the
+  // old title. The property that matters is that previous is still the REFUTED
+  // copy, so run the addressee checker over it and require it to fail. If a
+  // future --apply ever overwrites previous with the current copy, previous will
+  // start passing, and this flips.
+  const previousCopy = {
+    ...repo,
+    name: repo.previous?.name ?? "",
+    description_html: repo.previous?.description_html ?? "",
+  };
+  assert(
+    !checkAddressee(previousCopy).ok,
+    "previous now passes the addressee check, which means it is no longer the refuted copy the route change reverts to",
+  );
 
   // The listing may restate the shipped licence for a different reader. It may
   // not widen it: the kit is cut from a repository whose main branch is frozen by
