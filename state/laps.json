@@ -25,6 +25,14 @@
       "cost_percent": null,
       "usable": false,
       "reason": "no_new_usage_reading"
+    },
+    {
+      "id": "eta-loop",
+      "started_at": "2026-08-09T06:01:33.919Z",
+      "ended_at": "2026-08-09T06:02:42.666Z",
+      "cost_percent": null,
+      "usable": false,
+      "reason": "window_reset_mid_lap"
     }
   ]
 }

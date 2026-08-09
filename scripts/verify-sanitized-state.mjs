@@ -61,6 +61,16 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
   for (const o of state.options) {
     if (typeof o.id !== "string" || !o.id) throw new Error("zero-base option has no id");
   }
+} else if (state.decision !== undefined && state.reason !== undefined) {
+  // Continuation record. A lap that stopped must say why in a way that can be
+  // checked, because "nothing left to do" is the sentence this whole loop exists
+  // to make impossible to write without evidence.
+  if (typeof state.decision !== "string" || !state.decision) {
+    throw new Error("continuation record has no decision");
+  }
+  if (typeof state.reason !== "string" || !state.reason) {
+    throw new Error("continuation record has a decision but no reason");
+  }
 } else if (state.probe !== undefined) {
   // API capability probes. This shape predates the branch and was failing the
   // checker outright — which meant a file under state/ was exempt from the
