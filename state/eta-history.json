@@ -8,6 +8,13 @@
       "planned_eta_days": null,
       "measured_monthly_yen": 0,
       "top_candidate": "high_intent_tool_site"
+    },
+    {
+      "at": "2026-08-09T11:14:55.507Z",
+      "idle_eta_days": null,
+      "planned_eta_days": null,
+      "measured_monthly_yen": 0,
+      "top_candidate": "no_standing_where_buyers_gather"
     }
   ]
 }
