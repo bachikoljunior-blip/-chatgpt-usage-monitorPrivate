@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "asked_at": "2026-08-09T04:24:29.394Z",
+  "asked_at": "2026-08-09T04:44:07.131Z",
   "model": "default",
-  "sandbox": "danger-full-access",
+  "sandbox": "read-only",
   "quota_mode_at_ask": "normal",
-  "prompt": "能力の実測です。推測を書かず、実際にコマンドを実行して結果だけを報告してください。\n\n1. `ls` と `head -3 RUNBOOK.md` を実行し、RUNBOOK.md の最初の見出しをそのまま引用してください。\n2. `curl -s -o /dev/null -w \"%{http_code}\" https://api.github.com` を実行し、数字を報告してください。\n3. `curl -s -o /dev/null -w \"%{http_code}\" https://api.github.com/repos/bachikoljunior-blip/note` を実行し、数字を報告してください。\n4. `echo probe > /tmp/p.txt && cat /tmp/p.txt` を実行し、出力を報告してください。\n\n最後に1行:\nCAPABILITY read_cwd=<yes|no|untested> network=<yes|no|untested> other_repo=<yes|no|untested> write=<yes|no|untested>\n\n実際に実行できなかった項目は untested と書き、エラーメッセージをそのまま載せてください。",
-  "answer": "1. `ls` 出力: なし  \n   `head -3 RUNBOOK.md`:\n   `head: cannot open 'RUNBOOK.md' for reading: No such file or directory`  \n   最初の見出し: untested\n\n2. `200`\n\n3. `404`\n\n4. `probe`\n\nCAPABILITY read_cwd=yes network=yes other_repo=yes write=yes"
+  "prompt": "日本語のYouTube検索について簡潔に答えてください。次の3語の競合の厚さを評価: (1)「年収 上がっても 手取り 増えない」(2)「昇給 手取り いくら増える」(3)「年収660万 手取り 給与所得控除」。各語について、大手（税理士・FP系の登録者10万人超チャンネル）が既に押さえているか、それとも薄いかを述べ、薄いなら差別化の切り口を1行で。さらに、この計算（年収を50万円上げたとき手取りが何円増えるか、年収帯ごとの限界手取り率の表、給与所得控除の伸びが年収660万円で20%から10%に落ちる段差）に一番合う検索語を、上記以外も含めて5つ挙げてください。",
+  "answer": "2026年8月時点のYouTube検索結果ベースの評価です。\n\n1. 「年収 上がっても 手取り 増えない」  \n   競合：やや厚い。大手税理士・FPが「給料が増えても手取りが増えない理由」という周辺テーマを多数扱っています。ただし、年収帯別に“増分”を計算する動画は少なめです。\n\n2. 「昇給 手取り いくら増える」  \n   競合：中程度。税理士法人による「年収100万円上がったら手取りはいくら増える？」など、ほぼ同じ企画が既にあります。  \n   差別化：50万円昇給に統一し、年収帯別の増加額と限界手取り率を一覧比較する。\n\n3. 「年収660万 手取り 給与所得控除」  \n   競合：薄い。登録者10万人超の大手が、この組み合わせや660万円の段差を正面から押さえている形跡は乏しいです。  \n   差別化：「660万円を1円超えると損？」を入口に、控除の限界率が20％から10％へ変わる仕組みを図解する。\n\nなお、660万円では控除額が不連続に減るのではなく、給与所得控除の「追加年収に対する増え方」が20％から10％へ低下します。[国税庁の給与所得控除表](https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1410.htm)\n\n最適な検索語候補は次の5つです。\n\n- 年収50万円上がったら手取りはいくら増える\n- 昇給50万円 手取り\n- 年収別 限界手取り率\n- 年収が上がっても手取りが増えない理由\n- 年収660万円 給与所得控除\n\n主軸には「年収50万円上がったら手取りはいくら増える」、タイトル補助語には「年収660万円の壁」「限界手取り率」を入れる組み合わせが最も内容と合います。"
 }
