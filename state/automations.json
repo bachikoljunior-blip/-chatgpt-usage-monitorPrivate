@@ -95,6 +95,18 @@
       "enabled": true,
       "avg_cost_percent": 0,
       "samples": 0
+    },
+    {
+      "id": "codex-loop",
+      "label": "ChatGPT レーン（オーナーが手で起動）",
+      "kind": "chatgpt-lane",
+      "pool": "codex_week",
+      "cadence_minutes": 1440,
+      "enabled": true,
+      "note": "Separate lane so two loops never take the same candidate. Owns zero_base_option candidates; Claude's chain owns efficiency/constraint_recheck/channel_unblock. Different quota pool, so it is not reserved against the Claude weekly window. Branch codex/monthly-20k-automation, records under state/codex/. Prompt is in CODEX_LANE.md.",
+      "avg_cost_percent": 0,
+      "samples": 0,
+      "last_seen": null
     }
   ]
 }
