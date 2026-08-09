@@ -61,8 +61,8 @@
   "predecessor_note_for_the_successor": "That id is THIS session — the one you should archive, and only once get_session reports SESSION_STATUS_IDLE. It will still be RUNNING for a short while after you start, because this record is written before the session ends. One reading is not a verdict.",
   "predecessor_of_this_session": "session_01Ly5xpLuRK166NLKLPXQDCK",
   "predecessor_note": "Archived at 17:02Z after get_session reported SESSION_STATUS_IDLE. Checked before archiving, not assumed from having been started by it.",
-  "successor_session_id": null,
-  "successor_status": "not yet created — this record is written and pushed first so the successor can read it the moment it boots. The id is filled in by a follow-up commit.",
+  "successor_session_id": "session_01J7eVjVTbwTjSEeByiGmv9p",
+  "successor_status": "created 2026-08-09T17:32:17Z, SESSION_STATUS_PENDING, environment env_01XBCU2bxr2xArCs2PB8NUyL, model claude-opus-5. The lineage depth limit was NOT hit — create_session returned the session on the first attempt with no retry and no classifier refusal. The handoff record was pushed BEFORE the session was created, so it can read this file the moment it boots.",
   "archive_policy": "A successor archives its predecessor at startup, and only when get_session reports SESSION_STATUS_IDLE. RUNNING means look again later. If archive_session is refused, that is the intermittent classifier: do something else and retry.",
   "status": "ok"
 }
