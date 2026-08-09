@@ -70,6 +70,12 @@ jobs:
         run: |
           node scripts/probe-gumroad-lifecycle.mjs state/gumroad-capabilities.json
           node scripts/verify-sanitized-state.mjs state/gumroad-capabilities.json
+          # The commit step below resets to origin/main before staging, which would
+          # delete this file seconds after it was written. 2026-08-09: the first
+          # dispatch did exactly that — the run went green and nothing changed,
+          # which reads as "the probe found nothing" rather than "the result was
+          # discarded". Park it outside the working tree so the reset cannot reach it.
+          cp state/gumroad-capabilities.json "$RUNNER_TEMP/gumroad-capabilities.json"
 
       - name: Probe whether products can be created over REST
         if: always() && inputs.probe_create
@@ -92,6 +98,10 @@ jobs:
             git reset --hard origin/main
             node scripts/read-gumroad.mjs state/gumroad.json || exit 1
             node scripts/verify-sanitized-state.mjs state/gumroad.json || exit 1
+            # Restore anything a probe produced before the reset above removed it.
+            if [ -f "$RUNNER_TEMP/gumroad-capabilities.json" ]; then
+              cp "$RUNNER_TEMP/gumroad-capabilities.json" state/gumroad-capabilities.json
+            fi
             git add state/gumroad.json
             git add state/gumroad-capabilities.json 2>/dev/null || true
             if git diff --cached --quiet; then
