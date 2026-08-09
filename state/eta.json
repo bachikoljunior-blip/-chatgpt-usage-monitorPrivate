@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T10:36:30.081Z",
+  "fetched_at": "2026-08-09T10:39:27.065Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "target_yen_per_month": 200000,
@@ -53,24 +53,8 @@
       "eta_effect_days": 60,
       "recurring_owner_actions_per_month": 0,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "3 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "4 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 60 days at the conservative end (estimate, not measured)"
-    },
-    {
-      "kind": "zero_base_option",
-      "id": "findable_surface_at_scale",
-      "why": "the only route in the evidence that reaches a buyer without an audience and without recurring human posting: many individually findable pages, each carrying something computed rather than templated, so a third party can discover and refer one",
-      "owner_actions": "0 recurring",
-      "days_to_first_yen_estimate": "unmeasured",
-      "estimate_not_measurement": true,
-      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
-      "refuted": null,
-      "actionable_now": true,
-      "eta_effect_days": null,
-      "recurring_owner_actions_per_month": 0,
-      "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "3 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
-      "eta_effect_basis": "no comparable estimate recorded"
     },
     {
       "kind": "zero_base_option",
@@ -85,7 +69,7 @@
       "eta_effect_days": 30,
       "recurring_owner_actions_per_month": 1,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "3 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "4 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 30 days at the conservative end (estimate, not measured)"
     },
     {
@@ -134,8 +118,33 @@
       "eta_effect_days": 21,
       "recurring_owner_actions_per_month": 0,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "3 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "4 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 21 days at the conservative end (estimate, not measured)"
+    },
+    {
+      "kind": "zero_base_option",
+      "id": "findable_surface_at_scale",
+      "why": "the only route in the evidence that reaches a buyer without an audience and without recurring human posting: many individually findable pages, each carrying something computed rather than templated, so a third party can discover and refer one",
+      "owner_actions": "0 recurring",
+      "days_to_first_yen_estimate": "unmeasured",
+      "estimate_not_measurement": true,
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "refuted": {
+        "at": "2026-08-09T10:36:00Z",
+        "by": "codex-loop (codex/outbox/2026-08-09.h.md)",
+        "claim_tested": "many individually findable pages, each carrying something computed rather than templated, reach a first buyer from zero audience with no recurring human posting, because a third party can discover and refer one",
+        "finding": "No case was found with the full causal chain and both calendar dates. The nearest fast case (PredictionJobs, first $100 within 10 days) is the one this candidate was modelled on, and its own author attributes the sale to a large X account's post, not to search: there is no evidence the referrer found a specific page through search, and the pages were combinatorial templates rather than computed. Three counter-examples hit the candidate directly. Causal mass-published ~1,800 low-originality pages and took a Google manual action: organic traffic -99.52% (307,158 -> 1,485) over 2023-08 to 2024-08. Datanyze is the closest counter-example, because it had exactly what this candidate proposes — genuine per-entity data on each page — and still lost 95.46% of organic traffic, with over 80% of the loss concentrated in the two programmatic directories; the pages stayed HTTP 200 and indexed and were re-ranked down anyway. Stripe Fee Auditor tested the computed-value premise on its own: three months, 4,230 search impressions, 5 clicks, 2 real users, ¥0 — and Hacker News sent more real users in three hours than three months of search did. Google's own position matches: scaled content abuse (2024-03-05) covers mass low-originality pages whether generated or hand-written, and Search Essentials states outright that meeting the requirements does not guarantee crawl, index or display, and lists telling relevant communities as a basic step.",
+        "verdict": "falls as a route to first yen from zero audience without recurring posting",
+        "sources_in": "codex/outbox/2026-08-09.h.md",
+        "not_refuted": "that many search surfaces can work as a long-term acquisition play, and that per-page substance matters. What was refuted is this candidate's role: a route that reaches a FIRST buyer unattended. Note the survey answered the sub-question too — no case supports 'one computed value per page is enough'. The near-successes carried a page that could be acted on by itself (BuiltWith's technology list, IPinfo's IP metadata, Tunebat's key/BPM), and even those cannot be attributed to search for the first sale.",
+        "what_it_leaves": "Four candidates have now been refuted by outside evidence and every one of them failed on the same term. In each near-success the first buyer arrived through a third party with reach posting about the thing — an X account, Hacker News, Product Hunt, Stack Overflow answers — and never through discovery working unattended. distribution_answer already elected route 2 (findable surfaces) over route 1 (post where the buyers already gather) not on evidence but on our own constraint that recurring owner actions are excluded; it said so plainly. This survey removes the evidence route 2 was resting on, so what remains is a constraint with no surviving route under it. That is a decision for a lap to take deliberately, not a gap to fill by proposing a sixth build candidate."
+      },
+      "actionable_now": true,
+      "eta_effect_days": null,
+      "recurring_owner_actions_per_month": 0,
+      "estimate_reliability": "discredited_by_siblings",
+      "estimate_reliability_note": "4 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "eta_effect_basis": "no comparable estimate recorded"
     },
     {
       "kind": "zero_base_option",
@@ -158,7 +167,7 @@
       "eta_effect_days": 21,
       "recurring_owner_actions_per_month": 1,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "3 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "4 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 21 days at the conservative end (estimate, not measured)"
     },
     {
@@ -182,7 +191,7 @@
       "eta_effect_days": 14,
       "recurring_owner_actions_per_month": 1,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "3 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "4 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 14 days at the conservative end (estimate, not measured)"
     },
     {
