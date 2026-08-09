@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T04:00:00.000Z",
+  "fetched_at": "2026-08-09T13:57:43.609Z",
   "note": "Everything here is what was true when it was measured, not a permanent property of the world. Each entry carries a recheck date because on 2026-08-08 two items declared impossible were solved the same day. A constraint falling away usually moves the ETA more than any ordinary improvement does, so rechecks are ETA candidates in their own right.",
   "constraints": [
     {
@@ -246,18 +246,28 @@
       "id": "listing_has_no_cover_image",
       "claim": "MEASURED, NOT INFERRED: the priced product has covers: [], main_cover_id: null, thumbnail_url: null and preview_url: null. Gumroad Discover browse is a visual grid of tiles, so the product now carries the eight tags that put it IN the index while presenting a blank tile to everyone the index shows it to. This is the immediate next blocker on the path opened the same day, and it was invisible until the tags made the path real: an untagged product is nowhere, and being nowhere hides the fact that it also has no picture.",
       "evidence": "GET /v2/products 2026-08-09, the same call that measured tags: [] before they were set. All four image fields are empty or null on the single product; file_info reports only Size 31.2 KB. Nothing here is a self-report - these are the values the storefront serves.",
-      "measured_at": null,
+      "measured_at": "2026-08-09T13:52:00Z",
       "recheck_after": "2026-08-10",
       "blocks": [
         "no_standing_where_buyers_gather"
       ],
       "eta_effect_if_lifted": "unknown in days, and the honest reason is that no channel has a derivable rate yet. Bounded claim only: it is a precondition for the tags added this day to do anything in Discover BROWSE. It is not a precondition for Discover SEARCH, where a text match can surface a tile regardless, so this does not retroactively make the tags worthless.",
-      "what_is_not_known": "WHETHER THE API CAN SET IT AT ALL. Gumroad v2 documents no cover-upload endpoint, and this was deliberately NOT probed by firing guesses at the live published product: a wrong write here is visible to every buyer, unlike a wrong read. So the capability is unmeasured, and it must not be recorded as absent - state/gumroad-capabilities.json made exactly that mistake in the other direction by having only ever probed create, which is why editing was believed impossible until it was tried and worked.",
-      "the_owner_action_is_not_yet_established": "Do not raise this as an owner request until the API question is settled. RUNBOOK gate 1 requires actually attempting the automation first, and scripts/render-cover.mjs already renders an image locally with no network, so even in the worst case the owner would upload a file we produced rather than create one - which is a different and much smaller request than it looks like now.",
-      "note": "Recorded rather than fixed on purpose. The lap that measured this had already made its one change, and a second write to the same live storefront in the same lap would make the two impossible to tell apart in state/predictions.json 2026-08-09.tagging-puts-the-listing-in-discover.",
-      "measured_at_is_null_on_purpose": "Follows the precedent set by no_standing_where_buyers_gather. The BLANK TILE is measured and sits in evidence with the call that measured it. What is unmeasured is OUR side: whether this environment can set a cover through the API at all. Dating measured_at would file this as a settled fact and drop it out of the candidate list, when the actionable half has not been attempted once. Do not backfill it with the GET date - that would turn we never tried into we tried and could not.",
+      "what_is_not_known": "SETTLED 2026-08-09 - see api_capability_measured. This field previously read 'WHETHER THE API CAN SET IT AT ALL', and the answer is no: there is no cover route and PUT ignores cover_url. What remains unknown is narrower and is not about our side: whether a cover uploaded through the web UI is enough to make the product appear in Discover BROWSE, which is a question about Gumroad's ranking and cannot be answered by us at all - only by doing it and looking.",
+      "note": "Recorded rather than fixed when first found, because the lap that measured the blank tile had already made its one change. The capability question was then settled by a later lap on 2026-08-09 (this record). The remaining work is an owner upload, not a code change.",
       "measure_via": "here",
-      "actionable_now": true
+      "actionable_now": true,
+      "api_capability_measured": {
+        "verdict": "THE v2 API CANNOT SET A COVER. Measured, not inferred from the docs being silent.",
+        "how": "node scripts/probe-gumroad-cover.mjs, which is wired into .github/workflows/gumroad-monitor.yml behind probe_cover so it can be repeated without a lap.",
+        "route_probe": "GET /v2/products/:id/covers returns 404 / text-html / 900 bytes - byte-identical to GET /v2/products/:id/__nonexistent_probe_zzz, a path that was never defined. The control that makes that informative is GET /v2/products/:id/variant_categories, a DOCUMENTED subresource, which returns 200 / JSON / 40 bytes on the same token in the same run. So the 404 is the router not knowing the path, not auth and not path shape.",
+        "put_probe": "PUT /v2/products/:id with cover_url returns HTTP 200 success=true and changes nothing. That success is worthless on its own and was never read as support: the control PUT sent zzz_probe_param, a parameter name that is certainly fake, and got a byte-identical HTTP 200 success=true. Gumroad accepts unrecognised parameters silently.",
+        "the_generalisable_half": "GUMROAD PUT RETURNS success:true FOR PARAMETERS IT DOES NOT RECOGNISE. Any future claim of the form 'we set X through the API' is unfounded unless an independent GET reads X back. The tags set earlier today were verified that way and stand; anything verified only by a PUT response does not.",
+        "safety": "The live published product was unchanged across the probe: preview_url, thumbnail_url, main_cover_id all null, covers 0, name 52 chars, description 1537 bytes, price 2500, published true, 8 tags - identical before and after. Both PUTs carried no real product fields, and the probed value was deliberately not a URL, so it could not have rendered even if stored."
+      },
+      "the_owner_action_is_now_established": "RUNBOOK gate 1 required the automation to have been actually attempted before this could be raised with the owner. It has been, and it failed for a measured reason rather than a suspected one, so the gate is now satisfied. The request is bounded: upload one image file. It is NOT 'make us a cover' - scripts/render-cover.mjs renders 630x500 locally with Chromium and no network, so the file can be produced here and committed, leaving the owner with an upload and no judgement calls. That request was deliberately NOT written this lap: this lap's one change is the measurement, and the image plus the paste-ready request is the next lap's.",
+      "owner_action_required": true,
+      "owner_request_prepared": false,
+      "owner_action_note": "Set the moment the API question was settled. owner_request_prepared flips to true when the request exists in state/owner-requests.json in paste-ready form WITH the rendered image committed - not when a lap intends to write it. compute-eta.mjs keeps this constraint on the candidate list while this pair reads true/false, because otherwise dating measured_at hides the only work that is left."
     },
     {
       "id": "settings_change_cannot_be_done_by_any_session",

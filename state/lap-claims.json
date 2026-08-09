@@ -97,6 +97,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T13:45:54.579Z",
+      "candidate": "listing_has_no_cover_image",
+      "kind": "prerequisite",
+      "mechanism": "Gumroad Discover browse is a visual grid of tiles. The product entered that index yesterday-lap via eight tags but serves covers:[], main_cover_id:null, thumbnail_url:null, preview_url:null, so it presents a blank tile to everyone the index shows it to. The single unmeasured thing is OUR side: whether the v2 API can set a cover at all. scripts/render-cover.mjs already produces the image locally with no network, so settling the upload question either automates the fix outright or reduces the owner request to uploading a file we made. RUNBOOK gate 1 forbids raising the owner request before the automation has actually been attempted, so this measurement is the precondition for both branches. Claims no day movement: every channel is still non-derivable, so a direct claim would be invented.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

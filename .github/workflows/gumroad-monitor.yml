@@ -13,6 +13,10 @@ on:
         description: "Create a draft product, read it back, then delete it. Mutating but self-cleaning; decides whether listing needs a person at all."
         type: boolean
         default: false
+      probe_cover:
+        description: "Probe whether a cover image can be set through the API. Reads, plus two writes that carry no real product fields and cannot succeed into a bad state. Re-run to detect the day Gumroad adds the route."
+        type: boolean
+        default: false
   push:
     branches: [main]
     paths:
@@ -82,6 +86,18 @@ jobs:
         env:
           GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
         run: node scripts/probe-gumroad-create.mjs
+
+      # Writes nothing to state on purpose. The answer lives in
+      # state/constraints.json listing_has_no_cover_image, which the ranking
+      # already reads; a second state file would only be another place for the
+      # same fact to go stale. This step exists so the measurement can be
+      # repeated without a lap, since "no such route" is exactly the kind of
+      # thing that silently stops being true.
+      - name: Probe whether a cover image can be set over REST
+        if: always() && inputs.probe_cover
+        env:
+          GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
+        run: node scripts/probe-gumroad-cover.mjs
 
       - name: Commit current state
         if: steps.collect.outcome == 'success' && steps.verify.outcome == 'success'

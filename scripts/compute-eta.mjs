@@ -24,6 +24,7 @@ import { resolve } from "node:path";
 import { readStateJson, REPO } from "./state-source.mjs";
 import { applyRepricings } from "./repricing.mjs";
 import { daysToTarget } from "./revenue-rate.mjs";
+import { constraintDue } from "./constraint-due.mjs";
 
 const write = process.argv.includes("--write");
 // Reads come from origin/main so a stale checkout cannot drive the ranking. That
@@ -214,15 +215,18 @@ const plannedPortfolio = finitePlanned.length ? Math.min(...finitePlanned) : nul
 // one that removes future owner actions rather than spends them.
 const candidates = [];
 for (const c of constraints?.constraints ?? []) {
-  if (!c.recheck_after) continue;
-  const due = Date.parse(c.recheck_after);
-  const isDue = !Number.isFinite(due) || due <= now.getTime() || c.measured_at === null;
-  if (!isDue) continue;
+  // Why this predicate lives in its own module: compute-eta.mjs does its work at
+  // import time, so it cannot be imported by a test without recomputing the real
+  // ETA. scripts/constraint-due.mjs carries the rule and the reasoning, and
+  // tests/run-tests.mjs holds it — including the case where a measured
+  // constraint with an unwritten owner action must NOT disappear.
+  const dueness = constraintDue(c, now.getTime());
+  if (!dueness.due) continue;
   candidates.push({
-    kind: "constraint_recheck",
+    kind: dueness.kind,
     id: c.id,
     why: c.eta_effect_if_lifted ?? "unknown effect",
-    owner_actions: 0,
+    owner_actions: dueness.owner_actions,
     note: c.claim,
     // Which pool actually does the work. Ranking by days-to-first-yen puts every
     // candidate in one queue, and a queue is only correct when they compete for the

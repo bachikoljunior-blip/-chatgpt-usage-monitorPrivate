@@ -21,6 +21,7 @@ import {
 } from "../scripts/inbox-task.mjs";
 import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/revenue-rate.mjs";
 import { decideVerdict } from "../scripts/gate-verdict.mjs";
+import { constraintDue } from "../scripts/constraint-due.mjs";
 import { checkAddressee, copyChanged, diffListing, readRepoListing } from "../scripts/sync-listing.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -950,6 +951,59 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       repo.description_html.includes("再販・再配布することはできません"),
     "the listing dropped a licence restriction that the shipped LICENSE still imposes",
   );
+}
+
+// --- A settled constraint must not take its leftover work down with it -------
+// 2026-08-09. listing_has_no_cover_image was probed and answered: the Gumroad v2
+// API has no cover route, so a person has to upload the image. Dating
+// measured_at immediately dropped the constraint out of compute-eta's candidate
+// list, because "measured" and "recheck not due" were the only two rules. The
+// measurement was correct, the record was correct, and the only remaining task
+// silently stopped being ranked — the exact write-it-where-nobody-reads-it shape
+// this repository keeps rediscovering, arriving this time through a field that
+// means "we finished looking".
+{
+  const NOW = Date.parse("2026-08-09T14:00:00Z");
+  const base = {
+    id: "example",
+    recheck_after: "2026-08-20", // deliberately in the future
+    measured_at: "2026-08-09T13:52:00Z", // deliberately measured
+  };
+
+  // The regression itself: measured, recheck not due, owner action owed.
+  const owed = constraintDue({ ...base, owner_action_required: true }, NOW);
+  assert(owed.due === true, "a measured constraint with an owed owner action fell off the list");
+  assert(owed.kind === "owner_action_owed", `owed work was labelled ${owed.kind}`);
+  assert(owed.owner_actions === 1, "owed owner work was priced at zero owner actions");
+
+  // The control that proves the assertion above is not vacuous. Same constraint,
+  // same dates, only the flag differs — so if constraintDue ever returned "due"
+  // unconditionally, this line fails and the one above stops meaning anything.
+  const settled = constraintDue(base, NOW);
+  assert(settled.due === false, "a measured, not-yet-due constraint stayed on the list");
+
+  // Preparing the request is what retires it — and only actually preparing it.
+  const prepared = constraintDue(
+    { ...base, owner_action_required: true, owner_request_prepared: true },
+    NOW,
+  );
+  assert(prepared.due === false, "a prepared owner request kept its constraint on the list");
+
+  // The two older rules must survive the new one.
+  const never = constraintDue({ ...base, measured_at: null }, NOW);
+  assert(never.due === true, "an unmeasured constraint stopped being permanently overdue");
+  assert(never.kind === "constraint_recheck", "an unmeasured constraint was mislabelled");
+
+  const dateArrived = constraintDue({ ...base, recheck_after: "2026-08-01" }, NOW);
+  assert(dateArrived.due === true, "a constraint past its recheck date fell off the list");
+
+  // "waits on an event" is not a date and must stay eligible rather than vanish.
+  const eventGated = constraintDue({ ...base, recheck_after: "when someone buys" }, NOW);
+  assert(eventGated.due === true, "an event-gated constraint was dropped instead of ranked");
+
+  // No recheck_after at all is still the one way to opt out entirely.
+  const opted = constraintDue({ id: "x", measured_at: null }, NOW);
+  assert(opted.due === false, "a constraint with no recheck_after was ranked anyway");
 }
 
 console.log("All usage monitor tests passed.");
