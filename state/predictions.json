@@ -381,7 +381,17 @@
         "codex/INBOX.md task .n was dispatched the same lap and asks for English copy plus the Discover category. If a later lap sets a real taxonomy_id from that answer, that is a third change on the same surface and must be recorded as such."
       ],
       "falsified_if": "Either (a) the tags are gone or reduced at judge time, which would mean a later push dropped them because pushLive or the repo copy lost them - the drift this lap added a test for; or (b) the honest negative: tags persist, Discover lists the product, and nothing arrives. (b) does NOT falsify the necessity claim, and must not be written up as if it did. It would falsify the hope that Discover is enough on its own, and would move the constraint back to its expensive half - acquiring standing - with breadth then measured rather than untried, which is worth more than the guess it replaces.",
-      "outcome": null
+      "outcome": null,
+      "interim_observations": [
+        {
+          "observed_at": "2026-08-09T13:38:27.279Z",
+          "not_a_verdict": "Recorded BEFORE judge_on 2026-08-13 deliberately. RUNBOOK forbids writing did-not-work before the judge date, and indexing lag is a live explanation roughly ten minutes after the tags were set. This is evidence for whoever judges, not the judgement.",
+          "what_was_measured": "GET https://gumroad.com/discover?query=idle%20game returned 200 / 119323 bytes containing 36 /l/ product links, and ?query=clicker%20game returned 200 / 85479 bytes with 12. Neither contains this product, by permalink fbozt or by name. gumroad.com/products/search?query=idle+game likewise: 9 product links, ours absent. Both queries are verbatim tags set on the product this day.",
+          "the_control_that_makes_it_informative": "The link counts ARE the control. state/portfolio.json records a case where HTTP 200 carried zero information because a nonexistent UUID returned a byte-identical shell; the discipline is copied from there. Here the Discover pages are server-rendered and DO list other sellers products, so absence is a fact about our product rather than about JavaScript. Separately: https://bachiko4.gumroad.com/l/fbozt returns 200 / 27465 bytes with the product name present in the served HTML, while a fabricated permalink on the same subdomain returns 404 / 900 bytes - so the storefront page itself is decidably public from this environment.",
+          "two_explanations_not_yet_separated": "(a) Indexing lag - the tags are minutes old. (b) Tags are necessary but not sufficient for Discover, with category still other/taxonomy_id 266 the obvious suspect, and Gumroad additionally gating Discover inclusion on a per-product setting that carries a higher fee. These are distinguishable by simply looking again later, which costs one request and no quota, so the next lap should look before it builds anything.",
+          "what_this_does_NOT_show": "It does not show the tags were useless. Discover search is one surface; the tags also sit on the product itself. And it does not show the product is unreachable - the opposite was measured in the same run."
+        }
+      ]
     }
   ]
 }
