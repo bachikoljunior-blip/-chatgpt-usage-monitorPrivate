@@ -202,10 +202,61 @@ candidates.push({
   note: "move work to the non-scarce pool; stop loading the full directive into every session in 14 repos",
 });
 
+// Rank the candidates by what they do to the ETA, not by the order they were
+// appended.
+//
+// 2026-08-09: they were in arrival order, and RUNBOOK says a lap takes the top
+// one. The top one was a constraint recheck whose own record says it cannot be
+// resolved by testing — only by publishing a game. So a lap following the book
+// exactly would pick something unactionable, every time, while the fastest option
+// sat fourth. Adoption had an ETA argument behind it; the ranking did not.
+//
+// Nothing is dropped silently. An item that cannot be acted on now is kept, marked,
+// and sorted to the bottom with its reason, because a candidate list that quietly
+// shrinks reads as "this is everything" when it is not.
+const worstCaseDays = (range) => {
+  if (typeof range !== "string") return null;
+  const nums = range.match(/\d+/g);
+  if (!nums?.length) return null;
+  return Math.max(...nums.map(Number)); // conservative end of the estimate
+};
+
+const constraintById = new Map((constraints?.constraints ?? []).map((c) => [c.id, c]));
+
+for (const c of candidates) {
+  const constraint = constraintById.get(c.id);
+  // A recheck date that is not a date is a condition, not a schedule — it cannot
+  // be satisfied by choosing to do it today.
+  const gatedOnEvent =
+    constraint?.recheck_after && Number.isNaN(Date.parse(constraint.recheck_after));
+  c.actionable_now = !gatedOnEvent;
+  if (gatedOnEvent) c.not_actionable_reason = `waits on an event: ${constraint.recheck_after}`;
+
+  c.eta_effect_days = worstCaseDays(c.days_to_first_yen_estimate);
+  c.eta_effect_basis =
+    c.eta_effect_days !== null
+      ? `portfolio idle ETA is ${idlePortfolio === null ? "infinite" : idlePortfolio + "d"}; ` +
+        `this claims first yen within ${c.eta_effect_days} days at the conservative end (estimate, not measured)`
+      : c.kind === "efficiency"
+        ? "does not shorten the ETA directly; raises laps per week, which raises attempts at everything else"
+        : "no comparable estimate recorded";
+}
+
+candidates.sort((a, b) => {
+  if (a.actionable_now !== b.actionable_now) return a.actionable_now ? -1 : 1;
+  const ad = a.eta_effect_days ?? Infinity;
+  const bd = b.eta_effect_days ?? Infinity;
+  if (ad !== bd) return ad - bd;
+  const ao = typeof a.owner_actions === "number" ? a.owner_actions : 99;
+  const bo = typeof b.owner_actions === "number" ? b.owner_actions : 99;
+  return ao - bo;
+});
+
 const report = {
   schema_version: 1,
   status: "ok",
   fetched_at: now.toISOString(),
+  ranking: "candidates are sorted by estimated days to first yen (conservative end), actionable ones first",
   target_yen_per_month: TARGET_YEN_PER_MONTH,
   idle_eta_days: idlePortfolio,
   idle_eta_note:

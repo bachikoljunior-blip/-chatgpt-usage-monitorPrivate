@@ -1,7 +1,8 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T08:26:06.396Z",
+  "fetched_at": "2026-08-09T08:40:06.874Z",
+  "ranking": "candidates are sorted by estimated days to first yen (conservative end), actionable ones first",
   "target_yen_per_month": 200000,
   "idle_eta_days": null,
   "idle_eta_note": "every measurable channel is infinite: zero revenue, zero growth, or blocked behind an owner action. This is the real baseline, not a measurement failure.",
@@ -39,18 +40,16 @@
   ],
   "candidates": [
     {
-      "kind": "constraint_recheck",
-      "id": "itch_profile_games_fields",
-      "why": "medium: decides whether the three funnel stages (found / opened / bought) can be separated at all. Cannot be resolved by testing — only by publishing a game.",
-      "owner_actions": 0,
-      "note": "PARTLY MEASURED: api.itch.io/profile/games authenticates and returns a games collection. Which per-game fields it carries is still unknown, because the account currently has zero games."
-    },
-    {
-      "kind": "channel_unblock",
-      "id": "itch",
-      "why": "turns an infinite path finite",
-      "owner_actions": 1,
-      "note": "create one game page (form only); butler automates everything after"
+      "kind": "zero_base_option",
+      "id": "vscode_extension_pro",
+      "why": "CI can publish and update it; a concrete time-saver reaches the English-speaking developer market directly",
+      "owner_actions": "1 initial + 0-1 monthly",
+      "days_to_first_yen_estimate": "3-14",
+      "estimate_not_measurement": true,
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "actionable_now": true,
+      "eta_effect_days": 14,
+      "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 14 days at the conservative end (estimate, not measured)"
     },
     {
       "kind": "zero_base_option",
@@ -59,16 +58,10 @@
       "owner_actions": "1 initial + 0-1 monthly",
       "days_to_first_yen_estimate": "7-21",
       "estimate_not_measurement": true,
-      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations."
-    },
-    {
-      "kind": "zero_base_option",
-      "id": "vscode_extension_pro",
-      "why": "CI can publish and update it; a concrete time-saver reaches the English-speaking developer market directly",
-      "owner_actions": "1 initial + 0-1 monthly",
-      "days_to_first_yen_estimate": "3-14",
-      "estimate_not_measurement": true,
-      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations."
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "actionable_now": true,
+      "eta_effect_days": 21,
+      "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 21 days at the conservative end (estimate, not measured)"
     },
     {
       "kind": "zero_base_option",
@@ -77,7 +70,10 @@
       "owner_actions": "1 initial",
       "days_to_first_yen_estimate": "7-21",
       "estimate_not_measurement": true,
-      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations."
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "actionable_now": true,
+      "eta_effect_days": 21,
+      "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 21 days at the conservative end (estimate, not measured)"
     },
     {
       "kind": "zero_base_option",
@@ -86,7 +82,10 @@
       "owner_actions": "1 initial + 0-1 monthly",
       "days_to_first_yen_estimate": "7-30",
       "estimate_not_measurement": true,
-      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations."
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "actionable_now": true,
+      "eta_effect_days": 30,
+      "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 30 days at the conservative end (estimate, not measured)"
     },
     {
       "kind": "zero_base_option",
@@ -95,14 +94,41 @@
       "owner_actions": "1 initial",
       "days_to_first_yen_estimate": "14-60",
       "estimate_not_measurement": true,
-      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations."
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "actionable_now": true,
+      "eta_effect_days": 60,
+      "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 60 days at the conservative end (estimate, not measured)"
     },
     {
       "kind": "efficiency",
       "id": "reduce_lap_cost",
       "why": "more laps per week from the same quota means more attempts at every other candidate",
       "owner_actions": 0,
-      "note": "move work to the non-scarce pool; stop loading the full directive into every session in 14 repos"
+      "note": "move work to the non-scarce pool; stop loading the full directive into every session in 14 repos",
+      "actionable_now": true,
+      "eta_effect_days": null,
+      "eta_effect_basis": "does not shorten the ETA directly; raises laps per week, which raises attempts at everything else"
+    },
+    {
+      "kind": "channel_unblock",
+      "id": "itch",
+      "why": "turns an infinite path finite",
+      "owner_actions": 1,
+      "note": "create one game page (form only); butler automates everything after",
+      "actionable_now": true,
+      "eta_effect_days": null,
+      "eta_effect_basis": "no comparable estimate recorded"
+    },
+    {
+      "kind": "constraint_recheck",
+      "id": "itch_profile_games_fields",
+      "why": "medium: decides whether the three funnel stages (found / opened / bought) can be separated at all. Cannot be resolved by testing — only by publishing a game.",
+      "owner_actions": 0,
+      "note": "PARTLY MEASURED: api.itch.io/profile/games authenticates and returns a games collection. Which per-game fields it carries is still unknown, because the account currently has zero games.",
+      "actionable_now": false,
+      "not_actionable_reason": "waits on an event: first game published",
+      "eta_effect_days": null,
+      "eta_effect_basis": "no comparable estimate recorded"
     }
   ],
   "measured_current_monthly_yen": 0
