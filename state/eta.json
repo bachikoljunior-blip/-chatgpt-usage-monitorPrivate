@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T13:58:19.563Z",
+  "fetched_at": "2026-08-09T14:21:26.861Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -38,18 +38,18 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T11:02:42.926Z",
-      "days_unchanged": 0.12
+      "days_unchanged": 0.14
     },
     "planned": {
       "unchanged_since": "2026-08-09T11:02:42.926Z",
-      "days_unchanged": 0.12
+      "days_unchanged": 0.14
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-09T13:58:09.909Z",
+      "measured_at": "2026-08-09T14:17:27.104Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": false,
       "revenue_window_days": null,
@@ -66,7 +66,7 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-09T13:36:14.407Z",
+      "measured_at": "2026-08-09T14:19:21.592Z",
       "monthly_yen_now": 0,
       "games": 0,
       "total_views": 0,
@@ -90,10 +90,10 @@
   ],
   "candidates": [
     {
-      "kind": "constraint_recheck",
+      "kind": "owner_action_owed",
       "id": "no_standing_where_buyers_gather",
       "why": "large: all seven zero-base options are now refuted and every one failed on the term this constraint names. This is the only route in the whole evidence set where a first buyer actually arrived, and the fastest on record. Written as 'five of the seven' when this entry was created at 11:05; codex/outbox/2026-08-09.j.md took the remaining two an hour later, which is why this constraint sorts first — nothing was moved by hand to put it there.",
-      "owner_actions": 0,
+      "owner_actions": 1,
       "note": "UNMEASURED ON OUR SIDE, EVIDENCED FROM OUTSIDE: what blocks the only route on record that ever reached a first buyer is STANDING in the community the buyers are in — prior participation, an existing following, or several venues hit at once. Not recurring owner actions. Standing accrues before the post; it is a prerequisite, not a repeat action. Whether the owner has standing anywhere has never been checked, so this entry records a blocker whose size is unknown, not a blocker known to be present.",
       "measure_via": "here",
       "actionable_now": true,
