@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T09:21:31.673Z",
+  "fetched_at": "2026-08-09T09:25:23.768Z",
   "overdue_factor": 2,
   "overdue_count": 0,
   "never_seen_count": 3,
@@ -13,7 +13,7 @@
       "cadence_minutes": 60,
       "last_seen": "2026-08-09T09:16:39.080Z",
       "last_seen_source": "laps.open",
-      "age_minutes": 5,
+      "age_minutes": 9,
       "status": "ok"
     },
     {
@@ -38,18 +38,18 @@
       "id": "usage-monitor",
       "kind": "github-actions",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-09T09:16:06.446Z",
+      "last_seen": "2026-08-09T09:21:34.875Z",
       "last_seen_source": "state_file:state/usage.json",
-      "age_minutes": 5,
+      "age_minutes": 4,
       "status": "ok"
     },
     {
       "id": "claude-usage-monitor",
       "kind": "github-actions",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-09T09:21:28.390Z",
+      "last_seen": "2026-08-09T09:21:47.722Z",
       "last_seen_source": "state_file:state/claude-usage.json",
-      "age_minutes": 0,
+      "age_minutes": 4,
       "status": "ok"
     },
     {
@@ -58,7 +58,7 @@
       "cadence_minutes": 60,
       "last_seen": "2026-08-09T09:20:48.307Z",
       "last_seen_source": "state_file:state/gumroad.json",
-      "age_minutes": 1,
+      "age_minutes": 5,
       "status": "ok"
     },
     {

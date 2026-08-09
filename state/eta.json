@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T09:21:31.116Z",
+  "fetched_at": "2026-08-09T09:25:23.260Z",
   "ranking": "candidates are sorted by estimated days to first yen (conservative end), actionable ones first",
   "target_yen_per_month": 200000,
   "idle_eta_days": null,
@@ -20,7 +20,7 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-09T08:24:08.929Z",
+      "measured_at": "2026-08-09T09:22:42.947Z",
       "monthly_yen_now": 0,
       "games": 0,
       "total_views": 0,
