@@ -1,32 +1,16 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T06:52:00.000Z",
-  "decision": "hand_off",
-  "reason": "context_exhausted_not_quota",
-  "detail": "Trigger fired at 06:50Z. Gate returned continue (43% weekly, 5.63 days left, 13.0% discretionary, 1.39% lap budget), so quota was not the limit. RUNBOOK 6.5 applies instead: this session has run well past three laps, so the thinking was handed to a fresh child.",
-  "not_a_stop": "The child does the lap. Handing off is the loop continuing where it can think clearly.",
-  "gate_at_handoff": {
-    "weekly_remaining_percent": 43,
-    "days_to_reset": 5.63,
-    "discretionary_percent": 13.0,
-    "lap_budget_percent": 1.39,
-    "decision": "continue"
+  "fetched_at": "2026-08-09T07:02:18.934Z",
+  "decision": "lap_complete",
+  "reason": "assigned single lap finished; not a handoff for context",
+  "did": "fixed lap-cost measurement: window-roll compared resets_at as strings against a timestamp the collector re-derives every call, so 6 of 6 samples ever taken were discarded and pacing kept reserving the unmeasured 0.5% default.",
+  "observed_not_guessed": {
+    "gumroad_lifecycle": "dispatched gumroad-monitor.yml with probe_lifecycle=true at 06:53Z. Printed result: \"Sorry, you can only create 10 products per day.\" The daily cap has NOT reset. constraints.json recheck_after 2026-08-10 stands; do not re-probe before then.",
+    "resets_at_jitter": "12 consecutive collections 05:17Z-06:41Z all reported the same unmoved weekly window as .317/.265/.627/.324/.117/.435/.965/.281/21:59:59.937/.968/.180/.314",
+    "first_surviving_sample": "classified usable for the first time, then measured 0.000% — dropped as below_measurement_resolution rather than averaged in as free"
   },
-  "laps_this_session": [
-    {
-      "lap": 1,
-      "did": "zero-base round: blind proposal, leak check passed, verdict recorded"
-    },
-    {
-      "lap": 2,
-      "did": "made the zero-base options visible to the candidate ranker"
-    },
-    {
-      "lap": 3,
-      "did": "added the handoff rule the gate was missing"
-    }
-  ],
-  "next_lap_should": "Retry the Gumroad create/read/delete lifecycle once the 10-per-day creation cap resets — it is the one pending measurement that changes the ranking of the zero-base options. Decide from the run's own message whether the cap is still in force; do not assume.",
-  "child_session_id": "session_01AFhFETmkGvs9vkgaVqyTUS"
+  "next_lap_should": "The classifier is fixed; the remaining blocker is resolution. A lap budget is 1.37% against a reading rounded to 0.1%, so one lap sits near the noise floor. Two untried routes: (a) measure across several laps — open once, close after N fires — or (b) find a usage field finer than the rounded percentage. Until one lands, every lap budget is still a residue of the 0.5% guess. state/laps.json pending_verification carries the indicator and a 2026-08-10 judgement date.",
+  "known_gap": "the below_measurement_resolution guard is not covered by tests/run-tests.mjs; only windowDidRoll is. Extracting the sample classifier into a pure module would close that.",
+  "owner_requests_this_lap": 0
 }
