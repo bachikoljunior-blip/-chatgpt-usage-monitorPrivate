@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-09T11:12:00Z",
+  "why_this_exists": "The figure '28 published artifacts, no route to a buyer, ¥0 in eight months' is asserted in state/zerobase.json, state/eta.json, state/predictions.json, state/constraints.json and a comment in scripts/repricing.mjs. It entered at 8eca5b1 (2026-08-09T10:27:30Z) with no source and nothing ever enumerated it. It is load-bearing: it is the evidence that publishing-and-waiting has already been run 28 times, which is what demotes every build candidate. A number doing that much work should have a list under it.",
+  "what_was_counted_here": "Two independent enumerations, both taken 2026-08-09T11:12Z, both complete rather than sampled.",
+  "enumerations": [
+    {
+      "source": "claude.ai published artifacts (Artifact action=list, scope=mine, limit=50 — 50 is above the count, so this is the whole set, not a page)",
+      "count": 5,
+      "items": [
+        {
+          "title": "アエテリア戦記 — Echoes of Aetheria",
+          "updated": "2026-08-03",
+          "kind": "game",
+          "immediately_tryable": "likely, not verified — the page was not opened"
+        },
+        {
+          "title": "クッキーストラテジャー｜Shorts プロモ動画",
+          "updated": "2026-08-02",
+          "kind": "promo video for the game below",
+          "immediately_tryable": "not a thing to try; it advertises one"
+        },
+        {
+          "title": "KAGEROU 陽炎",
+          "updated": "2026-07-29",
+          "kind": "game",
+          "immediately_tryable": "likely, not verified — the page was not opened"
+        },
+        {
+          "title": "op_jikkyo3",
+          "updated": "2026-07-28",
+          "kind": "unknown",
+          "immediately_tryable": "unknown"
+        },
+        {
+          "title": "クッキーストラテジャー｜無料ブラウザで遊べるクッキークリッカー系放置ゲーム",
+          "updated": "2026-07-26",
+          "kind": "free browser idle game",
+          "immediately_tryable": "yes. The title states free and browser-playable, and a separate public repository (Simple-browser-cookie-clicker-game) carries the same product. Two signals, neither of them the other."
+        }
+      ]
+    },
+    {
+      "source": "GitHub repositories owned by the account (list_repos, limit=100, has_more=false, so complete)",
+      "count": 14,
+      "public": 10,
+      "private": 4,
+      "public_names": [
+        "Simple-browser-cookie-clicker-game",
+        "J",
+        "game",
+        "game2",
+        "exist-debug",
+        "Q",
+        "O",
+        "Gptgame",
+        "Cooky",
+        "survival"
+      ],
+      "contents_examined": false,
+      "contents_note": "Names only. Whether these are published, playable, or abandoned scratch repositories was NOT checked. Counting a repository as a published artifact is exactly the sort of inflation this file exists to stop, so they are listed, not totalled into a headline figure."
+    }
+  ],
+  "against_the_28": {
+    "verdict": "unsupported by anything enumerable from here, and NOT thereby refuted",
+    "detail": "5 published artifacts and 14 repositories. state/itch.json reports 0 games; state/gumroad.json reports product_count 1 and 0 lifetime sales. No combination of these reaches 28.",
+    "the_honest_gap": "The private youtube repository holds figures this environment cannot read — state/external-metrics.json has never been published, which is already recorded as a wiring exception. If '28' counted published videos, it could be right and unverifiable from here. So this entry does not say the number is wrong. It says the number has no list under it and the lists that do exist do not add up to it.",
+    "what_would_settle_it": "publish state/external-metrics.json from the repository that holds the YouTube credentials, or have whoever wrote 8eca5b1 name what was counted. Until then, treat 28 as an assertion, not an observation."
+  },
+  "the_question_this_was_actually_opened_for": {
+    "question": "Is there a finished artifact a reader could try immediately? codex/outbox/2026-08-09.i.md found that in every fast first-sale case there was one, and that no case succeeded on a bare announcement. state/zerobase.json recorded honest_post_where_buyers_gather as blocked_on 'there is nothing to post about yet', and the previous handoff recorded that nobody had ever looked.",
+    "answer": "Yes, at least one. The cookie-clicker idle game is free, browser-playable and corroborated by a second source. Two more artifacts are games and are probably tryable, though neither page was opened.",
+    "so_the_blocker_moves": "honest_post_where_buyers_gather was not blocked on having something to post. That half is answered and it was cheap — one tool call. What it is actually blocked on is the other half, which is still untouched: whether any of these reaches a community that contains BUYERS. A free browser idle game has players, and players are not the same as buyers. Do not read this entry as saying the route is now open.",
+    "do_not_overclaim": "Nobody has established that any of these five is worth posting. Established: something postable exists. Those are different sentences and the difference is the whole remaining question."
+  },
+  "not_examined": [
+    "the contents of the 10 public repositories",
+    "whether any artifact has a buyer community rather than a player community",
+    "whether the artifacts are still reachable at their URLs",
+    "the owner's standing in any community — see no_standing_where_buyers_gather in state/constraints.json"
+  ]
+}

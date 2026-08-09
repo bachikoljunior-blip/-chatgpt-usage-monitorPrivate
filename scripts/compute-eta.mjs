@@ -41,6 +41,7 @@ const [
   { value: zerobase },
   { value: blocked },
   { value: history },
+  { value: portfolio },
 ] = await Promise.all([
   readStateJson("state/gumroad.json", { preferLocal }),
   readStateJson("state/itch.json", { preferLocal }),
@@ -49,6 +50,7 @@ const [
   readStateJson("state/zerobase.json", { preferLocal }),
   readStateJson("state/blocked.json", { preferLocal }),
   readStateJson("state/eta-history.json", { preferLocal }),
+  readStateJson("state/portfolio.json", { preferLocal }),
 ]);
 
 const channels = [];
@@ -445,10 +447,53 @@ candidates.sort((a, b) => {
 // being found and referred rather than on existing, and wrote it in zerobase.json
 // — where the side that picks and executes work never reads it. Reasoning in
 // scripts/repricing.mjs.
+let portfolioCaveat = null;
 const { unmatched: unmatchedRepricings } = applyRepricings(
   candidates,
   zerobase?.distribution_answer?.reprices_candidates,
 );
+
+// A blocker that was never checked reads exactly like a blocker that was checked
+// and found solid. honest_post_where_buyers_gather carried blocked_on "there is
+// nothing to post about yet" from the hour it was written, and no lap had opened
+// the portfolio to see. state/portfolio.json is that enumeration; without this
+// block it would be another file written where the picker does not read, which is
+// the failure RUNBOOK step 8 exists to catch.
+//
+// It does not unblock the candidate. It moves the blocker from the half that was
+// answered to the half that was not, and says so on the candidate itself, because
+// "something postable exists" and "it reaches buyers" are different claims and the
+// list quietly collapsing them is how a route gets picked on a misread.
+if (portfolio) {
+  const answered = portfolio.the_question_this_was_actually_opened_for;
+  for (const c of candidates) {
+    if (c.id !== "honest_post_where_buyers_gather") continue;
+    c.blocked_on_rechecked = {
+      at: portfolio.fetched_at ?? null,
+      was: "there is nothing to post about yet",
+      found: answered?.answer ?? "state/portfolio.json carries no answer field",
+      still_blocked_on: answered?.so_the_blocker_moves ?? null,
+      do_not_overclaim: answered?.do_not_overclaim ?? null,
+      source: "state/portfolio.json",
+    };
+  }
+  // The 28 is asserted in five files and ranks every build candidate below the
+  // distribution ones. Anything carrying that much weight should say out loud when
+  // nothing enumerable supports it, in the file the picker reads rather than in a
+  // note somewhere else.
+  if (portfolio.against_the_28) {
+    portfolioCaveat = {
+      claim_in_circulation: "28 published artifacts, no route to a buyer, ¥0 in eight months",
+      verdict: portfolio.against_the_28.verdict ?? null,
+      enumerated: (portfolio.enumerations ?? []).map((e) => ({
+        source: e.source,
+        count: e.count,
+      })),
+      the_honest_gap: portfolio.against_the_28.the_honest_gap ?? null,
+      what_would_settle_it: portfolio.against_the_28.what_would_settle_it ?? null,
+    };
+  }
+}
 
 // Read off the history rather than recomputed: the question "how long has this been
 // stuck" is about the record, not about this run. Null means there is no history to
@@ -488,6 +533,7 @@ const report = {
     "ordered by recurring owner actions per month, which is measured. Everything else falls " +
     "back to the days estimate, then to owner actions.",
   repricings_with_no_candidate: unmatchedRepricings,
+  portfolio_caveat: portfolioCaveat,
   target_yen_per_month: TARGET_YEN_PER_MONTH,
   idle_eta_days: idlePortfolio,
   idle_eta_note:
