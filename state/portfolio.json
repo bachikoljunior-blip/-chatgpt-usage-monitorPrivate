@@ -68,6 +68,20 @@
     "the_honest_gap": "The private youtube repository holds figures this environment cannot read — state/external-metrics.json has never been published, which is already recorded as a wiring exception. If '28' counted published videos, it could be right and unverifiable from here. So this entry does not say the number is wrong. It says the number has no list under it and the lists that do exist do not add up to it.",
     "what_would_settle_it": "publish state/external-metrics.json from the repository that holds the YouTube credentials, or have whoever wrote 8eca5b1 name what was counted. Until then, treat 28 as an assertion, not an observation."
   },
+  "the_priced_artifact": {
+    "found_at": "2026-08-09T11:25:00Z",
+    "why_this_was_added": "This file enumerated free artifacts and repository names and then asked 'does any of it reach BUYERS'. It never listed the one artifact that has a price. state/gumroad.json has been collected hourly the whole time and carries exactly one published product; nothing in this file mentioned it. A portfolio that omits the only thing with a price cannot answer a question about buyers.",
+    "source": "state/gumroad.json, fetched_at 2026-08-09T11:04:57.959Z — the collector's own reading, not an assertion",
+    "what_it_is": "one published product, priced, with zero lifetime sales. Name, price and counts live in state/gumroad.json and are deliberately not copied here: a number copied into prose is the failure this whole file exists to document.",
+    "the_pair_this_makes": {
+      "claim": "there is already a free, immediately-playable artifact AND a priced product of the same kind, so the shape codex/outbox/2026-08-09.i.md found in every fast first-sale case — a finished thing the reader can try at once, with something purchasable behind it — is already assembled.",
+      "status": "INFERRED, NOT VERIFIED. The free artifact and the paid product share a subject by their titles, and a public repository carries the same subject again. Nobody has opened the product page or compared its contents to the free build.",
+      "what_would_verify_it": "open the Gumroad product page and check whether what it sells is the same codebase as the free browser build. One page load. Cheap, and not yet done.",
+      "what_would_refute_it": "the paid product being unrelated to the free artifact, or the free artifact no longer reachable at its URL."
+    },
+    "what_it_changes_about_the_open_question": "'Does a free browser idle game have buyers' was the wrong question to send outward. Players of a free idle game are not buyers, which this file already said. But the priced product is not aimed at players at all — it is aimed at whoever would buy that kind of product, which is a different audience with a different gathering place. The outward question that follows is who pays for this class of product and where they gather, and that is what codex task 2026-08-09.k asks.",
+    "still_not_established": "that anyone buys this. Zero lifetime sales is a measurement, and state/eta.json channels.gumroad already records why: no traffic source feeds it. This entry does not claim the product is good or priced right. It claims the enumeration was incomplete and the question was aimed at the wrong artifact."
+  },
   "the_question_this_was_actually_opened_for": {
     "question": "Is there a finished artifact a reader could try immediately? codex/outbox/2026-08-09.i.md found that in every fast first-sale case there was one, and that no case succeeded on a bare announcement. state/zerobase.json recorded honest_post_where_buyers_gather as blocked_on 'there is nothing to post about yet', and the previous handoff recorded that nobody had ever looked.",
     "answer": "Yes, at least one. The cookie-clicker idle game is free, browser-playable and corroborated by a second source. Two more artifacts are games and are probably tryable, though neither page was opened.",
@@ -76,7 +90,8 @@
   },
   "not_examined": [
     "the contents of the 10 public repositories",
-    "whether any artifact has a buyer community rather than a player community",
+    "whether the paid product is the same codebase as the free browser build — see the_priced_artifact.the_pair_this_makes, which is inferred from titles and never checked",
+    "whether any artifact has a buyer community rather than a player community — handed outward as codex task 2026-08-09.k on 2026-08-09, aimed at the PAID product rather than the free game",
     "whether the artifacts are still reachable at their URLs",
     "the owner's standing in any community — see no_standing_where_buyers_gather in state/constraints.json"
   ]

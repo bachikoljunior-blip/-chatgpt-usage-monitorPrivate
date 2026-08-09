@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T10:00:00.000Z",
+  "fetched_at": "2026-08-09T11:24:04.915Z",
   "note": "Every change made because it was claimed to shorten the ETA. judge_on is set when the change lands, not when it is convenient. concurrent_changes is what else was in flight, so a later reader can tell a clean attribution from a confounded one.",
   "predictions": [
     {
@@ -172,6 +172,28 @@
         "2026-08-09.eta-becomes-observable landed in the same minute from another worker, adding state/eta-history.json. Two workers were still writing concurrently despite the 10:59 change that was meant to leave only one."
       ],
       "falsified_if": "laps keep selecting build candidates or machinery without addressing standing or breadth, or the entry is dropped/rewritten by a later recompute so the picker stops seeing it. Also falsified if it surfaces but sits unread the way the zerobase repricing did — presence in the file is not the claim, being acted on or refused on the record is.",
+      "outcome": null
+    },
+    {
+      "id": "2026-08-09.buyer-question-aimed-at-the-priced-artifact",
+      "made_at": "2026-08-09T11:28:00Z",
+      "claim": "Every outward survey so far (2026-08-09.c through .j) asked about candidate SHAPES that did not exist yet, and all of them came back refuted on the same term: no case where a first buyer arrived unattended with both calendar dates. This lap points the lane at something that already exists and already has a price. The specific prediction: task 2026-08-09.k returns at least one venue where a zero-standing account may post on the same day, with the rule quoted, and that answer is materially different in kind from .c-.j — it names places and conditions rather than adjudicating a hypothetical. If it comes back refuted on the same term as the seven, that is evidence the term is about this account rather than about the candidates, which is a more useful finding than another refutation.",
+      "metric": "codex/outbox/2026-08-09.k.md exists and carries the four 判定 answers. Read: (a) whether a venue is named WITH a quoted rule and a stated posting precondition, (b) whether the buyer-class question returned あり with source URLs, (c) whether the answer is about named places or about a shape.",
+      "baseline": {
+        "outward_surveys_completed": 7,
+        "outward_surveys_returning_refuted": 7,
+        "venues_named_with_quoted_rules_so_far": 0,
+        "priced_products_published": 1,
+        "lifetime_sales": 0,
+        "attachments_sent_to_the_lane_before": 2,
+        "portfolio_entries_mentioning_the_priced_product_before": 0
+      },
+      "judge_on": "2026-08-11",
+      "concurrent_changes": [
+        "the same commit adds state/portfolio.json and state/gumroad.json to scripts/inbox-task.mjs ATTACHMENTS. The task text and the attachment set changed together on purpose — the question is unanswerable without the files — so a better answer cannot be attributed to the wording alone.",
+        "2026-08-09.standing-recorded-as-the-real-constraint and 2026-08-09.distribution-class-added judge on the same date and overlap on what laps pick."
+      ],
+      "falsified_if": "the answer comes back with venue names but no quoted rules or posting preconditions, which is the failure the task text names explicitly and would mean the instruction did not bind. Also falsified if the lane does not run at all by the judge date, or if the answer never mentions the priced product and answers about the free game instead — that would mean attaching the files did not redirect the question.",
       "outcome": null
     }
   ]

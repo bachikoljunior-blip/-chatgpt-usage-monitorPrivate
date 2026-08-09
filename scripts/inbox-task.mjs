@@ -103,7 +103,18 @@ export function decide(header, { today, markerExists }) {
 // Attaching them is not the same mistake as writing facts into an instruction.
 // That failure is a human copying a number into prose, where it then rots. These
 // are read at dispatch, every run, so they cannot be older than the run itself.
-export const ATTACHMENTS = ["state/eta.json", "state/constraints.json"];
+export const ATTACHMENTS = [
+  "state/eta.json",
+  "state/constraints.json",
+  // Added 2026-08-09 with task .k. The surveys up to .j were about candidate
+  // SHAPES, which eta.json describes on its own. .k asks about the artifacts
+  // this account actually has — and the only one carrying a price lives in
+  // gumroad.json, which nothing here attached. A survey asked "where do the
+  // buyers of this gather" without being told what "this" is answers about a
+  // shape again.
+  "state/portfolio.json",
+  "state/gumroad.json",
+];
 
 export function buildPrompt(inboxText, attachments) {
   const parts = [
