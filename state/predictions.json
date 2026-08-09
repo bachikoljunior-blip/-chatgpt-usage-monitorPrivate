@@ -141,6 +141,30 @@
       ],
       "outcome": null,
       "note": "null is the correct value for 'never' and the sanitizer now refuses a coerced number in the history. A row showing infinity becoming finite must be a real change, not a rounding."
+    },
+    {
+      "id": "2026-08-09.standing-recorded-as-the-real-constraint",
+      "made_at": "2026-08-09T11:10:00Z",
+      "claim": "Route 1 was excluded on the wrong ground. The constraint written down was recurring owner actions; the blocker the evidence actually names is standing, which accrues before the post and is not a recurring action. Recording standing in state/constraints.json — where compute-eta.mjs reads it and turns it into a candidate — should change what laps do, because until now that exclusion lived only as prose in zerobase.json and no machine read it. The specific prediction: the constraint surfaces as an actionable candidate in state/eta.json and survives the scheduled bot recompute, and the next lap that selects work either picks it or states on the record why not.",
+      "metric": "state/eta.json read back from origin/main: an entry with kind constraint_recheck and id no_standing_where_buyers_gather, actionable_now true, still present after a pulse/compute-eta run this session did not perform. Then state/continue.json and commit subjects for the following laps.",
+      "baseline": {
+        "constraint_entries_before": 12,
+        "route_1_exclusion_recorded_in_constraints_json": false,
+        "zero_base_options_refuted": 5,
+        "zero_base_options_total": 7,
+        "revenue_yen": 0,
+        "idle_eta_days": null,
+        "standing_of_our_accounts_ever_measured": false,
+        "artifacts_ever_examined_for_being_worth_posting": 0
+      },
+      "judge_on": "2026-08-11",
+      "concurrent_changes": [
+        "the parent applied a new eta-loop trigger prompt at 10:59 (ebb8cc0) making the parent a spawner rather than a worker. That changes who runs laps, so any change in what laps pick is confounded with it and cannot be attributed to this entry alone.",
+        "2026-08-09.distribution-class-added judges on the same date on an overlapping metric",
+        "2026-08-09.eta-becomes-observable landed in the same minute from another worker, adding state/eta-history.json. Two workers were still writing concurrently despite the 10:59 change that was meant to leave only one."
+      ],
+      "falsified_if": "laps keep selecting build candidates or machinery without addressing standing or breadth, or the entry is dropped/rewritten by a later recompute so the picker stops seeing it. Also falsified if it surfaces but sits unread the way the zerobase repricing did — presence in the file is not the claim, being acted on or refused on the record is.",
+      "outcome": null
     }
   ]
 }

@@ -128,6 +128,22 @@
       "note": "Design consequence: the parent only reads the gate and spawns a child. All thinking happens in a fresh context with full tools, which is what A12 asks for. Do not write laps that depend on MCP being present in the parent's own fired turn."
     },
     {
+      "id": "no_standing_where_buyers_gather",
+      "claim": "UNMEASURED ON OUR SIDE, EVIDENCED FROM OUTSIDE: what blocks the only route on record that ever reached a first buyer is STANDING in the community the buyers are in — prior participation, an existing following, or several venues hit at once. Not recurring owner actions. Standing accrues before the post; it is a prerequisite, not a repeat action. Whether the owner has standing anywhere has never been checked, so this entry records a blocker whose size is unknown, not a blocker known to be present.",
+      "evidence": "codex/outbox/2026-08-09.i.md, a survey commissioned to break honest_post_where_buyers_gather, plus codex/outbox/2026-08-09.h.md before it. Two counter-cases turn on standing rather than frequency: an r/Entrepreneur post removed 2026-02-19 under Rule 2 'No Promotion' (being honest that it is your own work is not an exemption when the post's purpose is promotion), and a post auto-removed 2026-03-20 because the author held under 10 comment karma in that community — the single post from a standing start was never shown to anyone. Against that, Invoker (published 2020-06-30, USD 90 the same day) records no audience at all and substituted breadth: Product Hunt, Reddit and Twitter at once. Three of the surveyed cases reached first revenue within 0-1 days of publishing. NOT MEASURED: our own standing in any named community, and whether any of the 28 published artifacts is worth posting. Nobody has looked at either.",
+      "measured_at": null,
+      "recheck_after": "2026-08-10",
+      "blocks": [
+        "honest_post_where_buyers_gather",
+        "first_buyer_from_zero_audience"
+      ],
+      "eta_effect_if_lifted": "large: five of the seven checked options are refuted and every one failed on the term this constraint names. This is the only route in the whole evidence set where a first buyer actually arrived, and the fastest on record.",
+      "corrects": "Route 1 (post where the buyers already gather) was excluded in state/zerobase.json distribution_answer on the ground that it needs recurring owner actions. That ground did not cover it. The exclusion elected route 2 (findable_surface_at_scale), which 2026-08-09.h then refuted, leaving the excluding constraint with no surviving route under it. Both surveys ended by asking a lap to take this deliberately rather than propose another build candidate. This entry is that decision: the recurring-actions ground is withdrawn, and standing is recorded as the real blocker in the file the picker reads. Until now it lived only as prose in zerobase.json, where no machine reads it.",
+      "two_ways_it_lifts": "Acquire standing — participation that accrues over time, an owner action that repeats, and therefore genuinely expensive under this loop's constraints. Or substitute breadth, which is what the one zero-audience case on record did: several venues on the same day. Breadth is a single bounded act, so it does not fall foul of the recurring-actions constraint at all. Breadth is the cheaper test and has never been tried.",
+      "prerequisite_the_evidence_adds": "In every fast case what was posted was a finished artifact the reader could try immediately — a working tool, a desktop app, a searchable database of real data. No case was found where a bare announcement sufficed. So this constraint cannot be tested until there is something to post, and whether any existing artifact qualifies is the cheap unexamined half.",
+      "note": "measured_at is null on purpose: it records that OUR side is unmeasured, which is what makes this actionable now rather than a scheduled recheck. Do not backfill it with the survey dates — those are in evidence, and confusing the two would turn 'we never looked' into 'we looked and found nothing'."
+    },
+    {
       "id": "simple_main_frozen",
       "claim": "The main branch of Simple-browser-cookie-clicker-game must not be modified.",
       "evidence": "Permanent directive A2.",
