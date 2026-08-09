@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-09T04:00:00.000Z",
+  "note": "Everything here is what was true when it was measured, not a permanent property of the world. Each entry carries a recheck date because on 2026-08-08 two items declared impossible were solved the same day. A constraint falling away usually moves the ETA more than any ordinary improvement does, so rechecks are ETA candidates in their own right.",
+  "constraints": [
+    {
+      "id": "external_repos_unreachable",
+      "claim": "This environment cannot reach repositories outside the owner's own set.",
+      "evidence": "git ls-remote on a public repo failed with no credentials; api.github.com/repos/facebook/react returned 403 through the proxy; GitHub MCP is scoped to the owner's repos.",
+      "measured_at": "2026-08-08",
+      "recheck_after": "2026-08-22",
+      "blocks": ["paid_bounties"],
+      "eta_effect_if_lifted": "large: opens paid issue/bounty work, the fastest first-yen path found so far"
+    },
+    {
+      "id": "itch_no_write_api",
+      "claim": "itch.io game pages cannot be created or edited by machine.",
+      "evidence": "Server-side API exposes 6 read-only endpoints and no write endpoints; OAuth scopes are profile:me / profile:games / game:view:purchases, all read; butler pushes builds to an existing page but has no page-creation command (docs fetched 2026-08-08).",
+      "measured_at": "2026-08-08",
+      "recheck_after": "2026-09-05",
+      "blocks": ["itch_zero_touch_publishing"],
+      "eta_effect_if_lifted": "large: removes the only owner action standing between us and a fully automated distribution loop"
+    },
+    {
+      "id": "crazygames_no_submission_api",
+      "claim": "CrazyGames accepts submissions only through a web form.",
+      "evidence": "Developer docs describe portal upload with build, SDK, metadata, cover art and trailer; no API mentioned.",
+      "measured_at": "2026-08-08",
+      "recheck_after": "2026-10-03",
+      "blocks": ["crazygames_automation"],
+      "eta_effect_if_lifted": "medium: 60% ad share with their traffic, but per-title manual work today"
+    },
+    {
+      "id": "no_ffmpeg_here",
+      "claim": "This container has no ffmpeg, so video cannot be produced in-session.",
+      "evidence": "command -v ffmpeg empty on 2026-08-08.",
+      "measured_at": "2026-08-08",
+      "recheck_after": "2026-09-05",
+      "blocks": ["trailer_production_in_session"],
+      "eta_effect_if_lifted": "small: the cookie daily run already has ffmpeg in another environment"
+    },
+    {
+      "id": "playwright_cannot_reach_external",
+      "claim": "Playwright cannot reach external sites from here, though curl can.",
+      "evidence": "Recorded 2026-08-08 as ERR_CONNECTION_RESET; curl fetched itch.io docs successfully in the same session.",
+      "measured_at": "2026-08-08",
+      "recheck_after": "2026-08-22",
+      "blocks": ["browser_form_automation"],
+      "eta_effect_if_lifted": "medium: would make form-only surfaces reachable, though credentials would still be required"
+    },
+    {
+      "id": "chatgpt_reach_from_automation",
+      "claim": "UNMEASURED: whether the automated ChatGPT path (chatgpt-ask.yml, codex exec in a read-only sandbox) can read our repositories.",
+      "evidence": "Owner confirmed ChatGPT can reach GitHub when they operate it. The automated path has never been tested.",
+      "measured_at": null,
+      "recheck_after": "2026-08-09",
+      "blocks": ["delegating_review_and_eta_work"],
+      "eta_effect_if_lifted": "large: Claude is the scarce pool and ChatGPT is not; moving review/audit/ETA work there raises laps per week"
+    },
+    {
+      "id": "itch_profile_games_fields",
+      "claim": "UNMEASURED: which fields itch.io actually returns for our account (views, downloads, purchases).",
+      "evidence": "Two API generations exist; the collector tries both and records fields_present. Not yet run against the real key.",
+      "measured_at": null,
+      "recheck_after": "2026-08-09",
+      "blocks": ["itch_funnel_measurement"],
+      "eta_effect_if_lifted": "medium: decides whether the three funnel stages can be separated at all"
+    },
+    {
+      "id": "simple_main_frozen",
+      "claim": "The main branch of Simple-browser-cookie-clicker-game must not be modified.",
+      "evidence": "Permanent directive A2.",
+      "measured_at": "2026-08-08",
+      "recheck_after": null,
+      "blocks": ["cookiestrateger_site_changes"],
+      "eta_effect_if_lifted": "not applicable: this is a standing owner instruction, not an environmental limit. Never schedule a recheck against it."
+    }
+  ]
+}

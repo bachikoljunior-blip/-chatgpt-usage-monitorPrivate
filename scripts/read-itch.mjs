@@ -57,6 +57,14 @@ async function attempt(label, url, headers) {
   }
 }
 
+// Key names only, never values. On 2026-08-09 both endpoints answered 200 with
+// valid JSON and no `games` array, which leaves "the account has no games yet"
+// and "the payload is shaped differently than assumed" indistinguishable — and
+// those need opposite responses. The key list separates them without putting any
+// response content into committed state.
+const shapeOf = (body) =>
+  body && typeof body === "object" && !Array.isArray(body) ? Object.keys(body).sort() : null;
+
 const modern = await attempt(
   "api.itch.io/profile/games",
   "https://api.itch.io/profile/games",
@@ -122,6 +130,7 @@ if (source) {
         http_status: r.http_status,
         parsed: r.body !== null && r.body !== undefined,
         failed: r.error ? true : false,
+        body_keys: shapeOf(r.body),
       })),
     },
   };
