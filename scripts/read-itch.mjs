@@ -70,6 +70,19 @@ const modern = await attempt(
   "https://api.itch.io/profile/games",
   { Authorization: `Bearer ${key}` },
 );
+// The account's own public profile URL. Needed because an owner request that says
+// "paste the URL you just made" is not a paste-only request — it is a substitution,
+// and the whole point of preparing a request is that the owner types nothing they
+// do not have to. With the username known, the page URL is decided in advance from
+// the project slug, and the announcement can carry the final link.
+//
+// Only username and url are taken. /me also returns the account email, and that key
+// would be rejected by the sanitizer anyway — but the reason not to record it is
+// that it has no bearing on any decision here.
+const me = await attempt("api.itch.io/me", "https://api.itch.io/me", {
+  Authorization: `Bearer ${key}`,
+});
+
 const legacy = await attempt(
   "itch.io/api/1/KEY/my-games",
   `https://itch.io/api/1/${encodeURIComponent(key)}/my-games`,
@@ -112,6 +125,11 @@ if (source) {
     status: "ok",
     fetched_at: now,
     source: source.label,
+    profile: {
+      username: typeof me.body?.user?.username === "string" ? me.body.user.username : null,
+      url: typeof me.body?.user?.url === "string" ? me.body.user.url : null,
+      read_from: "api.itch.io/me",
+    },
     game_count: games.length,
     total_views: games.reduce((n, g) => n + (g.views_count ?? 0), 0),
     total_downloads: games.reduce((n, g) => n + (g.downloads_count ?? 0), 0),
