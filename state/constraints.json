@@ -210,7 +210,8 @@
             "rule_quoted": "promoting paid assets (even on sale or in a giveaway) is forbidden on r/gamedev. / If you want to share assets make sure they are entirely free and not locked behind anything such as requiring account sign ups or emails.",
             "eligibility_threshold": "48 hours minimum account age, observed in a 2026 auto-removal notice",
             "live_slot_evidence": null,
-            "postable_today": null,
+            "postable_today": false,
+            "postable_today_corrected_2026-08-09T21:40Z": "The owner-answer commit 1846cfc set account.exists to false and said in its own message that the row becomes FALSE, but left this field at null. The mismatch check caught it — 'postable_today says null but the evidence says false' — so venue-readiness.mjs and therefore tests/run-tests.mjs and pulse.yml were red on origin/main between 21:18Z and this fix. Worth recording rather than quietly correcting: that commit reported verifying the CLI output, and the label did change from [UNKNOWN/unknown] to [none/shut] exactly as it says. What it did not read was the PROBLEM line underneath and the exit code. A verification that stops at the line you expected to change is not a verification; the whole reason this check exists is that hand-written verdicts drift from the evidence beneath them, and it drifted inside the same commit that supplied the evidence.",
             "postable_when": [
               {
                 "repo_file": "assets/free-demo/index.html"
