@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T21:18:40.979Z",
+  "fetched_at": "2026-08-09T21:27:08.021Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -45,11 +45,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.11
+      "days_unchanged": 0.12
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.11
+      "days_unchanged": 0.12
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -229,7 +229,8 @@
         "status": "on_abandoned_route",
         "elected_at": "2026-08-09T21:15:00Z",
         "why": "Route 2's evidence was refuted by task .h — Datanyze lost 95.46% of organic traffic with exactly what this route proposes (genuine per-entity data per page), and Stripe Fee Auditor ran the premise directly for three months to 5 clicks and zero revenue. On 2026-08-09T21:08Z the route was also measured to have no starting point HERE: our ten pages return nothing from a controlled search, and github.com/bachikoljunior-blip returns nothing either, so the surface an inbound link would come from is not in the index. Refuted in general and unstartable in particular.",
-        "prerequisite": null
+        "prerequisite": null,
+        "prerequisite_measured": null
       }
     },
     {
@@ -278,7 +279,8 @@
         "status": "on_abandoned_route",
         "elected_at": "2026-08-09T21:15:00Z",
         "why": "Route 2's evidence was refuted by task .h — Datanyze lost 95.46% of organic traffic with exactly what this route proposes (genuine per-entity data per page), and Stripe Fee Auditor ran the premise directly for three months to 5 clicks and zero revenue. On 2026-08-09T21:08Z the route was also measured to have no starting point HERE: our ten pages return nothing from a controlled search, and github.com/bachikoljunior-blip returns nothing either, so the surface an inbound link would come from is not in the index. Refuted in general and unstartable in particular.",
-        "prerequisite": null
+        "prerequisite": null,
+        "prerequisite_measured": null
       }
     },
     {
@@ -317,7 +319,32 @@
         "status": "elected",
         "elected_at": "2026-08-09T21:15:00Z",
         "why": "Every near-success in six surveys had a third party with reach point at the thing, or several venues on the same day. Route 1 is also the fastest thing on the board by a wide margin — three of the recorded cases reached first revenue within 0-1 days of publishing, against zero cases anywhere of unattended discovery producing a first buyer. It is elected on being the only route with a case behind it, not on being easy.",
-        "prerequisite": "STANDING in the venue — prior participation, or breadth (several venues the same day) substituting for it. Named as the prerequisite rather than as a blocker because it ACCRUES: it is the one thing on this route that a lap can build a little of at a time, and state/constraints.json no_standing_where_buyers_gather already measures 0 of 3 surveyed venues postable today."
+        "prerequisite": "AN ACCOUNT at a venue whose rules already permit the artifact. Corrected from STANDING at 2026-08-09T21:30Z — see prerequisite_correction. It does NOT accrue: account existence is binary, and for every surveyed venue but one it is an owner fact, not lap work.",
+        "prerequisite_measured": {
+          "term": "account",
+          "instrument": {
+            "script": "scripts/venue-readiness.mjs",
+            "function": "prerequisiteCheck",
+            "state_file": "state/constraints.json",
+            "path": "no_standing_where_buyers_gather.venue_survey.per_venue",
+            "vocabulary": [
+              "postable",
+              "venue_rule",
+              "venue_unsettled",
+              "account"
+            ],
+            "note": "A prerequisite_term outside that vocabulary fails venue-readiness.mjs and pulse.yml. The point is not the word: it is that the route's prerequisite has to be a thing some row can report, so it can be counted and can turn out to be wrong. STANDING could do neither."
+          },
+          "counts": {
+            "postable": 0,
+            "venue_rule": 1,
+            "venue_unsettled": 1,
+            "account": 1
+          },
+          "venues_on_the_named_term": 1,
+          "ok": true,
+          "problem": null
+        }
       },
       "blocked_on_rechecked": {
         "at": "2026-08-09T11:28:00.123Z",

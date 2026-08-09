@@ -44,10 +44,19 @@
  * failure above — a route abandoned in one field while the list keeps ranking its
  * candidates as though it were still elected.
  *
+ * The third argument is the election's prerequisite as MEASURED rather than as
+ * written, from scripts/venue-readiness.mjs prerequisiteCheck. Added 2026-08-09 after
+ * the election named STANDING — a term its own instrument cannot produce — and cited
+ * as evidence a count that measures something else. The prose prerequisite is still
+ * carried, beside the measurement, because a reader needs to see both to notice when
+ * they part company. That is the whole failure mode: they parted company for six
+ * hours inside one file and nothing said so.
+ *
  * @param {Array<{id: string, serves_route?: string}>} candidates
  * @param {{route: string, abandoned?: string[]}|null} election
+ * @param {{term: string|null, counts: object, ok: boolean, problem: string|null}|null} prerequisiteMeasured
  */
-export function applyRouteElection(candidates, election) {
+export function applyRouteElection(candidates, election, prerequisiteMeasured = null) {
   if (!election?.route) return { elected: null, aligned: [], on_abandoned_route: [] };
   const abandoned = election.abandoned ?? [];
   const aligned = [];
@@ -71,6 +80,7 @@ export function applyRouteElection(candidates, election) {
           ? election.abandoned_because ?? null
           : "the elected route does not cover this candidate; it is ranked on its own merits.",
       prerequisite: isElected ? election.prerequisite ?? null : null,
+      prerequisite_measured: isElected ? prerequisiteMeasured ?? null : null,
     };
     if (isElected) aligned.push(c.id);
     if (isAbandoned) onAbandoned.push(c.id);

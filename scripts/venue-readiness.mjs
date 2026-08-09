@@ -35,6 +35,30 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { PREDICATES } from "./unlock-condition.mjs";
 
+// The third half, added 2026-08-09T21:2xZ. The election in state/zerobase.json names
+// STANDING as the prerequisite of the only route it kept, and says standing ACCRUES —
+// that a lap can build a little of it at a time. This instrument consumes the very
+// rows that claim is cited from, and it cannot produce "standing" as an answer at
+// all. It produces exactly four:
+//
+//   postable        — the venue permits it and an account is measured to exist
+//   venue_rule      — the venue's own blocker is settled shut (itch.io wants a page
+//                     on itch.io; nothing about us)
+//   venue_unsettled — the venue's blocker cannot be settled by machine (GameDev.net
+//                     publishes no threshold)
+//   account         — the venue is open and whether we can post at all is unknown
+//                     or answered no
+//
+// None of those is reputational, and account existence does not accrue: it is binary
+// and, for every venue surveyed but one, an owner fact. So a route whose prerequisite
+// is "standing" is waiting on a term its own instrument never measures, and a lap that
+// believes the word will spend itself trying to accrue something no row can report.
+//
+// Hence prerequisiteCheck: the elected route must name its prerequisite in this
+// vocabulary. `prerequisite_term` outside the four is a hard failure here and in
+// pulse.yml, for the same reason a condition in prose is: it cannot be wrong out loud.
+export const BINDING_CAUSES = ["postable", "venue_rule", "venue_unsettled", "account"];
+
 // The second half, added 2026-08-09 after a sweep for gates nothing evaluates.
 //
 // `postable_today` is the field that decides whether a venue is a live route, and
@@ -133,6 +157,64 @@ function blockerCleared(v, evidence, repoFiles) {
   };
 }
 
+// Which of the four a row is actually waiting on. The order is the point: a settled
+// venue refusal outranks an unknown account, because knowing our username would not
+// move it, and an unsettleable venue outranks it for the same reason. `account` is
+// reached only when the venue is open and we are the missing term.
+function bindingCause(accountExists, blockerHolds, postable) {
+  if (postable === true) return "postable";
+  if (blockerHolds === false) return "venue_rule";
+  if (blockerHolds === UNKNOWN) return "venue_unsettled";
+  return "account";
+}
+
+// Does the elected route name its prerequisite in a vocabulary this instrument can
+// answer in? Returns a problem string rather than throwing, so callers that only want
+// to print it can. An election with no prerequisite_term at all is the pre-correction
+// state and is reported as prose, which is the failure being guarded against.
+export function prerequisiteCheck(election, result) {
+  const term = election?.prerequisite_term ?? null;
+  const counts = Object.fromEntries(BINDING_CAUSES.map((c) => [c, 0]));
+  for (const row of result?.rows ?? []) {
+    if (Object.prototype.hasOwnProperty.call(counts, row.binding)) counts[row.binding] += 1;
+  }
+  const base = {
+    term,
+    instrument: election?.prerequisite_measured_by ?? null,
+    counts,
+    venues_on_the_named_term: term && counts[term] !== undefined ? counts[term] : null,
+  };
+  if (!election?.route) return { ...base, ok: true, problem: null };
+  if (!term) {
+    return {
+      ...base,
+      ok: false,
+      problem:
+        "the elected route states its prerequisite only in prose: no prerequisite_term. " +
+        `Name it as one of ${BINDING_CAUSES.join(", ")} — the causes scripts/venue-readiness.mjs ` +
+        "can actually report — or the ranking is waiting on a word nothing measures.",
+    };
+  }
+  if (!BINDING_CAUSES.includes(term)) {
+    return {
+      ...base,
+      ok: false,
+      problem:
+        `the elected route names prerequisite_term "${term}", which this instrument never produces. ` +
+        `It reports ${BINDING_CAUSES.join(", ")} and nothing else, so no row can ever confirm or ` +
+        "refute that prerequisite.",
+    };
+  }
+  if (!election?.prerequisite_measured_by?.script) {
+    return {
+      ...base,
+      ok: false,
+      problem: `prerequisite_term "${term}" names no prerequisite_measured_by.script, so nothing says which reader settles it.`,
+    };
+  }
+  return { ...base, ok: true, problem: null };
+}
+
 // Pure so it can be tested without a repository. `venues` is the per_venue array;
 // `evidence` maps a state-file path to its parsed contents (or null if unreadable);
 // `repoFiles` maps a checkout-relative path to whether it exists.
@@ -195,6 +277,11 @@ export function venueReadiness(venues, evidence = {}, repoFiles = {}) {
       venue: v?.venue ?? "?",
       declared: true,
       account_exists: exists,
+      // Kept separate from postable_today so the two halves stay distinguishable
+      // after the AND. Which half is shut is the whole question the election got
+      // wrong; collapsing them into one boolean is what made it invisible.
+      venue_blocker: blocker.holds,
+      binding: bindingCause(exists, blocker.holds, computed),
       postable_today: computed,
       postable_declared: stored ?? null,
       postable_reason: blocker.reason,
@@ -220,18 +307,12 @@ export function venueReadiness(venues, evidence = {}, repoFiles = {}) {
   };
 }
 
-const isMain = process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url));
-if (isMain) {
-  const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-  const readJson = async (rel) => {
-    try {
-      return JSON.parse(await readFile(resolve(root, rel), "utf8"));
-    } catch {
-      return null;
-    }
-  };
-
-  const constraints = await readJson("state/constraints.json");
+// Loading the rows is shared rather than duplicated, because compute-eta.mjs needs the
+// same measurement to stamp onto the elected candidate and MUST read it from
+// origin/main. Both readers are injected for exactly that reason: this script reads the
+// checkout, compute-eta reads the published state, and neither hard-codes the other's
+// source. Duplicating the loader is how the two would drift into disagreeing.
+export async function loadVenueRows(constraints, readJson, fileExists) {
   const standing = (constraints?.constraints ?? []).find((c) => c.id === "no_standing_where_buyers_gather");
   const venues = standing?.venue_survey?.per_venue ?? [];
 
@@ -254,22 +335,41 @@ if (isMain) {
   // is the line that starts lying.
   const wanted = new Set(conditions.map((one) => one?.repo_file).filter(Boolean));
   const repoFiles = {};
-  for (const path of wanted) {
-    repoFiles[path] = await stat(resolve(root, path)).then(
-      () => true,
-      () => false,
-    );
-  }
+  for (const path of wanted) repoFiles[path] = await fileExists(path);
 
-  const result = venueReadiness(venues, evidence, repoFiles);
+  return { standing, venues, result: venueReadiness(venues, evidence, repoFiles) };
+}
+
+const isMain = process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url));
+if (isMain) {
+  const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+  const readJson = async (rel) => {
+    try {
+      return JSON.parse(await readFile(resolve(root, rel), "utf8"));
+    } catch {
+      return null;
+    }
+  };
+  const fileExists = (rel) => stat(resolve(root, rel)).then(() => true, () => false);
+
+  const constraints = await readJson("state/constraints.json");
+  const zerobase = await readJson("state/zerobase.json");
+  const { standing, venues, result } = await loadVenueRows(constraints, readJson, fileExists);
   console.log(`venue readiness: ${venues.length} surveyed · ${result.postable_with_a_measured_account} with a measured account · ${result.postable_today_count} postable today`);
   for (const r of result.rows) {
     const mark = r.account_exists === true ? "account" : r.account_exists === false ? "none" : "UNKNOWN";
     const post = r.postable_today === true ? "POSTABLE" : r.postable_today === false ? "shut" : "unknown";
     console.log(`  [${mark}/${post}] ${r.venue} — ${r.blocked_on}`);
-    console.log(`      postable_when: ${r.postable_reason}`);
+    console.log(`      binding: ${r.binding} · postable_when: ${r.postable_reason}`);
     if (r.problem) console.log(`      PROBLEM: ${r.problem}`);
   }
+
+  const prereq = prerequisiteCheck(zerobase?.elected_distribution_route ?? null, result);
+  console.log(
+    `\nelected route prerequisite: ${prereq.term ?? "PROSE ONLY"} · ` +
+      BINDING_CAUSES.map((c) => `${c}=${prereq.counts[c]}`).join(" "),
+  );
+  if (prereq.problem) console.error(`\n${prereq.problem}`);
 
   // The count is what a reader acts on, and it was hand-written. Checking it here is
   // the difference between a number that is derived and a number that is asserted.
@@ -283,7 +383,7 @@ if (isMain) {
     );
   }
 
-  if (!result.ok || countWrong) {
+  if (!result.ok || countWrong || !prereq.ok) {
     console.error(
       "\nA venue is being carried as a route without saying whether we can post from it. " +
         "Add account: { exists: true|false|null, evidence_state_file, note } and either " +

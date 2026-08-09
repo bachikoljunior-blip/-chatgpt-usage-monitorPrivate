@@ -735,6 +735,30 @@
       ],
       "falsified_if": "pages_found_by_search is non-zero at the judge date with no inbound-link, sitemap, hub-page or submission work in the log. ALSO falsified, in the more useful direction, if a lap does that work and the number still does not move — in which case the missing term is not links either, and the route needs an answer this lap did not have. What this does NOT claim: that the pages are absent from every index everywhere. Only one US-only index was queried; Google and Bing are unreachable from this container.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-09.prerequisite-was-account-not-standing",
+      "made_at": "2026-08-09T21:35:00Z",
+      "claim": "The elected route's prerequisite was STANDING, described as accruing and therefore as something a lap can build. It is not the binding term on any surveyed venue. scripts/venue-readiness.mjs now decomposes each row into the cause it actually waits on and derives venue_rule=1, venue_unsettled=1, account=1, postable=0 — nothing reputational anywhere. The claim registered is about lap behaviour, not about the venues: with the prerequisite renamed to `account` and printed on the candidate the picker reads, no lap between now and the judge date will spend itself trying to accrue standing, participation or reputation, because there is no longer a field that rewards it. The prior behaviour is on record — the handoff before this lap named STANDING vs BREADTH as the next fork, and breadth had already been measured and abandoned six hours earlier in the same file.",
+      "metric": "state/lap-claims.json, read from origin/main: the `mechanism` text of every claim appended after 2026-08-09T21:20Z. Judged by reading them for work whose stated mechanism is accruing standing/participation/karma/reputation in a venue. Alongside it, state/eta.json route_election and the elected candidate's route_alignment.prerequisite_measured must still carry term=account with a named instrument — if a later lap reverts the term to prose, venue-readiness.mjs exits 1 and pulse.yml goes red, so a silent revert is not available.",
+      "baseline": {
+        "measured_at": "2026-08-09T21:24:00Z",
+        "prerequisite_term_before": "STANDING (prose only; prerequisite_term absent)",
+        "prerequisite_term_after": "account",
+        "binding_causes_derived": { "postable": 0, "venue_rule": 1, "venue_unsettled": 1, "account": 1 },
+        "venues_surveyed": 3,
+        "lap_claims_rows_at_baseline": 4,
+        "laps_that_had_named_standing_as_the_next_fork": 1
+      },
+      "judge_on": "2026-08-16",
+      "judge_deadline": "2026-08-30",
+      "concurrent_changes": [
+        "Same lap, and inseparable from it: scripts/venue-readiness.mjs gained the binding decomposition and prerequisiteCheck, scripts/repricing.mjs carries the measurement onto the candidate, and scripts/compute-eta.mjs prints it. Those ARE the mechanism, so they cannot be held apart from the claim at judging — what can be held apart is whether a lap's behaviour changed, which is what the metric reads.",
+        "Same lap: codex/INBOX.md task .r asks whether any venue accepts an account we already hold. If that returns venues and a later lap acts on them, that work is downstream of this correction and must be named at judging rather than counted as independent confirmation.",
+        "Not this lap: the three pending owner requests are untouched, and no venue row's data was edited — only the election's prerequisite fields."
+      ],
+      "falsified_if": "A lap after this one records a mechanism in state/lap-claims.json whose route to the ETA is building standing, participation or karma. Also falsified, more usefully, if a venue turns out to refuse us specifically for lack of reputation while its rules and our account are both settled — that would mean standing was a real fourth cause and the vocabulary is too narrow, in which case BINDING_CAUSES needs a fifth member rather than the election needing a different word. What this does NOT claim: that renaming the prerequisite moves the ETA. The ETA is infinite and this lap was admitted as a prerequisite claiming no improvement.",
+      "outcome": null
     }
   ]
 }

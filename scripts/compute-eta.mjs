@@ -19,10 +19,11 @@
 //
 //   node scripts/compute-eta.mjs [--write]
 
-import { writeFile } from "node:fs/promises";
+import { stat, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { readStateJson, REPO } from "./state-source.mjs";
 import { applyRepricings, applyRouteElection } from "./repricing.mjs";
+import { loadVenueRows, prerequisiteCheck } from "./venue-readiness.mjs";
 import { daysToTarget } from "./revenue-rate.mjs";
 import { constraintDue } from "./constraint-due.mjs";
 import { evaluateUnlock } from "./unlock-condition.mjs";
@@ -638,7 +639,24 @@ const { unmatched: unmatchedRepricings } = applyRepricings(candidates, [
 // withdrawn in the same file, and when a lap measured that the route has no
 // starting point here, the ranking went on exactly as before. Three findings, no
 // movement, because the election was a sentence. Reasoning in scripts/repricing.mjs.
-const routeElection = applyRouteElection(candidates, zerobase?.elected_distribution_route ?? null);
+//
+// The election's prerequisite is measured here rather than believed. It said STANDING
+// and cited a count that measures no such thing; the same rows, read by
+// scripts/venue-readiness.mjs, report venue_rule / venue_unsettled / account and never
+// anything reputational. Reading state files through readStateJson keeps this on
+// origin/main like every other input; only the repo_file existence check touches the
+// checkout, which is the caveat venue-readiness already carries.
+const { result: venueResult } = await loadVenueRows(
+  constraints,
+  async (rel) => (await readStateJson(rel, { preferLocal })).value,
+  (rel) => stat(resolve(REPO, rel)).then(() => true, () => false),
+);
+const prerequisiteMeasured = prerequisiteCheck(zerobase?.elected_distribution_route ?? null, venueResult);
+const routeElection = applyRouteElection(
+  candidates,
+  zerobase?.elected_distribution_route ?? null,
+  prerequisiteMeasured,
+);
 
 // A blocker that was never checked reads exactly like a blocker that was checked
 // and found solid. honest_post_where_buyers_gather carried blocked_on "there is
@@ -807,6 +825,17 @@ for (const c of candidates) {
     console.log(`      ${c.route_alignment.why}`);
     if (c.route_alignment.prerequisite) {
       console.log(`      prerequisite: ${c.route_alignment.prerequisite}`);
+    }
+    // Beside the prose, never instead of it. The prose is what a lap acts on and the
+    // counts are what can contradict it; printing only one of them is how the two
+    // spent six hours disagreeing inside one file with nobody the wiser.
+    const m = c.route_alignment.prerequisite_measured;
+    if (m) {
+      const counts = Object.entries(m.counts ?? {})
+        .map(([k, v]) => `${k}=${v}`)
+        .join(" ");
+      console.log(`      prerequisite MEASURED (${m.instrument?.script ?? "no instrument named"}): term=${m.term ?? "PROSE ONLY"} · ${counts}`);
+      if (m.problem) console.log(`      PREREQUISITE PROBLEM: ${m.problem}`);
     }
   }
   // Printed, not just written into state/eta.json: a lap picking work reads this

@@ -29,7 +29,7 @@ import { evaluateUnlock } from "../scripts/unlock-condition.mjs";
 import { checkFreeArtifact } from "../scripts/check-free-artifact.mjs";
 import { publishedDemoVerdict } from "../scripts/check-published-demo.mjs";
 import { findableSurfaceVerdict, inboundSurfaceVerdict } from "../scripts/measure-findable-surface.mjs";
-import { venueReadiness } from "../scripts/venue-readiness.mjs";
+import { prerequisiteCheck, venueReadiness } from "../scripts/venue-readiness.mjs";
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import {
   checkAddressee, checkRequestsAddressee, copyChanged, diffListing, pasteableStrings,
@@ -2123,9 +2123,70 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   );
   assert(oneRefusal.rows[0].postable_today === false, "a settled refusal was softened to unknown by an unsettled sibling");
 
+  // --- and the elected route's prerequisite has to be a term some row can report ---
+  //
+  // The election named STANDING and said it ACCRUES, which is what made it read as
+  // lap work. This instrument consumes the rows that claim was cited from and cannot
+  // produce "standing" at all — it produces four causes and none is reputational.
+  // A prerequisite outside that vocabulary can never be confirmed or refuted, so it
+  // is a sentence with a boolean's authority, which is the failure this whole file
+  // exists to make loud.
+  // The artifact exists here, so r/gamedev's own blocker is cleared and the only
+  // thing left is us. That ordering is the finding: with the artifact missing the
+  // row binds on the venue, and knowing our username would not have opened it.
+  const bindings = venueReadiness([itch, reddit], evidence, { "assets/free-demo/index.html": true });
+  assert(bindings.rows[0].binding === "venue_rule", `itch.io's blocker is the venue's, not ours: ${bindings.rows[0].binding}`);
+  assert(bindings.rows[1].binding === "account", `an open venue with an unknown account did not bind on the account: ${bindings.rows[1].binding}`);
+  assert(
+    venueReadiness([reddit], evidence, repoFiles).rows[0].binding === "venue_rule",
+    "a row whose artifact does not exist yet was blamed on the account",
+  );
+
+  const unsettled = venueReadiness(
+    [{ venue: "x", postable_today: null, postable_not_evaluable: "no threshold is published", account: { exists: null, evidence_state_file: null } }],
+    evidence,
+    repoFiles,
+  );
+  assert(
+    unsettled.rows[0].binding === "venue_unsettled",
+    "an unsettleable venue was blamed on the account, which knowing our username would not fix",
+  );
+
+  const prose = prerequisiteCheck({ route: "r" }, bindings);
+  assert(prose.ok === false, "an election stating its prerequisite only in prose was accepted");
+
+  const unmeasurable = prerequisiteCheck({ route: "r", prerequisite_term: "standing", prerequisite_measured_by: { script: "x" } }, bindings);
+  assert(unmeasurable.ok === false, "a prerequisite this instrument cannot produce was accepted");
+  assert(
+    unmeasurable.problem.includes("never produces"),
+    `the unmeasurable prerequisite was rejected for the wrong reason: ${unmeasurable.problem}`,
+  );
+
+  const unread = prerequisiteCheck({ route: "r", prerequisite_term: "account" }, bindings);
+  assert(unread.ok === false, "a measurable prerequisite naming no reader was accepted");
+
+  const good = prerequisiteCheck(
+    { route: "r", prerequisite_term: "account", prerequisite_measured_by: { script: "scripts/venue-readiness.mjs" } },
+    bindings,
+  );
+  assert(good.ok === true, `a well-formed prerequisite was rejected: ${good.problem}`);
+  assert(good.venues_on_the_named_term === 1, `the count on the named term was wrong: ${good.venues_on_the_named_term}`);
+
+  // The measurement has to arrive on the candidate the picker reads, beside the
+  // prose rather than instead of it. Carrying it only in the constraint file is the
+  // exact failure applyRouteElection was written for one session earlier.
+  const stamped = [{ id: "c", serves_route: "r" }];
+  applyRouteElection(stamped, { route: "r", prerequisite: "words" }, good);
+  assert(
+    stamped[0].route_alignment.prerequisite_measured?.term === "account",
+    "the measured prerequisite never reached the candidate",
+  );
+  assert(stamped[0].route_alignment.prerequisite === "words", "the prose prerequisite was dropped instead of kept beside the measurement");
+
   // And the real rows pass, which is what keeps this honest as venues are added.
   // The CLI also checks the survey's stored count against the derived one, so the
-  // number a reader acts on cannot drift from the rows underneath it.
+  // number a reader acts on cannot drift from the rows underneath it, and now also
+  // checks the live election's prerequisite against the vocabulary above.
   run(process.execPath, [join(root, "scripts/venue-readiness.mjs")]);
 }
 

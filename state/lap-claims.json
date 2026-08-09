@@ -457,6 +457,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T21:19:46.747Z",
+      "candidate": "honest_post_where_buyers_gather",
+      "kind": "prerequisite",
+      "mechanism": "The elected route names STANDING as its prerequisite, but venue-readiness measures that no surveyed venue refused on standing: itch.io wants a page on its own platform, r/gamedev's venue blocker is now CLEARED and only account existence is unknown, GameDev.net is not evaluable. Naming the wrong prerequisite costs days directly because a lap that believes standing accrues will spend itself trying to accrue it, and no lap can. Pointing the prerequisite at the measured term turns the elected route's remaining blocker into one already-pending owner question, which is what the days actually wait on.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
