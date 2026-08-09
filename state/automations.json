@@ -136,21 +136,21 @@
     },
     {
       "id": "codex-loop",
-      "label": "ChatGPT レーン（オーナーが手で起動）",
+      "label": "ChatGPT レーン（毎時）",
       "kind": "github-actions",
       "pool": "codex_week",
-      "cadence_minutes": 1440,
+      "cadence_minutes": 60,
       "enabled": true,
-      "note": "Spends the Codex weekly pool, which is separate from the Claude window and was sitting at 100% unused on 2026-08-09 because nothing dispatched it. The mouth is codex/INBOX.md; scripts/inbox-task.mjs decides whether the task is live and unmarked before any model runs. Was \"owner starts it by hand\" until the schedule existed — that was an owner action standing in for a cron.",
+      "note": "Spends the Codex weekly pool, which is separate from the Claude window and was sitting at 100% unused on 2026-08-09 because nothing dispatched it. The mouth is codex/INBOX.md; scripts/inbox-task.mjs decides whether the task is live and unmarked before any model runs. Hourly since 2026-08-09: the daily cron had delivered zero runs in the workflow's entire history — all ten were workflow_dispatch — so an external answer arrived only when a lap happened to have MCP tools, and that is the lane the whole route depends on.",
       "avg_cost_percent": 0,
       "samples": 0,
       "last_seen": null,
       "workflow": "codex-inbox.yml",
-      "cron": "41 2 * * *",
+      "cron": "41 * * * *",
       "liveness": {
-        "state_file": "state/answers/latest.json",
-        "note": "The lane commits its answer here. No answer, no timestamp, no marker — so a lane that stops producing stops moving this and becomes overdue. The stamp is asked_at, not fetched_at: this file records a question being put, not a source being read. Naming it here rather than renaming the field keeps ask-chatgpt.mjs's own vocabulary intact.",
-        "stamp_field": "asked_at"
+        "state_file": "state/codex-lane.json",
+        "note": "Moved off state/answers/latest.json when the cron went hourly. That file only moves when a question is actually put to the model, and a healthy hourly lane skips most of its runs because the task already carries its done marker — so keyed on the answer, an idle lane and a stopped lane look the same. scripts/record-lane-run.mjs stamps checked_at on every run including the skips, which is the mark that dates the SCHEDULE rather than the product.",
+        "stamp_field": "checked_at"
       }
     }
   ],

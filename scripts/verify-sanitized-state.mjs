@@ -158,6 +158,20 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
       throw new Error(`heartbeat row ${a.id} has an invalid status`);
     }
   }
+} else if (state.checked_at !== undefined && state.ran !== undefined) {
+  // ChatGPT lane run mark. Written by every run of the lane, including the runs
+  // that skip because the inbox task already carries its done marker.
+  //
+  // `checked_at` is required and `ran` may be either value on purpose: the whole
+  // point of this shape is that a skipped run still dates itself. A record that
+  // could omit the timestamp when nothing happened would put the lane back where
+  // it was — invisible whenever it was healthy but idle.
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(state.checked_at)) {
+    throw new Error("lane state has no valid checked_at timestamp");
+  }
+  if (typeof state.ran !== "boolean") {
+    throw new Error("lane state has a non-boolean ran");
+  }
 } else if (Array.isArray(state.requests)) {
   // Owner requests. This shape was added by a lap and had no branch, so it fell
   // through to the usage-state check and failed outright — meaning a file under

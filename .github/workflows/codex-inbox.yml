@@ -14,10 +14,26 @@ name: Run the ChatGPT inbox
 
 on:
   schedule:
-    # Daily. The inbox holds surveys of the outside world, which do not change
-    # hour to hour, and the marker below means a finished task costs one skipped
-    # job rather than a repeated survey.
-    - cron: "41 2 * * *"
+    # Hourly, minute 41 — clear of usage-monitor at :07 and claude-usage-monitor
+    # at :22, both of which share this workflow's concurrency group.
+    #
+    # It was daily until 2026-08-09, on the reasoning that surveys of the outside
+    # world do not change hour to hour. True, and beside the point: what changes
+    # hour to hour is the QUESTION. A lap that needs an outside answer writes it
+    # into codex/INBOX.md and then cannot proceed until this workflow runs, so a
+    # daily cron prices every external question at up to a day of latency on the
+    # one lane that can see outside at all.
+    #
+    # The measurement that settled it: all ten runs in this workflow's entire
+    # history were workflow_dispatch. The daily cron had delivered zero answers.
+    # Every answer the loop ever got came from a lap that happened to have MCP
+    # tools available, and RUNBOOK step 0 records that MCP presence varies run to
+    # run — so the lane's throughput was a coin flip dressed as a schedule.
+    #
+    # Hourly is affordable because the skip is cheap: inbox-task.mjs decides
+    # before any model runs, and a task that already carries its done marker
+    # costs a checkout and a node process. It does not re-run a finished survey.
+    - cron: "41 * * * *"
   workflow_dispatch:
     inputs:
       force:
@@ -118,6 +134,24 @@ jobs:
               >> "$GITHUB_STEP_SUMMARY"
           fi
 
+      # Every run leaves this mark, including the ones that skipped. The lane's
+      # liveness used to be read from state/answers/latest.json, which only moves
+      # when a question is actually put — so once the schedule became hourly, a
+      # healthy idle lane would have looked identical to a stopped one.
+      - name: Record that the lane ran
+        if: always()
+        # Through the environment rather than inlined into the script: the reason
+        # string is free text from inbox-task.mjs and would otherwise be pasted
+        # into a shell command.
+        env:
+          RAN: ${{ (steps.task.outputs.run == 'true' || inputs.force) && 'true' || 'false' }}
+          TASK_ID: ${{ steps.task.outputs.task_id }}
+          REASON: ${{ steps.task.outputs.reason }}
+        run: |
+          node scripts/record-lane-run.mjs \
+            --ran="$RAN" --task="$TASK_ID" --reason="$REASON"
+          node scripts/verify-sanitized-state.mjs state/codex-lane.json
+
       - name: Publish the answer to the run summary
         if: always() && (steps.task.outputs.run == 'true' || inputs.force)
         run: |
@@ -138,12 +172,15 @@ jobs:
             node scripts/verify-sanitized-state.mjs state/answers/latest.json
           fi
 
-      - name: Commit the answer, the marker, and refreshed authentication
-        if: always() && (steps.task.outputs.run == 'true' || inputs.force)
+      # Unconditional, unlike the steps above: a skipped run has nothing to say
+      # about the inbox but still has to publish the fact that it happened, or
+      # the schedule is unwatchable again.
+      - name: Commit the answer, the marker, the lane mark, and refreshed authentication
+        if: always()
         run: |
           git config user.name "chatgpt-usage-monitor[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A state/auth.vault state/answers codex
+          git add -A state/auth.vault state/answers state/codex-lane.json codex
           if git diff --cached --quiet; then
             exit 0
           fi

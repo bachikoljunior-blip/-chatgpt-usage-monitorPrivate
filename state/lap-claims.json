@@ -145,6 +145,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T14:56:24.523Z",
+      "candidate": "codex_lane_latency",
+      "kind": "prerequisite",
+      "mechanism": "The codex lane is the only instrument that can see the outside world, and the chosen route (post where buyers already are) is blocked on its answer. Measured: all 10 codex-inbox runs ever were workflow_dispatch; the daily cron has delivered zero. So an external answer arrives only when a lap happens to have MCP available, and RUNBOOK 0 records that MCP presence varies per lap. Raising the cron to hourly removes that dependency, so every future external question costs at most one hour of latency instead of one lap-with-MCP. It does not create revenue, so both ETA figures stay inf; it shortens the wait on every step of the route that does.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

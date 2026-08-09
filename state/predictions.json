@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T11:34:21.260Z",
+  "fetched_at": "2026-08-09T15:05:00Z",
   "note": "Every change made because it was claimed to shorten the ETA. judge_on is set when the change lands, not when it is convenient. concurrent_changes is what else was in flight, so a later reader can tell a clean attribution from a confounded one.",
   "predictions": [
     {
@@ -431,6 +431,34 @@
         "codex/INBOX.md task .n was dispatched by the previous lap and its answer had not landed when this was written. If it returns a Discover category and a lap sets it, that is storefront tuning after this record and (b) is designed to catch exactly that."
       ],
       "falsified_if": "Either (a) the judge date arrives with owner_request_prepared still false and no venue pack in state/owner-requests.json, which would mean the route change was a gate record and a JSON field rather than a change in what laps do - the most likely failure and the reason this prediction exists; or (b) later laps keep gating storefront-tuning work, which would mean the route was abandoned in the file and not in practice. Note the honest negative it does NOT cover: if the pack is prepared and the owner never posts, this prediction is CORRECT and the route is still untested. That is a different question and belongs to a later record - do not let a prepared-but-unposted pack be written up as the route having failed.",
+      "outcome": null
+    },
+    {
+      "id": "2026-08-09.codex-lane-cron-actually-fires",
+      "made_at": "2026-08-09T15:05:00Z",
+      "claim": "The ChatGPT lane will now deliver answers on its own schedule instead of only when a lap happens to hold MCP tools. The measurement that prompted this is the whole of the workflow history: all ten codex-inbox runs ever were workflow_dispatch, so the daily cron had delivered zero and nobody had noticed, because the manual dispatches kept the liveness mark it was watched through fresh. Two things are claimed and they can fail separately. First, that a GitHub schedule on this workflow fires at all — the cron was not merely too slow, it was unobserved, and an hourly cron that also never fires would be the same defect at a different number. Second, that the new mark makes the difference visible: state/codex-lane.json is written by every run including the skips, so a silent schedule now becomes overdue in state/heartbeat.json within two hours instead of hiding behind whatever a lap dispatched by hand.",
+      "metric": "Read from origin/main and from the Actions API, not from any lap description. (a) At least one codex-inbox.yml run with event=schedule exists — this is the half that has never once happened. (b) state/codex-lane.json checked_at advances across an hour in which no lap dispatched the workflow; commit authorship is chatgpt-usage-monitor[bot] and the run behind it is a schedule event. (c) The skip path is exercised: at least one committed state/codex-lane.json carries ran:false, proving an idle run still marks itself rather than going silent. (d) state/heartbeat.json shows codex-loop ok at cadence 60 rather than flipping to overdue, which would mean the mark moved but the schedule did not.",
+      "baseline": {
+        "codex_inbox_runs_total": 10,
+        "runs_by_event": {
+          "workflow_dispatch": 10,
+          "schedule": 0
+        },
+        "cron_before": "41 2 * * *",
+        "cron_after": "41 * * * *",
+        "cadence_minutes_before": 1440,
+        "liveness_state_file_before": "state/answers/latest.json",
+        "lane_state_file_exists_before": false,
+        "external_answer_latency": "unbounded — arrives only when a lap holds MCP, and RUNBOOK step 0 records MCP presence as varying run to run"
+      },
+      "judge_on": "2026-08-10",
+      "judge_deadline": "2026-08-12",
+      "concurrent_changes": [
+        "The same lap moved codex-loop liveness from state/answers/latest.json to state/codex-lane.json and its cadence from 1440 to 60. That is deliberately part of the same change — an hourly lane watched through the answer file would report overdue every time it correctly skipped — but it means a heartbeat reading after this date measures both at once.",
+        "The same lap dispatched codex-inbox by hand at 14:56Z to land task .o. That run is a workflow_dispatch and must not be counted toward metric (a); only a schedule event settles it.",
+        "verify-sanitized-state.mjs gained a branch for the new shape. If state/codex-lane.json is ever absent, check whether the sanitizer rejected it before concluding the schedule did not fire."
+      ],
+      "falsified_if": "The judge date arrives with no schedule-event run on codex-inbox.yml, which would mean GitHub is not running this workflow on a cron at all and the daily-to-hourly edit was cosmetic — in which case the repair is not another cron but a dispatcher that does not depend on a lap holding MCP, and the finding is that this repository cannot rely on GitHub schedules for anything. It is ALSO falsified, differently, if schedule runs appear but no committed state/codex-lane.json ever carries ran:false, which would mean the skip path does not commit and the lane is only visible on the runs that were already visible.",
       "outcome": null
     }
   ]

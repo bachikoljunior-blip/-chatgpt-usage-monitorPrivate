@@ -15,6 +15,7 @@ import {
   deriveFromSegment, readingsFromHistory, segmentsWithoutRoll,
 } from "../scripts/derive-lap-cost.mjs";
 import { classify, resolveLastSeen } from "../scripts/check-heartbeats.mjs";
+import { buildLaneRecord, LANE_STATE_PATH } from "../scripts/record-lane-run.mjs";
 import { applyRepricings } from "../scripts/repricing.mjs";
 import {
   ATTACHMENTS, buildPrompt, decide, markerEarned, parseInboxHeader,
@@ -569,6 +570,53 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(
     unreconciled.length === 0,
     `claude-trigger rows never checked against list_triggers: ${unreconciled.join(", ")}`,
+  );
+
+  // The ChatGPT lane went hourly on 2026-08-09, and that changes what counts as
+  // evidence it is alive. Its old mark was the answer file, which only moves when
+  // a question is actually put — but a healthy hourly lane skips most of its runs,
+  // because inbox-task.mjs refuses to repeat a task that already carries its done
+  // marker. Keyed on the answer, "nobody asked anything for two hours" and "the
+  // cron is dead" produce the identical reading, and the second one is the failure
+  // this lane has already had: the daily cron delivered zero runs in its entire
+  // history and nothing noticed, because manual dispatches kept the answer file
+  // fresh. So the mark has to be one that every run writes.
+  const lane = registry.automations.find((a) => a.id === "codex-loop");
+  assert(
+    lane.liveness?.state_file === LANE_STATE_PATH,
+    `codex-loop's liveness mark is ${lane.liveness?.state_file}, which is not the file ` +
+    `every run writes (${LANE_STATE_PATH}). A mark only successful runs move cannot ` +
+    "distinguish an idle lane from a stopped one.",
+  );
+  assert(
+    lane.liveness?.stamp_field === "checked_at" &&
+      buildLaneRecord({ now: new Date(), ran: false }).checked_at !== undefined,
+    "codex-loop reads a stamp field the lane record does not write",
+  );
+
+  // The invariant itself, stated where it can fail: a run that did no work still
+  // dates itself. Make the timestamp conditional on `ran` and this is what breaks.
+  const skipped = buildLaneRecord({
+    now: new Date("2026-08-09T15:41:00Z"),
+    ran: false,
+    taskId: "2026-08-09.o",
+    reason: "already done",
+  });
+  assert(skipped.checked_at === "2026-08-09T15:41:00.000Z", "a skipped lane run left no mark");
+  assert(skipped.ran === false, "a skipped lane run claimed it ran");
+  assert(
+    resolveLastSeen(lane, { laps: null, stateFiles: new Map([[LANE_STATE_PATH, skipped]]) })
+      .last_seen === skipped.checked_at,
+    "the heartbeat cannot see the lane through the mark a skipped run leaves",
+  );
+
+  // And the cron the registry claims has to be the cron the workflow runs, or the
+  // cadence the heartbeat compares against is fiction. This row said "41 2 * * *"
+  // while every run on record was a manual dispatch.
+  const laneWorkflow = await readFile(join(root, ".github/workflows/codex-inbox.yml"), "utf8");
+  assert(
+    laneWorkflow.includes(`- cron: "${lane.cron}"`),
+    `state/automations.json says codex-loop runs at "${lane.cron}", which codex-inbox.yml does not schedule`,
   );
 }
 
