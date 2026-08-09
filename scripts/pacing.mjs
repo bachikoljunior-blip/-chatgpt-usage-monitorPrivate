@@ -26,6 +26,16 @@
 // An automation with no samples yet is reserved at a deliberately high default
 // so an unmeasured neighbour cannot silently starve the pool.
 //
+// That default is now a last resort rather than the normal case. A single lap
+// costs far less than one integer point of the weekly window, so no direct
+// sample has ever survived — eleven in a row discarded as below_measurement_
+// resolution, and the endpoint carries nothing finer to compare (measured
+// 2026-08-09: limit_dollars, used_dollars and remaining_dollars are null on
+// every window). scripts/derive-lap-cost.mjs sidesteps that by measuring a span
+// instead of a lap: points consumed over an interval, divided by the laps
+// recorded inside it. That is an upper bound, which is the right shape for a
+// reservation and is a real number rather than an invented one.
+//
 //   node scripts/pacing.mjs --id=revenue-loop [--json]
 
 import { readStateJson } from "./state-source.mjs";
@@ -61,6 +71,16 @@ const MAX_RESERVED_FRACTION = 0.7;
 
 const { value: usage, via: usageVia } = await readStateJson("state/claude-usage.json");
 const { value: registry } = await readStateJson("state/automations.json");
+// An upper bound derived from the usage history joined with the lap timestamps
+// (scripts/derive-lap-cost.mjs). It replaces UNMEASURED_COST_PERCENT for
+// automations that have no direct sample, because a bound measured from real
+// consumption beats an invented number in both directions. A direct sample,
+// where one exists, still wins: it is the tighter claim.
+const { value: derivedCost } = await readStateJson("state/lap-cost-derived.json");
+const derivedBound = Number(derivedCost?.best?.upper_bound_percent_per_lap);
+const fallbackPerRun = Number.isFinite(derivedBound) && derivedBound > 0
+  ? derivedBound
+  : UNMEASURED_COST_PERCENT;
 
 function fail(reason, detail) {
   const out = {
@@ -116,7 +136,7 @@ for (const a of automations) {
   const raw = a.avg_cost_percent;
   const measured =
     raw === null || raw === undefined || !Number.isFinite(Number(raw)) ? null : Number(raw);
-  const per = measured ?? UNMEASURED_COST_PERCENT;
+  const per = measured ?? fallbackPerRun;
   const cost = runs * per;
   reserved += cost;
   reservations.push({
@@ -124,6 +144,7 @@ for (const a of automations) {
     runs_before_reset: runs,
     cost_percent_per_run: per,
     measured: measured !== null,
+    basis: measured !== null ? "sampled" : (fallbackPerRun === UNMEASURED_COST_PERCENT ? "unmeasured_default" : "derived_upper_bound"),
     reserved_percent: Number(cost.toFixed(2)),
   });
 }
@@ -150,7 +171,7 @@ if (discretionary <= 0) {
   decision = "stop";
   reason = "reserved_for_others";
   budgetPercent = 0;
-} else if (discretionary < UNMEASURED_COST_PERCENT) {
+} else if (discretionary < fallbackPerRun) {
   decision = "stop";
   reason = "below_one_lap";
   budgetPercent = 0;
@@ -192,7 +213,10 @@ const report = {
   observed_percent_per_day: observedPerDay === null ? null : Number(observedPerDay.toFixed(2)),
   flat_percent_per_day: flatPerDay === null ? null : Number(flatPerDay.toFixed(2)),
   lap_budget_percent: Number(budgetPercent.toFixed(2)),
-  unmeasured_automations: reservations.filter((r) => !r.measured).map((r) => r.id),
+  unmeasured_automations: reservations.filter((r) => r.basis === "unmeasured_default").map((r) => r.id),
+  fallback_percent_per_run: fallbackPerRun,
+  fallback_basis: fallbackPerRun === UNMEASURED_COST_PERCENT ? "unmeasured_default" : "derived_upper_bound",
+  derived_from: derivedCost?.best ? { from: derivedCost.best.from, to: derivedCost.best.to, laps: derivedCost.best.laps_inside, drop_percent: derivedCost.best.drop_percent } : null,
 };
 
 if (asJson) {
@@ -210,7 +234,7 @@ if (asJson) {
   for (const r of reservations) {
     console.log(
       `    ${r.id}: ${r.runs_before_reset} runs × ${r.cost_percent_per_run}%` +
-      `${r.measured ? "" : " (UNMEASURED default)"} = ${r.reserved_percent}%`,
+      `${r.basis === "sampled" ? "" : r.basis === "derived_upper_bound" ? " (DERIVED upper bound)" : " (UNMEASURED default)"} = ${r.reserved_percent}%`,
     );
   }
   console.log(`  discretionary: ${discretionary.toFixed(2)}%`);

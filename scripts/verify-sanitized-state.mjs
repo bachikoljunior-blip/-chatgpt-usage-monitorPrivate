@@ -127,6 +127,28 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
       throw new Error(`eta channel ${c.id} has a non-numeric idle_eta_days`);
     }
   }
+} else if (state.usage_revisions !== undefined) {
+  // Derived lap cost. The bound is null exactly when it could not be derived,
+  // the same rule laps.json follows and for the same reason: a bound of 0 would
+  // tell pacing an automation is free, and this file exists to replace a guess
+  // with a number, not with a better-looking guess.
+  if (!Array.isArray(state.segments)) {
+    throw new Error("derived lap cost has no segments array");
+  }
+  for (const s of state.segments) {
+    if (!Number.isFinite(Number(s.laps_inside))) {
+      throw new Error("derived segment has a non-numeric laps_inside");
+    }
+    if (s.upper_bound_percent_per_lap !== null && !Number.isFinite(Number(s.upper_bound_percent_per_lap))) {
+      throw new Error("derived segment has a non-numeric upper bound");
+    }
+    if (s.upper_bound_percent_per_lap !== null && Number(s.laps_inside) <= 0) {
+      throw new Error("derived segment carries a bound with no laps to divide by");
+    }
+  }
+  if (state.best !== null && !Number.isFinite(Number(state.best?.upper_bound_percent_per_lap))) {
+    throw new Error("derived lap cost has a best segment with no numeric bound");
+  }
 } else if (Array.isArray(state.samples) && state.open !== undefined) {
   // Lap cost samples. cost_percent is null exactly when usable is false, and that
   // pairing is the point: an unusable lap must not carry a number, because a
