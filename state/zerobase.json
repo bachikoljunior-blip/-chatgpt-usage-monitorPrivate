@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-09T06:20:00.000Z",
+  "last_round_at": "2026-08-09T06:20:00.000Z",
+  "cadence_days": 7,
+  "note": "Zero-base round: options produced without sight of the current portfolio, then compared against the measured ETA. The proposal passed scripts/check-blind.mjs, so no name of ours appears in it.",
+  "route": "chatgpt-ask.yml with danger-full-access; the account cannot read our private repos (measured 404), so it is blind to the portfolio while still able to research",
+  "transcript": "state/blind/2026-08-09.md",
+  "incumbent_idle_eta_days": null,
+  "options": [
+    {
+      "id": "wordpress_plugin_pro",
+      "days_to_first_yen": "7-21",
+      "months_to_target": "2-4",
+      "owner_actions": "1 initial + 0-1 monthly",
+      "why": "borrows the plugin directory's existing search traffic; free version funnels to a paid Pro"
+    },
+    {
+      "id": "vscode_extension_pro",
+      "days_to_first_yen": "3-14",
+      "months_to_target": "2-5",
+      "owner_actions": "1 initial + 0-1 monthly",
+      "why": "CI can publish and update it; a concrete time-saver reaches the English-speaking developer market directly"
+    },
+    {
+      "id": "maintained_data_or_api",
+      "days_to_first_yen": "7-21",
+      "months_to_target": "3-6",
+      "owner_actions": "1 initial",
+      "why": "CI turns public data into a normalised, diffable feed people pay monthly for"
+    },
+    {
+      "id": "npm_pypi_cli_pro",
+      "days_to_first_yen": "7-30",
+      "months_to_target": "3-7",
+      "owner_actions": "1 initial + 0-1 monthly",
+      "why": "package search and README funnel to a commercial licence"
+    },
+    {
+      "id": "high_intent_tool_site",
+      "days_to_first_yen": "14-60",
+      "months_to_target": "4-9",
+      "owner_actions": "1 initial",
+      "why": "captures validator/converter/generator searches with a free tool and sells the full version"
+    }
+  ],
+  "ranked_last_by_blind_model": {
+    "id": "generated_video_to_digital_product",
+    "days_to_first_yen": "30-120",
+    "months_to_target": "6-18",
+    "note": "The blind model placed audience-zero content accumulation last without being told this is what we currently do. Independent agreement with the measured 0.023% conversion."
+  },
+  "structural_insight": "Every fast option borrows an existing marketplace's search demand instead of building an audience. The slow ones all start from zero attention. That is the axis, not the medium.",
+  "verdict": "adopt_for_next_test",
+  "verdict_reason": "Measured incumbent idle ETA is infinite on every channel. These are estimates rather than measurements, but any finite path beats infinity, and the capability they need (writing and shipping software) is the one thing this operation has demonstrated repeatedly.",
+  "caution": "The month-count figures are the model's estimates, not observations. Treat first-yen as the falsifiable claim and measure it; do not carry the month figures forward as if measured."
+}

@@ -48,6 +48,19 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
   if (typeof state.prompt !== "string" || typeof state.answer !== "string" || !state.answer) {
     throw new Error("answer record is missing its prompt or answer");
   }
+} else if (Array.isArray(state.options) && state.last_round_at !== undefined) {
+  // Zero-base round record. The verdict is required and must be explicit, because
+  // "we looked at alternatives" with no recorded decision is how a review becomes
+  // a ritual: it runs, it produces text, and nothing ever changes as a result.
+  if (!["adopt_for_next_test", "keep_incumbent", "inconclusive"].includes(state.verdict)) {
+    throw new Error("zero-base record has no valid verdict");
+  }
+  if (typeof state.verdict_reason !== "string" || !state.verdict_reason) {
+    throw new Error("zero-base record has a verdict but no reason");
+  }
+  for (const o of state.options) {
+    if (typeof o.id !== "string" || !o.id) throw new Error("zero-base option has no id");
+  }
 } else if (state.probe !== undefined) {
   // API capability probes. This shape predates the branch and was failing the
   // checker outright — which meant a file under state/ was exempt from the
