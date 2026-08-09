@@ -41,17 +41,18 @@
               "source-code"
             ],
             "Community": "Comments を有効に（無効だと反応が一切見えません）",
-            "Visibility": "Public"
+            "Visibility": "Public",
+            "Project URL": "idle-clicker-kit"
           },
           "description_body_to_paste": "お客さんに「もう一度サイトを開く理由」を作るための、小さなブラウザゲームです。\n\n設定ファイル1枚（brand.config.json）を書き換えるだけで、自分の店・商品・チャンネルの放置ゲームになります。題名・配色・数えるものの名前・増やすもの8種・強化6種・到達メッセージ・誘導ボタン・フッターまで、すべてそこから決まります。\n\n■ 入っているもの\n・ゲーム本体一式（HTML / CSS / JavaScript）\n・brand.config.json — 書き換えるのはここだけ\n・generator.html — フォームを埋めると設定ファイルが出てくるページ\n・書き換え例3種（珈琲店・サロン・配信者）\n・validate_config.py — 設定の誤りを日本語で指摘する検査\n・test_engine.py — 実ブラウザで20項目を自動検査（開発用）\n・日本語 README とライセンス\n\n■ 技術的なこと\n・ビルド不要。フォルダを置くだけです。Node も PHP も要りません\n・外部ライブラリなし・通信なし。あなたが設定したリンク以外へは何も送りません\n・セーブは端末内。サーバーもデータベースも要りません\n・スマホ縦画面前提。片手・タップだけで遊べます\n・GitHub Pages / Netlify / Cloudflare Pages / 自社サーバー、どこでも動きます\n\n■ ライセンス\n・あなたの店・自社・自分のチャンネルのために、公開先1つで使えます。商用可・改変自由\n・クライアントの案件へ納品する場合は、別途ご相談ください\n・キット自体を素材・テンプレート商品として再販・再配布することはできません\n\n効果音・BGM・画像素材は入っていません。表示は絵文字とCSSだけで作っています。売上や集客を保証するものではありません。",
-          "cover_image": "必要です。無いとインデックスに載りません（itch の Getting indexed 条件）。ゲーム画面のスクリーンショット1枚で足ります。",
+          "cover_image": "assets/itch-cover.png をアップロードするだけ。630x500 で生成済み（node scripts/render-cover.mjs で再生成できる）。スクリーンショットを撮る必要はありません。",
           "upload": "ここでファイルを上げなくて構いません。ページさえ在れば、以降のアップロードは butler（itch 公式CLI）で自動化できます。ただし butler が既存の ITCH の鍵で通るかは未検証です（下の unverified を参照）。"
         },
         "step_2": {
           "what": "同じ日のうちに、itch.io の Community → Release announcements 板へ告知を1件投稿する",
           "why_same_day": "零観客から初売上に届いた唯一の事例（Invoker）がやったのは、実績を積むことではなく、同じ日に複数の場所へ出すこと。実績（standing）の代わりに広さ（breadth）を使う、という筋。",
           "title_to_paste": "設定1枚で自社ブランドになる放置クリッカーのキットを出しました",
-          "body_to_paste": "店舗サイトや配信者のリンク集に置ける、小さな放置クリッカーのキットを公開しました。\n\nbrand.config.json を1枚書き換えるだけで、題名・配色・数えるものの名前・増やすもの・強化・到達メッセージ・誘導ボタンまで全部変わります。ビルド不要、外部ライブラリなし、通信なし。フォルダを置くだけで動きます。\n\n設定を作るフォーム（generator.html）と、設定の誤りを日本語で指摘する検査、実ブラウザで20項目を回す自動検査を同梱しています。\n\nページはこちら： <ここに step_1 で作った itch のURL>\n\n感想でも、動かなかった報告でも助かります。",
+          "body_to_paste": "店舗サイトや配信者のリンク集に置ける、小さな放置クリッカーのキットを公開しました。\n\nbrand.config.json を1枚書き換えるだけで、題名・配色・数えるものの名前・増やすもの・強化・到達メッセージ・誘導ボタンまで全部変わります。ビルド不要、外部ライブラリなし、通信なし。フォルダを置くだけで動きます。\n\n設定を作るフォーム（generator.html）と、設定の誤りを日本語で指摘する検査、実ブラウザで20項目を回す自動検査を同梱しています。\n\nページはこちら： https://bachikoljunior-blip.itch.io/idle-clicker-kit\n\n感想でも、動かなかった報告でも助かります。",
           "rule_that_permits_this": "'The Release announcements board is our designated place for creators to announce and show off their own work.'（itch.io Quality guidelines）",
           "rule_that_forbids_doing_it_elsewhere": "'Comments and communities are not for advertisement or self-promotion unless explicitly specified.'（itch.io Community rules）。だから他の板には出さないでください。"
         }
@@ -84,7 +85,8 @@
       "minimised": {
         "removed": "step_3 (Product Hunt account). It is a different route, not part of making this one finite. RUNBOOK 6 gate 5 asks whether the request can be reduced further, and bundling a second route into one ask is exactly the padding that gate exists to catch.",
         "kept_and_why": "Two steps, not one. The page alone is publish-and-wait, which eight outward surveys agree does not reach a buyer. The announcement is the traffic. Dropping either one leaves a request that cannot succeed.",
-        "not_reducible_further": "itch has no write API (state/constraints.json itch_no_write_api), so the form cannot be automated, and the announcement must come from the account that owns the page."
+        "not_reducible_further": "itch has no write API (state/constraints.json itch_no_write_api), so the form cannot be automated, and the announcement must come from the account that owns the page.",
+        "second_pass": "Owner pointed out that 'substitute the URL you just made' is not paste-only. Two things were removed: the URL substitution (the page URL is now decided in advance from the slug) and the screenshot (the cover is generated and committed). What the owner types is now the slug and nothing else."
       },
       "urls": {
         "create_project": "https://itch.io/game/new",
@@ -92,7 +94,10 @@
         "release_announcements_board": "https://itch.io/board/10022/release-announcements",
         "existing_gumroad_listing": "https://bachiko4.gumroad.com/l/fbozt",
         "how_these_were_obtained": "Read off the live https://itch.io/community index with curl on 2026-08-09, not recalled. The board id was first guessed as 10025, which returned HTTP 200 and looked right; the index says 10022. A 200 proves something answered, not that it is the thing you named — the same lesson as the archive_session refusal recorded in state/continue.json.",
-        "codes_seen": "community 200, board/10022 200, game/new 429 (rate limited, so the path exists), dashboard 403 (login required, as expected)"
+        "codes_seen": "community 200, board/10022 200, game/new 429 (rate limited, so the path exists), dashboard 403 (login required, as expected)",
+        "page_url_decided_in_advance": "https://bachikoljunior-blip.itch.io/idle-clicker-kit",
+        "project_url_slug_to_type": "idle-clicker-kit",
+        "how_the_page_url_is_known_before_it_exists": "itch page URLs are <username>.itch.io/<slug>, and the slug is chosen on the create form. username came from state/itch.json profile.username, read via itch.io/api/1/KEY/me (api.itch.io/me answers 404 for this key type). So the announcement carries the final link and the owner substitutes nothing."
       }
     }
   ]
