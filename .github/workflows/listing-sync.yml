@@ -1,0 +1,91 @@
+name: Listing copy sync
+
+# The storefront copy is a file in this repository, and this is what makes that
+# true rather than aspirational. Editing assets/listing/gumroad.ja.json on main
+# pushes the change to Gumroad; nothing has to remember to do it by hand, and a
+# session that cannot reach the Gumroad API — several cannot — can still change
+# what the listing says.
+#
+# It also keeps the credential where CLAUDE.md says it belongs. GUMROAD_TOKEN
+# lives in the repository secret store, so re-aiming the listing never requires a
+# session to hold the token or to make the outbound call itself.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "assets/listing/**"
+      - "scripts/sync-listing.mjs"
+      - ".github/workflows/listing-sync.yml"
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Push the repo copy to Gumroad. Unchecked only compares and reports drift."
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: listing-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Require the Gumroad secret
+        env:
+          GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
+        run: |
+          if [ -z "$GUMROAD_TOKEN" ]; then
+            echo "GUMROAD_TOKEN is missing from repository secrets" >&2
+            exit 1
+          fi
+
+      - name: Compare or apply
+        env:
+          GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
+          APPLY: ${{ github.event_name == 'push' || inputs.apply }}
+        run: |
+          if [ "$APPLY" = "true" ]; then
+            node scripts/sync-listing.mjs --apply
+          else
+            node scripts/sync-listing.mjs
+          fi
+
+      # --apply captures the copy it is about to overwrite into the same file.
+      # Without this commit the old copy exists nowhere once the push lands, and a
+      # route change that cannot be reverted is a bet rather than an experiment.
+      - name: Commit the captured previous copy
+        if: success()
+        run: |
+          git config user.name "listing-sync[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/listing
+          if git diff --cached --quiet; then
+            echo "no change"
+            exit 0
+          fi
+          git commit -m "chore: capture the replaced Gumroad listing copy"
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "push rejected, retrying ($attempt)"
+            git fetch origin main
+            git rebase --autostash origin/main || exit 1
+          done
+          echo "could not push after 3 attempts" >&2
+          exit 1
