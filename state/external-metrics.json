@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T23:32:51.746Z",
+  "fetched_at": "2026-08-09T23:39:13.136Z",
   "note": "Derived by scripts/measure-reach.mjs from state/youtube-scan.json. Do not hand-edit: the numbers here are a division of the snapshot, and editing them detaches the claim from the commit that can contradict it.",
   "source_snapshot": {
     "fetched_at": "2026-08-09T22:50:00.000Z",

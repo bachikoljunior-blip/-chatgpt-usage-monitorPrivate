@@ -601,6 +601,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T23:34:21.941Z",
+      "candidate": "point_the_reach_we_own_at_the_thing_we_sell",
+      "kind": "prerequisite",
+      "mechanism": "Lap 2 established the surface (config/channel.yaml publish.footer) and that it permits the paid link. It left open whether this loop edits or asks. Reasoning it through settles it against editing on mechanism rather than on politeness: the sibling loop is a RESIDENT session with that repository already checked out on branch claude/youtube-auto-post-revenue-ggedij, and what it runs is its working tree. A push from here changes a remote ref and changes nothing that executes, so the edit cannot take effect at all without the other loop acting. The act under this route is therefore a MESSAGE, and the two automations have chased the same 200,000-yen target all day without exchanging one in either direction. This lap opens that channel and puts the measured request through it. Claimed as prerequisite because it cannot itself make an ETA finite — it makes the elected route's act performable by somebody, which is currently true of nobody.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
