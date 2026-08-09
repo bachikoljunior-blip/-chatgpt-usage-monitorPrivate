@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T23:22:20.550Z",
+  "fetched_at": "2026-08-09T23:32:51.746Z",
   "note": "Derived by scripts/measure-reach.mjs from state/youtube-scan.json. Do not hand-edit: the numbers here are a division of the snapshot, and editing them detaches the claim from the commit that can contradict it.",
   "source_snapshot": {
     "fetched_at": "2026-08-09T22:50:00.000Z",
-    "age_days": 0.02,
+    "age_days": 0.03,
     "stale": false,
     "provenance": {
       "repo": "bachikoljunior-blip/youtube",
@@ -25,8 +25,19 @@
       "measured_at": "2026-08-10T07:21:51+09:00",
       "monthly_yen_now": 0,
       "owner_actions_required": 0,
+      "addressability": {
+        "known": true,
+        "surface": "config/channel.yaml publish.footer — a template appended to EVERY video description. So the act is a config edit, not a per-video action, and it applies to the back catalogue's future views as well as new uploads.",
+        "paid_link_permitted": true,
+        "free_link_permitted": false,
+        "free_link_forbidden_by": [
+          "github"
+        ],
+        "lap_may_perform_the_edit": null,
+        "note": "Whether this loop should perform the edit itself. list_repos reports can_push true for the sibling repo and the owner's standing directive A14 puts every repository except simple's main in scope, so PERMISSION is not the open question. Coordination is: that repository is driven by its own resident Claude session which committed 60 minutes before this measurement, and an unannounced config edit lands in another running loop's working set. The two automations are chasing the same ¥200,000/month target and have never exchanged a message in either direction."
+      },
       "idle_eta_days": null,
-      "reason": "measured, not unreadable: 1208.75/day views and 394.75/day engaged over 4 days (2026-08-04..2026-08-07), zero owner actions. Ad revenue is not the path — at this rate the YouTube Partner gate is 4000 days away on subscribers, and the sibling loop prices the far side of it in the ¥1,000s/month against a ¥200,000 target. What is worth the ranking's attention is the REACH, which the elected route was blocked on and which nothing here had counted.",
+      "reason": "measured, not unreadable: 1208.75/day views and 394.75/day engaged over 4 days (2026-08-04..2026-08-07), zero owner actions. Ad revenue is not the path — at this rate the YouTube Partner gate is 4000 days away on subscribers, and the sibling loop prices the far side of it in the ¥1,000s/month against a ¥200,000 target. What is worth the ranking's attention is the REACH, which the elected route was blocked on and which nothing here had counted. The surface PERMITS the paid product's link and FORBIDS the free demo's (github) — so route 1's entire payload cannot go here as hosted. That is the exact INVERSE of r/gamedev, which permits the free artifact and forbids being paid. Whether a lap may perform the edit is NOT established — permission is not the question (A14), coordination with the sibling loop is.",
       "reach": {
         "usable": true,
         "window_days": 4,

@@ -2720,6 +2720,59 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(externalEta("") === null, "an empty external ETA coerced to 0 days");
   assert(externalEta(0) === 0, "a genuine zero was thrown away with the nulls");
   assert(externalEta(12.5) === 12.5, "a real finite ETA was discarded");
+
+  // --- addressability: reach that cannot be pointed anywhere is a number ----
+  //
+  // The sibling repo's upload guard is a substring test over title, description and
+  // first comment, and the run aborts on a hit. It is re-derived here over our own
+  // two URLs rather than trusted as prose, because prose goes stale silently the day
+  // either URL or the word list changes — and this verdict decides whether the elected
+  // route has an executable act under it.
+  const { addressabilityVerdict, addressabilitySentence } = await import(
+    "../scripts/measure-reach.mjs"
+  );
+  const guard = {
+    the_surface: "config/channel.yaml publish.footer",
+    the_rule_read_for_what_it_FORBIDS: {
+      words: ["github", "GitHub", "リポジトリ", "コードを公開", "ソースコード"],
+      gumroad_url: "https://bachiko4.gumroad.com/l/fbozt",
+      free_demo_url: "https://bachikoljunior-blip.github.io/O/hoshikuzu/",
+    },
+    lap_may_perform_the_edit: null,
+  };
+  const v = addressabilityVerdict({ addressability: guard });
+  assert(v.known === true, "a snapshot carrying an addressability block reported unknown");
+  assert(v.paid_link_permitted === true, "the Gumroad link was reported forbidden; it contains none of the words");
+  // THE FINDING. The demo's only public home is a github.io URL, and 'github' is the
+  // first forbidden word, so route 1's whole payload cannot go on this surface.
+  assert(v.free_link_permitted === false, "the github.io demo URL passed a guard that forbids 'github'");
+  assert(v.free_link_forbidden_by.includes("github"), "the forbidding word was not named, so a reader cannot check it");
+
+  // Unknown must not read as no. "Nobody established it" and "established as no" lead
+  // to different laps — the conflation account.exists already made once here.
+  assert(v.lap_may_perform_the_edit === null, "an unestablished permission was collapsed to a boolean");
+  assert(
+    addressabilitySentence(v).includes("NOT established"),
+    "the sentence the ranking reads did not say the decisive question is open",
+  );
+  assert(
+    addressabilityVerdict({}).known === false,
+    "a snapshot with no addressability block claimed to know whether the reach can be pointed anywhere",
+  );
+  assert(
+    addressabilitySentence(addressabilityVerdict({})).includes("UNKNOWN"),
+    "an unmeasured addressability printed as though it had been measured",
+  );
+
+  // And the committed snapshot really carries it — the half that goes red if a later
+  // lap edits state/youtube-scan.json into prose.
+  const committed = JSON.parse(await readFile(join(root, "state/youtube-scan.json"), "utf8"));
+  const live = addressabilityVerdict(committed);
+  assert(live.known === true, "the committed snapshot lost its addressability block");
+  assert(
+    live.free_link_permitted === false && live.paid_link_permitted === true,
+    "the committed snapshot no longer derives the inverse-of-r/gamedev finding",
+  );
 }
 
 console.log("All usage monitor tests passed.");

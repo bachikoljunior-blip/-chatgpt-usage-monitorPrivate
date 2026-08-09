@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T23:24:36.293Z",
+  "fetched_at": "2026-08-09T23:32:51.827Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -45,11 +45,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.2
+      "days_unchanged": 0.21
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.2
+      "days_unchanged": 0.21
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -101,7 +101,7 @@
       "measured_at": "2026-08-10T07:21:51+09:00",
       "monthly_yen_now": 0,
       "idle_eta_days": null,
-      "idle_eta_reason": "measured, not unreadable: 1208.75/day views and 394.75/day engaged over 4 days (2026-08-04..2026-08-07), zero owner actions. Ad revenue is not the path — at this rate the YouTube Partner gate is 4000 days away on subscribers, and the sibling loop prices the far side of it in the ¥1,000s/month against a ¥200,000 target. What is worth the ranking's attention is the REACH, which the elected route was blocked on and which nothing here had counted.",
+      "idle_eta_reason": "measured, not unreadable: 1208.75/day views and 394.75/day engaged over 4 days (2026-08-04..2026-08-07), zero owner actions. Ad revenue is not the path — at this rate the YouTube Partner gate is 4000 days away on subscribers, and the sibling loop prices the far side of it in the ¥1,000s/month against a ¥200,000 target. What is worth the ranking's attention is the REACH, which the elected route was blocked on and which nothing here had counted. The surface PERMITS the paid product's link and FORBIDS the free demo's (github) — so route 1's entire payload cannot go here as hosted. That is the exact INVERSE of r/gamedev, which permits the free artifact and forbids being paid. Whether a lap may perform the edit is NOT established — permission is not the question (A14), coordination with the sibling loop is.",
       "owner_actions_required": 0,
       "stale": false,
       "stale_days": 0,
@@ -333,7 +333,7 @@
         "published_count": 10,
         "pages_found_by_search": 0,
         "verdict": "published_but_not_findable",
-        "measured_at": "2026-08-09T23:19:02.901Z",
+        "measured_at": "2026-08-09T23:24:37.441Z",
         "what_it_settles": "Not a shortage of pages. Ten serve 200 and a search index returned none of them, so page COUNT is not the binding term — the missing step is an inbound path from a surface that is already crawled. Building more pages buys nothing until that step exists.",
         "inbound_surface": {
           "verdict": "no_crawled_surface_found",

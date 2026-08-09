@@ -36,5 +36,24 @@
     }
   },
   "read_the_lag": "The scan ran at 2026-08-09T22:21Z and its newest day is 2026-08-07. YouTube Analytics lags roughly two days, so the window is four days (08-04..08-07) and NOT the six days between `since` and the scan time. Dividing by six would understate the rate by a third. scripts/measure-reach.mjs derives the window from the day keys for exactly this reason and never from `since`.",
+  "addressability": {
+    "measured_at": "2026-08-09T23:30:00.000Z",
+    "why_this_is_here_and_not_in_a_note": "The route elected at 22:55Z rests on reach being usable, and reach that cannot be pointed anywhere is a number, not a route. Measured from the sibling repo's own files at the commit in provenance — config/channel.yaml and scripts/upload_only.py — not from anyone's account of them.",
+    "the_surface": "config/channel.yaml publish.footer — a template appended to EVERY video description. So the act is a config edit, not a per-video action, and it applies to the back catalogue's future views as well as new uploads.",
+    "the_rule_read_for_what_it_FORBIDS": {
+      "source": "scripts/upload_only.py FORBIDDEN, enforced against title, description and first comment before every upload; the run aborts on a hit.",
+      "words": ["github", "GitHub", "リポジトリ", "コードを公開", "ソースコード"],
+      "owner_instruction": "Recorded in the sibling repo's docs/JOURNAL.md: the automation's/repository's existence must not appear in any video — no link, no name, no hint.",
+      "gumroad_url": "https://bachiko4.gumroad.com/l/fbozt",
+      "free_demo_url": "https://bachikoljunior-blip.github.io/O/hoshikuzu/",
+      "the_urls_are_here_as_DATA": "scripts/measure-reach.mjs addressabilityVerdict re-runs the guard's substring test over these two strings and derives the permitted/forbidden verdict itself. Writing 'gumroad: permitted, demo: forbidden' as prose would be an assertion in the one file whose entire purpose is that assertions were what went wrong — and it would go stale silently the day either URL or the word list changes.",
+      "what_the_derivation_finds": "The demo URL contains 'github', which is FORBIDDEN[0], so the upload guard aborts. Not a technicality about substring matching: the owner's instruction is to hide that a code repository is behind the channel, and a github.io URL discloses exactly that. The Gumroad URL contains none of the five words."
+    },
+    "the_finding_that_matters": "THE SURFACE PERMITS THE PAID PRODUCT AND FORBIDS THE FREE ONE — the exact inverse of r/gamedev, which permits the free artifact and forbids being paid. Route 1 spent five laps at a door that allows the demo and no revenue; the first surface examined under route 3 allows the revenue and not the demo. Read together they say the loop's two assets have never both been permitted anywhere at once, which is a fact about the ASSETS and not about any venue.",
+    "and_this_was_read_the_way_r_gamedev_should_have_been": "The r/gamedev rule was quoted correctly six sessions ago and read only for what it permits; the first clause forbidding paid promotion sat unread in the same sentence. So this surface's rule was read for the forbidding half FIRST, before anything was placed on it, and the forbidding half turned out to be the load-bearing one.",
+    "lap_may_perform_the_edit": null,
+    "NOT_settled": "Whether this loop should perform the edit itself. list_repos reports can_push true for the sibling repo and the owner's standing directive A14 puts every repository except simple's main in scope, so PERMISSION is not the open question. Coordination is: that repository is driven by its own resident Claude session which committed 60 minutes before this measurement, and an unannounced config edit lands in another running loop's working set. The two automations are chasing the same ¥200,000/month target and have never exchanged a message in either direction.",
+    "what_would_settle_it": "Establish a coordination channel the way this repo did for the ChatGPT lane — one file in the sibling repo that its resident session reads, so a request is made rather than a surprise edit. That is one push and it is the next act under this route."
+  },
   "what_this_is_not": "It is not evidence that this audience buys anything. The channel publishes money-and-work calculations to a Japanese consumer audience; the priced product is a USD 25 development kit for developers. One subscriber from 4,835 views is a 0.02% conversion on the cheapest possible ask. The value claimed here is REACH, which the elected route was blocked on and which nothing in this repository had ever counted — not that the reach is already pointed at a buyer."
 }

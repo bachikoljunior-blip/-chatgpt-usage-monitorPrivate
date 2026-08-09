@@ -585,6 +585,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-09T23:25:15.349Z",
+      "candidate": "point_the_reach_we_own_at_the_thing_we_sell",
+      "kind": "prerequisite",
+      "mechanism": "The route elected last lap rests on reach that is MEASURED but not established as ADDRESSABLE. The candidate's own not_settled_here says so: the YouTube credentials live in the sibling repository's environment, not in this session, so changing what that channel links to may be the sibling loop's act rather than this one's. Until that is settled the route is a number and not a route, and the next lap would otherwise pick work under it on an unchecked assumption. This lap reads the sibling repo's uploader and channel config to establish (a) whether the description/link text is generated from a file a change could reach, (b) what the owner has ALREADY forbidden on that surface — the sibling's JOURNAL records a standing owner instruction that the automation's existence must not appear in any video, enforced by a pre-upload check, and a link placed without reading that rule would be the r/gamedev trap again: acting on what a surface permits without reading the same source for what it forbids. Claimed as prerequisite because it cannot itself make an ETA finite: it decides whether the elected route has an executable act under it at all.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

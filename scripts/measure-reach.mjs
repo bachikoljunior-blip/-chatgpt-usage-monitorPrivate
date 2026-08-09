@@ -137,6 +137,65 @@ export const externalEta = (v) =>
   v === null || v === undefined || v === "" || !Number.isFinite(Number(v)) ? null : Number(v);
 
 /**
+ * Reach that cannot be pointed at anything is a number, not a route — so the row the
+ * ranking reads carries which of our two assets this surface will actually accept.
+ *
+ * Derived by re-running the sibling repo's own upload guard over our own URLs, rather
+ * than by trusting the snapshot's prose about them. The guard is a plain substring
+ * test over the title, description and first comment, so it is reproducible here
+ * exactly; recording its VERDICT without re-deriving it would be an assertion in a
+ * file whose whole point is that assertions were what went wrong.
+ *
+ * WHY THE FORBIDDEN HALF IS COMPUTED FIRST. r/gamedev's rule was quoted correctly six
+ * sessions ago and read only for what it PERMITS, while the clause forbidding paid
+ * promotion sat unread in the same sentence and cost the loop five laps. So this
+ * surface's rule is read for what it forbids before anything is placed on it.
+ */
+export function addressabilityVerdict(snapshot) {
+  const a = snapshot?.addressability;
+  if (!a) return { known: false, why: "the snapshot carries no addressability block" };
+  const words = a.the_rule_read_for_what_it_FORBIDS?.words ?? [];
+  const hits = (url) => words.filter((w) => (url ?? "").includes(w));
+  const paid = hits(a.the_rule_read_for_what_it_FORBIDS?.gumroad_url);
+  const free = hits(a.the_rule_read_for_what_it_FORBIDS?.free_demo_url);
+  return {
+    known: true,
+    surface: a.the_surface ?? null,
+    paid_link_permitted: paid.length === 0,
+    free_link_permitted: free.length === 0,
+    free_link_forbidden_by: free,
+    // Deliberately three-valued rather than a boolean. "Nobody has established it" and
+    // "established as no" lead to different laps, and collapsing them is the mistake
+    // account.exists made when it conflated 'an account exists' with 'a lap can post'.
+    lap_may_perform_the_edit: a.lap_may_perform_the_edit ?? null,
+    note: a.NOT_settled ?? null,
+  };
+}
+
+export function addressabilitySentence(v) {
+  if (!v?.known) return "ADDRESSABILITY UNKNOWN: nobody has established whether the reach can be pointed at anything, which is the difference between a route and a number.";
+  const parts = [];
+  parts.push(
+    v.paid_link_permitted
+      ? "The surface PERMITS the paid product's link"
+      : "The surface FORBIDS the paid product's link",
+  );
+  parts.push(
+    v.free_link_permitted
+      ? "and permits the free demo's."
+      : `and FORBIDS the free demo's (${v.free_link_forbidden_by.join(", ")}) — so route 1's entire payload cannot go here as hosted. That is the exact INVERSE of r/gamedev, which permits the free artifact and forbids being paid.`,
+  );
+  if (v.lap_may_perform_the_edit === null) {
+    parts.push(
+      "Whether a lap may perform the edit is NOT established — permission is not the question (A14), coordination with the sibling loop is.",
+    );
+  } else if (v.lap_may_perform_the_edit === false) {
+    parts.push("A lap may NOT perform the edit; it is the sibling loop's act.");
+  }
+  return parts.join(" ");
+}
+
+/**
  * The channel row compute-eta.mjs consumes. Also pure, and separate from deriveReach
  * on purpose: the reach numbers are a measurement and the ETA verdict is a judgement
  * about them, and the second one is the part a later lap is most likely to argue with.
@@ -156,6 +215,7 @@ export function toChannelRow(snapshot, reach) {
     measured_at: snapshot?.record?.at ?? null,
     monthly_yen_now: 0,
     owner_actions_required: 0,
+    addressability: addressabilityVerdict(snapshot),
   };
   if (!reach.usable) {
     return { ...base, idle_eta_days: null, reason: `not derivable: ${reach.why_not}` };
@@ -171,7 +231,8 @@ export function toChannelRow(snapshot, reach) {
       `${reach.days_to_ypp_gate} days away on ${reach.ypp_gate_binding_half}, and the sibling ` +
       `loop prices the far side of it in the ¥1,000s/month against a ¥200,000 target. ` +
       `What is worth the ranking's attention is the REACH, which the elected route was ` +
-      `blocked on and which nothing here had counted.`,
+      `blocked on and which nothing here had counted. ` +
+      addressabilitySentence(base.addressability),
     reach,
   };
 }
@@ -235,6 +296,7 @@ if (isMain) {
           "calculations; the priced product is a USD 25 developer kit. Reach is the term the " +
           "elected route was blocked on, and it is now a number instead of an assumption.",
       );
+      console.log(`  ${addressabilitySentence(row.addressability)}`);
     }
   }
 
