@@ -76,12 +76,24 @@ const legacy = await attempt(
   {},
 );
 
-// Prefer whichever actually returned games.
-const source = [modern, legacy].find((r) => Array.isArray(r.body?.games));
+// itch returned `{games: ...}` at HTTP 200 where `games` was not an array
+// (2026-08-09). Rather than guess the container, accept either form: an array, or
+// an object keyed by id. An empty result must survive as "0 games" — that is a
+// real, actionable answer (nothing published yet), and rejecting it as a shape
+// error would have us debugging the collector when the account is simply empty.
+const asGames = (g) => {
+  if (Array.isArray(g)) return g;
+  if (g && typeof g === "object") return Object.values(g);
+  return null;
+};
+const describe = (g) =>
+  Array.isArray(g) ? `array[${g.length}]` : g === null ? "null" : typeof g;
+
+const source = [modern, legacy].find((r) => asGames(r.body?.games) !== null);
 
 let payload;
 if (source) {
-  const games = source.body.games.map((g) => ({
+  const games = asGames(source.body.games).map((g) => ({
     id: g.id ?? null,
     title: g.title ?? null,
     published: g.published === true || g.published_at != null,
@@ -131,6 +143,7 @@ if (source) {
         parsed: r.body !== null && r.body !== undefined,
         failed: r.error ? true : false,
         body_keys: shapeOf(r.body),
+        games_type: r.body && typeof r.body === "object" ? describe(r.body.games) : null,
       })),
     },
   };
