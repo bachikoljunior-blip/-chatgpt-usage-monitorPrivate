@@ -20,6 +20,7 @@ import {
   ATTACHMENTS, buildPrompt, decide, markerEarned, parseInboxHeader,
 } from "../scripts/inbox-task.mjs";
 import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/revenue-rate.mjs";
+import { decideVerdict } from "../scripts/gate-verdict.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const temporary = await mkdtemp(join(tmpdir(), "usage-monitor-test-"));
@@ -790,6 +791,65 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(appendReading(seed, { at: "nonsense", total_sales_count: 1, total_sales_usd_cents: 1 }) === seed,
     "an undated reading was appended");
   assert(appendReading(later, at(0, 0)) === later, "an out-of-order reading was appended");
+}
+
+// --- The gate must never refuse every lane at once --------------------------
+// Observed on 2026-08-09: with the ETA at ∞ for every channel and three
+// prerequisite laps recorded, --kind=direct and --kind=prerequisite both
+// rejected, while the rejection text said "doing nothing is the one response this
+// does not authorise". Those two conditions cannot clear on their own — a direct
+// claim needs a finite measured ETA, that needs revenue, and revenue needs a lap.
+{
+  const inf = { beforeIdle: null, beforePlanned: null, afterIdle: null, afterPlanned: null };
+  const at = (n) => ({ ...inf, consecutivePrerequisites: n });
+
+  // The livelock, stated as a test: at the cap, some lane must remain open.
+  const capped = ["direct", "prerequisite", "route_change"].map(
+    (kind) => decideVerdict({ ...at(3), kind }).verdict,
+  );
+  assert(capped.includes("go"), "every lane rejected at the prerequisite cap — the loop cannot move");
+  assert(
+    decideVerdict({ ...at(3), kind: "route_change" }).verdict === "go",
+    "the route-change lane did not open when the prerequisite cap fired",
+  );
+  assert(
+    decideVerdict({ ...at(3), kind: "prerequisite" }).verdict === "reject",
+    "the prerequisite cap stopped firing",
+  );
+  assert(
+    decideVerdict({ ...at(3), kind: "direct" }).verdict === "reject",
+    "a direct claim with no improvement was admitted",
+  );
+
+  // ...and it must not become the lane everything uses. While groundwork is still
+  // affordable, "I am changing the route" is groundwork with a grander name.
+  assert(
+    decideVerdict({ ...at(0), kind: "route_change" }).verdict === "reject",
+    "route change was admitted while the prerequisite lane was still open",
+  );
+  assert(
+    decideVerdict({ ...at(2), kind: "route_change" }).verdict === "reject",
+    "route change was admitted one lap before the cap fired",
+  );
+  assert(
+    decideVerdict({ ...at(2), kind: "prerequisite" }).verdict === "go",
+    "groundwork was refused while still inside the cap",
+  );
+
+  // A real improvement passes in any lane, and a regression fails in all of them.
+  assert(
+    decideVerdict({ ...at(3), kind: "direct", afterPlanned: 30 }).verdict === "go",
+    "a finite claim against an infinite baseline was refused",
+  );
+  for (const kind of ["direct", "prerequisite", "route_change"]) {
+    assert(
+      decideVerdict({
+        kind, beforeIdle: 10, beforePlanned: 10, afterIdle: 20, afterPlanned: 20,
+        consecutivePrerequisites: 3,
+      }).verdict === "reject",
+      `${kind} admitted a claim that makes the ETA worse`,
+    );
+  }
 }
 
 console.log("All usage monitor tests passed.");

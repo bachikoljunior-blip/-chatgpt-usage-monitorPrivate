@@ -41,8 +41,7 @@
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { readStateJson, REPO } from "./state-source.mjs";
-
-const MAX_CONSECUTIVE_PREREQUISITES = 3;
+import { decideVerdict, KINDS, MAX_CONSECUTIVE_PREREQUISITES } from "./gate-verdict.mjs";
 
 const preferLocal = process.argv.includes("--local");
 const record = process.argv.includes("--record");
@@ -59,7 +58,6 @@ const days = (raw) => {
   const n = Number(raw);
   return Number.isFinite(n) ? n : undefined;
 };
-const cmp = (v) => (v === null || v === undefined ? Infinity : Number(v));
 const show = (v) => (v === null ? "∞" : `${v}d`);
 
 const id = arg("id");
@@ -70,8 +68,8 @@ const afterPlanned = days(arg("after-planned"));
 
 const problems = [];
 if (!id) problems.push("--id is required: name the candidate this work is against");
-if (!["direct", "prerequisite"].includes(kind)) {
-  problems.push("--kind must be direct or prerequisite");
+if (!KINDS.includes(kind)) {
+  problems.push(`--kind must be one of: ${KINDS.join(", ")}`);
 }
 if (afterIdle === undefined) problems.push("--after-idle is required (a number of days, or inf)");
 if (afterPlanned === undefined) {
@@ -116,51 +114,21 @@ for (let i = claims.length - 1; i >= 0; i -= 1) {
   consecutivePrerequisites += 1;
 }
 
-const improvesIdle = cmp(afterIdle) < cmp(beforeIdle);
-const improvesPlanned = cmp(afterPlanned) < cmp(beforePlanned);
-const improves = improvesIdle || improvesPlanned;
-const worsens = cmp(afterIdle) > cmp(beforeIdle) || cmp(afterPlanned) > cmp(beforePlanned);
+const { verdict, reason, improves } = decideVerdict({
+  kind,
+  beforeIdle,
+  beforePlanned,
+  afterIdle,
+  afterPlanned,
+  consecutivePrerequisites,
+  max: MAX_CONSECUTIVE_PREREQUISITES,
+});
 
 console.log(`ETA gate for ${id} (${kind})`);
 console.log(`  before: idle ${show(beforeIdle)} · planned ${show(beforePlanned)}   [measured]`);
 console.log(`  after:  idle ${show(afterIdle)} · planned ${show(afterPlanned)}   [claimed]`);
 console.log(`  eta has ever moved: ${etaHasEverMoved} (${rows.length} history row(s))`);
 console.log(`  consecutive prerequisite laps: ${consecutivePrerequisites}`);
-
-let verdict;
-let reason;
-
-if (worsens) {
-  verdict = "reject";
-  reason = "the claim makes the ETA worse. Whatever this is for, it is not the goal. Take the next candidate.";
-} else if (improves) {
-  verdict = "go";
-  reason =
-    "the claim is an improvement. It is a claim and not a measurement — the history is " +
-    "what settles it later, and a claim that never materialises is the useful kind of wrong.";
-} else if (kind === "prerequisite" && consecutivePrerequisites < MAX_CONSECUTIVE_PREREQUISITES) {
-  verdict = "go";
-  reason =
-    `no improvement claimed, admitted as prerequisite ` +
-    `${consecutivePrerequisites + 1}/${MAX_CONSECUTIVE_PREREQUISITES}. ` +
-    "Prerequisites are how an infinite portfolio gets a finite path at all, and also how " +
-    "a loop spends a month getting better at nothing. The count is the difference.";
-} else if (kind === "prerequisite") {
-  verdict = "reject";
-  reason =
-    `${consecutivePrerequisites} prerequisite laps in a row and the ETA is unchanged. ` +
-    "The rule is that three rounds without movement means the route is wrong, not the " +
-    "parameter. This is a redirection, not a stop: take a candidate that claims to move " +
-    "the number. If no candidate in state/eta.json can claim that, then the portfolio is " +
-    "the finding — run the zero-base round and produce candidates that can. Doing nothing " +
-    "is the one response this does not authorise.";
-} else {
-  verdict = "reject";
-  reason =
-    "a direct claim that does not improve either ETA is not a reason to spend a lap on it. " +
-    "If this is groundwork, say so with --kind=prerequisite and it will be counted. " +
-    "Either way the lap continues — pick again.";
-}
 
 console.log("");
 console.log(`  verdict: ${verdict}`);
