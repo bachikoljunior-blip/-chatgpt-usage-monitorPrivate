@@ -210,6 +210,13 @@ for (const c of constraints?.constraints ?? []) {
     why: c.eta_effect_if_lifted ?? "unknown effect",
     owner_actions: 0,
     note: c.claim,
+    // Which pool actually does the work. Ranking by days-to-first-yen puts every
+    // candidate in one queue, and a queue is only correct when they compete for the
+    // same thing. These do not: a codex_lane candidate costs one write here and then
+    // spends a weekly pool that was sitting at 100% unused while the Claude pool was
+    // the binding constraint. Making it wait behind a strategic branch spends nothing
+    // and buys nothing — it just delays the answer.
+    measure_via: c.measure_via ?? "here",
   });
 }
 for (const ch of channels) {

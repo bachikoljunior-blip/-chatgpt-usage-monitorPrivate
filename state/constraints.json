@@ -181,7 +181,9 @@
       "measured_at": null,
       "recheck_after": "2026-08-10",
       "eta_effect_if_lifted": "high: the Claude weekly pool is the scarce one and the Codex pool sat at 100% unused. Every kind of work that turns out to be delegable moves off the binding constraint, which is the same mechanism as halving lap cost but without giving anything up.",
-      "how_to_measure": "Ask the lane directly what it can and cannot do in its own environment, and have it demonstrate rather than assert — one small artefact per claimed capability. An assertion from a model about its own tools is not a measurement."
+      "how_to_measure": "Ask the lane directly what it can and cannot do in its own environment, and have it demonstrate rather than assert — one small artefact per claimed capability. An assertion from a model about its own tools is not a measurement.",
+      "measure_via": "codex_lane",
+      "why_that_matters": "Answering this costs one write to codex/INBOX.md and then runs on the Codex weekly pool, which was sitting at 100% unused while the Claude pool was the binding constraint. It does not compete with the candidates above it for the scarce resource, so making it queue behind them spends nothing and buys nothing."
     },
     {
       "id": "codex_can_produce_images",
@@ -190,7 +192,9 @@
       "measured_at": null,
       "recheck_after": "2026-08-10",
       "eta_effect_if_lifted": "medium: store art, covers and screenshots are needed on every listing. Chromium here already renders text-and-CSS covers (assets/itch-cover.png), so this only buys what CSS cannot draw — illustration. Real, but smaller than the range question above.",
-      "how_to_measure": "Ask the lane for an image through codex/INBOX.md and see what comes back. An SVG is text and would arrive through the existing answer file; a raster image would not, and that difference is itself the finding."
+      "how_to_measure": "Ask the lane for an image through codex/INBOX.md and see what comes back. An SVG is text and would arrive through the existing answer file; a raster image would not, and that difference is itself the finding.",
+      "measure_via": "codex_lane",
+      "why_that_matters": "Answering this costs one write to codex/INBOX.md and then runs on the Codex weekly pool, which was sitting at 100% unused while the Claude pool was the binding constraint. It does not compete with the candidates above it for the scarce resource, so making it queue behind them spends nothing and buys nothing."
     }
   ]
 }

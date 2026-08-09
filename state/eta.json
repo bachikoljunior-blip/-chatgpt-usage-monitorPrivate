@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T11:55:40.253Z",
+  "fetched_at": "2026-08-09T12:03:10.161Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -49,7 +49,7 @@
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-09T11:28:51.670Z",
+      "measured_at": "2026-08-09T11:59:01.520Z",
       "monthly_yen_now": 0,
       "lifetime_sales": 0,
       "lifetime_usd_cents": 0,
@@ -62,7 +62,7 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-09T11:51:06.263Z",
+      "measured_at": "2026-08-09T12:02:31.821Z",
       "monthly_yen_now": 0,
       "games": 0,
       "total_views": 0,
@@ -91,6 +91,7 @@
       "why": "large: all seven zero-base options are now refuted and every one failed on the term this constraint names. This is the only route in the whole evidence set where a first buyer actually arrived, and the fastest on record. Written as 'five of the seven' when this entry was created at 11:05; codex/outbox/2026-08-09.j.md took the remaining two an hour later, which is why this constraint sorts first — nothing was moved by hand to put it there.",
       "owner_actions": 0,
       "note": "UNMEASURED ON OUR SIDE, EVIDENCED FROM OUTSIDE: what blocks the only route on record that ever reached a first buyer is STANDING in the community the buyers are in — prior participation, an existing following, or several venues hit at once. Not recurring owner actions. Standing accrues before the post; it is a prerequisite, not a repeat action. Whether the owner has standing anywhere has never been checked, so this entry records a blocker whose size is unknown, not a blocker known to be present.",
+      "measure_via": "here",
       "actionable_now": true,
       "eta_effect_days": null,
       "eta_effect_basis": "no comparable estimate recorded"
@@ -101,6 +102,7 @@
       "why": "large, and it is the first finding that constrains the PRODUCT rather than a proposed shape. Seven surveys refuted candidate shapes; this one refutes the thing that already exists and already has a price. Until the branch below is chosen, every distribution route is aimed at a class that was not observed buying this form, which is why no venue work can fix it.",
       "owner_actions": 0,
       "note": "MEASURED FROM OUTSIDE, DECISION NOT YET TAKEN: the priced product's FORM does not match the buyer class its own description addresses. The description addresses shops, cafes, salons, streamers and campaign pages, and asks them to drop an HTML folder on their own site and edit a config file. Every purchase actually confirmed for that class was a monthly SaaS with a browser admin panel, hosting or an instant URL, and setup help. Not one buy-once, self-installed kit purchase was found for that class. The price is NOT the blocker: USD 25 is below one month of every comparable found.",
+      "measure_via": "here",
       "actionable_now": true,
       "eta_effect_days": null,
       "eta_effect_basis": "no comparable estimate recorded"
@@ -111,6 +113,7 @@
       "why": "high: the Claude weekly pool is the scarce one and the Codex pool sat at 100% unused. Every kind of work that turns out to be delegable moves off the binding constraint, which is the same mechanism as halving lap cost but without giving anything up.",
       "owner_actions": 0,
       "note": "What the ChatGPT lane can do has never been enumerated. It has only ever been asked to look things up outside, because that is what RUNBOOK offered it — the range was assumed rather than measured.",
+      "measure_via": "codex_lane",
       "actionable_now": true,
       "eta_effect_days": null,
       "eta_effect_basis": "no comparable estimate recorded"
@@ -121,6 +124,7 @@
       "why": "medium: store art, covers and screenshots are needed on every listing. Chromium here already renders text-and-CSS covers (assets/itch-cover.png), so this only buys what CSS cannot draw — illustration. Real, but smaller than the range question above.",
       "owner_actions": 0,
       "note": "The ChatGPT account can generate images. Whether that reaches our automated lane is a separate and untested question.",
+      "measure_via": "codex_lane",
       "actionable_now": true,
       "eta_effect_days": null,
       "eta_effect_basis": "no comparable estimate recorded"
@@ -157,6 +161,7 @@
       "why": "medium: decides whether the three funnel stages (found / opened / bought) can be separated at all. Cannot be resolved by testing — only by publishing a game.",
       "owner_actions": 0,
       "note": "PARTLY MEASURED: api.itch.io/profile/games authenticates and returns a games collection. Which per-game fields it carries is still unknown, because the account currently has zero games.",
+      "measure_via": "here",
       "actionable_now": false,
       "not_actionable_reason": "waits on an event: first game published",
       "eta_effect_days": null,
