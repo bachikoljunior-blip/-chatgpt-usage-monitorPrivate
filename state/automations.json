@@ -144,7 +144,8 @@
       "cron": "41 2 * * *",
       "liveness": {
         "state_file": "state/answers/latest.json",
-        "note": "The lane commits its answer here. No answer, no timestamp, no marker — so a lane that stops producing stops moving this and becomes overdue."
+        "note": "The lane commits its answer here. No answer, no timestamp, no marker — so a lane that stops producing stops moving this and becomes overdue. The stamp is asked_at, not fetched_at: this file records a question being put, not a source being read. Naming it here rather than renaming the field keeps ask-chatgpt.mjs's own vocabulary intact.",
+        "stamp_field": "asked_at"
       }
     }
   ],

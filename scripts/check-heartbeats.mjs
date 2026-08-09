@@ -62,9 +62,17 @@ export function resolveLastSeen(automation, evidence) {
 
   // A collector's mark is the state file it writes. `fetched_at` is stamped by
   // the collector at the moment it read, so it dates the run and not the commit.
+  //
+  // Not every lane stamps that name. The ChatGPT lane records `asked_at`, so for
+  // as long as this read only one field name that lane sat at never_seen while
+  // it was demonstrably running — an all-clear the detector could never earn, and
+  // silence it could never break. A lane whose failure cannot be reported is not
+  // being watched. The field is therefore declared next to the file it belongs
+  // to, and `fetched_at` stays the default so nothing else has to say anything.
   const path = automation.liveness?.state_file;
   if (path) {
-    const stamp = evidence.stateFiles.get(path)?.fetched_at;
+    const field = automation.liveness?.stamp_field ?? "fetched_at";
+    const stamp = evidence.stateFiles.get(path)?.[field];
     if (stamp) found.push([stamp, `state_file:${path}`]);
   }
 

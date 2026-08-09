@@ -517,6 +517,27 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     "an automation with no marks invented one",
   );
 
+  // A lane that stamps its run under another name was invisible for as long as
+  // this read one field name only: the ChatGPT lane records asked_at, so it sat
+  // at never_seen while it was running, and never_seen is excluded from
+  // overdue_count. Same defect as the one above, one field name further along.
+  const otherName = new Map([["state/answers/latest.json", { asked_at: "2026-08-09T09:04:00Z" }]]);
+  const declared = resolveLastSeen(
+    { id: "codex-loop", last_seen: null, liveness: { state_file: "state/answers/latest.json", stamp_field: "asked_at" } },
+    { laps: null, stateFiles: otherName },
+  );
+  assert(
+    declared.last_seen === "2026-08-09T09:04:00Z",
+    "a lane that stamps its run under a declared field name stayed invisible",
+  );
+  assert(
+    resolveLastSeen(
+      { id: "codex-loop", last_seen: null, liveness: { state_file: "state/answers/latest.json" } },
+      { laps: null, stateFiles: otherName },
+    ).last_seen === null,
+    "an undeclared field name was guessed at instead of being left unseen",
+  );
+
   // Every enabled automation in the real registry must have some mark available,
   // or it is one the detector structurally cannot watch.
   const registry = JSON.parse(await readFile(join(root, "state/automations.json"), "utf8"));
