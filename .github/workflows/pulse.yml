@@ -192,6 +192,13 @@ jobs:
           # the Spark window still has capacity — i.e. when a whole quota silently
           # goes back to being counted as "spare" while nothing can spend it.
           node scripts/spark-model.mjs --check || rc=1
+          # The lane was asked to BUILD a deliverable rather than research one
+          # (codex/INBOX.md 2026-08-10.payload-01), and the six terms of that ask
+          # are a contract, not a preference. Silent while the artifact is absent —
+          # the lane runs on its own schedule and waiting is not a failure — and
+          # red the moment something arrives that breaks a term, so a payload that
+          # does not meet its own promise cannot become rung 1's subject.
+          node scripts/check-payload.mjs || rc=1
           # The other half of the same fix, and the half that bites. Naming Spark
           # made the second pool spendable and made the account default — the only
           # model here that authored none of the Spark-built artifacts — unreachable.

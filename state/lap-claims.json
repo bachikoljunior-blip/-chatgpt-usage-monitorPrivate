@@ -1098,6 +1098,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T13:30:05.794Z",
+      "candidate": "the_lane_builds_the_payload",
+      "kind": "route_change",
+      "mechanism": "Route 4 says the offer form is the binding term, and its only aligned candidate just exhausted the preparation lane without the route's own act ever becoming performable. A recurring membership needs something delivered every month, and this account has no payload it can inspect: state/product-source.json records that the source of the one thing on sale exists in no repository, so promise conformance - rung 1 of the product ladder - has never been measurable. Every channel therefore reports idle infinite for the same reason, not for four different ones. Route 5 abandons the offer-form parameter and changes what the loop spends on: the pool that can build is idle (codex 94 percent, Spark 100 percent untouched) while the pool that decides is at 15 percent. Building one payload in the idle pool makes rung 1 measurable for the first time, and a measurable rung 1 is the precondition for any channel to report a non-null idle_eta_days, which is the stated top goal. This lap does not create revenue, so both numbers stay infinite; what changes is that the next lap has an artifact to measure instead of a form to prepare.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
