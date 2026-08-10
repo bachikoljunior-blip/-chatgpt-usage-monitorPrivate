@@ -53,7 +53,7 @@
 import { spawn } from "node:child_process";
 import { mkdtempSync, rmSync, existsSync, writeFileSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, resolve, dirname } from "node:path";
+import { join, resolve, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -86,7 +86,20 @@ export const SHIPPED = [
   // Recovered 2026-08-10 from the product's own Gumroad attachment. live: true
   // because buyers can pay for it today — which is what makes an unrun artifact
   // a problem rather than a gap.
-  { id: "idle_clicker_kit", path: "product/brandable-idle-clicker/index.html", profile: "idle_clicker_kit", live: true },
+  //
+  // serve: it fetches brand.config.json and REFUSES file:// by design, printing
+  // setup guidance instead of booting — exactly what its README promises. Under
+  // file:// the counter never renders, every measurement comes back null, and the
+  // run completes. That is not a broken product; it is an instrument whose reach
+  // does not cover its subject. A local static server is the missing half, and it
+  // needs no dependency: node:http is built in.
+  {
+    id: "idle_clicker_kit",
+    path: "product/brandable-idle-clicker/index.html",
+    profile: "idle_clicker_kit",
+    live: true,
+    serve: true,
+  },
 ];
 
 const CHROMIUM_CANDIDATES = [
@@ -211,6 +224,87 @@ class Cdp {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+/**
+ * MIME types this server answers with. Short on purpose: an artifact that needs a
+ * type not listed here is an artifact whose shape nobody here has looked at, and
+ * the right response is to look rather than to serve it as octet-stream and
+ * wonder later why the page half-loaded.
+ */
+const CONTENT_TYPES = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".mjs": "text/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".svg": "image/svg+xml",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".ico": "image/x-icon",
+  ".webp": "image/webp",
+};
+
+/**
+ * Resolve a request path inside a served directory, or null if it escapes.
+ *
+ * Pure so the escape rule can be tested without a socket. The rule is not
+ * theoretical politeness: this server is pointed at a directory inside the
+ * repository and the page being served is a product we did not write, so "../"
+ * reaching state/auth.vault is a real path and not a hypothetical one.
+ *
+ * @param {string} rootDir absolute directory being served
+ * @param {string} urlPath the request path, e.g. "/assets/engine.js"
+ * @returns {string|null} absolute file path, or null when it leaves rootDir
+ */
+export function resolveServedPath(rootDir, urlPath) {
+  const decoded = (() => {
+    try { return decodeURIComponent(String(urlPath ?? "").split("?")[0].split("#")[0]); }
+    catch { return null; }
+  })();
+  if (decoded === null) return null;
+  const root = resolve(rootDir);
+  const full = resolve(root, `.${decoded.startsWith("/") ? decoded : `/${decoded}`}`);
+  // `startsWith(root)` alone would accept a sibling directory whose name merely
+  // begins with root's, so the separator is part of the test.
+  if (full !== root && !full.startsWith(root + "/")) return null;
+  return full;
+}
+
+/**
+ * Where the browser should navigate for this job.
+ *
+ * Pure, and separate from the launching, because it is the whole behavioural
+ * difference between an artifact that boots and one that prints setup guidance —
+ * and it is the part a future edit is most likely to get wrong silently.
+ *
+ * @param {{serve?: boolean}} job
+ * @param {string} file absolute path to the artifact
+ * @param {string|null} base e.g. "http://127.0.0.1:41234" when a server is up
+ */
+export function navigationUrlFor(job, file, base) {
+  if (!job?.serve) return `file://${resolve(file)}`;
+  if (!base) throw new Error("serve requested but no server base url");
+  return `${base}/${encodeURIComponent(basename(resolve(file)))}`;
+}
+
+/** A static server over node:http. No dependency, no npm, no network exposure. */
+async function startServer(rootDir) {
+  const { createServer } = await import("node:http");
+  const server = createServer((req, res) => {
+    const full = resolveServedPath(rootDir, req.url ?? "/");
+    if (!full || !existsSync(full)) { res.writeHead(404); res.end("not found"); return; }
+    const dot = full.lastIndexOf(".");
+    const type = CONTENT_TYPES[dot >= 0 ? full.slice(dot).toLowerCase() : ""] ?? "application/octet-stream";
+    res.writeHead(200, { "content-type": type });
+    res.end(readFileSync(full));
+  });
+  // 127.0.0.1 rather than 0.0.0.0: nothing outside this container has any business
+  // reaching a product's source, and port 0 lets the OS pick a free one so two
+  // artifacts in the same run cannot collide.
+  await new Promise((ok) => server.listen(0, "127.0.0.1", ok));
+  const { port } = server.address();
+  return { base: `http://127.0.0.1:${port}`, close: () => new Promise((ok) => server.close(ok)) };
+}
+
 async function launch(exe) {
   const profile = mkdtempSync(join(tmpdir(), "play-"));
   const proc = spawn(exe, [
@@ -246,18 +340,27 @@ async function closeAll(h) {
  * what a finger does. The latency is measured by polling the counter's text: the
  * number is how long the player stares at an unchanged screen.
  */
-async function play(exe, file, profile) {
+async function play(exe, file, profile, job = {}) {
   const sel = PROFILES[profile];
   if (!sel) throw new Error(`unknown profile ${profile}`);
+  const server = job.serve ? await startServer(dirname(resolve(file))) : null;
   const h = await launch(exe);
-  const out = { browser_available: true, page_errors: [], tap_latency_ms: [] };
+  const out = {
+    browser_available: true,
+    // Recorded, not inferred: "played over http" and "played off the disk" are
+    // different runs of a different thing, and a reader comparing two rows of
+    // this register must be able to see which was which.
+    transport: job.serve ? "http" : "file",
+    page_errors: [],
+    tap_latency_ms: [],
+  };
   try {
     const { targetId } = await h.cdp.send("Target.createTarget", { url: "about:blank" });
     const { sessionId } = await h.cdp.send("Target.attachToTarget", { targetId, flatten: true });
     const S = sessionId;
     await h.cdp.send("Runtime.enable", {}, S);
     await h.cdp.send("Page.enable", {}, S);
-    await h.cdp.send("Page.navigate", { url: "file://" + resolve(file) }, S);
+    await h.cdp.send("Page.navigate", { url: navigationUrlFor(job, file, server?.base ?? null) }, S);
     await sleep(1200);
 
     const evalIn = async (expr) => {
@@ -336,6 +439,7 @@ async function play(exe, file, profile) {
     out.distinct_page_errors = [...new Set(out.page_errors)];
   } finally {
     await closeAll(h);
+    if (server) await server.close();
   }
   return out;
 }
@@ -385,7 +489,17 @@ async function main() {
   const doc = { schema_version: 1, status: "ok", fetched_at: now, chromium: exe, artifacts: {} };
 
   const jobs = val("--file")
-    ? [{ id: val("--profile") ?? "adhoc", path: val("--file"), profile: val("--profile") ?? "free_demo", live: false }]
+    // --serve is available ad hoc too: an artifact that needs a server is a shape,
+    // not one particular file, and a scratch copy used as a control has to be
+    // drivable exactly the way the original was or the comparison measures the
+    // transport instead of the change.
+    ? [{
+        id: val("--profile") ?? "adhoc",
+        path: val("--file"),
+        profile: val("--profile") ?? "free_demo",
+        live: false,
+        serve: process.argv.includes("--serve"),
+      }]
     : SHIPPED;
 
   for (const job of jobs) {
@@ -403,7 +517,7 @@ async function main() {
       continue;
     }
     try {
-      doc.artifacts[job.id] = { ...(await play(exe, file, job.profile)), source: job.path, live: job.live, measured_at: now };
+      doc.artifacts[job.id] = { ...(await play(exe, file, job.profile, job)), source: job.path, live: job.live, measured_at: now };
     } catch (err) {
       doc.artifacts[job.id] = {
         browser_available: true, run_failed: String(err?.message ?? err),

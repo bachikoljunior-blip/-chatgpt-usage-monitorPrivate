@@ -57,7 +57,7 @@ import { artifactWasDriven } from "../scripts/play-artifact.mjs";
 import { checkGoal, GOAL, BEGIN as DIRECTIVE_BEGIN } from "../scripts/check-goal-intact.mjs";
 import { judge as judgeSpark, sparkModelCandidate, sparkWindow } from "../scripts/spark-model.mjs";
 import { judge as judgeProductLoop, MAX_ROUND_AGE_DAYS as PRODUCT_MAX_ROUND_AGE_DAYS, roundEngaged, playedEvidenceFor, roundHasReviewer } from "../scripts/product-loop.mjs";
-import { measurementIsEvidence, artifactThrew, findChromium, PROFILES, SHIPPED } from "../scripts/play-artifact.mjs";
+import { measurementIsEvidence, artifactThrew, findChromium, PROFILES, SHIPPED, navigationUrlFor, resolveServedPath } from "../scripts/play-artifact.mjs";
 import {
   checkAddressee, checkRequestsAddressee, copyChanged, diffListing, pasteableStrings,
   readCoverSource, readOwnerRequests, readRepoListing,
@@ -5237,4 +5237,51 @@ function assert(condition, message) {
   // and only one of them is about the artifact.
   assert(artifactWasDriven({ browser_available: false }) === null, "an absent browser was reported as an artifact fault");
   assert(artifactWasDriven({ run_failed: "timeout" }) === null, "a failed run was reported as an artifact fault");
+}
+
+// --- The instrument's reach had to cover the subject -------------------------
+// The finding above stops the false pass; it does not make the kit measurable.
+// The kit refuses file:// BY DESIGN, so under the old navigation there was no
+// wording of --check that could ever produce a number for the only PRICED
+// product. A local node:http server is the missing half, and it turned the kit's
+// first real run in: rendered counter, 5ms taps, and 15 taps before anything is
+// affordable — the identical dead opening the free demo was just changed to fix.
+//
+// Mutations run red before this was kept: serve dropped from the SHIPPED row,
+// navigationUrlFor ignoring job.serve, and the path-escape test reduced to a
+// bare startsWith.
+{
+  const kit = SHIPPED.find((s) => s.id === "idle_clicker_kit");
+  assert(
+    kit?.serve === true,
+    "the paid kit lost its serve flag — it refuses file:// by design, so every number for the only priced product goes back to null and the run still reports played",
+  );
+
+  assert(
+    navigationUrlFor({ serve: false }, "/tmp/a/index.html", null) === "file:///tmp/a/index.html",
+    "an artifact that does not need a server was routed through one anyway, changing the transport under a measurement nobody asked to change",
+  );
+  assert(
+    navigationUrlFor({ serve: true }, "/tmp/a/index.html", "http://127.0.0.1:9") === "http://127.0.0.1:9/index.html",
+    "a served artifact was still opened off the disk, which is the state where it prints setup guidance and measures nothing",
+  );
+  let threw = false;
+  try { navigationUrlFor({ serve: true }, "/tmp/a/index.html", null); } catch { threw = true; }
+  assert(threw, "serve was requested with no server and the run continued, which would silently fall back to the transport the artifact refuses");
+
+  // The server is pointed at a directory inside this repository and serves a
+  // product nobody here wrote. `../` reaching state/auth.vault is a real path.
+  assert(
+    resolveServedPath("/srv/app", "/assets/engine.js") === "/srv/app/assets/engine.js",
+    "an ordinary asset path did not resolve",
+  );
+  assert(resolveServedPath("/srv/app", "/../../etc/passwd") === null, "a traversal escaped the served directory");
+  assert(
+    resolveServedPath("/srv/app", "/%2e%2e/%2e%2e/etc/passwd") === null,
+    "a percent-encoded traversal escaped the served directory",
+  );
+  // A sibling whose name merely starts with the root's is outside it. A bare
+  // startsWith check accepts this one.
+  assert(resolveServedPath("/srv/app", "/../app-secrets/x") === null, "a sibling directory sharing a name prefix was served");
+  assert(resolveServedPath("/srv/app", "/index.html?v=2#top") === "/srv/app/index.html", "a query string was treated as part of the filename");
 }
