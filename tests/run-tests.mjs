@@ -565,6 +565,53 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     "an undeclared field name was guessed at instead of being left unseen",
   );
 
+  // The scheduler's own fire record is a mark, and it was sitting in the registry
+  // unread. 2026-08-10: youtube-loop and cookie-daily reported never_seen — which
+  // is excluded from overdue_count, so they could never be reported as stopped —
+  // while both rows carried a last_fired_at copied out of list_triggers. The
+  // detector was saying "I cannot see" about rows that were telling it. Nothing
+  // new had to be collected; a field already there had to be read.
+  const fired = resolveLastSeen(
+    { id: "youtube-loop", last_seen: null, last_fired_at: "2026-08-10T01:15:52Z" },
+    { laps: null, stateFiles: new Map() },
+  );
+  assert(
+    fired.last_seen === "2026-08-10T01:15:52Z" && fired.source === "registry:last_fired_at",
+    "a scheduler fire record already in the registry was not counted as evidence the trigger ran",
+  );
+
+  // It is a snapshot, and it must lose to anything fresher — otherwise a lap that
+  // reconciles the registry would outrank the automation's own live output.
+  assert(
+    resolveLastSeen(
+      {
+        id: "eta-loop",
+        last_seen: null,
+        last_fired_at: "2026-08-10T01:15:52Z",
+        liveness: { state_file: "state/continue.json" },
+      },
+      { laps: null, stateFiles: new Map([["state/continue.json", { fetched_at: "2026-08-10T01:45:00Z" }]]) },
+    ).source === "state_file:state/continue.json",
+    "a scheduler snapshot outranked a fresher mark left by the automation itself",
+  );
+
+  // And it must be allowed to go stale. Only a lap with MCP can refresh it, so a
+  // registry nobody reconciles freezes this value and the row drifts to overdue
+  // on its own — the correct reading, and one that clears itself. Trusting it
+  // indefinitely would convert two permanent never_seens into two permanent
+  // greens, which is worse: a green light is read as an answer.
+  {
+    const stale = resolveLastSeen(
+      { id: "cookie-daily", last_seen: null, last_fired_at: "2026-08-09T00:02:04Z" },
+      { laps: null, stateFiles: new Map() },
+    );
+    const ageMinutes = (Date.parse("2026-08-10T02:15:00Z") - Date.parse(stale.last_seen)) / 60_000;
+    assert(
+      classify(ageMinutes, 60) === "overdue",
+      "a frozen scheduler snapshot kept reporting ok instead of ageing into overdue",
+    );
+  }
+
   // Every enabled automation in the real registry must have some mark available,
   // or it is one the detector structurally cannot watch.
   const registry = JSON.parse(await readFile(join(root, "state/automations.json"), "utf8"));

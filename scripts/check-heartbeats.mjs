@@ -49,6 +49,26 @@ export function resolveLastSeen(automation, evidence) {
 
   if (automation.last_seen) found.push([automation.last_seen, "registry"]);
 
+  // The scheduler's own record that the trigger fired, copied in by whichever lap
+  // last ran list_triggers. It was already in this file and nothing read it, so
+  // youtube-loop and cookie-daily sat at never_seen while carrying a timestamp
+  // proving they had run — the detector reporting "I cannot see" about rows that
+  // were telling it.
+  //
+  // It is a SNAPSHOT, and that is a feature here rather than a caveat. Only a lap
+  // with MCP can refresh it, so if no lap reconciles the registry the value
+  // freezes and the row drifts into `overdue` at 2x its cadence on its own. That
+  // is the correct reading — "nothing has confirmed this is still alive" — and it
+  // clears itself the moment someone reconciles. The alternative considered and
+  // rejected was trusting it indefinitely, which would have turned two permanent
+  // never_seens into two permanent greens, and a green light gets read as an
+  // answer where a blank does not.
+  //
+  // The cost of getting this wrong is not cosmetic: pacing.mjs reserves the
+  // weekly pool per enabled row, so a registry nobody reconciles is also a
+  // reservation nobody checks.
+  if (automation.last_fired_at) found.push([automation.last_fired_at, "registry:last_fired_at"]);
+
   // A lap leaves a mark whether or not its cost came out measurable: record-lap
   // pushes a sample on every close, and holds an `open` entry while it runs.
   const laps = evidence.laps;
@@ -150,6 +170,13 @@ const report = {
   repair: overdue.length
     ? "A lap with MCP access should re-arm these triggers, then confirm the next fire actually happened. Do not report them as repaired on the strength of the create call returning."
     : null,
+  // An overdue row whose only mark is a scheduler snapshot is a different finding
+  // from one whose own output stopped moving. The first may mean nothing worse
+  // than "no lap has run list_triggers lately"; re-arming on that reading would
+  // rebuild a trigger that never stopped. Reconcile first, then judge.
+  reconcile_before_judging: overdue
+    .filter((r) => r.last_seen_source === "registry:last_fired_at")
+    .map((r) => r.id),
   automations: rows,
 };
 

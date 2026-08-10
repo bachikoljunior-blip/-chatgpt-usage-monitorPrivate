@@ -1150,6 +1150,41 @@
       ],
       "falsified_if": "A later lap files an owner request to create a Gumroad listing, or costs an option at one owner action for listing, while this entry stands — that is the price failing to reach the chooser, which is the specific failure two consecutive handoffs have now recorded in other forms. Also falsified, and worse: the probe reverts to confirming deletion by an endpoint that answers for deleted objects, since the whole class of defect here is a well-formed reading of the wrong thing. NOT falsified by the route decision rejecting Gumroad — a rail that is cheap and still wrong is a legitimate answer, and this claims the price, not the venue.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-10.the-registry-was-short-two-loops",
+      "made_at": "2026-08-10T02:20:00Z",
+      "claim": "state/automations.json is what pacing.mjs divides the weekly pool by, and it is refreshed only when a lap that happens to have MCP happens to look. It had not been looked at in seventeen hours, and the reading taken today found TWO enabled hourly claude-trigger rows it did not contain at all. The gate was therefore dividing the pool among two other loops while four were live. Two halves. The first is arithmetic and should show up immediately: with five claude_week rows instead of three, the reservation rises and the discretionary share falls, so laps get smaller — that is the correction, not a regression. The second is that the blind spot stops being silent: resolveLastSeen now reads last_fired_at, a field the registry already carried and nothing read, which both clears the two permanent never_seens AND makes an unreconciled registry age into `overdue` on its own instead of sitting quiet. never_seen is excluded from overdue_count, so before today a row with no liveness wire could not be reported as stopped at all.",
+      "metric": "Read from committed state on origin/main, none from a lap's account of itself. (a) state/heartbeat.json after the next pulse run: youtube-loop and cookie-daily carry last_seen_source \"registry:last_fired_at\" and are no longer counted in never_seen_count. (b) node scripts/pacing.mjs reserved_for_others_percent and discretionary_percent, against the baseline below — five rows must reserve more than three did. (c) The behavioural half, and the one that can fail quietly: when heartbeat.json reports reconcile_before_judging non-empty, does the next lap with MCP re-run list_triggers and reconcile, or does it re-arm a trigger that never stopped? Read from state/continue.json, state/lap-claims.json and state/automations.json reconciled_at. (d) Whether automations.json reconciled_at moves at all after today — if it sits at 2026-08-10T02:15Z for days, the reconciliation is a thing one lap did rather than a thing the loop does.",
+      "baseline": {
+        "measured_at": "2026-08-10T02:15:00Z",
+        "registry_observed_at_before": "2026-08-09T09:11:00Z",
+        "hours_since_previous_reconciliation": 17.07,
+        "claude_week_rows_before": 3,
+        "claude_week_rows_after": 5,
+        "rows_added": ["youtube-loop-fresh", "cookie-daily-fresh"],
+        "reserved_for_others_percent_before": 18.9,
+        "discretionary_percent_before": 8.1,
+        "this_lap_may_spend_before": 1.01,
+        "never_seen_before": ["youtube-loop", "cookie-daily"],
+        "codex_loop_status_at_reading": "overdue, 130 minutes since state/codex-lane.json checked_at, cadence 60 — the lane that owes task 2026-08-10.b had missed two scheduled slots. codex-inbox.yml was dispatched at 02:17Z as the RUNBOOK 3 repair."
+      },
+      "judge_on": "2026-08-12",
+      "judge_deadline": "2026-08-16",
+      "min_observations": {
+        "source": "state/laps.json",
+        "path": "samples",
+        "min": 3,
+        "usable_only": false,
+        "note": "Parts (c) and (d) are about what later laps do, so they need laps to have happened. Parts (a) and (b) are measurable as soon as pulse runs and need no laps at all."
+      },
+      "concurrent_changes": [
+        "One commit: scripts/check-heartbeats.mjs (read last_fired_at, and report reconcile_before_judging so a frozen snapshot is not mistaken for a dead trigger), state/automations.json (the reconciliation and the two new rows), tests/run-tests.mjs (three directions held; two mutations run and both go red).",
+        "Not this change: codex-inbox.yml was dispatched by hand in the same lap because the lane was overdue. That will move state/codex-lane.json checked_at and may land codex/outbox/2026-08-10.b.md, neither of which is evidence about the registry.",
+        "Also in the same session, one lap earlier: the Gumroad lifecycle probe repair. Different subsystem, no shared reader."
+      ],
+      "falsified_if": "reconciled_at is still 2026-08-10T02:15Z at the judge date — that would mean the registry is refreshed by whoever happens to notice, which is the condition this found, not a fix for it. Also falsified: a lap re-arms a trigger listed in reconcile_before_judging without reconciling first, which is the specific mistake the new field exists to prevent. NOT falsified by the reservation going UP and laps getting smaller; that is the arithmetic being right for the first time, and a lap that reverses it to get its budget back would be falsifying the thing on purpose.",
+      "outcome": null
     }
   ]
 }
