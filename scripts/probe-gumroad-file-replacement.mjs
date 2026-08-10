@@ -215,7 +215,14 @@ try {
   const controlKey = `${control.status}|${control.json?.success ?? "?"}|${control.json?.message ?? ""}`;
 
   console.log("\nPUT probes (fake-parameter control first — a 200 means nothing without it):");
-  console.log(`  control  zzz_probe_param : HTTP ${control.status} success=${control.json?.success ?? "?"}`);
+  console.log(
+    `  control  zzz_probe_param : HTTP ${control.status} success=${control.json?.success ?? "?"} msg=${redact(control.json?.message ?? "(none)")}`,
+  );
+  result.put_control = {
+    status: control.status,
+    success: control.json?.success ?? null,
+    message: redact(control.json?.message ?? "(none)"),
+  };
 
   for (const param of ["file_url", "files[][url]", "product_file_url"]) {
     const r = await call(`products/${enc}`, {
@@ -231,6 +238,13 @@ try {
       param,
       status: r.status,
       success: r.json?.success ?? null,
+      // The first run recorded the flag and not this, and the flag alone
+      // produced a "partial" verdict nobody could resolve: files[][url] came
+      // back success=false, which DIFFERS from the fake-parameter control and
+      // therefore blocks a clean absence, while the reason it differs — a
+      // rejected parameter shape, a validation error, or a real file handler
+      // refusing a bad URL — lives entirely in the message that was thrown away.
+      message: redact(r.json?.message ?? "(none)"),
       distinguishable_from_fake_control: distinguishable,
     });
   }
@@ -284,8 +298,23 @@ try {
     result.verdict_reason =
       "no candidate route answers differently from a path that was never defined; every candidate PUT parameter is indistinguishable from a parameter name that is certainly fake; a real multipart upload with bytes was refused; and the throwaway's file shape did not move. The file a buyer downloads cannot be replaced over this API surface. Every source fix to the priced product is therefore undeliverable, and the alternatives are to retire the listing or to list a corrected product afresh — which state/gumroad-capabilities.json already measures at zero owner actions.";
   } else {
+    // A differing response is NOT automatically a lead, and it is not
+    // automatically noise either — which way it cuts depends on the message,
+    // and the first run of this script threw the message away and produced a
+    // "partial" nobody could resolve.
+    //
+    // The case that matters: a parameter REJECTED for its value (an invalid
+    // URL) is a recognised parameter, and that would mean replacement by URL
+    // might work with a real one. A parameter rejected for its NAME or SHAPE is
+    // the same as absent. Both arrive as success:false, so the distinction is
+    // in the text and a later reader must be able to see it.
+    const differing = result.put_probes.filter((p) => p.distinguishable_from_fake_control);
     result.verdict = "partial";
-    result.verdict_reason = `something answered differently from its control without the file shape moving (routes present: ${anyRoutePresent}, params distinguishable: ${anyParamDistinguishable}). Read the bodies above before concluding; this is not yet an answer in either direction.`;
+    result.verdict_reason =
+      `Every candidate route is absent (byte-identical to a path that was never defined), a real multipart upload with bytes was refused, and the throwaway's file shape did not move — but ${differing.length} PUT parameter(s) answered differently from a parameter name that is certainly fake, so this is not a clean absence. ` +
+      `The differing responses, verbatim: ${differing.map((p) => `${p.param} → HTTP ${p.status} success=${p.success} "${p.message}"`).join("; ")}. ` +
+      `Control was: HTTP ${result.put_control?.status} success=${result.put_control?.success} "${result.put_control?.message}". ` +
+      `READ THOSE MESSAGES BEFORE CONCLUDING. Rejected for the VALUE (a bad URL) means the parameter is recognised and replacement by URL may work with a real one — a lead, not an absence. Rejected for the NAME or SHAPE means the same as absent.`;
   }
   console.log(`\nverdict: ${result.verdict} — ${result.verdict_reason}`);
 } finally {

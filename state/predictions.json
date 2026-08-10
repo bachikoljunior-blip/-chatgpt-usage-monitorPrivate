@@ -1723,6 +1723,29 @@
         "rung 1 promise conformance was completed on idle_clicker_kit in the same session — a different offer, and it touched no file the .t reviewer sees"
       ],
       "outcome": null
+    },
+    {
+      "id": "2026-08-10.the-delivery-channel-was-never-probed",
+      "made_at": "2026-08-10T10:40:00Z",
+      "claim": "The binding term on the priced product is DELIVERY, not any fix. license_tier_is_determinate was fixed in source at 000e35e and promise-conformance still reports it FAILS, because the buyer downloads the attachment and the attachment did not move. balance_is_pre_tuned (15 taps before anything happens, the exact defect two independent reviewers gave as their reason for 払わない) is queued behind the same door: fixing it in source would produce a SECOND undeliverable fix. PREDICTION: the probe returns not_replaceable. Gumroad's v2 surface is a product-metadata API — create, read, update fields, delete, all of which are measured working — and file bytes are not in it. If that is right, the route 'sell the kit we already have, by fixing it' is dead rather than slow, and the successor is already measured at zero owner actions: list a corrected product afresh (gumroad-capabilities verdict full_lifecycle_over_api). NOT CLAIMED: any ETA movement. Revenue is zero and a measurement earns none; the gate record carries after-idle inf deliberately. NOT CLAIMED that the answer is no with confidence — the last three inherited claims about this lane's reach were all wrong when finally probed, the most recent that same morning at 09:02Z, which is why this is a probe and not a paragraph.",
+      "metric": "Read from committed state on origin/main, none from a lap's account of itself. (a) state/gumroad-file-replacement.json exists and carries a verdict. (b) Its verdict is not_replaceable, and controls_separated is true — an absence recorded while the documented and fabricated control paths did NOT separate is not evidence, and the script reports undecidable for exactly that case. (c) node scripts/promise-conformance.mjs prints the MEASURED sentence on license_tier_is_determinate rather than the UNMEASURED one, i.e. the answer reached the reader instead of sitting in a file. (d) throwaway.confirmed_absent is true and live_product_untouched is true — a probe that leaves a product on the account or moves the live listing's files is a failure whatever it discovered. (e) THE ONE THAT DECIDES WHAT HAPPENS NEXT: whether the lap that reads a not_replaceable verdict re-prices the paid product's remaining fixes, or keeps editing source that cannot be delivered. state/lap-claims.json mechanisms and state/product-loop.json are where that shows.",
+      "baseline": "At 2026-08-10T10:40Z: state/gumroad-file-replacement.json did not exist. scripts/promise-conformance.mjs asserted 'Uploading a replacement attachment is not in the v2 API surface this lane holds' in prose, with no measurement behind it, and state/product-loop.json said so explicitly: 'this lap did NOT attempt it, so that is a reading of the documented surface rather than a measurement'. promise-conformance tally: conforms 12, blocked 1, partial 1, fails 2. idle_clicker_kit rounds 2, engaged 0, next promise_conformance. All channels idle_eta_days null; revenue ¥0 across 8 months. eta-gate: 37 consecutive prerequisite laps, 23 route changes that moved nothing.",
+      "judge_on": "2026-08-11",
+      "judge_deadline": "2026-08-14",
+      "judge_on_why": "The probe is dispatched in the same lap that registers this, so (a) through (d) settle within minutes. The date is a day out because (e) is about the NEXT lap's behaviour, which needs a lap to happen. The deadline is the backstop if the run is capped out — product creation is limited to 10/day and a cap-out returns unmeasured rather than an answer.",
+      "min_observations": {
+        "source": "file",
+        "path": "state/gumroad-file-replacement.json",
+        "min": 1,
+        "usable_only": false
+      },
+      "concurrent_changes": [
+        "scripts/promise-conformance.mjs deliveryChannel() added in the same commit — it is the reader this prediction's metric (c) tests, so it is the subject rather than a confound",
+        ".github/workflows/gumroad-monitor.yml commit step changed from restoring one probe file to restoring four. This fixes a pre-existing defect that discarded gumroad-recurring.json and product-source.json, so any future observation that those files now update on their own is attributable to THIS change and not to the probe",
+        "codex/INBOX.md tasks .s and .t are both in flight on the free demo and move the same product-loop register; nothing about the paid product's delivery depends on them"
+      ],
+      "what_would_make_this_wrong_in_a_way_worth_recording": "The likely failure is that the probe measures the WRONG SURFACE and reports a confident absence. Gumroad has a seller web UI that certainly can replace a file, and an internal endpoint behind it; 'not in the documented v2 REST API with this token' is a narrower claim than 'cannot be done by machine' and this probe cannot reach the wider one. If a later lap reads not_replaceable as 'a person must do it' and files an owner request, that is the error this note exists to catch — the honest next step is a browser-driven attempt, and the lane was measured on 2026-08-10T09:02:44Z to have a working browser. The second failure mode: creation is capped at 10/day, so a cap-out returns unmeasured, and unmeasured must not be read as not_replaceable. That is why they are separate verdict values rather than a boolean.",
+      "outcome": null
     }
   ]
 }
