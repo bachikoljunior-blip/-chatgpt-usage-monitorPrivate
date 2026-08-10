@@ -21,9 +21,24 @@
 // because it is the whole of good writing:
 //
 //   * the field exists and is Japanese (kana present)
-//   * it is a summary — long enough to say something, short enough to read on a phone
+//   * it is long enough to be an explanation rather than a label
+//   * it carries numbers, because measurements are the first thing lost
 //   * no jargon from the curated list below
 //   * no file paths, no snake_case identifiers, no bare hashes
+//
+// THERE IS NO UPPER LENGTH LIMIT, AND THERE USED TO BE.
+//
+// The first version of this file capped the summary at 700 characters and told laps
+// the detail belonged in the other fields. The owner corrected it the same day:
+// 用語を使わないのと情報量を落とすは別だから。情報量落とすな. Dropping jargon and
+// dropping content are different operations, and a ceiling makes a lap perform the
+// second while believing it did the first — the cheapest way to satisfy a length cap
+// is to delete a finding, and the findings are the reason anyone is reading.
+//
+// So the rule is TRANSLATION, not compression. Every fact that would have gone into
+// the technical fields belongs here too, in words that carry outside this loop. If
+// that runs long, it runs long. A reader can stop; a reader cannot recover a
+// measurement nobody wrote down.
 //
 // What it CANNOT check is whether the sentences are true or whether they are the
 // important ones. That stays a judgement, and saying so here is deliberate: a
@@ -35,7 +50,10 @@ import { readStateJson } from "./state-source.mjs";
 export const STATE_PATH = "state/continue.json";
 export const FIELD = "owner_summary";
 export const MIN_CHARS = 60;
-export const MAX_CHARS = 700;
+// Numbers are the first casualty when someone "simplifies": counts, amounts, dates
+// and durations turn into 少し, おおむね, 順調. A summary with no digit in it has
+// almost certainly lost a measurement rather than translated one.
+export const MIN_NUMBERS = 2;
 
 // Terms an outsider cannot resolve. Kept to words this project actually uses in its
 // handoffs — a longer list would fail honest summaries and teach laps to fight the
@@ -81,14 +99,19 @@ export function checkSummary(summary) {
   if (chars < MIN_CHARS) {
     problems.push(`the summary is ${chars} characters; under ${MIN_CHARS} it is a label, not an explanation`);
   }
-  if (chars > MAX_CHARS) {
-    problems.push(
-      `the summary is ${chars} characters; over ${MAX_CHARS} it stops being a summary. ` +
-        "The detail belongs in the other fields, which the next lap reads.",
-    );
-  }
+  // Deliberately no upper bound. See the header: a cap buys brevity by deleting
+  // findings, which is the opposite of what was asked for.
   if (!HAS_KANA.test(text)) {
     problems.push("the summary contains no kana, so it is not the Japanese that was asked for");
+  }
+
+  const numbers = text.match(/[0-9０-９]+/g) ?? [];
+  if (numbers.length < MIN_NUMBERS) {
+    problems.push(
+      `the summary carries ${numbers.length} number(s); under ${MIN_NUMBERS} a measurement has ` +
+        "almost certainly been dropped rather than translated. How many, how much, how long, " +
+        "since when — those survive translation, and 少し / おおむね / 順調 are what replaces them.",
+    );
   }
 
   const found = JARGON.filter((w) => text.toLowerCase().includes(w.toLowerCase()));
@@ -96,7 +119,7 @@ export function checkSummary(summary) {
     problems.push(
       `these are terms only this loop understands: ${found.join("、")}. ` +
         "Say what happened in the world instead — what was tried, what came back, what it means " +
-        "for the money.",
+        "for the money. Translate the term; do NOT drop the fact it was naming.",
     );
   }
 

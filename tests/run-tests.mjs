@@ -4300,7 +4300,24 @@ function assert(condition, message) {
     !checkSummary(good + "記録は 901debad にあります。").ok,
     "a hash passed, and it names something to a machine and nothing to a reader",
   );
-  assert(!checkSummary(good.repeat(6)).ok, "an unbounded summary passed as a summary");
+  // There is deliberately NO upper bound, and this assertion is the record of why.
+  // The first version capped it at 700 characters and told laps the detail belonged
+  // in the technical fields. Owner, same day: 用語を使わないのと情報量を落とすは別だから。
+  // 情報量落とすな. The cheapest way to satisfy a length cap is to delete a finding,
+  // and the findings are the reason anyone reads it. Translation, not compression.
+  assert(
+    checkSummary(good.repeat(8)).ok,
+    "a long summary was rejected — a length cap makes a lap drop findings while believing it " +
+      "simplified, which is the failure this rule was corrected for",
+  );
+
+  // What replaced the cap: measurements have to survive. Counts, amounts, dates and
+  // durations are the first thing lost when someone "simplifies", and they turn into
+  // 少し / おおむね / 順調, which read like information and are not.
+  assert(
+    !checkSummary("売り物を人に見せて感想をもらいましたが、おおむね良くない反応でした。次はやり方を変えて、もう一度だけ試してみるつもりです。お金はまだ入っていません。").ok,
+    "a summary with no numbers passed, so a measurement could be dropped rather than translated",
+  );
 
   // And the live file, which is the point of the whole thing.
   const live = JSON.parse(readFileSync(join(root, "state/continue.json"), "utf8"));
