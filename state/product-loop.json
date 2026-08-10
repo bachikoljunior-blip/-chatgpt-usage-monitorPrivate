@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T01:25:31.248Z",
+  "fetched_at": "2026-08-10T03:12:00Z",
   "why_this_exists": "Owner, 2026-08-10: 提供するものは測定分析改善ループまわさないと需要のあるものになっていかない. Every loop in this repository measures the ROUTE — ETA, venues, findable surface, reach, usage, heartbeats. None took the offer itself as its subject, and state/portfolio.json has carried a field named not_examined since it was written. This file is the register the product loop runs on. scripts/product-loop.mjs derives loopability from it and pulse.yml runs the check hourly.",
   "the_ladder_is_in_the_script": "scripts/product-loop.mjs LADDER. Cheapest and fastest signal first: promise_conformance, stranger_reaction, sells_against, behaviour. The order is the design content — measuring conversion on an artifact that does not deliver what its page promises tells you about the promise, not the product.",
   "offers": [
@@ -56,7 +56,44 @@
         "was_queued_behind": "codex/INBOX.md carried task 2026-08-10.a, then .b, and the lane holds exactly one task at a time — scripts/inbox-task.mjs parses a single yaml header. That is a real throughput limit on the pool that is NOT scarce, and RUNBOOK 3 tells laps to file codex_lane candidates with no limit on the number. The document and the mechanism disagree, and this round waited two laps on the difference. Recorded rather than fixed: a queue in the INBOX is a change to the lane, not to this offer, and one lap changes one thing.",
         "who_must_not_do_it": "Whoever wrote the artifact. The rule that makes a stranger reaction worth anything is that the reviewer is not the author, and the Codex lane WROTE assets/free-demo/index.html. So the reviewer must be told nothing about where it came from, and if the lane recognises it the round is void — say so rather than keeping the verdict."
       },
-      "rounds": [],
+      "rounds": [
+        {
+          "round": 1,
+          "rung": "stranger_reaction",
+          "ran_at": "2026-08-10T02:57:13Z",
+          "verified_at": "2026-08-10T03:12:00Z",
+          "task_id": "2026-08-10.c",
+          "answer": "codex/outbox/2026-08-10.c.md",
+          "answer_commit": "901debadcd7771b5bd7a0460b3b980c53411e293",
+          "blind_held": {
+            "recognised": "ない",
+            "so": "VALID. The round is kept. Had it read ある or たぶんある the round would have been void and discarded, because the Codex lane wrote assets/free-demo/index.html and an author's opinion cannot answer this rung.",
+            "what_was_disclosed": "the public URL and nothing else — no repository, no authorship, no reason for asking."
+          },
+          "verdict": "would_not_pay",
+          "verdict_verbatim": "払わない",
+          "ceiling_offered": null,
+          "strongest_objection_verbatim": "タップして増えるUIは見えたが、購入価値（何を買って何が得られるか）に直接つながる要素が体験内で確認できず、今の状態では有料化判断に必要な納得点が取れなかった。",
+          "strongest_objection_in_english": "The tap-to-increment UI was visible, but nothing inside the experience connected to what would actually be bought, so there was no basis on which to judge paying for it.",
+          "engagement": {
+            "played_or_read": "読んだ",
+            "depth_verbatim": "ページを開いて初期画面を確認し、そこで止めた",
+            "depth": "Opened the page, looked at the opening screen, stopped there. Did not play.",
+            "minutes": null
+          },
+          "changed": null,
+          "moved": null,
+          "moved_note": "Nothing was changed before this round, so there is no prior figure for it to move from. This is the baseline, and the first completed round in this file's history. Rule 4's no-move counter deliberately does not start here: a round that attempted nothing cannot be evidence that a parameter stopped working.",
+          "how_much_this_carries": {
+            "n": 1,
+            "the_default_was_the_answer": "The task states the default verdict is 払わない and that only a number overturns it. A reviewer who stopped at the opening screen therefore returned the default, and a returned default is weaker evidence than a refusal after real play. Do NOT let a later lap upgrade this to 'measured: strangers will not pay for it'.",
+            "what_it_does_establish": "The entrance did not hold one blind reader past the first screen. That is a statement about the opening, which is the part the route depends on most: this artifact is the free door the whole route walks people through.",
+            "what_it_does_not_establish": "Anything about the paid kit, whose source does not exist anywhere and which nobody has ever opened. The two are routinely named in one breath and the relationship does not exist.",
+            "grade": "one blind reviewer, self-reported engagement, no instrumentation — the same grade as the lane's other sweeps, and weaker than a behavioural reading would be."
+          },
+          "what_this_does_to_the_elected_route": "route_4_the_offer_form_is_the_binding_term names its prerequisite as AN ARTIFACT SOMEONE WHO DID NOT MAKE IT WOULD PAY FOR. Round 1 returns the opposite on the only artifact we own outright. The prerequisite is NOT satisfied and the route is not thereby refuted — one round is not a verdict on the route, and this lap deliberately does not re-elect. Three elections in three days would say the elections are noise."
+        }
+      ],
       "why_it_is_here_at_all": "It is the only thing this account offers that can enter a loop. If the owner's rule is right — and nothing here contradicts it — then this is where demand can actually be built, and the priced product's un-loopability is the reason the two have to be ranked against each other rather than assumed complementary."
     }
   ],
