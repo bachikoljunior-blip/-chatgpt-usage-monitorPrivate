@@ -1,17 +1,17 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T09:15:38.367Z",
+  "fetched_at": "2026-08-10T09:42:48.113Z",
   "overdue_factor": 2,
-  "overdue_count": 2,
+  "overdue_count": 0,
+  "mark_stale_count": 0,
+  "marks_only_a_lap_can_refresh": [],
+  "mark_stale_instruction": null,
   "never_seen_count": 1,
-  "repair": "A lap with MCP access should re-arm these triggers, then confirm the next fire actually happened. Do not report them as repaired on the strength of the create call returning.",
-  "reconcile_before_judging": [
-    "youtube-loop",
-    "cookie-daily"
-  ],
-  "registry_reconciled_at": "2026-08-10T06:18:00Z",
-  "registry_reconcile_age_minutes": 178,
+  "repair": null,
+  "reconcile_before_judging": [],
+  "registry_reconciled_at": "2026-08-10T09:35:00Z",
+  "registry_reconcile_age_minutes": 8,
   "registry_stale": false,
   "reservations_resting_on_unverified_rows": [],
   "reconcile_instruction": null,
@@ -20,19 +20,19 @@
       "id": "eta-loop",
       "kind": "claude-trigger",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-10T08:52:49.125Z",
-      "last_seen_source": "laps.open",
-      "age_minutes": 23,
+      "last_seen": "2026-08-10T09:33:00Z",
+      "last_seen_source": "state_file:state/continue.json",
+      "age_minutes": 10,
       "status": "ok"
     },
     {
       "id": "youtube-loop",
       "kind": "claude-trigger",
-      "cadence_minutes": 60,
-      "last_seen": "2026-08-10T05:15:07.717698Z",
+      "cadence_minutes": 360,
+      "last_seen": "2026-08-10T06:16:41.408707Z",
       "last_seen_source": "registry:last_fired_at",
-      "age_minutes": 241,
-      "status": "overdue"
+      "age_minutes": 206,
+      "status": "ok"
     },
     {
       "id": "youtube-loop-fresh",
@@ -47,16 +47,16 @@
       "id": "cookie-daily",
       "kind": "claude-trigger",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-10T05:55:38.060405Z",
+      "last_seen": "2026-08-10T08:56:07.957332Z",
       "last_seen_source": "registry:last_fired_at",
-      "age_minutes": 200,
-      "status": "overdue"
+      "age_minutes": 47,
+      "status": "ok"
     },
     {
       "id": "usage-monitor",
       "kind": "github-actions",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-10T09:15:30.771Z",
+      "last_seen": "2026-08-10T09:42:36.901Z",
       "last_seen_source": "state_file:state/usage.json",
       "age_minutes": 0,
       "status": "ok"
@@ -65,7 +65,7 @@
       "id": "claude-usage-monitor",
       "kind": "github-actions",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-10T09:15:26.694Z",
+      "last_seen": "2026-08-10T09:42:42.207Z",
       "last_seen_source": "state_file:state/claude-usage.json",
       "age_minutes": 0,
       "status": "ok"
@@ -74,9 +74,9 @@
       "id": "gumroad-monitor",
       "kind": "github-actions",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-10T09:15:24.842Z",
+      "last_seen": "2026-08-10T09:24:17.479Z",
       "last_seen_source": "state_file:state/gumroad.json",
-      "age_minutes": 0,
+      "age_minutes": 19,
       "status": "ok"
     },
     {
@@ -85,7 +85,7 @@
       "cadence_minutes": 90,
       "last_seen": "2026-08-10T09:02:43.288Z",
       "last_seen_source": "state_file:state/codex-lane.json",
-      "age_minutes": 13,
+      "age_minutes": 40,
       "status": "ok"
     }
   ]
