@@ -1,12 +1,29 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T10:36:42.595Z",
+  "fetched_at": "2026-08-10T10:42:46.974Z",
   "total_sales_count": 0,
   "total_sales_usd_cents": 0,
-  "product_count": 1,
+  "product_count": 2,
   "published_count": 1,
   "products": [
+    {
+      "id": "ROgroOIvVmE_D8yr1mUwvA==",
+      "name": "zzz-probe-file-replacement (delete me)",
+      "short_url": "https://bachiko4.gumroad.com/l/njefg",
+      "published": false,
+      "price_cents": 100,
+      "currency": "jpy",
+      "sales_count": 0,
+      "sales_usd_cents": 0,
+      "file_info_shape": "object",
+      "file_count": null,
+      "file_info_keys": [],
+      "cover_count": 0,
+      "thumbnail_url_present": false,
+      "main_cover_id_present": false,
+      "covers_field_shape": "array"
+    },
     {
       "id": "rMqZDCfZHOiaDJO5Iv0aHQ==",
       "name": "放置クリッカー制作キット 商用ライセンス｜設定ファイル1枚でリスキンできる HTML/CSS/JS 一式",
