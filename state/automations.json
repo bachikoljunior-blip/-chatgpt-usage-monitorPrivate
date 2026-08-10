@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T03:13:40Z",
+  "fetched_at": "2026-08-10T08:30:00Z",
   "note": "Live automations and their measured cost per run. pacing.mjs reserves each one's expected consumption before the reset, so a lap plans with what is genuinely spare rather than with the whole pool. avg_cost_percent is filled in by scripts/record-lap.mjs from real start/end readings; null means never measured and is reserved at a high default.",
   "reconciled_at": "2026-08-10T06:18:00Z",
   "reconciled_note": "Reconciled against list_triggers at 2026-08-10T06:18:00Z by a lap with MCP. TWO DRIFTS in the 83 minutes since 04:55Z, both in rows the previous reconciliation had just confirmed. (1) youtube-loop cron moved from hourly to every six hours, scheduler updated_at 05:22:08Z. (2) cookie-daily was reported OVERDUE by state/heartbeat.json while actually firing on schedule. The two -fresh rows are still absent, now on a third independent observation. The previous note said a run of no-drift readings is two samples and not evidence that drift is rare; the very next reading found drift in both live rows, which settles that question in the direction the note guessed. Do not read this reconciliation as making the registry trustworthy for the next hour — it makes it trustworthy for now, which is the only thing any reading of it can do.",
@@ -54,7 +54,7 @@
       "label": "YouTube",
       "kind": "claude-trigger",
       "pool": "claude_week",
-      "cadence_minutes": 360,
+      "cadence_minutes": 60,
       "enabled": true,
       "avg_cost_percent": null,
       "samples": 0,
@@ -69,26 +69,27 @@
       "scheduler_updated_at": "2026-08-10T03:06:13Z",
       "next_run_at": "2026-08-10T06:09:00Z",
       "cadence_corrected_at": "2026-08-10T06:18:00Z",
-      "cadence_correction_note": "MEASURED DRIFT. This row said cron \"9 * * * *\" and cadence_minutes 60 from 04:55Z, reconciled against list_triggers at that time. The live cron reads \"9 */6 * * *\" and the trigger name says 6時間おき; scheduler updated_at is 2026-08-10T05:22:08Z, i.e. AFTER the 04:55Z reconciliation. So the registry was right when written and wrong 83 minutes later, which is the third instance of the thing reconciliation_gap_nobody_has_closed describes and the first where the drift was in the CADENCE rather than in existence. What it cost: pacing reserved 112 runs to reset for this row; at six-hourly it is about 19. The reservation did not actually change the lap budget, because both hourly rows already blew past the cap (173.20% capped to 15.40%) — the cap absorbed the error, which is also why nobody would have noticed it from the gate output."
+      "cadence_correction_note": "MEASURED DRIFT. This row said cron \"9 * * * *\" and cadence_minutes 60 from 04:55Z, reconciled against list_triggers at that time. The live cron reads \"9 */6 * * *\" and the trigger name says 6時間おき; scheduler updated_at is 2026-08-10T05:22:08Z, i.e. AFTER the 04:55Z reconciliation. So the registry was right when written and wrong 83 minutes later, which is the third instance of the thing reconciliation_gap_nobody_has_closed describes and the first where the drift was in the CADENCE rather than in existence. What it cost: pacing reserved 112 runs to reset for this row; at six-hourly it is about 19. The reservation did not actually change the lap budget, because both hourly rows already blew past the cap (173.20% capped to 15.40%) — the cap absorbed the error, which is also why nobody would have noticed it from the gate output.",
+      "cadence_recorrected_at": "2026-08-10T08:30:00Z",
+      "cadence_recorrection_note": "Back to hourly, and this time measured from the RUNS rather than from the schedule. list_sessions at 2026-08-10T08:30Z. Sessions tagged youtube-hourly, every one a child of session_01PXy8TiBxL1SM7AUc6XAMML, created at 02:27:17, 03:13:41, 04:15:28, 05:15:43, 06:18:21, 07:19:53 and 07:21:38 UTC. Seven runs in six hours, and the last two are inside the same hour: an ordinary run plus one tagged quality-judge. The 06:18Z reconciliation read 9 */6 * * * off list_triggers and was right about the scheduler; the runs did not follow it. When the two disagree the runs win, because the runs are what spends the pool. Recorded as a re-correction rather than by editing the previous note: that note is a true reading of a different instrument and deleting it would hide the disagreement, which is the finding."
     },
     {
       "id": "youtube-loop-fresh",
       "label": "YouTube 本番（毎時・毎回新セッション）",
-      "kind": "claude-trigger",
+      "kind": "parent-spawned-session",
       "pool": "claude_week",
       "cadence_minutes": 60,
-      "enabled": false,
+      "enabled": true,
       "avg_cost_percent": null,
       "samples": 0,
       "last_seen": null,
-      "trigger_id": "trig_01Kyty8cMLdcLmAzZ4qkCGfS",
+      "trigger_id": null,
       "cron": "20 * * * *",
       "observed_at": "2026-08-10T04:55:00Z",
       "observed_from": "list_triggers (the scheduler itself, not a repo file)",
       "last_fired_at": null,
       "created_at": "2026-08-10T01:57:19Z",
       "note": "ABSENT FROM list_triggers AT 2026-08-10T03:13:40Z. Recorded at 02:15Z with this trigger_id; fifty-eight minutes later the id is not in the account's listing at all. The listing was complete, not truncated: limit=100 returned 52 rows with no has_more, while limit=3 returned has_more true and a cursor, so the absence of the field is exhaustion rather than a default. It is also sorted strictly newest-first by created_at and its newest row is 2026-08-09T04:19Z, so NO trigger created on 2026-08-10 exists — a second argument for the same absence that does not depend on the id at all. enabled:false rather than deleted, so the reservation stops without erasing the finding. Do not re-create it: the owner replaced this migration, see reconciled_note. PRIOR NOTE: MISSING FROM THIS REGISTRY UNTIL 2026-08-10T02:15Z. Created at 01:57:19Z, eighteen minutes before it was found, so the gap was small — but nothing here would have closed it, because the registry is only reconciled when a lap with MCP happens to look. It uses create_new_session_on_fire, which state/constraints.json trigger_new_session_mode_does_not_fire says never fires; last_fired_at is null and next_run_at is 02:20Z, so this row is also the live test of that constraint. Do not reserve zero for it on the strength of the constraint — the constraint is what is on trial.",
-      "absent_from_scheduler_at": "2026-08-10T03:13:40Z",
       "disabled_by": "owner (inferred from the deletion; not an instruction this loop was given)",
       "absent_confirmed_twice_at": "2026-08-10T04:55:00Z",
       "absent_observations": [
@@ -103,7 +104,18 @@
           "finding": "id not in the listing; 50 rows + cursor, second page 2 rows, 52 total again"
         }
       ],
-      "why_two_observations_matter": "RUNBOOK 4: saying a thing is ABSENT takes two independent observations. Until now there was one, taken 99 minutes ago, and a single listing that omits an id is also what a truncated page or a transient error looks like. Two agreeing readings 99 minutes apart, each reaching the same total of 52 rows by a different pagination path (limit=100 then; limit=50 plus a cursor now), is the rule satisfied rather than cited."
+      "why_two_observations_matter": "RUNBOOK 4: saying a thing is ABSENT takes two independent observations. Until now there was one, taken 99 minutes ago, and a single listing that omits an id is also what a truncated page or a transient error looks like. Two agreeing readings 99 minutes apart, each reaching the same total of 52 rows by a different pagination path (limit=100 then; limit=50 plus a cursor now), is the rule satisfied rather than cited.",
+      "enabled_changed_at": "2026-08-10T08:30:00Z",
+      "enabled_change_reason": "Set to true. It was set false at 03:13:40Z on a good observation — its trigger id was absent from a complete list_triggers listing — but absence from the scheduler listing is not absence of runs, and the runs are there: list_sessions at 2026-08-10T08:30Z. Sessions tagged youtube-hourly, every one a child of session_01PXy8TiBxL1SM7AUc6XAMML, created at 02:27:17, 03:13:41, 04:15:28, 05:15:43, 06:18:21, 07:19:53 and 07:21:38 UTC. Seven runs in six hours, and the last two are inside the same hour: an ordinary run plus one tagged quality-judge. Its own row says this is the trigger that does the work (youtube-loop was demoted to a watchdog at 02:02:58Z), so reserving for one of the two prices the YouTube lane at half. Owner named both on 2026-08-10.",
+      "what_would_refute_this": "A run of hours with exactly one youtube-hourly session created per hour. That would mean the second run seen at 07:19/07:21 was a one-off and this row should go back to false. Counting it is the conservative direction: under-reserving spends quota another loop believed was spare, over-reserving only makes this lap poorer.",
+      "both_of_these_fail_every_run": "Every youtube-hourly session in the listing ends status_bucket FAILED with stop_reason=tool_use, as does every cookie-strateger-run session. They are reserved for at full cost anyway: a run that fails still spends what it spent before it failed.",
+      "absence_resolved": {
+        "the_observation_that_stands": "At 2026-08-10T03:13:40Z this row's trigger id was absent from a complete list_triggers listing. That reading was correct and is not withdrawn.",
+        "what_it_did_not_mean": "That the runs had stopped. They had not. The conclusion drawn from it — enabled:false, do not reserve — was the wrong one.",
+        "how_the_runs_actually_happen": "A parent session spawns them. Every youtube-hourly session in the 2026-08-10T08:30Z listing is a child of session_01PXy8TiBxL1SM7AUc6XAMML, created 02:27:17, 03:13:41, 04:15:28, 05:15:43, 06:18:21, 07:19:53, 07:21:38 UTC. That is the same shape as this repository's own chain: a parent holds the schedule and calls create_session, so no trigger of its own has to exist. Absence from the scheduler is therefore not evidence about whether it runs.",
+        "why_trigger_id_is_now_null": "Because the id no longer names the thing that produces the runs, and leaving it there is what made the absence reading look decisive.",
+        "what_the_guard_was_right_about": "tests/run-tests.mjs refuses a row that carries absent_from_scheduler_at while enabled. That pairing is correct and stays. The way out was never to enable it and keep the field — it was to settle what the absence meant."
+      }
     },
     {
       "id": "cookie-daily",
