@@ -166,6 +166,54 @@ function deliveredMatches(relPath) {
  *
  * @returns {{verdict: string, sentence: string}}
  */
+/**
+ * The clause that used to close the none_over_api sentence read "no route in this
+ * API puts bytes in front of a buyer ... a measured ceiling rather than an
+ * unexplored one". It was neither. The twelve probes behind it never sent the two
+ * paths the vendor's own source names — POST /v2/files/presign and
+ * POST /v2/files/complete — and when scripts/probe-gumroad-presign.mjs finally sent
+ * them they answered "filename is required" and "upload_id is required" against a
+ * never-defined control that answers a 900-byte HTML 404.
+ *
+ * So the ceiling was measured on the wrong doors, and this reads the probe that
+ * found the right ones rather than restating either verdict. Absence of the file
+ * remains true; the reason it was called permanent does not.
+ *
+ * @returns {string} a clause to append, or "" when there is nothing to add
+ */
+function uploadRouteReading() {
+  const f = path.join(ROOT, "state", "gumroad-presign.json");
+  if (!existsSync(f)) {
+    return (
+      " Whether ANY upload route exists is unprobed on the paths the vendor's source names" +
+      " (POST /v2/files/presign, POST /v2/files/complete) — run scripts/probe-gumroad-presign.mjs" +
+      " before calling this a ceiling.";
+  }
+  let probe;
+  try {
+    probe = JSON.parse(readFileSync(f, "utf8"));
+  } catch {
+    return "";
+  }
+  if (probe?.upload_route_exists !== true) {
+    return (
+      ` MEASURED ${probe?.fetched_at}: the upload paths the vendor's source names are absent here too,` +
+      " so every source fix to this product needs one owner action to upload."
+    );
+  }
+  const which = (probe.probes ?? [])
+    .filter((p) => p.verdict === "exists")
+    .map((p) => `${p.method} /v2/${p.path}`)
+    .join(", ");
+  return (
+    ` BUT THE UPLOAD ROUTE IS NOT ABSENT. MEASURED ${probe.fetched_at}: ${which} answer with their own` +
+    " validation errors, not with the 404 a never-defined path returns. The earlier ceiling was" +
+    " measured on paths the vendor's source does not name, so 'every fix needs an owner upload' is" +
+    " withdrawn as a conclusion. What is still unmeasured is the walk through: presign, real parts to" +
+    " S3, complete, attach — on a throwaway product, never the live listing."
+  );
+}
+
 function deliveryChannel() {
   const f = path.join(ROOT, "state", "gumroad-file-replacement.json");
   const unmeasured = {
@@ -186,11 +234,12 @@ function deliveryChannel() {
   // reach a buyer". Relisting delivers without replacing, so the route is stated
   // separately or not at all.
   const route = probe?.delivery_route ?? "unmeasured";
+  const upload = uploadRouteReading();
   const routeSentence =
     route === "relist_with_file"
       ? " DELIVERY IS STILL OPEN: creation carries a file at zero owner actions, so a corrected kit reaches a buyer by being listed afresh, and replacement never has to work."
       : route === "none_over_api"
-        ? " AND NEITHER DOES CREATION: a create sent with a file was refused by the same rule, so no route in this API puts bytes in front of a buyer. Every source fix to this product needs one owner action to upload, and that is a measured ceiling rather than an unexplored one."
+        ? ` AND NEITHER DOES CREATION: a create sent with a file was refused by the same rule.${upload}`
         : route === "replace_in_place"
           ? ""
           : " Whether a corrected kit could instead be DELIVERED by listing it afresh is unmeasured — absence of replacement is not absence of delivery.";

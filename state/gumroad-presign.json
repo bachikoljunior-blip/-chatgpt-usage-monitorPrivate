@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-10T14:43:04.250Z",
+  "probe": "POST /v2/files/presign, POST /v2/files/complete and GET /v2/files/presign, each read against a POST to a path that was never defined, in the same session",
+  "question": "state/gumroad-file-replacement.json concluded none_over_api from 12 probes. The public source names POST /v2/files/presign and POST /v2/files/complete, and neither path is in those 12. Do they answer?",
+  "source_of_the_paths": "antiwork/gumroad, app/controllers/api/v2/links_controller.rb, private method upload_field_guidance, read 2026-08-10. The same file accepts rich_content on both create and update, which is a delivery route that needs no bytes at all.",
+  "control": {
+    "status": 404,
+    "bytes": 900,
+    "json": false,
+    "message": "(html)",
+    "path": "this_route_was_never_defined_control",
+    "method": "POST"
+  },
+  "probes": [
+    {
+      "path": "files/presign",
+      "method": "POST",
+      "status": 400,
+      "bytes": 45,
+      "json": true,
+      "message": "{\"status\":400,\"error\":\"filename is required\"}",
+      "verdict": "exists"
+    },
+    {
+      "path": "files/complete",
+      "method": "POST",
+      "status": 400,
+      "bytes": 46,
+      "json": true,
+      "message": "{\"status\":400,\"error\":\"upload_id is required\"}",
+      "verdict": "exists"
+    },
+    {
+      "path": "files/presign",
+      "method": "GET",
+      "status": 404,
+      "bytes": 900,
+      "json": false,
+      "message": "(html)",
+      "verdict": "absent"
+    }
+  ],
+  "upload_route_exists": true,
+  "verdict": "the earlier absence was measured on the wrong paths",
+  "verdict_reason": "POST /v2/files/presign, POST /v2/files/complete answered differently from a path that was never defined, so the route exists and is refusing for its own reasons. That does not yet mean bytes can be delivered — it means the door the earlier probe called missing is there, and what it costs to walk through has not been measured.",
+  "what_this_does_not_settle": "Whether a file can actually be uploaded end to end. That needs the presign response, real parts pushed to S3, a complete call and an attach, and it must be done on a throwaway product — the live listing is not a test surface."
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T14:05:57.003Z",
+  "fetched_at": "2026-08-10T14:48:56.151Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -40,11 +40,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.81
+      "days_unchanged": 0.84
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.81
+      "days_unchanged": 0.84
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -66,7 +66,7 @@
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-10T13:05:24.995Z",
+      "measured_at": "2026-08-10T14:24:22.772Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
       "revenue_window_days": 0.87,
@@ -83,11 +83,11 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-10T12:31:11.839Z",
+      "measured_at": "2026-08-10T14:05:24.161Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
-      "revenue_window_days": 0.286,
-      "revenue_readings": 2,
+      "revenue_window_days": 0.584,
+      "revenue_readings": 3,
       "revenue_is_a_lower_bound": true,
       "games": 1,
       "total_views": 2,
@@ -193,11 +193,22 @@
       "why": "the offer is loopable and its own measurement says it is failing — a round that clears a named failure is the one kind of work that is about the thing being sold",
       "owner_actions": 0,
       "measure_via": "here",
-      "note": "Next rung: promise_conformance. 2 finding(s): idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: measured on the shipped config: 15 taps before the first affordable purchase, with the rate reading \"毎秒 0円 ／ 1タップ 1円\" for every one of them. Two independent reviewers on the FREE demo named exactly this opening as their reason for 払わない (codex/outbox/2026-08-10.k.md, .l.md). \"調整済み\" is a claim about the shipped defaults, and the shipped defaults are what was measured. | idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 The replacement probe ran 2026-08-10T10:43:01.694Z and did NOT settle it (partial): Every candidate route is absent (byte-identical to a path that was never defined), a real multipart upload with bytes was refused, and the throwaway's file shape did not move — but 1 PUT parameter(s) answered differently from a parameter name that is certainly fake, so this is not a clean absence. The differing responses, verbatim: files[][url] → HTTP 200 success=false \"File URLs must reference your own uploaded files. Use the presigned upload endpoint to upload files first.\". Control was: HTTP 200 success=true \"(none)\". READ THOSE MESSAGES BEFORE CONCLUDING. Rejected for the VALUE (a bad URL) means the parameter is recognised and replacement by URL may work with a real one — a lead, not an absence. Rejected for the NAME or SHAPE means the same as absent. Re-run before concluding anything from this. The promise stays failed until a re-fetch shows the delivered digest moved.",
+      "note": "Next rung: promise_conformance. 2 finding(s): idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: FIXED IN SOURCE, NOT YET DELIVERED. The shipped tree now measures 6 taps to the first purchase, then 100s idle to a second kind of producer (browser run: 6 taps to the first purchase, opening rate \"毎秒 0円 ／ 1タップ 1円\"). Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so a buyer still downloads the config that needs 15 taps and then 600 seconds of nothing new. MEASURED 2026-08-10T11:09:28.750Z: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable in place. AND NEITHER DOES CREATION: a create sent with a file was refused by the same rule, so no route in this API puts bytes in front of a buyer. Every source fix to this product needs one owner action to upload, and that is a measured ceiling rather than an unexplored one. no candidate route answers differently from a path that was never defined; a real multipart upload with bytes was refused; the throwaway's file shape did not move; the presigned upload endpoint the API's own refusal names is absent from this surface (12 path/method pairs, all byte-identical to a path that was never defined); and files[][url] returns the IDENTICAL refusal for a URL we own that answers 200 as for a URL that cannot resolve, so it rejects external URLs as such rather than rejecting a bad value. The file a buyer downloads cannot be replaced over this API surface. Nor can creation carry one: a create sent WITH files[][url] was refused by the identical file-ownership rule and produced no product at all, so the listing rail delivers a price and a description and no download. Attaching bytes is outside this API entirely — a measured ceiling rather than a gap in the probing, and the strongest owner-request candidate on the board. The promise stays failed until a re-fetch shows the delivered digest moved. | idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 MEASURED 2026-08-10T11:09:28.750Z: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable in place. AND NEITHER DOES CREATION: a create sent with a file was refused by the same rule, so no route in this API puts bytes in front of a buyer. Every source fix to this product needs one owner action to upload, and that is a measured ceiling rather than an unexplored one. no candidate route answers differently from a path that was never defined; a real multipart upload with bytes was refused; the throwaway's file shape did not move; the presigned upload endpoint the API's own refusal names is absent from this surface (12 path/method pairs, all byte-identical to a path that was never defined); and files[][url] returns the IDENTICAL refusal for a URL we own that answers 200 as for a URL that cannot resolve, so it rejects external URLs as such rather than rejecting a bad value. The file a buyer downloads cannot be replaced over this API surface. Nor can creation carry one: a create sent WITH files[][url] was refused by the identical file-ownership rule and produced no product at all, so the listing rail delivers a price and a description and no download. Attaching bytes is outside this API entirely — a measured ceiling rather than a gap in the probing, and the strongest owner-request candidate on the board. The promise stays failed until a re-fetch shows the delivered digest moved.",
       "product_loop_problems": [
-        "idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: measured on the shipped config: 15 taps before the first affordable purchase, with the rate reading \"毎秒 0円 ／ 1タップ 1円\" for every one of them. Two independent reviewers on the FREE demo named exactly this opening as their reason for 払わない (codex/outbox/2026-08-10.k.md, .l.md). \"調整済み\" is a claim about the shipped defaults, and the shipped defaults are what was measured.",
-        "idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 The replacement probe ran 2026-08-10T10:43:01.694Z and did NOT settle it (partial): Every candidate route is absent (byte-identical to a path that was never defined), a real multipart upload with bytes was refused, and the throwaway's file shape did not move — but 1 PUT parameter(s) answered differently from a parameter name that is certainly fake, so this is not a clean absence. The differing responses, verbatim: files[][url] → HTTP 200 success=false \"File URLs must reference your own uploaded files. Use the presigned upload endpoint to upload files first.\". Control was: HTTP 200 success=true \"(none)\". READ THOSE MESSAGES BEFORE CONCLUDING. Rejected for the VALUE (a bad URL) means the parameter is recognised and replacement by URL may work with a real one — a lead, not an absence. Rejected for the NAME or SHAPE means the same as absent. Re-run before concluding anything from this. The promise stays failed until a re-fetch shows the delivered digest moved."
+        "idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: FIXED IN SOURCE, NOT YET DELIVERED. The shipped tree now measures 6 taps to the first purchase, then 100s idle to a second kind of producer (browser run: 6 taps to the first purchase, opening rate \"毎秒 0円 ／ 1タップ 1円\"). Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so a buyer still downloads the config that needs 15 taps and then 600 seconds of nothing new. MEASURED 2026-08-10T11:09:28.750Z: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable in place. AND NEITHER DOES CREATION: a create sent with a file was refused by the same rule, so no route in this API puts bytes in front of a buyer. Every source fix to this product needs one owner action to upload, and that is a measured ceiling rather than an unexplored one. no candidate route answers differently from a path that was never defined; a real multipart upload with bytes was refused; the throwaway's file shape did not move; the presigned upload endpoint the API's own refusal names is absent from this surface (12 path/method pairs, all byte-identical to a path that was never defined); and files[][url] returns the IDENTICAL refusal for a URL we own that answers 200 as for a URL that cannot resolve, so it rejects external URLs as such rather than rejecting a bad value. The file a buyer downloads cannot be replaced over this API surface. Nor can creation carry one: a create sent WITH files[][url] was refused by the identical file-ownership rule and produced no product at all, so the listing rail delivers a price and a description and no download. Attaching bytes is outside this API entirely — a measured ceiling rather than a gap in the probing, and the strongest owner-request candidate on the board. The promise stays failed until a re-fetch shows the delivered digest moved.",
+        "idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 MEASURED 2026-08-10T11:09:28.750Z: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable in place. AND NEITHER DOES CREATION: a create sent with a file was refused by the same rule, so no route in this API puts bytes in front of a buyer. Every source fix to this product needs one owner action to upload, and that is a measured ceiling rather than an unexplored one. no candidate route answers differently from a path that was never defined; a real multipart upload with bytes was refused; the throwaway's file shape did not move; the presigned upload endpoint the API's own refusal names is absent from this surface (12 path/method pairs, all byte-identical to a path that was never defined); and files[][url] returns the IDENTICAL refusal for a URL we own that answers 200 as for a URL that cannot resolve, so it rejects external URLs as such rather than rejecting a bad value. The file a buyer downloads cannot be replaced over this API surface. Nor can creation carry one: a create sent WITH files[][url] was refused by the identical file-ownership rule and produced no product at all, so the listing rail delivers a price and a description and no download. Attaching bytes is outside this API entirely — a measured ceiling rather than a gap in the probing, and the strongest owner-request candidate on the board. The promise stays failed until a re-fetch shows the delivered digest moved."
       ],
+      "actionable_now": true,
+      "eta_effect_days": null,
+      "eta_effect_basis": "no comparable estimate recorded"
+    },
+    {
+      "kind": "product_loop",
+      "id": "prompt_pack.round_1",
+      "why": "the one thing on offer that CAN be measured has never been measured once",
+      "owner_actions": 0,
+      "measure_via": "codex_lane",
+      "note": "Next rung: stranger_reaction. See state/product-loop.json for how, and for which rung is deliberately NOT next and why.",
       "actionable_now": true,
       "eta_effect_days": null,
       "eta_effect_basis": "no comparable estimate recorded"

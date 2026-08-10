@@ -170,6 +170,28 @@ jobs:
           # was written, which reads as "the probe found nothing".
           cp state/gumroad-file-replacement.json "$RUNNER_TEMP/gumroad-file-replacement.json"
 
+      # HOURLY and NOT behind a dispatch input, unlike every other probe above,
+      # and the difference is what it costs: three requests, no product created,
+      # nothing modified, so it cannot spend the ten-creates-a-day cap or touch
+      # the live listing. It earns the schedule because the answer it corrects
+      # was wrong for a whole day while reading as measured — the file-replacement
+      # probe concluded "no route in this API puts bytes in front of a buyer" from
+      # twelve paths, none of which was one the vendor's own source names, and
+      # scripts/promise-conformance.mjs derived a ceiling from that verdict. "No
+      # such route" is exactly the kind of thing that silently stops being true,
+      # and here it had never been true.
+      - name: Probe the upload paths the vendor's source names
+        if: always()
+        env:
+          GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
+        run: |
+          node scripts/probe-gumroad-presign.mjs state/gumroad-presign.json
+          node scripts/verify-sanitized-state.mjs state/gumroad-presign.json
+          # Same reason as the probes above: the commit step resets to
+          # origin/main before staging and would delete this seconds after it was
+          # written, which reads as "the probe found nothing".
+          cp state/gumroad-presign.json "$RUNNER_TEMP/gumroad-presign.json"
+
       # always(), and deliberately AFTER the probe's own `set -e` can kill the
       # step above. The probe exits 1 when it cannot delete its throwaway, which
       # is correct reporting and is not cleanup — on 2026-08-10T10:38Z that is
@@ -211,6 +233,7 @@ jobs:
               gumroad-capabilities \
               gumroad-recurring \
               gumroad-file-replacement \
+              gumroad-presign \
               product-source
             do
               if [ -f "$RUNNER_TEMP/$probe_state.json" ]; then

@@ -1114,6 +1114,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T14:37:51.261Z",
+      "candidate": "delivery_is_the_binding_term",
+      "kind": "route_change",
+      "mechanism": "Route 5 asked whether the idle pool could BUILD an inspectable artifact. It can: payload-01 arrived, conforms, and its source is in this repository. So that term is settled and the next one is visible in every measured file at once. state/gumroad-file-replacement.json: delivery_route none_over_api, creation-with-a-file refused by the same rule as replacement. state/product-loop.json: both promise failures on the priced product read FIXED IN SOURCE, NOT YET DELIVERED, so rung 1 cannot be cleared however well we fix it. prompt_pack: rungs 3 and 4 both need it purchasable and its own exit clause is no delivery route by 2026-08-24. Every offer and every ladder rung above 2 stops on one term: nothing built here reaches a buyer without an owner action, so no revenue reading exists and every channel reads infinity for that reason. The route change is from which pool builds to whether anything built can be sold unattended, and the first act under it is the one state/ already names as worth a lap and never spent: read the PUBLIC antiwork/gumroad source to convert the sourced claim (upload is session-cookie-only, outside OAuth) into a measurement, and to settle whether product content that is NOT a file is reachable from the API — which is the whole question for a text offer.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
