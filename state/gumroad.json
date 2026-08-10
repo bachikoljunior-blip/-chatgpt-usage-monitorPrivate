@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T13:05:24.995Z",
+  "fetched_at": "2026-08-10T14:02:02.790Z",
   "total_sales_count": 0,
   "total_sales_usd_cents": 0,
   "product_count": 1,
@@ -18,11 +18,9 @@
       "sales_usd_cents": 0,
       "file_info_shape": "object",
       "file_count": null,
-      "file_info_keys": [
-        "Size"
-      ],
+      "file_info_keys": [],
       "file_size_bytes": null,
-      "file_size_value_shape": "string",
+      "file_size_value_shape": "undefined",
       "cover_count": 1,
       "thumbnail_url_present": false,
       "main_cover_id_present": true,
