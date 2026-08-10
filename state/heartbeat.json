@@ -1,23 +1,33 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T01:34:09.008Z",
+  "fetched_at": "2026-08-10T02:17:27.999Z",
   "overdue_factor": 2,
   "overdue_count": 0,
-  "never_seen_count": 2,
+  "never_seen_count": 1,
   "repair": null,
+  "reconcile_before_judging": [],
   "automations": [
     {
       "id": "eta-loop",
       "kind": "claude-trigger",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-10T01:22:00.000Z",
-      "last_seen_source": "state_file:state/continue.json",
-      "age_minutes": 12,
+      "last_seen": "2026-08-10T02:07:30.719Z",
+      "last_seen_source": "laps.open",
+      "age_minutes": 10,
       "status": "ok"
     },
     {
       "id": "youtube-loop",
+      "kind": "claude-trigger",
+      "cadence_minutes": 60,
+      "last_seen": "2026-08-10T01:15:52Z",
+      "last_seen_source": "registry:last_fired_at",
+      "age_minutes": 62,
+      "status": "ok"
+    },
+    {
+      "id": "youtube-loop-fresh",
       "kind": "claude-trigger",
       "cadence_minutes": 60,
       "last_seen": null,
@@ -29,25 +39,34 @@
       "id": "cookie-daily",
       "kind": "claude-trigger",
       "cadence_minutes": 60,
-      "last_seen": null,
-      "last_seen_source": null,
-      "age_minutes": null,
-      "status": "never_seen"
+      "last_seen": "2026-08-10T01:55:24Z",
+      "last_seen_source": "registry:last_fired_at",
+      "age_minutes": 22,
+      "status": "ok"
+    },
+    {
+      "id": "cookie-daily-fresh",
+      "kind": "claude-trigger",
+      "cadence_minutes": 60,
+      "last_seen": "2026-08-10T02:03:24Z",
+      "last_seen_source": "registry:last_fired_at",
+      "age_minutes": 14,
+      "status": "ok"
     },
     {
       "id": "usage-monitor",
       "kind": "github-actions",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-10T01:25:30.239Z",
+      "last_seen": "2026-08-10T02:14:50.686Z",
       "last_seen_source": "state_file:state/usage.json",
-      "age_minutes": 9,
+      "age_minutes": 3,
       "status": "ok"
     },
     {
       "id": "claude-usage-monitor",
       "kind": "github-actions",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-10T01:34:05.797Z",
+      "last_seen": "2026-08-10T02:17:25.276Z",
       "last_seen_source": "state_file:state/claude-usage.json",
       "age_minutes": 0,
       "status": "ok"
@@ -58,16 +77,16 @@
       "cadence_minutes": 60,
       "last_seen": "2026-08-10T01:17:13.293Z",
       "last_seen_source": "state_file:state/gumroad.json",
-      "age_minutes": 17,
+      "age_minutes": 60,
       "status": "ok"
     },
     {
       "id": "codex-loop",
       "kind": "github-actions",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-10T00:02:55.012Z",
+      "last_seen": "2026-08-10T02:14:23.807Z",
       "last_seen_source": "state_file:state/codex-lane.json",
-      "age_minutes": 91,
+      "age_minutes": 3,
       "status": "ok"
     }
   ]
