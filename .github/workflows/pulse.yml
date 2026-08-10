@@ -176,6 +176,15 @@ jobs:
           # when something is live to buyers that cannot be measured at all, and when
           # an offer that CAN be measured has gone a fortnight without a round.
           node scripts/product-loop.mjs --check || rc=1
+          # Whether the thing we ship has ever been RUN, and what it did. Rung 2 sat
+          # at engaged 0 because the only reviewer available reads text, and no
+          # question answerable in text separates playing from reading — the evidence
+          # bar was unreachable by construction, not by wording. This reads the
+          # register a lap writes with a real browser. It launches nothing itself:
+          # this runner has no Chromium, and a check that reports on the runner's
+          # shape instead of the artifact's teaches laps to ignore it. Goes red when
+          # something live throws on interaction, or has never been run at all.
+          node scripts/play-artifact.mjs --check || rc=1
           # The one thing that is not ours to change. Since 2026-08-10 the permanent
           # set is the goal alone, so this is the whole fixed point — a loop whose
           # objective can be edited by the thing being optimised has no objective.

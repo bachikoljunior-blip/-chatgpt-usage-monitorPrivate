@@ -153,6 +153,65 @@
             "what_it_does_not_establish": "Anything about play. rounds_engaged stays 0 after five rounds, and this round is the one that was designed to move it.",
             "grade": "one blind reviewer, engagement claimed and unverifiable, no instrumentation."
           }
+        },
+        {
+          "round": 6,
+          "rung": "promise_conformance",
+          "ran_at": "2026-08-10T08:10:56Z",
+          "verified_at": "2026-08-10T08:16:00Z",
+          "task_id": null,
+          "answer": "state/play-measurements.json",
+          "measured_by": "scripts/play-artifact.mjs — Chromium over the DevTools protocol, no npm dependency",
+          "why_this_rung_and_not_stranger_reaction": "There is no reviewer in this round. It measures whether the artifacts do what they are said to do, which is rung 1, and rung 1 was skipped here on the grounds that a free demo promises almost nothing. That reasoning held for the SHIPPED file and does not hold for a REPLACEMENT, which is commissioned against two named defects and therefore promises exactly two things.",
+          "what_this_round_is_for": "engagementSupported() rejects quoted evidence that appears in the artifact's own source, and the comment above it states the proof: no question answerable in text separates playing from reading, because everything the artifact does is in the file the reviewer opens. The Codex lane reads text and returns text. So rounds_engaged could never move, for any artifact, however the task was worded — five rounds and three of them void is not bad luck, it is the bar being unreachable from that side. This environment ships Chromium. The missing half was obtainable here the whole time and nobody had run the file.",
+          "measured_shipped_artifact": {
+            "file": "assets/free-demo/index.html",
+            "taps_to_first_affordable_purchase": 15,
+            "rate_shown_across_all_15_taps": "毎秒 0",
+            "rate_after_first_purchase": "毎秒 0.2",
+            "tap_feedback_ms": [
+              6,
+              5,
+              5,
+              5,
+              4
+            ],
+            "runtime_errors": [],
+            "so": "Round 4 and round 5 converged on 'the first 14-15 taps are dead' by reading. Running it says the same number. The two reviewers were right, and this is the first time the number came from the game rather than from its source."
+          },
+          "measured_replacement_candidate": {
+            "file": "codex/outbox/2026-08-10.n.md (the html fence, extracted)",
+            "the_two_commissioned_fixes": {
+              "double_credit": "closed. Reloading after a known 5s span credited 0 extra — no double count.",
+              "dead_opening": "closed on its own terms. The first producer costs 4, reachable in 2 taps on the burst path."
+            },
+            "but_it_throws": {
+              "error": "ReferenceError: render is not defined",
+              "where": "render() is called at four sites — applyChoice, exchange, tap, hardResetRun. The function is named refreshUI(). It is never defined under the name it is called by.",
+              "when": "every tap, every purchase, the branch choice, and the run reset",
+              "consequence_measured_not_reasoned": "The screen only repaints from tick()'s elapsed >= 0.25 branch, so tap feedback is 198-247ms against the shipped build's 4-6ms. Tapping fast, the counter reads 0 after eight consecutive taps and the buy button stays disabled while the player already has enough. The rebuild was commissioned to fix 'nothing happens for fifteen taps' and it produced 'nothing happens when you tap'.",
+              "reproduced_twice": "Two independent drivers — playwright-core, then the dependency-free DevTools driver that became scripts/play-artifact.mjs — agree on the error and on the ~5x latency gap."
+            },
+            "verdict": "MUST NOT SHIP AS IS. One line fixes it (rename the four call sites, or define render = refreshUI), and that is a change to the artifact, so it is the next round's subject and not this one's."
+          },
+          "what_it_named_that_no_earlier_round_did": "That a careful read misses this. Two reviewers read this file and neither mentioned it. A lap then read it against the source, correctly identified the applyOffline fix down to line 449, and recorded the_commissioned_fix_landed — while four calls to an undefined function sat in the same file. One tap shows it. Reading did not, three times.",
+          "engagement": {
+            "played_or_read": "遊んだ",
+            "by": "this lap, in Chromium, not by a reviewer",
+            "evidence": [
+              "ReferenceError: render is not defined",
+              "tap feedback 198ms",
+              "tap feedback 4ms"
+            ],
+            "why_these_items": "They are facts about execution and none of them appears in either artifact's source, which is the test engagementSupported() applies. That is not a wording trick — it is the whole distinction. A timing cannot be read out of a file.",
+            "what_it_is_not": "A stranger's verdict. Nobody was asked whether they would pay, and this round does not move rounds_engaged, which counts REVIEWERS who played. The verdict half of rung 2 still needs a person or a model that is not the author, and this round changes only what such a reviewer can be checked against."
+          },
+          "changed": "Nothing in the shipped artifact. The instrument is what changed.",
+          "moved": false,
+          "moved_note": "The offer did not move: assets/free-demo/index.html is byte-identical to what it was this morning, and no buyer saw anything different. Recording that as false rather than crediting the round with the instrument it built, because RUNBOOK 5.4 says editing is not improving and building a better ruler is not either.",
+          "approach_changed": true,
+          "approach_changed_what": "Stop buying rung-2 evidence from a text lane. It cannot produce it and the reason is structural rather than a matter of prompt quality. Behavioural facts get measured here with a browser; the lane keeps the half it can actually do, which is the verdict and the reason against.",
+          "how_much_this_carries": "One run of each artifact, one machine, one browser, one lap. The tap-latency gap and the thrown error are reproducible and were reproduced with two drivers. Everything about what a PLAYER would feel — whether 245ms reads as sluggish on a phone, whether 15 dead taps is worse than an irreversible choice — is not measured here and is not claimed."
         }
       ],
       "why_it_is_here_at_all": "It is the only thing this account offers that can enter a loop. If the owner's rule is right — and nothing here contradicts it — then this is where demand can actually be built, and the priced product's un-loopability is the reason the two have to be ranked against each other rather than assumed complementary.",
@@ -300,6 +359,14 @@
         "the_pattern_across_three_rebuilds": "v2 (.h): three defects in the persistence and offline-credit path. v3 (.j): those three closed, a fourth left in the same function. v5 (.n): that fourth closed, two zero-valued no-ops and a half-reset introduced. The defect count is not falling toward zero, it is circulating, and the shape that repeats is the zero-valued statement — a line that looks like bookkeeping and does nothing. Three rebuilds is thin, and it is the third time this file records the same shape.",
         "verified_how": "Read line by line in this lap against the extracted HTML in codex/outbox/2026-08-10.n.md. Not transplanted, so no check-free-artifact run against a copy: that is the step this lap did not pay for and the next one must, before any transplant.",
         "not_transplanted": "assets/free-demo/index.html is untouched. And the transplant's second half is still uncosted: state/public-host.json mirrors the live file to a repository this session has never had, so any accepted rebuild breaks the byte-identity check until that repository is updated too."
+      },
+      "the_instrument_that_was_missing": {
+        "at": "2026-08-10T08:16:00Z",
+        "what": "scripts/play-artifact.mjs, and state/play-measurements.json which it writes.",
+        "the_proof_that_it_was_needed": "engagementSupported() already carried the argument in its own comment — 'No question of the form tell me a number from the game can distinguish playing from reading' — and the conclusion was never drawn: the only reviewer available answers in text, so the rung's evidence bar could not be cleared from where every task was being sent. Three void rounds and two kept-but-unengaged rounds are what that cost.",
+        "what_reads_it": "scripts/product-loop.mjs playedEvidenceFor() — every offer row now prints played / NOT PLAYED / NEVER RUN with the tap latency and any thrown error, and --check goes red when something live throws on interaction or has never been run. .github/workflows/pulse.yml runs play-artifact.mjs --check hourly.",
+        "what_it_deliberately_cannot_do": "Judge. It reports timings and thrown errors. Whether the game is worth paying for is not in it, and a lap that reads a clean run as 'the artifact is fine' has made the same mistake as reading silence as consent.",
+        "the_limit_that_matters": "--check never launches a browser, because the hourly runner has no Chromium. So it judges the LAST committed run, not the current file. An artifact edited after its last run reads clean until a lap plays it again. --write refuses to run when no browser is present, so an absence can never overwrite a measurement, but nothing yet forces a re-run when the artifact changes."
       }
     }
   ],

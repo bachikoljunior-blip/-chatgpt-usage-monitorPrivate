@@ -842,6 +842,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T08:02:50.755Z",
+      "candidate": "stranger_verdict_from_a_text_lane",
+      "kind": "route_change",
+      "mechanism": "Abandon the text lane as the source of rung-2 evidence: no question exists that a source-reader cannot answer from source, so rounds_engaged stays 0 by construction. Replace it with driving the artifact in Chromium here, turning taps-to-first-purchase and rate-before/after into measurements rather than testimony.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

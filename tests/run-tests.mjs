@@ -53,7 +53,8 @@ import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-br
 import { classifyLifecycle } from "../scripts/probe-gumroad-lifecycle.mjs";
 import { checkGoal, GOAL, BEGIN as DIRECTIVE_BEGIN } from "../scripts/check-goal-intact.mjs";
 import { judge as judgeSpark, sparkModelCandidate, sparkWindow } from "../scripts/spark-model.mjs";
-import { judge as judgeProductLoop, MAX_ROUND_AGE_DAYS as PRODUCT_MAX_ROUND_AGE_DAYS, roundEngaged } from "../scripts/product-loop.mjs";
+import { judge as judgeProductLoop, MAX_ROUND_AGE_DAYS as PRODUCT_MAX_ROUND_AGE_DAYS, roundEngaged, playedEvidenceFor, roundHasReviewer } from "../scripts/product-loop.mjs";
+import { measurementIsEvidence, artifactThrew, findChromium, PROFILES, SHIPPED } from "../scripts/play-artifact.mjs";
 import {
   checkAddressee, checkRequestsAddressee, copyChanged, diffListing, pasteableStrings,
   readCoverSource, readOwnerRequests, readRepoListing,
@@ -4826,6 +4827,113 @@ function assert(condition, message) {
       row.rounds_engaged === 0 && row.rounds >= 1,
       `free_demo should report rounds without engagement, got rounds=${row.rounds} engaged=${row.rounds_engaged}`,
     );
+  }
+
+  // ---- The half the Codex lane cannot produce -----------------------------
+  //
+  // engagementSupported() rejects any quoted evidence that appears in the artifact's
+  // own source, and the comment above it proves the negative: no question answerable
+  // in text separates playing from reading. The lane returns text. So rounds_engaged
+  // was unreachable by construction, and every proof-of-play task queued at it was
+  // buying an impossibility. play-artifact.mjs drives the artifact in Chromium and
+  // records timings and thrown errors, which are facts about execution.
+  //
+  // Five mutations, all run red before these were kept:
+  //   1. an unplayed offer reading as played
+  //   2. browser_available:false counting as a run rather than as no measurement
+  //   3. a thrown runtime error not reaching problems[]
+  //   4. the register's absence reading as "never run" instead of "no instrument"
+  //   5. the real register missing free_demo entirely
+  {
+    const played = { artifacts: { demo: { tap_latency_ms: [5, 5, 6], page_errors: [] } } };
+    const threw = { artifacts: { demo: { tap_latency_ms: [200, 198], page_errors: ["ReferenceError: render is not defined"], distinct_page_errors: ["ReferenceError: render is not defined"] } } };
+    const noBrowser = { artifacts: { demo: { browser_available: false } } };
+
+    assert(playedEvidenceFor("demo", played).played === true, "a run with timings did not read as played");
+    assert(playedEvidenceFor("demo", noBrowser).played === false, "no browser read as a run");
+    assert(playedEvidenceFor("demo", noBrowser).threw === null, "no browser produced a verdict about errors");
+    assert(playedEvidenceFor("demo", null).played === null, "an absent register resolved instead of staying unknown");
+    assert(playedEvidenceFor("missing", played).played === null, "an offer absent from the register was resolved");
+    assert(playedEvidenceFor("demo", threw).threw === true, "a thrown runtime error was not reported");
+    // An entry that exists but holds no timings. Mutation 1 first passed without
+    // this: every fixture that should read "not played" was missing from the
+    // register entirely, so it exited early and never reached the line under test.
+    // A register row is not a run.
+    const rowNoTimings = { artifacts: { demo: { tap_latency_ms: [], page_errors: [] } } };
+    assert(playedEvidenceFor("demo", rowNoTimings).played === false, "a register row with no timings read as a run");
+    assert(
+      !judgeProductLoop({ offers: [healthy] }, { now, playMeasurements: rowNoTimings }).ok,
+      "an offer whose register row holds no timings was accepted as run",
+    );
+
+    assert(
+      judgeProductLoop({ offers: [healthy] }, { now, playMeasurements: played }).ok,
+      "an offer that was played cleanly was flagged",
+    );
+    assert(
+      !judgeProductLoop({ offers: [healthy] }, { now, playMeasurements: threw }).ok,
+      "an artifact that throws while being played was accepted",
+    );
+    assert(
+      !judgeProductLoop({ offers: [healthy] }, { now, playMeasurements: { artifacts: {} } }).ok,
+      "an offer the register has never run was accepted",
+    );
+    // Mutation 4. Without a register nothing is claimed either way — otherwise every
+    // synthetic judge call would report a finding about an instrument it never had.
+    assert(
+      judgeProductLoop({ offers: [healthy] }, { now, playMeasurements: null }).ok,
+      "an absent run register was reported as 'never run' rather than as no instrument",
+    );
+
+    // Mutation 5. The register itself must exist and must carry the artifact this
+    // repository ships, because the per-offer rule above goes quiet without it.
+    const reg = JSON.parse(await readFile(join(root, "state/play-measurements.json"), "utf8"));
+    assert(reg.artifacts?.free_demo, "state/play-measurements.json has no free_demo entry");
+    assert(
+      Array.isArray(reg.artifacts.free_demo.tap_latency_ms) && reg.artifacts.free_demo.tap_latency_ms.length > 0,
+      "the shipped artifact is in the run register with no timings, which is not a run",
+    );
+    assert(
+      measurementIsEvidence({ browser_available: false }) === null,
+      "a run that never happened counted as evidence",
+    );
+    assert(measurementIsEvidence({ tap_latency_ms: [] }) === false, "an empty sample set counted as evidence");
+    assert(artifactThrew({ browser_available: false }) === null, "no browser produced an error verdict");
+
+    // The register's own guard. The hourly workflow has no Chromium, so --write must
+    // refuse rather than replace a real run with an absence every hour: that would
+    // lose the measurement and then report "never run" about an artifact that had
+    // been played. The state is only reachable if a named browser that does not
+    // exist resolves to none, so CHROMIUM_PATH is authoritative when set.
+    assert(findChromium(() => true, { CHROMIUM_PATH: "/x/chrome" }) === "/x/chrome", "a named browser was not used");
+    assert(findChromium(() => false, { CHROMIUM_PATH: "/x/chrome" }) === null, "a named browser that is absent fell through to another");
+    assert(typeof findChromium(() => false, {}) === "object", "an environment with no browser resolved to one");
+    assert(SHIPPED.some((s) => s.id === "free_demo" && PROFILES[s.profile]), "the shipped artifact has no selector profile");
+
+    // A round we ran ourselves is not a stranger. When this lap first drove the
+    // artifact its round cleared engagementSupported() honestly — timings are not
+    // quotable from source — and rounds_engaged went to 1 on the author's own hands.
+    // That is worse than the unreachable bar it replaced: the bar at least left the
+    // number visibly at 0. Two mutations, both red before this was kept: a
+    // reviewerless round counting as engaged, and reviewer_pairing being ignored.
+    const ourOwn = {
+      round: 9, verified_at: "2026-08-10T08:00:00Z", verdict: "n/a", task_id: null,
+      engagement: { played_or_read: "遊んだ", evidence: ["tap feedback 198ms"] },
+    };
+    const theirs = { ...ourOwn, round: 10, reviewer_pairing: { reviewer_model_key: "spark" } };
+    assert(!roundHasReviewer(ourOwn), "a round with no reviewer named counted as a reviewer's");
+    assert(roundHasReviewer(theirs), "a paired reviewer round was not recognised");
+    {
+      const src = "nothing quotable here";
+      const rowOurs = judgeProductLoop({ offers: [{ ...healthy, rounds: [ourOwn] }] },
+        { now, artifactSources: { demo: src }, playMeasurements: played }).rows[0];
+      const rowTheirs = judgeProductLoop({ offers: [{ ...healthy, rounds: [theirs] }] },
+        { now, artifactSources: { demo: src }, playMeasurements: played }).rows[0];
+      assert(rowOurs.rounds_engaged === 0, "a round this loop ran itself counted as an engaged stranger");
+      assert(rowOurs.rounds_played_here === 1, "a round this loop ran itself was not counted anywhere");
+      assert(rowTheirs.rounds_engaged === 1, "a reviewer who played was not counted as engaged");
+      assert(rowTheirs.rounds_played_here === 0, "a reviewer's round was filed as one of ours");
+    }
   }
 
   // A verdict that never says whether the reviewer engaged cannot be told from

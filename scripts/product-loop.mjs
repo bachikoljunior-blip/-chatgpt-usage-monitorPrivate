@@ -365,17 +365,75 @@ export function loopable(offer) {
 }
 
 /**
+ * Was this round run by a REVIEWER, or by us?
+ *
+ * rounds_engaged is the number the elected route rests on, and its question is
+ * whether someone who did not write the artifact would keep playing. When this lap
+ * started driving the artifact in a browser, its round cleared engagementSupported()
+ * honestly — timings are not quotable from source — and the count went to 1 on the
+ * strength of the author's own hands. That is worse than the unreachable bar it
+ * replaced: an unreachable bar leaves the number at 0 where anyone can see it, and
+ * this would have moved it while nobody outside had touched the thing.
+ *
+ * So the two are separated. A round counts toward rounds_engaged only if it names a
+ * reviewer. Rounds we ran ourselves count in rounds_played_here, which is a real
+ * measurement and a different one.
+ *
+ * @param {object} round
+ * @returns {boolean} true when someone other than this loop supplied the round
+ */
+export function roundHasReviewer(round) {
+  if (!round || typeof round !== "object") return false;
+  if (round.reviewer_pairing && typeof round.reviewer_pairing === "object") return true;
+  return Boolean(round.task_id) && Boolean(round.answer);
+}
+
+/**
+ * Has anyone RUN this offer, and what happened?
+ *
+ * engagementSupported() above proves a negative that went unstated for two rounds:
+ * no question answerable in text can separate a reviewer who played from one who
+ * read, because everything the artifact does is in the file the reviewer opens. The
+ * Codex lane returns text. So rounds_engaged was unreachable by construction, and
+ * every proof-of-play task queued at it was buying an impossibility.
+ *
+ * scripts/play-artifact.mjs is the other half: it drives the artifact in Chromium
+ * and records timings and thrown runtime errors, which are facts about execution and
+ * therefore not quotable from source. This reads what it wrote.
+ *
+ * Tri-state, same discipline as the rest of this file. `null` is "no run on record",
+ * which is not "the artifact is fine" — an unplayed artifact and a clean one look
+ * identical from here and must not be reported as the same thing.
+ *
+ * @param {string} offerId
+ * @param {object|null} playDoc parsed state/play-measurements.json
+ * @returns {{played: boolean|null, threw: boolean|null, measurement: object|null}}
+ */
+export function playedEvidenceFor(offerId, playDoc) {
+  const m = playDoc?.artifacts?.[offerId] ?? null;
+  if (!m || typeof m !== "object") return { played: null, threw: null, measurement: null };
+  if (m.browser_available === false || m.run_failed || m.missing_file) {
+    return { played: false, threw: null, measurement: m };
+  }
+  const errs = Array.isArray(m.page_errors) ? m.page_errors : null;
+  const lat = Array.isArray(m.tap_latency_ms) ? m.tap_latency_ms.filter((n) => typeof n === "number") : [];
+  return { played: lat.length > 0, threw: errs === null ? null : errs.length > 0, measurement: m };
+}
+
+/**
  * @param {{offers?: Array<any>}} doc
- * @param {{now: Date, artifactSources?: Record<string,string|null>}} ctx
+ * @param {{now: Date, artifactSources?: Record<string,string|null>, playMeasurements?: object|null}} ctx
  *   artifactSources maps offer id -> the artifact's own source text. Absent means
  *   "not available", which leaves engagement claims unchecked rather than refuted.
+ *   playMeasurements is state/play-measurements.json, or null when nothing has run.
  */
-export function judge(doc, { now, artifactSources = {} }) {
+export function judge(doc, { now, artifactSources = {}, playMeasurements = null }) {
   const problems = [];
   const rows = [];
 
   for (const offer of doc?.offers ?? []) {
     const artifactSource = artifactSources[offer.id] ?? null;
+    const play = playedEvidenceFor(offer.id, playMeasurements);
     const loop = loopable(offer);
     const rounds = Array.isArray(offer.rounds) ? offer.rounds : [];
     const newest = rounds.length ? rounds[rounds.length - 1] : null;
@@ -512,6 +570,33 @@ export function judge(doc, { now, artifactSources = {} }) {
       );
     }
 
+    // 7. It throws while being played. Ranked as a problem rather than left in the
+    //    row because a reviewer cannot report this: the two rounds on record read
+    //    the source and neither mentioned that the rebuild calls an undefined
+    //    render() at four sites. One tap shows it; a careful read did not.
+    if (play.threw === true) {
+      problems.push(
+        `${offer.id} throws while being played: ${(play.measurement?.distinct_page_errors ?? []).join("; ")}. ` +
+          "A verdict collected on an artifact that errors on interaction is a verdict about the error.",
+      );
+    }
+
+    // 8. Loopable, and nobody has ever run it. Not the same as a clean run, and the
+    //    distinction is the whole reason play-artifact.mjs exists — see
+    //    playedEvidenceFor. Silence here would let a rung sit at engaged 0 forever
+    //    while laps queue more text tasks at an evidence bar text cannot clear.
+    //    Conditioned on the register existing. With no register at all the loop
+    //    cannot tell "never run" from "no instrument", and reporting the first when
+    //    it means the second would put a false finding in front of every lap. That
+    //    the register must exist at all is asserted against the real file in
+    //    tests/run-tests.mjs, not inferred here from its absence.
+    if (playMeasurements && loop.ok && play.played !== true) {
+      problems.push(
+        `${offer.id} has never been RUN — ${play.played === false ? "the last attempt did not play it" : "no run is on record"}. ` +
+          "Every round on it is a read. node scripts/play-artifact.mjs --write is the measurement.",
+      );
+    }
+
     rows.push({
       id: offer.id,
       live_to_buyers: Boolean(offer.live_to_buyers),
@@ -524,12 +609,22 @@ export function judge(doc, { now, artifactSources = {} }) {
       // play whose evidence is entirely readable from the artifact does not count:
       // it is a careful read that says 遊んだ, and this rung's question is whether
       // anyone would keep PLAYING.
+      // Reviewers only. See roundHasReviewer — a round this loop ran with its own
+      // hands is a measurement, but it is not a stranger, and this is the number the
+      // elected route rests on.
       rounds_engaged: rounds.filter(
-        (r) => roundEngaged(r) === true && engagementSupported(r, artifactSource) !== false,
+        (r) => roundHasReviewer(r) && roundEngaged(r) === true && engagementSupported(r, artifactSource) !== false,
+      ).length,
+      rounds_played_here: rounds.filter(
+        (r) => !roundHasReviewer(r) && roundEngaged(r) === true && engagementSupported(r, artifactSource) !== false,
       ).length,
       rounds_engagement_claimed_unsupported: engagedClaimedUnsupported,
       newest_round_age_days: ageDays,
       consecutive_no_move: noMove,
+      played_here: play.played,
+      play_threw: play.threw,
+      play_distinct_errors: play.measurement?.distinct_page_errors ?? null,
+      play_tap_latency_ms: play.measurement?.tap_latency_ms ?? null,
     });
   }
 
@@ -554,14 +649,30 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     artifactSources[offer.id] = (await readState(path)).text;
   }
 
-  const verdict = judge(doc, { now: new Date(), artifactSources });
+  // What happened when the artifact was RUN. Read from state the same way, so a
+  // measurement that was taken but never pushed does not silently count.
+  const { value: playMeasurements } = await readStateJson("state/play-measurements.json");
+
+  const verdict = judge(doc, { now: new Date(), artifactSources, playMeasurements });
   console.log(`product loop at ${new Date().toISOString()} (source: ${via})`);
   for (const r of verdict.rows) {
     console.log(
       `  ${r.id}: ${r.loopable ? "loopable" : "NOT LOOPABLE"} · live=${r.live_to_buyers} · ` +
-        `rounds=${r.rounds} (engaged ${r.rounds_engaged}) · next=${r.next_rung ?? "(none)"}`,
+        `rounds=${r.rounds} (engaged ${r.rounds_engaged}, played here ${r.rounds_played_here}) · next=${r.next_rung ?? "(none)"}`,
     );
     for (const why of r.why_not ?? []) console.log(`      ${why}`);
+    // Printed for every offer, including the unplayed ones. An unplayed artifact and
+    // a clean one must not look the same in the output a lap actually reads.
+    {
+      const lat = (r.play_tap_latency_ms ?? []).filter((n) => typeof n === "number");
+      const median = lat.length ? lat.slice().sort((a, b) => a - b)[Math.floor(lat.length / 2)] : null;
+      console.log(
+        `      run: ${r.played_here === true ? "played" : r.played_here === false ? "NOT PLAYED" : "NEVER RUN"}` +
+          (median === null ? "" : ` · tap feedback ${median}ms`) +
+          (r.play_threw === true ? ` · THREW: ${(r.play_distinct_errors ?? []).join("; ")}` : "") +
+          (r.play_threw === false ? " · no runtime errors" : ""),
+      );
+    }
     if (r.rounds_engagement_claimed_unsupported > 0) {
       console.log(
         `      ${r.rounds_engagement_claimed_unsupported} round(s) SAY 遊んだ and are not counted: every ` +
