@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T10:36:36.757Z",
+  "fetched_at": "2026-08-10T10:43:01.694Z",
   "question": "Can the file a buyer downloads be replaced over the Gumroad v2 API, with no owner action?",
   "probe": "Against a throwaway product created and deleted in the same run: route probes with a documented and a fabricated control, form-encoded PUT probes with a fake-parameter control, and a real multipart/form-data upload with bytes.",
   "throwaway": {
@@ -39,18 +39,21 @@
       "param": "file_url",
       "status": 200,
       "success": true,
+      "message": "(none)",
       "distinguishable_from_fake_control": false
     },
     {
       "param": "files[][url]",
       "status": 200,
       "success": false,
+      "message": "File URLs must reference your own uploaded files. Use the presigned upload endpoint to upload files first.",
       "distinguishable_from_fake_control": true
     },
     {
       "param": "product_file_url",
       "status": 200,
       "success": true,
+      "message": "(none)",
       "distinguishable_from_fake_control": false
     }
   ],
@@ -63,7 +66,12 @@
     "message": "(none)"
   },
   "verdict": "partial",
-  "verdict_reason": "something answered differently from its control without the file shape moving (routes present: false, params distinguishable: true). Read the bodies above before concluding; this is not yet an answer in either direction.",
+  "verdict_reason": "Every candidate route is absent (byte-identical to a path that was never defined), a real multipart upload with bytes was refused, and the throwaway's file shape did not move — but 1 PUT parameter(s) answered differently from a parameter name that is certainly fake, so this is not a clean absence. The differing responses, verbatim: files[][url] → HTTP 200 success=false \"File URLs must reference your own uploaded files. Use the presigned upload endpoint to upload files first.\". Control was: HTTP 200 success=true \"(none)\". READ THOSE MESSAGES BEFORE CONCLUDING. Rejected for the VALUE (a bad URL) means the parameter is recognised and replacement by URL may work with a real one — a lead, not an absence. Rejected for the NAME or SHAPE means the same as absent.",
   "live_product_untouched": true,
-  "controls_separated": true
+  "controls_separated": true,
+  "put_control": {
+    "status": 200,
+    "success": true,
+    "message": "(none)"
+  }
 }
