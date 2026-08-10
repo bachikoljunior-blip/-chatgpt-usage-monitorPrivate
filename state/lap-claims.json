@@ -729,6 +729,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T03:32:42.058Z",
+      "candidate": "recurring_offer_on_the_rail_we_can_list_ourselves",
+      "kind": "prerequisite",
+      "mechanism": "The elected route's prerequisite is stranger_reaction, measured in state/product-loop.json. Round 1 recorded engagement.played_or_read=読んだ — the reviewer stopped at the opening screen and returned the task's DECLARED DEFAULT verdict — and nothing in scripts/product-loop.mjs reads that field. So a round where the artifact was never exercised is, to the machine, identical to a refusal after real play: judge() counts it toward rounds, and rule 4's no-move counter would let three such non-measurements demand an approach change. This does not move ETA and is not claimed to. It makes the prerequisite's own instrument able to tell a measurement from a default, before round 2 is run against it.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

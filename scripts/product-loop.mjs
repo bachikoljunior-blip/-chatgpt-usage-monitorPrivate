@@ -52,6 +52,54 @@ export const STATE_PATH = "state/product-loop.json";
 export const MAX_ROUND_AGE_DAYS = 14;
 export const NO_MOVE_LIMIT = 3;
 
+/**
+ * Did the reviewer actually exercise the artifact in this round?
+ *
+ * stranger_reaction is the elected route's prerequisite, and its task DECLARES
+ * 払わない as the verdict to return unless a number overturns it. So a reviewer
+ * who opens the page and stops has returned the default, not judged the product.
+ * Round 1 (2026-08-10) recorded exactly that — engagement.played_or_read 読んだ,
+ * "opened the page, looked at the opening screen, stopped there" — and wrote at
+ * length about how much less it carries than a refusal after real play.
+ *
+ * Nothing read the field. To this file the round was a completed measurement
+ * with a verdict, indistinguishable from twenty minutes of play ending in no.
+ * That is the failure RUNBOOK 8 names: the file half was written carefully and
+ * the machine half was never built, so the care survives exactly as long as the
+ * session that wrote it.
+ *
+ * Two places it mattered. The rung reads as measured when what happened is that
+ * a default came back; and rule 4 below would let three unengaged rounds demand
+ * an approach change, which is a decision taken on three non-measurements.
+ *
+ * Tri-state on purpose. `null` is "this round does not say", which is not the
+ * same as "the reviewer did not engage" and must not silently become it — older
+ * rounds predate the field, and a check that reads absence as a verdict would
+ * convict them of something nobody asked.
+ *
+ * @param {object} round
+ * @returns {boolean|null}
+ */
+export function roundEngaged(round) {
+  const e = round?.engagement;
+  if (!e || typeof e !== "object") return null;
+
+  // A number of minutes is the least ambiguous evidence available, and it is
+  // checked first so a round carrying both is decided by the measurement rather
+  // than by the word.
+  const minutes = Number(e.minutes);
+  if (Number.isFinite(minutes) && minutes > 0) return true;
+
+  const said = String(e.played_or_read ?? "").trim();
+  if (!said) return null;
+  // 遊んだ / played means the artifact was exercised. 読んだ / read means the page
+  // was looked at. The distinction is the reviewer's own word, quoted rather
+  // than inferred, for the same reason the venue rules are quoted.
+  if (/遊ん|played|plaid/i.test(said)) return true;
+  if (/読ん|read|looked/i.test(said)) return false;
+  return null;
+}
+
 // The measurement ladder, cheapest and fastest first. The ORDER is the design
 // content, not decoration: each rung's signal returns sooner than the one below
 // it, and a failure high up makes every lower reading uninterpretable. Measuring
@@ -161,10 +209,27 @@ export function judge(doc, { now }) {
       }
     }
 
+    // 5. A verdict with no engagement recorded. Without it the rung cannot tell
+    //    a refusal from a returned default, which is the whole content of the
+    //    stranger_reaction rung.
+    for (const r of rounds) {
+      if (r.verdict && roundEngaged(r) === null) {
+        problems.push(
+          `${offer.id} round ${r.round ?? "?"} records verdict "${r.verdict}" but no engagement — ` +
+            "say whether the reviewer exercised the artifact, or the round cannot be told from its default",
+        );
+      }
+    }
+
     // 4. Three no-move rounds without an approach change.
     let noMove = 0;
     for (const r of rounds) {
       if (r.approach_changed) noMove = 0;
+      // A round the reviewer never engaged with cannot be evidence that a
+      // parameter stopped working — nothing was tried. Round 1 argued this for
+      // itself in prose (moved_note) and no reader enforced it; three such
+      // rounds would have demanded an approach change on three non-measurements.
+      else if (roundEngaged(r) === false) continue;
       else if (r.moved === false) noMove += 1;
       else if (r.moved === true) noMove = 0;
     }
@@ -182,6 +247,9 @@ export function judge(doc, { now }) {
       why_not: loop.ok ? null : loop.reasons,
       next_rung: offer.measurement?.rung ?? null,
       rounds: rounds.length,
+      // The count that means something for this rung. A rung whose only rounds
+      // are unengaged has not been measured, however many rows it has.
+      rounds_engaged: rounds.filter((r) => roundEngaged(r) === true).length,
       newest_round_age_days: ageDays,
       consecutive_no_move: noMove,
     });
@@ -203,7 +271,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   for (const r of verdict.rows) {
     console.log(
       `  ${r.id}: ${r.loopable ? "loopable" : "NOT LOOPABLE"} · live=${r.live_to_buyers} · ` +
-        `rounds=${r.rounds} · next=${r.next_rung ?? "(none)"}`,
+        `rounds=${r.rounds} (engaged ${r.rounds_engaged}) · next=${r.next_rung ?? "(none)"}`,
     );
     for (const why of r.why_not ?? []) console.log(`      ${why}`);
   }

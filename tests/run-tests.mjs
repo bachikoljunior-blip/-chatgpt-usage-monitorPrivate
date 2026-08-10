@@ -41,7 +41,7 @@ import { gateThreeState, ownerRequestGate } from "../scripts/owner-request-gate.
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import { classifyLifecycle } from "../scripts/probe-gumroad-lifecycle.mjs";
 import { judge as judgeSpark, sparkModelCandidate, sparkWindow } from "../scripts/spark-model.mjs";
-import { judge as judgeProductLoop, MAX_ROUND_AGE_DAYS as PRODUCT_MAX_ROUND_AGE_DAYS } from "../scripts/product-loop.mjs";
+import { judge as judgeProductLoop, MAX_ROUND_AGE_DAYS as PRODUCT_MAX_ROUND_AGE_DAYS, roundEngaged } from "../scripts/product-loop.mjs";
 import {
   checkAddressee, checkRequestsAddressee, copyChanged, diffListing, pasteableStrings,
   readCoverSource, readOwnerRequests, readRepoListing,
@@ -3702,10 +3702,86 @@ function assert(condition, message) {
       moved: false,
       ...(i === n - 1 ? extra : {}),
     }));
+  // Whether the reviewer actually exercised the artifact. stranger_reaction's
+  // task declares 払わない as the verdict to return unless a number overturns it,
+  // so a reviewer who stops at the opening screen returns the default rather than
+  // judging the product. free_demo round 1 recorded exactly that and nothing read
+  // the field.
+  assert(roundEngaged({ engagement: { played_or_read: "遊んだ" } }) === true, "遊んだ was not read as engaged");
+  assert(roundEngaged({ engagement: { played_or_read: "読んだ" } }) === false, "読んだ was not read as unengaged");
+  assert(roundEngaged({ engagement: { played_or_read: "read the page" } }) === false, "the English form was not read");
+  // A measured number decides it over the word, so a round carrying both is
+  // settled by the measurement.
+  assert(
+    roundEngaged({ engagement: { played_or_read: "読んだ", minutes: 12 } }) === true,
+    "recorded minutes of play lost to the word next to them",
+  );
+  // Absent is not false. Rounds predate the field, and reading silence as a
+  // verdict would convict them of something nobody asked.
+  assert(roundEngaged({ round: 1 }) === null, "a round with no engagement block was given a verdict about it");
+  assert(
+    roundEngaged({ engagement: { played_or_read: "" } }) === null,
+    "an empty engagement value was resolved instead of left unknown",
+  );
+
+  // The real file: round 1 is on record as unengaged, so the rung it measures has
+  // zero engaged rounds however many rows it carries. This is the number the
+  // elected route's prerequisite actually rests on.
+  {
+    const real = JSON.parse(await readFile(join(root, "state/product-loop.json"), "utf8"));
+    const demo = real.offers.find((o) => o.id === "free_demo");
+    const row = judgeProductLoop(real, { now: new Date("2026-08-10T04:00:00Z") }).rows
+      .find((r) => r.id === "free_demo");
+    assert(demo.rounds.length >= 1, "free_demo lost its recorded round");
+    assert(
+      row.rounds_engaged === 0 && row.rounds >= 1,
+      `free_demo should report rounds without engagement, got rounds=${row.rounds} engaged=${row.rounds_engaged}`,
+    );
+  }
+
+  // A verdict that never says whether the reviewer engaged cannot be told from
+  // the default, so it is a problem in its own right.
+  assert(
+    !judgeProductLoop(
+      { offers: [{ ...healthy, rounds: [{ round: 1, verified_at: "2026-08-09T00:00:00Z", verdict: "would_not_pay" }] }] },
+      { now },
+    ).ok,
+    "a verdict with no engagement recorded was accepted",
+  );
+
   assert(!judgeProductLoop({ offers: [{ ...healthy, rounds: flat(3) }] }, { now }).ok, "three no-move rounds passed");
   assert(
     judgeProductLoop({ offers: [{ ...healthy, rounds: flat(2) }] }, { now }).ok,
     "two no-move rounds were treated as the failure; the limit is three",
+  );
+  // Three rounds nobody engaged with are not three failures to move — nothing was
+  // tried. Demanding an approach change on them would be a decision taken on
+  // three non-measurements.
+  assert(
+    judgeProductLoop(
+      {
+        offers: [{
+          ...healthy,
+          rounds: flat(3).map((r) => ({ ...r, engagement: { played_or_read: "読んだ" } })),
+        }],
+      },
+      { now },
+    ).ok,
+    "three unengaged rounds were counted toward the no-move limit",
+  );
+  // But engagement is not an escape hatch: three rounds someone did play and that
+  // still moved nothing are the failure the rule is for.
+  assert(
+    !judgeProductLoop(
+      {
+        offers: [{
+          ...healthy,
+          rounds: flat(3).map((r) => ({ ...r, engagement: { played_or_read: "遊んだ" } })),
+        }],
+      },
+      { now },
+    ).ok,
+    "three engaged no-move rounds stopped counting toward the limit",
   );
   // Changing the approach is what clears it — not another parameter, which is the
   // whole content of the rule.

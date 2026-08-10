@@ -1351,6 +1351,30 @@
       ],
       "falsified_if": "discretionary_percent moves off 7.50% when the reservation halves — that would mean the cap was not what bound and the reservation arithmetic below it is live and untested. Falsified in the direction that matters more if reconciled_at is still 2026-08-10T03:13:40Z in two days: then this lap, like the one before it, performed a reconciliation rather than establishing one, and the registry's correctness is still whatever the last MCP lap happened to leave behind.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-10.the-round-that-was-never-played-counted-as-a-round",
+      "made_at": "2026-08-10T03:42:00Z",
+      "claim": "free_demo round 1 recorded engagement.played_or_read=読んだ — the reviewer opened the page, looked at the opening screen and stopped — and wrote carefully about how much less that carries than a refusal after real play. No reader read the field. To scripts/product-loop.mjs the round was a completed measurement carrying a verdict, identical to twenty minutes of play ending in no, on the rung that IS the elected route's prerequisite. The claim is that the distinction now survives its author: rounds and rounds_engaged are separate numbers, a verdict with no engagement fails --check, and rule 4's no-move counter skips unengaged rounds so three non-measurements cannot demand an approach change. NOT claimed: any movement in ETA, which stays ∞ on every channel. This was admitted as prerequisite 2/3 and claims no improvement.",
+      "metric": "Read from committed state on origin/main, none from a lap's account of itself. (a) node scripts/product-loop.mjs prints free_demo rounds=1 (engaged 0) while round 1 remains in the file — the round is kept and its weight is stated, not deleted to make the count look better. (b) node tests/run-tests.mjs fails when any of the five mutations is reapplied: 読んだ reading as engaged, the rule-4 skip removed, a missing engagement block reading as false rather than null, the verdict-without-engagement check disabled, or rounds_engaged echoing rounds. All five were run at 03:38Z and all five went red. (c) The one that decides it, and the one that can fail quietly: when codex/outbox/2026-08-10.f.md returns, does the lap that records it write an engagement block with the reviewer's own words, and does rounds_engaged move to 1 only if the reviewer actually played? A round 2 recorded WITHOUT engagement now fails --check, so silence is not available — but a lap could still write 遊んだ over a reviewer who did not. .f asks for the item name and the number it cost precisely so that is checkable against the artifact rather than taken on trust. (d) Whether any later lap cites round 1 as evidence that strangers will not pay. state/continue.json, state/lap-claims.json mechanisms and state/zerobase.json are where that would appear.",
+      "baseline": {
+        "measured_at": "2026-08-10T03:38:00Z",
+        "free_demo_rounds": 1,
+        "free_demo_rounds_engaged_before": "not computed — the field existed in state and had no reader",
+        "free_demo_rounds_engaged_after": 0,
+        "round_1_engagement_verbatim": "ページを開いて初期画面を確認し、そこで止めた",
+        "idle_eta_days_all_channels": "null (∞)",
+        "gate": "prerequisite 2/3, verdict go; one prerequisite slot remains"
+      },
+      "judge_on": "2026-08-12",
+      "judge_deadline": "2026-08-15",
+      "min_observations": null,
+      "concurrent_changes": [
+        "One commit: scripts/product-loop.mjs (roundEngaged(), rounds_engaged, problem 5, rule-4 skip), tests/run-tests.mjs (ten assertions; five mutations run and all five went red), codex/INBOX.md (task 2026-08-10.f, stranger_reaction round 2), state/zerobase.json (the route decision and the .d write-up), state/eta.json (regenerated), state/lap-claims.json (the gate record), state/predictions.json (this row).",
+        "Same lap, earlier commit, touching none of the files this prediction reads: the registry reconciliation and check-heartbeats/pacing changes recorded as 2026-08-10.the-registry-was-wrong-in-both-directions."
+      ],
+      "falsified_if": "Round 2 lands and free_demo still reports engaged 0 while a lap writes it up as a measured stranger reaction — that would mean the number is printed and unread, which is the same failure one layer out. Also falsified if a lap deletes round 1 rather than carrying it at its recorded weight: the point is that a weak round stays visible as weak, not that it disappears.",
+      "outcome": null
     }
   ]
 }
