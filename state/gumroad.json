@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T02:55:16.226Z",
+  "fetched_at": "2026-08-10T03:56:18.553Z",
   "total_sales_count": 0,
   "total_sales_usd_cents": 0,
   "product_count": 1,
@@ -20,7 +20,11 @@
       "file_count": null,
       "file_info_keys": [
         "Size"
-      ]
+      ],
+      "cover_count": 1,
+      "thumbnail_url_present": false,
+      "main_cover_id_present": true,
+      "covers_field_shape": "array"
     }
   ]
 }
