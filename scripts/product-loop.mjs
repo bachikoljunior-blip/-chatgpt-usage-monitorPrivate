@@ -144,6 +144,15 @@ export function roundEngaged(round) {
 export function engagementSupported(round, artifactSource) {
   const e = round?.engagement;
   if (!e || typeof e !== "object") return null;
+  // A transcript is evidence about the RUN by construction, so it does not need
+  // the quote-against-source test — but it has to survive its own. See
+  // transcriptIsSelfConsistent.
+  // `unusable` returns false, not null. Null means "rounds predate this field and
+  // silence is not a denial"; a transcript that is PRESENT and cannot be checked is
+  // a claim nobody can verify, and RUNBOOK 2's direction applies — refusing to
+  // credit a measurement costs a repeat, crediting a false one costs every decision
+  // downstream. The reason is reported separately so the printed line is true.
+  if (e.transcript) return transcriptIsSelfConsistent(e.transcript).verdict === "consistent";
   const quoted = (Array.isArray(e.evidence) ? e.evidence : [])
     .map((s) => String(s ?? "").trim())
     .filter(Boolean);
@@ -151,6 +160,62 @@ export function engagementSupported(round, artifactSource) {
   const src = String(artifactSource ?? "");
   if (!src) return null;
   return quoted.some((item) => !src.includes(item));
+}
+
+/**
+ * Labels a program prints. ALL-CAPS tokens at the start of an output line —
+ * CREATE, NAVIGATE, GECKO_EXIT, AMOUNT_SCRIPT_STATUS. That is the convention a
+ * driver script falls into unprompted, and it is the only part of a transcript
+ * that can be checked against the program without running either.
+ */
+const LABEL = /^\s*([A-Z][A-Z0-9_]{2,})\b/;
+
+/**
+ * Does a transcript's output match the program pasted beside it?
+ *
+ * WHY THIS EXISTS, and it is a measurement rather than a worry. Task 2026-08-10.p
+ * established that the Codex lane HAS browsers and can drive one — chromium and
+ * firefox found by `which`, a FATAL sandbox abort then a working --no-sandbox run
+ * rendering a title, a geckodriver session that clicked twenty times and read the
+ * DOM. That refuted the diagnosis two handoffs were built on. But its transcript
+ * prints a line labelled AMOUNT_EL_TEXT_STATUS, and the program it pastes never
+ * prints that label. So the program shown is not the program run.
+ *
+ * The innocent reading — an edited-down paste after iterating — is the likely one.
+ * It is also indistinguishable from the other one, and "indistinguishable" is the
+ * whole problem this rung has had since it was declared. A round whose evidence
+ * cannot be told from a fabrication is not evidence, however probably honest.
+ *
+ * WHAT IT CANNOT DO, stated here rather than discovered later. A transcript that
+ * prints no ALL-CAPS labels at all passes nothing and fails nothing — there is
+ * simply nothing to cross-check — so that case returns `unusable` and is reported,
+ * never folded into `consistent`. A vacuous pass reads as a measurement, and this
+ * repository has already paid for one of those.
+ *
+ * @param {{program?: string, output?: string}|null|undefined} t
+ * @returns {{verdict: "consistent"|"mismatched"|"unusable", labels: string[], unmatched: string[], why: string}}
+ */
+export function transcriptIsSelfConsistent(t) {
+  const program = String(t?.program ?? "");
+  const output = String(t?.output ?? "");
+  if (!program.trim() || !output.trim()) {
+    return { verdict: "unusable", labels: [], unmatched: [], why: "the transcript is missing its program or its output; one half proves nothing about the other" };
+  }
+  const labels = [...new Set(
+    output.split("\n").map((line) => line.match(LABEL)?.[1]).filter(Boolean),
+  )];
+  if (!labels.length) {
+    return { verdict: "unusable", labels: [], unmatched: [], why: "the output prints no labels, so there is nothing in it that the program can be checked against" };
+  }
+  const unmatched = labels.filter((l) => !program.includes(l));
+  return unmatched.length
+    ? {
+        verdict: "mismatched",
+        labels,
+        unmatched,
+        why: `the output prints ${unmatched.join(", ")}, which the pasted program never prints — so the program shown is not the program run`,
+      }
+    : { verdict: "consistent", labels, unmatched: [], why: `all ${labels.length} printed label(s) appear in the program` };
 }
 
 /**
@@ -551,6 +616,16 @@ export function judge(doc, { now, artifactSources = {}, playMeasurements = null 
       (r) => roundEngaged(r) === true && engagementSupported(r, artifactSource) === false,
     ).length;
 
+    // Of those, the ones rejected on their TRANSCRIPT rather than on quoting the
+    // source. Same exclusion, different reason, and printing the wrong reason is
+    // how a reader concludes the lane cannot run anything when in fact it ran
+    // something and pasted the wrong program.
+    const transcriptRejections = rounds
+      .filter((r) => roundEngaged(r) === true && r?.engagement?.transcript)
+      .map((r) => transcriptIsSelfConsistent(r.engagement.transcript))
+      .filter((v) => v.verdict !== "consistent")
+      .map((v) => v.why);
+
     // 4. Three no-move rounds without an approach change.
     let noMove = 0;
     for (const r of rounds) {
@@ -619,6 +694,7 @@ export function judge(doc, { now, artifactSources = {}, playMeasurements = null 
         (r) => !roundHasReviewer(r) && roundEngaged(r) === true && engagementSupported(r, artifactSource) !== false,
       ).length,
       rounds_engagement_claimed_unsupported: engagedClaimedUnsupported,
+      rounds_rejected_on_transcript: transcriptRejections,
       newest_round_age_days: ageDays,
       consecutive_no_move: noMove,
       played_here: play.played,
@@ -679,6 +755,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
           "piece of evidence they quote is in the artifact's own source, so the claim cannot be told " +
           "from a careful read. Evidence that separates them has to be about what the reviewer RAN.",
       );
+    }
+    for (const why of r.rounds_rejected_on_transcript ?? []) {
+      console.log(`      a round with a TRANSCRIPT is not counted: ${why}`);
     }
   }
   for (const p of verdict.problems) console.log(`  PROBLEM ${p}`);

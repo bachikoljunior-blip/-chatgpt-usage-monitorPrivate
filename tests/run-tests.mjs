@@ -25,7 +25,7 @@ import {
 } from "../scripts/inbox-task.mjs";
 import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/revenue-rate.mjs";
 import { decideVerdict, KINDS } from "../scripts/gate-verdict.mjs";
-import { roundRecognised, roundSelfReviewed, blindLeaks, inBlindScope, judge, engagementSupported } from "../scripts/product-loop.mjs";
+import { roundRecognised, roundSelfReviewed, blindLeaks, inBlindScope, judge, engagementSupported, transcriptIsSelfConsistent } from "../scripts/product-loop.mjs";
 import {
   KINDS as LANE_KINDS, classify as laneClassify, completedIds, producesOf,
   share as laneShare, judge as laneJudge,
@@ -4511,6 +4511,69 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       "a round quoting no evidence was convicted rather than left unknown");
     assert(engagementSupported({ engagement: { played_or_read: "遊んだ", evidence: ["15"] } }, null) === null,
       "a missing artifact source was treated as proof the evidence is readable");
+
+    // --- A transcript is evidence about the RUN, and has to survive its own test.
+    //
+    // Task 2026-08-10.p proved the Codex lane has browsers and can drive one, which
+    // refuted the diagnosis two handoffs were built on. Its transcript also prints a
+    // line labelled AMOUNT_EL_TEXT_STATUS that the program it pastes never prints —
+    // so the program shown is not the program run. The innocent reading is an
+    // edited-down paste; it is also indistinguishable from the other one, and
+    // indistinguishable is exactly what this rung has been stuck on.
+    //
+    // Mutations run red before this was kept: the transcript branch removed so a
+    // driven round falls back to quote-checking, `unusable` returning null so an
+    // uncheckable transcript counts, and the label scan reduced to any word.
+    {
+      const PROGRAM = "print('CREATE', s)\nprint('NAVIGATE', s)\nprint('GECKO_EXIT', rc)";
+      const GOOD = "CREATE 200\nNAVIGATE 200\nGECKO_EXIT 0";
+      const P_SHAPED = "CREATE 200\nNAVIGATE 200\nAMOUNT_EL_TEXT_STATUS 200\nGECKO_EXIT 0";
+
+      assert(
+        transcriptIsSelfConsistent({ program: PROGRAM, output: GOOD }).verdict === "consistent",
+        "a transcript whose every printed label is in its own program was rejected",
+      );
+      const bad = transcriptIsSelfConsistent({ program: PROGRAM, output: P_SHAPED });
+      assert(
+        bad.verdict === "mismatched" && bad.unmatched[0] === "AMOUNT_EL_TEXT_STATUS",
+        "the exact shape .p came back in — a printed label absent from the pasted program — passed as a driven round",
+      );
+
+      // Vacuous passes are the failure this repository has already paid for once.
+      // Nothing to cross-check is reported as nothing, never as agreement.
+      assert(
+        transcriptIsSelfConsistent({ program: "x = 1", output: "hello" }).verdict === "unusable",
+        "a transcript with no labels at all was scored as if it had been checked",
+      );
+      assert(
+        transcriptIsSelfConsistent({ program: PROGRAM, output: "" }).verdict === "unusable",
+        "half a transcript was accepted; one half proves nothing about the other",
+      );
+
+      // And the gate that decides the count.
+      assert(
+        engagementSupported({ engagement: { played_or_read: "遊んだ", transcript: { program: PROGRAM, output: GOOD } } }, SRC) === true,
+        "a consistent transcript did not count as engagement — the whole point is that a run is not quotable from the artifact",
+      );
+      assert(
+        engagementSupported({ engagement: { played_or_read: "遊んだ", transcript: { program: PROGRAM, output: P_SHAPED } } }, SRC) === false,
+        "a transcript whose program does not match its output counted toward rounds_engaged",
+      );
+      assert(
+        engagementSupported({ engagement: { played_or_read: "遊んだ", transcript: { program: "x=1", output: "hello" } } }, SRC) === false,
+        "an uncheckable transcript was left as null and therefore counted; a claim nobody can verify is not silence",
+      );
+      // The transcript branch must not be reachable around: a round with BOTH a
+      // transcript and source-quotable evidence is judged on the transcript,
+      // because that is the half that is about the run.
+      assert(
+        engagementSupported(
+          { engagement: { played_or_read: "遊んだ", evidence: ["15", "小さな衛星"], transcript: { program: PROGRAM, output: GOOD } } },
+          SRC,
+        ) === true,
+        "a driven round was convicted on the numbers it also quoted from the artifact",
+      );
+    }
 
     // The count is where it has to bite. A register that recorded the downgrade in
     // prose and still reported engaged=1 would be the RUNBOOK 8 failure again.
