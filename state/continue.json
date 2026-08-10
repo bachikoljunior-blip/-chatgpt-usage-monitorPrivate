@@ -38,11 +38,11 @@
     "pulse.yml still has an unreachable exit 1 after exit $rc in the reporting step. Untouched again — the verify step this lap rewrote is a different step.",
     "The 120-second bar in balance-curve.mjs is a judgement, not a derivation, and is labelled as one in the source."
   ],
-  "predecessor_session_id": "session_01RTETtouYm6nxFvo6kbGGuc",
+  "predecessor_session_id": "session_01UjSfmCJL5dFdjwXieyud59",
   "predecessor_note_for_the_successor": "session_01Rxz38Mww17oLrVQwPRmCh3 is the session that wrote this record — the one to archive, and only once get_session reports SESSION_STATUS_IDLE. It will still be RUNNING when you start, because this record is written before the session ends. NOTE: the previous handoff's version of this field named a session that was already ARCHIVED, so trust get_session over this sentence if they disagree.",
   "predecessor_of_this_session": "session_01Nuxr1GzJLWqrncRWbBeeUC",
   "predecessor_note": "session_01Rxz38Mww17oLrVQwPRmCh3 was ARCHIVED by this session at 13:07Z after get_session reported IDLE. The successor that owed that cleanup, 01Gg2TH, never got far enough to do it — see successor_note_correction.",
-  "successor_session_id": "session_01UjSfmCJL5dFdjwXieyud59",
+  "successor_session_id": "session_01FHEtvvVyC2yDnLKPEASP7E",
   "successor_note": "Spawned 2026-08-10T13:25:07Z by session_01RTETt WITH source_url and source_revision:main, tagged eta-loop/worker so the liveness test can see it. Its id goes out in its own commit before any other record, per RUNBOOK 7. Its prompt is short on purpose (the depth-limit finding says length, not content, is what gets a spawn refused) and carries only the one thing not in RUNBOOK: do not wait for approval, and issue shell commands one at a time.",
   "archive_policy": "A successor archives its predecessor at startup, and only when get_session reports SESSION_STATUS_IDLE. RUNNING means look again later. Trust list_sessions over this file if they disagree.",
   "status": "ok",
