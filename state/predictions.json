@@ -1922,6 +1922,20 @@
       "what_would_refute_it": "(a) is refuted if the marker is absent after 2026-08-12T00:00Z while codex-inbox runs succeeded in between — that would mean the lane can run research tasks and cannot run build tasks, which is a real range limit and must be recorded as one, with measured_at, not left as unmeasured. (b) is refuted if the artifact lands and pulse still prints the waiting line, i.e. the check is looking at a path the lane does not write. (c) is refuted if a lap copies the artifact's self-reported numbers into state/ as measurement.",
       "judge_on": "2026-08-12",
       "outcome": null
+    },
+    {
+      "id": "2026-08-10.the-second-producer-is-not-this-repository",
+      "made_at": "2026-08-10T13:52:00Z",
+      "claim": "Six answers landed with no ledger row and the register could not separate a hand relay from a second automated path. Reading every .github/workflows committer identity settles half of it: nothing this repository runs commits under bachikoljunior-blip, so the six were produced outside it. PREDICTION. (a) THE SHAPE HOLDS: the next answer that arrives with no ledger row is stamped +09:00, author equal to committer, one file changed. (b) THE LEDGERED PATH KEEPS ITS OWN SHAPE: the next answer WITH a ledger row is stamped +00:00 and authored by a bot. (c) RE-RUNNING DOES NOT ESTABLISH AUTHORSHIP: no lap files an entry claiming a re-run established who wrote an earlier unledgered answer, because the two producers are different.",
+      "metric": "git log --format=%an|%cn|%cI --stat over codex/outbox/ for answers added after 2026-08-10T13:52Z, joined against state/codex-lane.json runs[].",
+      "baseline": "At 2026-08-10T13:52Z: 7 ledger runs (k l m p s t u), 6 unledgered answers (n o r t v w), all six +09:00 author=committer single-file, all ten committing workflows declaring a [bot] identity, laps committing as Claude <noreply@anthropic.com>.",
+      "what_i_could_not_establish": "Which product the second path is, and whether it polls codex/INBOX.md on a schedule. Nothing readable inside this repository distinguishes ChatGPT agent mode from Codex cloud from the owner driving either.",
+      "concurrent_changes": [
+        "codex/INBOX.md gained 2026-08-10.payload-01 an hour before this, which changes WHAT the lane is asked for but not WHO commits the answer."
+      ],
+      "what_would_refute_it": "(a) an unledgered answer stamped +00:00, or with author different from committer. (b) a ledgered answer authored by a human identity. (c) any register entry citing a re-run as having established an earlier answer author.",
+      "judge_on": "2026-08-13",
+      "outcome": null
     }
   ]
 }

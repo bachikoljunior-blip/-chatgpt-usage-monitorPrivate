@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { chmod, copyFile, mkdtemp, readdir, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -5216,6 +5216,41 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(
     pulseYml.includes("scripts/check-payload.mjs"),
     "pulse.yml no longer runs the payload contract check",
+  );
+}
+
+// --- the finding about who commits the unledgered answers stays checkable ----
+//
+// state/codex-lane.json where_the_unledgered_answers_come_from concludes that
+// nothing this repository runs produced the six answers with no ledger row,
+// because every workflow that commits declares a bot identity. That conclusion
+// is only as good as the scan it rests on, and the scan is over a directory
+// anyone can add a file to. If a workflow ever commits under a human identity,
+// the finding is wrong and the register has to be re-derived rather than
+// trusted — so this fails instead of letting it quietly decay.
+{
+  const wfDir = new URL("../.github/workflows/", import.meta.url);
+  const declared = [];
+  for (const name of readdirSync(wfDir)) {
+    if (!name.endsWith(".yml") && !name.endsWith(".yaml")) continue;
+    const body = readFileSync(new URL(name, wfDir), "utf8");
+    for (const m of body.matchAll(/git config user\.name\s+"([^"]+)"/g)) {
+      declared.push({ workflow: name, identity: m[1] });
+    }
+  }
+  assert(declared.length > 0, "no workflow declares a committer identity; the scan this finding rests on found nothing");
+  const human = declared.filter((d) => !d.identity.endsWith("[bot]"));
+  assert(
+    human.length === 0,
+    `a workflow now commits under a non-bot identity (${human
+      .map((d) => `${d.workflow}: ${d.identity}`)
+      .join(", ")}). state/codex-lane.json where_the_unledgered_answers_come_from concludes the opposite and must be re-derived.`,
+  );
+
+  const lane = JSON.parse(readFileSync(new URL("../state/codex-lane.json", import.meta.url), "utf8"));
+  assert(
+    lane.where_the_unledgered_answers_come_from?.how_this_stays_true?.includes("run-tests"),
+    "the finding no longer names the check that keeps it true, so a later reader cannot tell it is watched",
   );
 }
 
