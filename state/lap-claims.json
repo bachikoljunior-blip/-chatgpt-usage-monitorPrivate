@@ -1034,6 +1034,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T11:46:04.277Z",
+      "candidate": "recurring_offer_on_the_rail_we_can_list_ourselves",
+      "kind": "route_change",
+      "mechanism": "Route 6 was elected only because route 4's prerequisite term, stranger_reaction, could not be run: builder and reviewer were one model, so every rung-2 round came back void. That prerequisite is now SATISFIED, not abandoned - state/product-loop.json free_demo round 8 is the first countable round in this project's history (rounds_engaged 0 -> 1, evidence about what the reviewer RAN in a real browser, 見覚え ない), and its verdict is 払わない with a structural reason: the choice set never widens after the first purchase. Route 6's whole purpose was to make that reading possible and it has produced it, so it can bind nothing further. Resuming route 4 is therefore the designed sequence rather than a fourth election - routes 1-5 were abandoned on refutation, route 6 is retired on completion. The number moves because the successor candidate is the only one on the board carrying a MEASURED capability rather than an estimate (state/gumroad-recurring.json: a monthly membership created over the API, read back as recurring, deleted - 0 owner actions to list) and the only arithmetic tied to the goal: 200,000 JPY/month needs ~54 one-time buyers EVERY month forever at 3,700 JPY against a strongest-measured conversion of 1 in 4,835, versus 78 subscribers ONCE at 2,590 JPY who carry over. Both external sweeps (.a, .b) found zero one-time self-serve developer downloads converting at any scale and five recurring or high-ticket cases converting at and below our reach. While the elected route stays route 6, every lap ranks judging machinery above the offer form, and the offer form is the term no lap has ever varied.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
