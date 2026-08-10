@@ -4015,6 +4015,17 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     const leaky = "前回この依頼を出したとき、返ってきたのは「初期画面を見て止めた」でした。";
     const buildSection = `\ntask_id: 2026-08-10.zz\nproduces: payload\n\`\`\`\n${leaky}\nassets/free-demo/index.html を直してください。\n`;
     const roundSection = `\ntask_id: 2026-08-10.zy\nproduces: measurement\n\`\`\`\n${leaky}\n`;
+    // A blind REVIEW is scanned too. Until 2026-08-10 it was not, and the two
+    // rounds this rung rests on (.k and .l) are both produces: review — the
+    // scanner had never looked at either, and the register said so in prose.
+    const reviewSection = `\ntask_id: 2026-08-10.zx\nproduces: review\n\`\`\`\n${leaky}\n`;
+    assert(inBlindScope(reviewSection) && blindLeaks(reviewSection).length > 0,
+      "a blind review task was outside the leak scanner; .k, .l and .q are all produces: review " +
+      "and a scanner that skips them is green because it is not looking");
+    // And a task that produces neither is still out: a builder has to be told what
+    // to fix, which means quoting the reviewer, which is what blindLeaks matches.
+    assert(!inBlindScope(`\ntask_id: 2026-08-10.zw\nproduces: payload\n`),
+      "a build task was pulled into the blind scope, which is the scoping error this rule already fixed once");
     assert(blindLeaks(buildSection).length > 0,
       "the synthetic build section must actually contain a leak phrase, or this pair proves nothing");
     assert(!inBlindScope(buildSection),

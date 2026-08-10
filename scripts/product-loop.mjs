@@ -265,10 +265,28 @@ export function roundSelfReviewed(round) {
  * file that checks it cannot be mutation-tested: reverting it leaves the suite
  * green. As a function, breaking it fails.
  */
+// What a task PRODUCES decides whether its blind is scanned. Both of these hand an
+// artifact to someone and ask for a verdict, and in both the answer is void if the
+// reviewer recognises what it is looking at.
+//
+// `review` was missing until 2026-08-10T07:4xZ, and it was missing for the two
+// rounds this rung actually rests on. Tasks .k and .l — the pair that settled
+// whether authorship or engagement drives recognition, and the only reason the lane
+// is usable as a blind reviewer at all — are both produces: review, so the live
+// scanner never looked at either. The register recorded that as a known gap on the
+// day and named it "not fixed this lap"; then .q was filed under the same word and
+// the gap covered a third round.
+//
+// It is the shape the file warns about twice over: a green check that is green
+// because it is not looking, and a limitation written in prose beside a machine that
+// cannot read prose. Scanning `review` costs nothing when the tasks are clean — .q
+// is — and the whole value is that it goes red on the day one is not.
+export const BLIND_SCOPED_KINDS = ["measurement", "review"];
+
 export function inBlindScope(section) {
   const m = String(section ?? "").match(/^\s*produces\s*:\s*(.*)$/m);
   const produces = m ? m[1].replace(/\s*#.*$/, "").trim() : null;
-  return produces === "measurement";
+  return BLIND_SCOPED_KINDS.includes(produces);
 }
 
 export function blindLeaks(text) {
