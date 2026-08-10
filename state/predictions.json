@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T07:08:47.196Z",
+  "fetched_at": "2026-08-10T07:17:06.008Z",
   "note": "Every change made because it was claimed to shorten the ETA. judge_on is set when the change lands, not when it is convenient. concurrent_changes is what else was in flight, so a later reader can tell a clean attribution from a confounded one.",
   "predictions": [
     {
@@ -1547,6 +1547,26 @@
         "Same commit 977338e: the constraint, the snapshot's delivery counts, deliverySurface() and its two mutation-tested assertions. These are one change — a measurement and the machine that reads it — split across files rather than four changes.",
         "ef5b6be persisted state/external-metrics.json, which the first commit had left carrying the old sentence. Separate commit, same change.",
         "A reply was pushed to the sibling repo (their commit 8fa3659) carrying the Gumroad capability verdict they asked for. That is an outbound act with its own uncertain effect and it is NOT part of what (a)-(e) judge."
+      ],
+      "outcome": null
+    },
+    {
+      "id": "2026-08-10.permission-was-never-the-question",
+      "made_at": "2026-08-10T07:18:00Z",
+      "claim": "This project has elected every distribution route on whether a venue ALLOWS a post, and has never once asked whether a post is SEEN. venue-readiness.mjs could return five binding causes and all five were permission or eligibility. The claim: that criterion, not any particular venue, is what produced eight refuted options and five laps at a door — and delivery-first would have refused route 3 before those laps, because the refusing number (2 description views per 28 days) existed the whole time and no field asked for it.",
+      "metric": "Whether delivery_unmeasured actually changes which work gets chosen, or becomes a sixth label on rows nobody re-ranks.",
+      "baseline_at_registration": "All three surveyed venues carry delivery.measured_at: null. venue-readiness.mjs today prints delivery_unmeasured=1 postable=0 venue_rule=0 venue_unsettled=1 account=0 account_too_new=1 — the one row that was open now binds on delivery. 15 route changes on record, ETA never moved, 5 rows in state/eta-history.json.",
+      "judge_on": "2026-08-14",
+      "judge_by": [
+        "(a) node tests/run-tests.mjs fails when any of the three mutations is reapplied: delivery not outranking postable, an undated figure counting as measured, the check moved off the open branch. All three ran red at 07:1xZ.",
+        "(b) codex/outbox/2026-08-10.o.md exists and carries a 判定 line per venue with either a view median or 表示なし plus a named substitute. A lane answer that guesses numbers instead of reading them fails this, and the task says so in its own words.",
+        "(c) THE ONE THAT DECIDES IT: does any delivery figure get written into a venue row, and does a lap then rank venues differently than it would have? If .o returns and no row is updated, the field is decoration. state/constraints.json venue_survey.per_venue and state/lap-claims.json mechanisms are where that shows.",
+        "(d) The falsifier for the criterion itself: if a venue turns out to deliver well AND permit us AND still produce nothing, delivery-first is no better than permission-first and the binding term is somewhere neither criterion looks. That is a real answer and should be recorded as one.",
+        "(e) Whether delivery_unmeasured is ever removed or demoted below postable by a later lap. Doing so without a delivery reading in hand would mean the rule was found inconvenient rather than wrong."
+      ],
+      "concurrent_changes": [
+        "Same lap and same session as 2026-08-10.the-answer-was-already-in-the-inbox, which is where the YouTube measurement itself is judged. This prediction is about the GENERALISATION and that one is about the reading. They will move together if the generalisation is right, and the honest reading of that is that neither isolates the other.",
+        "codex/INBOX.md gained task .o in the same commit. Queue depth 13, .n still live and undisplaced."
       ],
       "outcome": null
     }
