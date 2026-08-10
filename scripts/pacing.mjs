@@ -39,6 +39,7 @@
 //   node scripts/pacing.mjs --id=revenue-loop [--json]
 
 import { readStateJson } from "./state-source.mjs";
+import { unverifiedReservations } from "./check-heartbeats.mjs";
 
 const flags = new Map(
   process.argv
@@ -134,6 +135,12 @@ const daysToReset = minutesToReset / 1440;
 const automations = (registry?.automations ?? []).filter(
   (a) => a.enabled !== false && (a.pool ?? "claude_week") === "claude_week",
 );
+// The reservation above is only as good as the last time anything checked that
+// these rows correspond to live triggers. That check needs MCP, so it happens on
+// a lap or not at all — and the number it produces has no age printed anywhere
+// until here. On 2026-08-10 two rows in this list named triggers that had been
+// deleted, and the gate went on dividing the pool among them.
+const registryAge = unverifiedReservations(registry ?? {}, now.getTime());
 let reserved = 0;
 const reservations = [];
 for (const a of automations) {
@@ -217,6 +224,9 @@ const report = {
   },
   reserved_for_others_percent: Number(reserved.toFixed(2)),
   reserved_uncapped_percent: Number(reservedRaw.toFixed(2)),
+  registry_reconcile_age_minutes: registryAge.age_minutes,
+  registry_stale: registryAge.stale,
+  reservations_resting_on_unverified_rows: registryAge.ids,
   reserved_was_capped: reservedCapped,
   reservations,
   discretionary_percent: Number(discretionary.toFixed(2)),
@@ -255,6 +265,11 @@ if (asJson) {
     (derivedCostAgeHours === null
       ? " · NEVER DERIVED"
       : ` · derived ${derivedCostAgeHours}h ago${derivedCostStale ? " · STALE, pulse.yml is not refreshing it" : ""}`),
+  );
+  console.log(
+    `  registry: reconciled ${registryAge.age_minutes === null ? "never" : `${registryAge.age_minutes}m ago`}` +
+    (registryAge.stale ? " · STALE, only a lap with MCP can refresh it" : "") +
+    (registryAge.ids.length ? ` · unverified rows still reserved: ${registryAge.ids.join(", ")}` : ""),
   );
   console.log(`  discretionary: ${discretionary.toFixed(2)}%`);
   console.log(

@@ -1317,6 +1317,40 @@
       ],
       "falsified_if": "state/lap-cost-derived.json fetched_at is still 2026-08-09T09:00Z after several pulse runs, meaning the workflow line does not execute or its output is not staged. Also falsified in the direction that matters more: if the file refreshes but pacing still reports the old bound, the gate is reading something other than what pulse writes.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-10.the-registry-was-wrong-in-both-directions",
+      "made_at": "2026-08-10T03:26:00Z",
+      "claim": "state/automations.json is the list pacing.mjs divides the weekly pool by, and only a lap holding MCP can correct it. Read at 02:15Z it was SHORT two live triggers; read at 03:13:40Z, 58 minutes later, it carried two rows whose triggers had been DELETED. Wrong in both directions inside one hour. The existing detector could not have caught either: reconcile_before_judging is built from `overdue` rows only, and the two dead rows read `ok` (off a frozen scheduler snapshot) and `never_seen`. As with the cost bound, the claim is deliberately NOT that discretionary budget improves. Dropping the reservation from four rows to two takes reserved_uncapped from 382.63% to about 191.31%, still far above the cap of remaining x 0.7, so MAX_RESERVED_FRACTION should still bind and discretionary should NOT move. What is claimed is narrower: the reservation stops naming triggers that cannot fire, and the age of the list acquires a printed number at the one place every lap already looks. A SECOND CLAIM, against this lap's own fix: the six-hour threshold would not have caught this. The registry was 66 minutes old and already wrong. Catching it needs a window under 51 minutes, below the loop's own cadence, so it would be red permanently. Age bounds silent drift; it cannot detect the world changing.",
+      "metric": "Read from committed state on origin/main, none from a lap's account of itself. (a) node scripts/pacing.mjs reservations lists exactly youtube-loop and cookie-daily, and reserved_uncapped_percent falls from 382.63% to roughly 191.31% while discretionary_percent stays at 7.50% and reserved_for_others_percent stays at 17.50%. If discretionary MOVES, the cap stopped binding and the untested arithmetic below it is live — the same tripwire the cost-bound prediction set. (b) pacing.mjs and check-heartbeats.mjs both print a registry age, and state/heartbeat.json carries registry_reconcile_age_minutes, registry_stale and reservations_resting_on_unverified_rows. (c) The behavioural half, and the one that can fail quietly: does state/automations.json reconciled_at keep moving after today, or does it freeze at 03:13:40Z the way its predecessor froze at 02:15Z? Two consecutive reconciliations by two consecutive laps is not yet a habit. Prediction 2026-08-10.the-registry-was-short-two-loops metric (d) asks the same question and this is the second sample for it. (d) The falsifying observation for the second claim: if any lap between now and the judge date is warned by registry_stale BEFORE it independently discovers a registry error, the threshold earned its keep and the 'age cannot detect change' half is wrong. (e) Whether a later lap re-enables youtube-loop-fresh or cookie-daily-fresh, or deletes those rows outright. Either would mean the enabled:false-plus-evidence form did not survive contact with the next reader; tests/run-tests.mjs asserts against the first and nothing guards the second.",
+      "baseline": {
+        "measured_at": "2026-08-10T03:13:40Z",
+        "previous_reconciliation": "2026-08-10T02:15:00Z",
+        "minutes_between_readings": 58,
+        "registry_age_when_it_was_already_wrong_minutes": 66,
+        "owner_edit_at": "2026-08-10T03:06:13Z / 03:06:22Z (two triggers, nine seconds apart)",
+        "enabled_claude_triggers_in_registry_before": 5,
+        "enabled_claude_triggers_in_scheduler": 3,
+        "reserved_uncapped_percent_before": 382.63,
+        "reserved_for_others_percent_before": 17.5,
+        "discretionary_percent_before": 7.5,
+        "rows_reserved_before": [
+          "youtube-loop",
+          "youtube-loop-fresh",
+          "cookie-daily",
+          "cookie-daily-fresh"
+        ],
+        "listing_completeness": "limit=100 returned 52 rows with no has_more; limit=3 returned has_more true with a cursor. Sorted strictly newest-first by created_at, newest 2026-08-09T04:19Z, so no 2026-08-10 creation exists."
+      },
+      "judge_on": "2026-08-12",
+      "judge_deadline": "2026-08-15",
+      "min_observations": null,
+      "concurrent_changes": [
+        "One commit: scripts/check-heartbeats.mjs (unverifiedReservations() plus four report fields and a printed age), scripts/pacing.mjs (imports it, reports the age and the unverified ids), tests/run-tests.mjs (four assertions; four mutations run and all four went red), state/automations.json (reconciled against the 03:13:40Z reading; both -fresh rows set enabled:false with the evidence rather than deleted), state/predictions.json (this row).",
+        "Not isolated from: the same lap wrote up codex/outbox/2026-08-10.d into state/product-loop.json. That touches no file this prediction reads, but it is the same lap and is named here rather than left out."
+      ],
+      "falsified_if": "discretionary_percent moves off 7.50% when the reservation halves — that would mean the cap was not what bound and the reservation arithmetic below it is live and untested. Falsified in the direction that matters more if reconciled_at is still 2026-08-10T03:13:40Z in two days: then this lap, like the one before it, performed a reconciliation rather than establishing one, and the registry's correctness is still whatever the last MCP lap happened to leave behind.",
+      "outcome": null
     }
   ]
 }

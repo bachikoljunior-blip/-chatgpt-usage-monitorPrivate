@@ -23,6 +23,88 @@ import { readStateJson, REPO } from "./state-source.mjs";
 // is deliberate: schedulers drift, and a single missed slot is normal noise.
 export const OVERDUE_FACTOR = 2;
 
+// How long a registry row's `observed_at` may stand before the reservation
+// resting on it stops counting as verified.
+//
+// Six hours, matching the derived cost bound's staleness window in pacing.mjs,
+// so the two ages the gate depends on are read on one convention rather than two.
+//
+// WHAT THIS THRESHOLD CANNOT DO, stated here because the run that added it is the
+// run that proves it. On 2026-08-10 the registry was reconciled at 02:15Z, the
+// owner deleted two triggers and rewrote two others at 03:06Z, and the next lap
+// read the scheduler at 03:13Z. The registry was 66 minutes old and already
+// wrong, so this check was green through the whole failure. No age threshold
+// fixes that: catching it needs one under 51 minutes, the loop's own cadence is
+// 60 and only a lap that happens to hold MCP can reconcile at all, so such a
+// threshold is red permanently and a permanently red check is a report.
+//
+// So this bounds how stale a reservation can get SILENTLY — the cost bound sat
+// unattended for 17.9 hours and that is the shape this catches. It cannot tell
+// you the world changed. Only list_triggers can, and only a lap can call it.
+export const REGISTRY_STALE_MINUTES = 360;
+
+/**
+ * Which reservations are resting on rows nobody has confirmed still exist?
+ *
+ * `reconcile_before_judging` above answers a different question — "this row is
+ * overdue, but its only mark is a scheduler snapshot, so reconcile before you
+ * re-arm something that never stopped." It is built from OVERDUE rows only.
+ *
+ * That leaves the failure measured on 2026-08-10 uncovered in both directions.
+ * A trigger DELETED from the scheduler keeps its registry row at enabled:true,
+ * and pacing.mjs reserves on `enabled` alone (`a.enabled !== false`), so the
+ * pool keeps being divided among rows that cannot fire. Neither of the two rows
+ * that were wrong that day could have been caught: cookie-daily-fresh read `ok`
+ * at 59m off a frozen `registry:last_fired_at` snapshot of a trigger that no
+ * longer existed, and youtube-loop-fresh read `never_seen`. Neither is
+ * `overdue`, so neither reached the list above.
+ *
+ * The registry was ALSO short two live rows an hour earlier the same morning.
+ * Wrong in both directions inside one hour is what sets the age threshold here:
+ * the quantity being reported is not "is this automation alive" but "when did
+ * anything last check that this row corresponds to a trigger", and only a lap
+ * with MCP can answer it. Reported rather than repaired, for the same reason
+ * detection and repair are split at the top of this file.
+ *
+ * @param {object} registry parsed state/automations.json
+ * @param {number} nowMs
+ * @param {number} maxAgeMinutes
+ * @returns {{reconciled_at: string|null, age_minutes: number|null, stale: boolean, ids: string[]}}
+ */
+export function unverifiedReservations(registry, nowMs, maxAgeMinutes = REGISTRY_STALE_MINUTES) {
+  const reconciledAt = registry?.reconciled_at ?? null;
+  const reconciledMs = reconciledAt ? Date.parse(reconciledAt) : NaN;
+  const ageMinutes = Number.isFinite(reconciledMs)
+    ? Math.round((nowMs - reconciledMs) / 60_000)
+    : null;
+
+  const ids = [];
+  for (const a of registry?.automations ?? []) {
+    // Only rows pacing.mjs actually reserves for. A disabled row costs nothing,
+    // and a row on another pool is not spending this window.
+    if (a.enabled === false) continue;
+    if ((a.pool ?? "claude_week") !== "claude_week") continue;
+    // github-actions rows are not in the scheduler this reconciles against, so
+    // their age says nothing about whether they still exist.
+    if (a.kind !== "claude-trigger") continue;
+    // Per-row first: a row observed in its own right is verified even when some
+    // other row in the file has gone stale. Falling back to the file-level stamp
+    // means a row that has NEVER been observed is unverified rather than absent
+    // from the finding.
+    const observedMs = Date.parse(a.observed_at ?? reconciledAt ?? "");
+    if (!Number.isFinite(observedMs) || nowMs - observedMs > maxAgeMinutes * 60_000) {
+      ids.push(a.id);
+    }
+  }
+
+  return {
+    reconciled_at: reconciledAt,
+    age_minutes: ageMinutes,
+    stale: ageMinutes === null || ageMinutes > maxAgeMinutes,
+    ids,
+  };
+}
+
 /**
  * When did this automation last actually run?
  *
@@ -157,6 +239,7 @@ for (const a of enabled) {
 
 const overdue = rows.filter((r) => r.status === "overdue");
 const neverSeen = rows.filter((r) => r.status === "never_seen");
+const unverified = unverifiedReservations(registry, now.getTime());
 
 const report = {
   schema_version: 1,
@@ -177,6 +260,17 @@ const report = {
   reconcile_before_judging: overdue
     .filter((r) => r.last_seen_source === "registry:last_fired_at")
     .map((r) => r.id),
+  // When did anything last check that these rows correspond to live triggers,
+  // and which reservations are resting on rows older than that window. A row can
+  // read ok here and not exist at all; see unverifiedReservations above for the
+  // morning that established it.
+  registry_reconciled_at: unverified.reconciled_at,
+  registry_reconcile_age_minutes: unverified.age_minutes,
+  registry_stale: unverified.stale,
+  reservations_resting_on_unverified_rows: unverified.ids,
+  reconcile_instruction: unverified.ids.length
+    ? "A lap with MCP should run list_triggers and reconcile state/automations.json, then move reconciled_at and each row's observed_at. Rows absent from the listing are not overdue, they are gone: set enabled:false rather than deleting the row, so the reservation stops without the finding being erased."
+    : null,
   automations: rows,
 };
 
@@ -194,6 +288,15 @@ for (const r of rows) {
   );
 }
 if (overdue.length) console.log(`OVERDUE: ${overdue.map((r) => r.id).join(", ")}`);
+// Printed unconditionally, with its age, for the same reason pacing.mjs prints the
+// age of the cost bound: a number with no age beside it is read as current.
+console.log(
+  `  registry reconciled ${unverified.age_minutes === null ? "never" : `${unverified.age_minutes}m ago`}` +
+  `${unverified.stale ? " · STALE, only a lap with MCP can refresh it" : ""}`,
+);
+if (unverified.ids.length) {
+  console.log(`UNVERIFIED RESERVATIONS: ${unverified.ids.join(", ")}`);
+}
 // An automation with no mark at all is not a clean bill of health — it is the
 // detector admitting it cannot see. Say so, so "overdue_count: 0" is never read
 // as "everything is running".

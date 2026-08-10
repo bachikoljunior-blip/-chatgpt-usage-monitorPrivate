@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T02:15:00Z",
+  "fetched_at": "2026-08-10T03:13:40Z",
   "note": "Live automations and their measured cost per run. pacing.mjs reserves each one's expected consumption before the reset, so a lap plans with what is genuinely spare rather than with the whole pool. avg_cost_percent is filled in by scripts/record-lap.mjs from real start/end readings; null means never measured and is reserved at a high default.",
-  "reconciled_at": "2026-08-10T02:15:00Z",
-  "reconciled_note": "A full list_triggers reading, the first since 2026-08-09T09:11Z — seventeen hours. It found TWO enabled hourly claude-trigger rows that this registry did not contain at all, both created within the hour before it was read (01:32Z and 01:57Z). pacing.mjs reserves the weekly pool per enabled row, so for those minutes the gate was dividing the pool among two other loops when there were four. This is the same class of error as the revenue-loop row that stayed enabled after the owner stopped it and reserved 9.43% for a trigger that could not fire, except in the direction that says there is MORE room than there is. Only a lap with MCP can take this reading; Actions has no access to the scheduler API. The listing was paginated (has_more true) — the fifty most recent were read, which covers every trigger created since 2026-07-22, and forty-five of them are spent one-shot send_later rows.",
+  "reconciled_at": "2026-08-10T03:13:40Z",
+  "reconciled_note": "A full list_triggers reading at 03:13:40Z, 58 minutes after the previous one. THE REGISTRY WAS WRONG IN THE OPPOSITE DIRECTION FROM 02:15Z. Then it was short two live rows; now it carried two rows whose triggers no longer exist. Three claude-trigger rows are enabled in the scheduler: eta-loop (:50), youtube-loop (:9), cookie-daily (:55). Both '-fresh' rows are gone. WHAT REPLACED THEM, read off the triggers themselves rather than inferred from the deletion: youtube-loop and cookie-daily were updated at 03:06:13Z and 03:06:22Z, nine seconds apart, i.e. one owner action, and 51 minutes after the previous reconciliation. youtube-loop's prompt now reads 【親】あなたの仕事は2つだけです — spawn one child, archive the finished one, touch no repository — and cites owner instruction 2026-08-10 「毎回新しいセッション立ててそこで実行、終わったらアーカイブ」. So the create_new_session_on_fire migration was not abandoned, it was rebuilt on create_session, which is what RUNBOOK 0 says works and what state/constraints.json trigger_new_session_mode_does_not_fire predicted was necessary. THE LIVE TEST OF THAT CONSTRAINT IS NOW DEAD: youtube-loop-fresh was the trial and it never fired before being deleted, so it accumulated exactly one empty slot (02:20Z) and can accumulate no more. cookie-daily-fresh's single 02:03:24Z fire record is now unverifiable and must not be promoted to a settlement. The constraint is neither confirmed nor refuted; its subject was removed. CAVEAT ON THE INSTRUMENT: the limit=100 listing omits fields the limit=3 listing carries — persist_session and persistent_session_id are present in the small read and absent in the large one for the SAME trigger id. So the big listing is a reduced projection, and nothing about session mode may be read from it. ids, created_at, enabled, cron and last_fired_at appear in both.",
   "automations": [
     {
       "id": "eta-loop",
@@ -19,14 +19,15 @@
       "avg_cost_percent": null,
       "samples": 0,
       "last_seen": null,
-      "observed_at": "2026-08-10T02:15:00Z",
+      "observed_at": "2026-08-10T03:13:40Z",
       "observed_from": "list_triggers (the scheduler itself, not a repo file)",
-      "last_fired_at": "2026-08-10T01:50:03Z",
+      "last_fired_at": "2026-08-10T02:50:28Z",
       "liveness": {
         "state_file": "state/continue.json",
         "stamp_field": "fetched_at",
         "note": "Every lap writes its continuation decision here, so this dates the loop actually deciding rather than the trigger merely firing. Added 2026-08-09 because check-wiring found continue.json was written by laps and read by nothing — the exact failure this project is named after, sitting in the file that records whether the loop is still choosing. A lap that stops recording now shows up as overdue instead of as silence."
-      }
+      },
+      "scheduler_updated_at": "2026-08-09T10:58:21Z"
     },
     {
       "id": "revenue-loop",
@@ -58,11 +59,12 @@
       "last_seen": null,
       "trigger_id": "trig_01S5mtxkjiBp6hsttmDvdzgw",
       "cron": "9 * * * *",
-      "observed_at": "2026-08-10T02:15:00Z",
+      "observed_at": "2026-08-10T03:13:40Z",
       "observed_from": "list_triggers (the scheduler itself, not a repo file)",
-      "last_fired_at": "2026-08-10T01:15:52Z",
+      "last_fired_at": "2026-08-10T03:13:23Z",
       "role_changed_at": "2026-08-10T02:02:58Z",
-      "note": "No longer the loop that does the work. Its prompt was rewritten at 02:02:58Z to say 本番は毎時 :20 に立つ新しいセッションがやります（オーナー指示 2026-08-10）, leaving this row as a watchdog and session-sweeper. The row that does the work is youtube-loop-fresh below. Recorded because the label 'YouTube' now covers two triggers with different jobs, and reserving for one of them prices the loop at half."
+      "note": "No longer the loop that does the work. Its prompt was rewritten at 02:02:58Z to say 本番は毎時 :20 に立つ新しいセッションがやります（オーナー指示 2026-08-10）, leaving this row as a watchdog and session-sweeper. The row that does the work is youtube-loop-fresh below. Recorded because the label 'YouTube' now covers two triggers with different jobs, and reserving for one of them prices the loop at half.",
+      "scheduler_updated_at": "2026-08-10T03:06:13Z"
     },
     {
       "id": "youtube-loop-fresh",
@@ -70,17 +72,19 @@
       "kind": "claude-trigger",
       "pool": "claude_week",
       "cadence_minutes": 60,
-      "enabled": true,
+      "enabled": false,
       "avg_cost_percent": null,
       "samples": 0,
       "last_seen": null,
       "trigger_id": "trig_01Kyty8cMLdcLmAzZ4qkCGfS",
       "cron": "20 * * * *",
-      "observed_at": "2026-08-10T02:15:00Z",
+      "observed_at": "2026-08-10T03:13:40Z",
       "observed_from": "list_triggers (the scheduler itself, not a repo file)",
       "last_fired_at": null,
       "created_at": "2026-08-10T01:57:19Z",
-      "note": "MISSING FROM THIS REGISTRY UNTIL 2026-08-10T02:15Z. Created at 01:57:19Z, eighteen minutes before it was found, so the gap was small — but nothing here would have closed it, because the registry is only reconciled when a lap with MCP happens to look. It uses create_new_session_on_fire, which state/constraints.json trigger_new_session_mode_does_not_fire says never fires; last_fired_at is null and next_run_at is 02:20Z, so this row is also the live test of that constraint. Do not reserve zero for it on the strength of the constraint — the constraint is what is on trial."
+      "note": "ABSENT FROM list_triggers AT 2026-08-10T03:13:40Z. Recorded at 02:15Z with this trigger_id; fifty-eight minutes later the id is not in the account's listing at all. The listing was complete, not truncated: limit=100 returned 52 rows with no has_more, while limit=3 returned has_more true and a cursor, so the absence of the field is exhaustion rather than a default. It is also sorted strictly newest-first by created_at and its newest row is 2026-08-09T04:19Z, so NO trigger created on 2026-08-10 exists — a second argument for the same absence that does not depend on the id at all. enabled:false rather than deleted, so the reservation stops without erasing the finding. Do not re-create it: the owner replaced this migration, see reconciled_note. PRIOR NOTE: MISSING FROM THIS REGISTRY UNTIL 2026-08-10T02:15Z. Created at 01:57:19Z, eighteen minutes before it was found, so the gap was small — but nothing here would have closed it, because the registry is only reconciled when a lap with MCP happens to look. It uses create_new_session_on_fire, which state/constraints.json trigger_new_session_mode_does_not_fire says never fires; last_fired_at is null and next_run_at is 02:20Z, so this row is also the live test of that constraint. Do not reserve zero for it on the strength of the constraint — the constraint is what is on trial.",
+      "absent_from_scheduler_at": "2026-08-10T03:13:40Z",
+      "disabled_by": "owner (inferred from the deletion; not an instruction this loop was given)"
     },
     {
       "id": "cookie-daily",
@@ -94,10 +98,11 @@
       "last_seen": null,
       "trigger_id": "trig_011CUbWRXqjNKLcGX5BhDgk9",
       "cron": "55 * * * *",
-      "observed_at": "2026-08-10T02:15:00Z",
+      "observed_at": "2026-08-10T03:13:40Z",
       "observed_from": "list_triggers (the scheduler itself, not a repo file)",
-      "last_fired_at": "2026-08-10T01:55:24Z",
-      "note": "Named \"daily\" but the live cron is hourly (55 * * * *). The id is a key other files reference, so the name stays and the cadence follows the scheduler. 2026-08-10: a SECOND cookie trigger exists on the same cron, in the same environment, pushing to the same branch — cookie-daily-fresh below. Both are enabled. That looks like a migration whose old half was not switched off, and it is the owner's migration, not this loop's to finish; what belongs here is that the pool is being spent twice per hour and the reservation must say so."
+      "last_fired_at": "2026-08-10T02:55:17Z",
+      "note": "Named \"daily\" but the live cron is hourly (55 * * * *). The id is a key other files reference, so the name stays and the cadence follows the scheduler. 2026-08-10: a SECOND cookie trigger exists on the same cron, in the same environment, pushing to the same branch — cookie-daily-fresh below. Both are enabled. That looks like a migration whose old half was not switched off, and it is the owner's migration, not this loop's to finish; what belongs here is that the pool is being spent twice per hour and the reservation must say so.",
+      "scheduler_updated_at": "2026-08-10T03:06:22Z"
     },
     {
       "id": "cookie-daily-fresh",
@@ -105,17 +110,19 @@
       "kind": "claude-trigger",
       "pool": "claude_week",
       "cadence_minutes": 60,
-      "enabled": true,
+      "enabled": false,
       "avg_cost_percent": null,
       "samples": 0,
       "last_seen": null,
       "trigger_id": "trig_0183ngN1qA8GCbPGKiaYbGay",
       "cron": "55 * * * *",
-      "observed_at": "2026-08-10T02:15:00Z",
+      "observed_at": "2026-08-10T03:13:40Z",
       "observed_from": "list_triggers (the scheduler itself, not a repo file)",
       "last_fired_at": "2026-08-10T02:03:24Z",
       "created_at": "2026-08-10T01:32:20Z",
-      "note": "MISSING FROM THIS REGISTRY UNTIL 2026-08-10T02:15Z. It carries a last_fired_at of 02:03:24Z and has no persistent_session_id, which is the first record this project holds of a create_new_session_on_fire trigger firing at all — state/constraints.json trigger_new_session_mode_does_not_fire says they never do. It is NOT a settlement and must not be written up as one: the earlier measurement's whole point was that a scheduler fire record is not a session, and no session was found for 02:03Z. The two also disagree — cron says :55, the fire says :03 — so either the fire was manual or the anchoring is not what the cron reads. What is established is that the row exists, is enabled, and is spending the same weekly pool."
+      "note": "ABSENT FROM list_triggers AT 2026-08-10T03:13:40Z. Recorded at 02:15Z with this trigger_id; fifty-eight minutes later the id is not in the account's listing at all. The listing was complete, not truncated: limit=100 returned 52 rows with no has_more, while limit=3 returned has_more true and a cursor, so the absence of the field is exhaustion rather than a default. It is also sorted strictly newest-first by created_at and its newest row is 2026-08-09T04:19Z, so NO trigger created on 2026-08-10 exists — a second argument for the same absence that does not depend on the id at all. enabled:false rather than deleted, so the reservation stops without erasing the finding. Do not re-create it: the owner replaced this migration, see reconciled_note. PRIOR NOTE: MISSING FROM THIS REGISTRY UNTIL 2026-08-10T02:15Z. It carries a last_fired_at of 02:03:24Z and has no persistent_session_id, which is the first record this project holds of a create_new_session_on_fire trigger firing at all — state/constraints.json trigger_new_session_mode_does_not_fire says they never do. It is NOT a settlement and must not be written up as one: the earlier measurement's whole point was that a scheduler fire record is not a session, and no session was found for 02:03Z. The two also disagree — cron says :55, the fire says :03 — so either the fire was manual or the anchoring is not what the cron reads. What is established is that the row exists, is enabled, and is spending the same weekly pool.",
+      "absent_from_scheduler_at": "2026-08-10T03:13:40Z",
+      "disabled_by": "owner (inferred from the deletion; not an instruction this loop was given)"
     },
     {
       "id": "eldria-loop",
@@ -194,5 +201,5 @@
       }
     }
   ],
-  "reconciliation_note": "cadence/enabled for claude-trigger rows are reconciled against list_triggers, not asserted here. Actions cannot call that API, so a lap with MCP is the only thing that can refresh them — check observed_at before trusting these fields."
+  "reconciliation_note": "cadence/enabled for claude-trigger rows are reconciled against list_triggers, not asserted here. Actions cannot call that API, so a lap with MCP is the only thing that can refresh them — check observed_at before trusting these fields. 2026-08-10: the two readings 58 minutes apart were wrong in opposite directions, which is the measurement behind check-heartbeats.mjs unverifiedReservations() and the registry age pacing.mjs now prints. Note what that check cannot do — at 66 minutes old the registry was inside every reasonable staleness window and already wrong. Age bounds silent drift; it does not detect the world changing. Only list_triggers does, and only a lap can call it."
 }

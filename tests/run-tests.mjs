@@ -15,7 +15,7 @@ import { describeFields, probeUsageFields, safeNumber } from "../scripts/usage-f
 import {
   deriveFromSegment, readingsFromHistory, segmentsWithoutRoll,
 } from "../scripts/derive-lap-cost.mjs";
-import { classify, resolveLastSeen } from "../scripts/check-heartbeats.mjs";
+import { classify, resolveLastSeen, unverifiedReservations } from "../scripts/check-heartbeats.mjs";
 import { buildLaneRecord, LANE_STATE_PATH } from "../scripts/record-lane-run.mjs";
 import { applyRepricings, applyRouteElection } from "../scripts/repricing.mjs";
 import {
@@ -638,6 +638,68 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(
     unreconciled.length === 0,
     `claude-trigger rows never checked against list_triggers: ${unreconciled.join(", ")}`,
+  );
+
+  // A trigger DELETED from the scheduler is the case none of the above catches.
+  // Its row keeps enabled:true, pacing.mjs reserves on `enabled` alone, and the
+  // row's heartbeat status is `ok` or `never_seen` — never `overdue` — so it also
+  // never reaches reconcile_before_judging. Measured 2026-08-10: two such rows
+  // divided the weekly pool between them for 58 minutes.
+  {
+    const NOW = Date.parse("2026-08-10T09:00:00Z");
+    const gone = {
+      reconciled_at: "2026-08-10T08:30:00Z",
+      automations: [
+        // Reserved, and nobody has checked it in 25 hours.
+        { id: "stale", kind: "claude-trigger", enabled: true, observed_at: "2026-08-09T08:00:00Z" },
+        // Reserved, checked half an hour ago.
+        { id: "fresh", kind: "claude-trigger", enabled: true, observed_at: "2026-08-10T08:30:00Z" },
+        // Costs nothing, so its age cannot mislead a reservation.
+        { id: "off", kind: "claude-trigger", enabled: false, observed_at: "2026-08-01T00:00:00Z" },
+        // Not in the scheduler this reconciles against.
+        { id: "actions", kind: "github-actions", enabled: true },
+        { id: "lane", kind: "claude-trigger", enabled: true, pool: "codex_week" },
+      ],
+    };
+    const u = unverifiedReservations(gone, NOW);
+    assert(
+      u.ids.join(",") === "stale",
+      `unverified reservations should name only the stale reserved trigger, got: ${u.ids.join(",")}`,
+    );
+    assert(u.age_minutes === 30 && u.stale === false, "registry age was not read from reconciled_at");
+
+    // A row that has NEVER been observed must be unverified, not silently fine.
+    const never = unverifiedReservations(
+      { reconciled_at: null, automations: [{ id: "x", kind: "claude-trigger", enabled: true }] },
+      NOW,
+    );
+    assert(
+      never.ids.join(",") === "x" && never.stale === true,
+      "a registry with no reconciliation stamp at all reported itself verified",
+    );
+
+    // The file-level stamp stands in for a row that carries none of its own, so
+    // adding a row does not silently mark it checked-never or checked-now.
+    const inherited = unverifiedReservations(
+      { reconciled_at: "2026-08-09T08:00:00Z", automations: [{ id: "y", kind: "claude-trigger", enabled: true }] },
+      NOW,
+    );
+    assert(
+      inherited.ids.join(",") === "y",
+      "a row with no observed_at did not inherit the file's stale reconciliation stamp",
+    );
+  }
+
+  // Once a lap has recorded that a trigger is absent from the scheduler, the row
+  // must not be reserved for again. enabled:false rather than deletion is what
+  // keeps the finding readable; this stops the pair being separated later, which
+  // would restore the reservation while the note still says the trigger is gone.
+  const resurrected = registry.automations
+    .filter((a) => a.absent_from_scheduler_at && a.enabled !== false)
+    .map((a) => a.id);
+  assert(
+    resurrected.length === 0,
+    `rows recorded absent from the scheduler but still reserved: ${resurrected.join(", ")}`,
   );
 
   // The ChatGPT lane went hourly on 2026-08-09, and that changes what counts as
