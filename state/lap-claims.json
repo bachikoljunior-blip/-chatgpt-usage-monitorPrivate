@@ -858,6 +858,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T08:24:20.470Z",
+      "candidate": "the_postable_venue_delivers_eleven_views",
+      "kind": "route_change",
+      "mechanism": "Task .o measured the one venue postable today at a median of 11 views per post, and the venue with 447 is the one with no account. Writing those into the rows that declared the slot makes the election run on delivery, and abandons posting to itch.io Release Announcements as a revenue route on its own arithmetic rather than on permission.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

@@ -262,10 +262,15 @@
               "note": "itch.io/api/1/KEY/me returns HTTP 200 with username bachikoljunior-blip. This is the ONLY venue across six surveys where our own ability to post is measured rather than assumed, and it is also the only one whose eligibility threshold is an explicit none. Both halves are settled here and nowhere else."
             },
             "delivery": {
-              "reached_per_post": null,
-              "measured_at": null,
-              "why_null": "Nobody has counted how many people a post here reaches. Declared rather than omitted, because an omitted field and an unmeasured one are indistinguishable — the same reason every row carries an `account` field with a nullable exists.",
-              "what_would_fill_it": "A number read from outside: views or impressions on a comparable recent post in this venue, with the post named so it can be checked. It is external-world work, so it belongs on the codex lane, not here."
+              "reached_per_post": 11,
+              "unit": "views, median of the five most recent topics (10, 24, 11, 30, 8)",
+              "measured_at": "2026-08-10T08:11:43Z",
+              "source": "codex/outbox/2026-08-10.o.md (task 2026-08-10.o), five most recent topics per board, each named with its url so the count can be rechecked. Arrived as commit dfc3678 with no ledger run — see state/codex-lane.json answers_with_no_ledger_run. Usable because it is research about public pages rather than a review of anything this loop wrote.",
+              "also_measured": "replies median 0, upvotes median 0, across all five. Posting frequency 7.38 topics/day, so a new post is pushed down the board within hours.",
+              "read_from": "https://itch.io/board/10022/release-announcements",
+              "caveat": "The individual topic pages were not reachable; these are the view counts the board index shows. The board index is where the number is published, so this is the venue's own figure, not an estimate.",
+              "what_it_means_for_the_route": "This is the ONE venue postable today from a standing start with zero owner actions, and it delivers a median of eleven people. Eleven views with a median of zero replies and zero upvotes is not an audience that a storefront link converts out of at any rate anyone reports. The venue was abandoned and reopened on PERMISSION — it was the only surveyed board whose quoted rule permits showing a paid product. Permission was never the scarce thing.",
+              "what_it_replaced": "Nobody has counted how many people a post here reaches. Declared rather than omitted, because an omitted field and an unmeasured one are indistinguishable — the same reason every row carries an `account` field with a nullable exists."
             }
           },
           {
@@ -332,9 +337,13 @@
             },
             "delivery": {
               "reached_per_post": null,
-              "measured_at": null,
-              "why_null": "Nobody has counted how many people a post here reaches. Declared rather than omitted, because an omitted field and an unmeasured one are indistinguishable — the same reason every row carries an `account` field with a nullable exists.",
-              "what_would_fill_it": "A number read from outside: views or impressions on a comparable recent post in this venue, with the post named so it can be checked. It is external-world work, so it belongs on the codex lane, not here."
+              "unit": null,
+              "measured_at": "2026-08-10T08:11:43Z",
+              "source": "codex/outbox/2026-08-10.o.md (task 2026-08-10.o), five most recent topics per board, each named with its url so the count can be rechecked. Arrived as commit dfc3678 with no ledger run — see state/codex-lane.json answers_with_no_ledger_run. Usable because it is research about public pages rather than a review of anything this loop wrote.",
+              "why_still_null": "MEASURED AND NOT AVAILABLE, which is different from unmeasured. Reddit publishes no per-post view count to a logged-out reader; the five most recent posts showed no views, no reply count and no score. The date is filled in so this reads as an attempt that failed rather than an attempt not made.",
+              "surrogate": "407K subscribers on the board itself, and 0.84 posts/day so a post stays visible far longer than on itch. Subscribers is a ceiling on an audience, not a delivery figure, and substituting one for the other is the error this whole field was added to stop.",
+              "read_from": "https://www.reddit.com/r/gamedev/new/",
+              "what_it_replaced": "Nobody has counted how many people a post here reaches. Declared rather than omitted, because an omitted field and an unmeasured one are indistinguishable — the same reason every row carries an `account` field with a nullable exists."
             }
           },
           {
@@ -360,10 +369,14 @@
               "note": "Never asked, and unlike r/gamedev it would not help much if answered: this venue's blocker is that its own eligibility threshold is unpublished, so an account here could not be shown to qualify either way."
             },
             "delivery": {
-              "reached_per_post": null,
-              "measured_at": null,
-              "why_null": "Nobody has counted how many people a post here reaches. Declared rather than omitted, because an omitted field and an unmeasured one are indistinguishable — the same reason every row carries an `account` field with a nullable exists.",
-              "what_would_fill_it": "A number read from outside: views or impressions on a comparable recent post in this venue, with the post named so it can be checked. It is external-world work, so it belongs on the codex lane, not here."
+              "reached_per_post": 447,
+              "unit": "views, median of the five most recent topics (648, 1638, 423, 291, 447)",
+              "measured_at": "2026-08-10T08:11:43Z",
+              "source": "codex/outbox/2026-08-10.o.md (task 2026-08-10.o), five most recent topics per board, each named with its url so the count can be rechecked. Arrived as commit dfc3678 with no ledger run — see state/codex-lane.json answers_with_no_ledger_run. Usable because it is research about public pages rather than a review of anything this loop wrote.",
+              "also_measured": "replies median 4. Posting frequency not derivable — the board index shows last-activity times rather than post dates, and the topic pages were unreachable.",
+              "read_from": "https://www.gamedev.net/forums/forum/28-your-announcements/",
+              "what_it_means_for_the_route": "FORTY TIMES the delivery of the venue that is open, and it is the venue whose account status nobody has ever established (binding cause venue_unsettled). The board is also slow enough that four replies is the median, which is engagement itch.io's board does not produce at all. If any venue on this survey is worth an owner action, the numbers now say it is this one — and the survey has spent six rounds ranking these boards without a single delivery figure in front of it.",
+              "what_it_replaced": "Nobody has counted how many people a post here reaches. Declared rather than omitted, because an omitted field and an unmeasured one are indistinguishable — the same reason every row carries an `account` field with a nullable exists."
             }
           }
         ],
@@ -399,6 +412,14 @@
           "what": "delivery. Every field above it describes whether the venue ALLOWS a post — rule_quoted, paid_promotion_permitted, eligibility_threshold, postable_today, account. Not one describes whether a post is SEEN.",
           "why_it_was_added_today": "Because the gap decided a real election. The sibling YouTube channel permits the paid product's link and was elected on 1,208 views/day; its description is reached by 2 people per 28 days. Read for permission it was the best route on the board. scripts/venue-readiness.mjs now returns delivery_unmeasured ahead of postable, so an open door with uncounted traffic can no longer be the top of the ranking — which is what it was, for all three rows here, for the whole life of this register.",
           "and_the_honest_limit": "This makes the gap visible; it does not close it. All three rows read delivery_unmeasured today and will keep reading it until somebody counts. That is the correct state — the previous state was the same ignorance printing as readiness."
+        },
+        "delivery_measured_at": "2026-08-10T08:11:43Z",
+        "what_the_delivery_numbers_changed": {
+          "at": "2026-08-10T08:30:00Z",
+          "the_ordering_inverts": "The survey has ranked these three boards for six rounds on permission and eligibility. On delivery the order is the reverse of the order the loop has been using: GameDev.net 447 views and 4 replies (no account, never established), itch.io 11 views and 0 replies (open today, zero owner actions), r/gamedev unpublished (account exists, too new until 2026-08-12).",
+          "the_arithmetic_nobody_had_done": "Eleven views per post is the whole delivery of the one open door. Even at a conversion rate no storefront reports, a post there does not produce a buyer. The same shape as the sibling loop's WATCH=2 finding on 2026-08-10: a surface was elected because it was PERMITTED, and the reachable half of it had never been counted. Two loops made the same error on the same day, independently, on different surfaces.",
+          "what_this_does_not_say": "That posting to itch.io is worthless. Eleven readers is more than zero and the post costs nothing. It says the route cannot reach ¥200,000/month through that board, which is the question this loop asks. And it does NOT say GameDev.net will deliver 447 to us — that is the median of established members' posts, and no_standing_where_buyers_gather is exactly the term that would differ for a new account.",
+          "the_measurement_reached_the_chooser": "scripts/venue-readiness.mjs deliveryKnown() needs a number AND a date. Two of the three rows now have both, so delivery_unmeasured stops binding on them and the next binding cause is visible instead. r/gamedev keeps a null with a date, which is measured-and-unavailable rather than unmeasured — the distinction the field was built to hold."
         }
       },
       "reprices_candidates": [
