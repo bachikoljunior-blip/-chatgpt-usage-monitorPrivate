@@ -195,6 +195,48 @@ const LABEL = /^\s*([A-Z][A-Z0-9_]{2,})\b/;
  * @param {{program?: string, output?: string}|null|undefined} t
  * @returns {{verdict: "consistent"|"mismatched"|"unusable", labels: string[], unmatched: string[], why: string}}
  */
+/**
+ * The distinct object keys in whatever JSON the output contains.
+ *
+ * Deliberately parsed rather than regexed off the text: a regex for "quoted
+ * thing followed by a colon" also matches every string VALUE that happens to
+ * contain one, and the values are the reviewer's prose. Keys have to come from
+ * something that actually parsed as JSON, or this check starts cross-checking
+ * Japanese sentences against a JavaScript program and passes on coincidence.
+ *
+ * Values are ignored on purpose. A value is what the run produced and the whole
+ * point is that we cannot predict it; a key is what the program must contain.
+ *
+ * @param {string} output
+ * @returns {string[]}
+ */
+function jsonKeysIn(output) {
+  const keys = new Set();
+  const collect = (v) => {
+    if (Array.isArray(v)) return v.forEach(collect);
+    if (v && typeof v === "object") {
+      for (const [k, inner] of Object.entries(v)) {
+        keys.add(k);
+        collect(inner);
+      }
+    }
+  };
+  // The largest brace-delimited spans, tried longest first: a transcript may
+  // wrap its JSON in a fence, prose, or nothing.
+  const starts = [...output].map((c, i) => (c === "{" ? i : -1)).filter((i) => i >= 0);
+  for (const start of starts) {
+    for (let end = output.lastIndexOf("}"); end > start; end = output.lastIndexOf("}", end - 1)) {
+      try {
+        collect(JSON.parse(output.slice(start, end + 1)));
+        return [...keys];
+      } catch {
+        /* not a complete object at this span; try a shorter one */
+      }
+    }
+  }
+  return [];
+}
+
 export function transcriptIsSelfConsistent(t) {
   const program = String(t?.program ?? "");
   const output = String(t?.output ?? "");
@@ -205,7 +247,39 @@ export function transcriptIsSelfConsistent(t) {
     output.split("\n").map((line) => line.match(LABEL)?.[1]).filter(Boolean),
   )];
   if (!labels.length) {
-    return { verdict: "unusable", labels: [], unmatched: [], why: "the output prints no labels, so there is nothing in it that the program can be checked against" };
+    // A program that emits ONE JSON object prints no labels at all, and the
+    // label rule cannot read it. That is a gap in this check, not a defect in
+    // the transcript: 2026-08-10.s drove a real browser and reported a single
+    // JSON.stringify(out), so it scored `unusable` while carrying more
+    // cross-checkable material than any labelled run before it.
+    //
+    // THE PRINCIPLE IS UNCHANGED and that is the only reason this is here.
+    // Labels test "nothing appears in the output that the program does not
+    // produce". Keys test exactly the same proposition against the emission
+    // convention that actually arrived. Widening the LABEL scan to any word
+    // would have been the other thing — a mutation run red when this check was
+    // built — because it makes the test pass on prose, which no program emits.
+    //
+    // It must still be able to fail: a key the program never mentions is a
+    // mismatch, on the same reasoning and with the same wording as a label.
+    const keys = jsonKeysIn(output);
+    if (keys.length) {
+      const unmatchedKeys = keys.filter((k) => !program.includes(k));
+      return unmatchedKeys.length
+        ? {
+            verdict: "mismatched",
+            labels: keys,
+            unmatched: unmatchedKeys,
+            why: `the output is JSON carrying the key(s) ${unmatchedKeys.join(", ")}, which the pasted program never produces — so the program shown is not the program run`,
+          }
+        : {
+            verdict: "consistent",
+            labels: keys,
+            unmatched: [],
+            why: `the output prints no labels but is JSON, and all ${keys.length} of its key(s) appear in the program`,
+          };
+    }
+    return { verdict: "unusable", labels: [], unmatched: [], why: "the output prints no labels and carries no JSON keys, so there is nothing in it that the program can be checked against" };
   }
   const unmatched = labels.filter((l) => !program.includes(l));
   return unmatched.length

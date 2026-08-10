@@ -4608,6 +4608,47 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
         "half a transcript was accepted; one half proves nothing about the other",
       );
 
+      // A program that emits ONE JSON object prints no labels, and the label
+      // scan cannot read it. 2026-08-10.s drove a real browser and reported a
+      // single JSON.stringify(out), so it scored `unusable` while carrying more
+      // cross-checkable material than any labelled run before it.
+      //
+      // The proposition is identical — nothing in the output that the program
+      // does not produce — so the KEYS are checked the way labels are. What
+      // makes this an extension rather than a loosening is that it still fails:
+      // these four assertions are the ones that would go green if the key check
+      // were widened to "any quoted string", which is the JSON-shaped version of
+      // the label-scan mutation already run red above.
+      {
+        const JS = 'const out = {stepLog: [], sessionId: id};\nout.stepLog.push({step: 1, amount: a});\nconsole.log(JSON.stringify(out));';
+        const JSON_GOOD = '{\n "stepLog": [{"step": 1, "amount": "4"}],\n "sessionId": "5940ade1"\n}';
+        assert(
+          transcriptIsSelfConsistent({ program: JS, output: JSON_GOOD }).verdict === "consistent",
+          "a JSON transcript whose every key is produced by its own program was scored unusable",
+        );
+        const forged = transcriptIsSelfConsistent({
+          program: JS,
+          output: '{"stepLog": [], "totalRevenueYen": 200000}',
+        });
+        assert(
+          forged.verdict === "mismatched" && forged.unmatched[0] === "totalRevenueYen",
+          "a JSON key the pasted program never produces passed as a driven round",
+        );
+        // Values are the reviewer's prose and must never be mistaken for keys —
+        // otherwise a Japanese sentence containing a colon is cross-checked
+        // against a JavaScript program and passes on coincidence.
+        assert(
+          transcriptIsSelfConsistent({ program: JS, output: "遊びました: 面白かったです" }).verdict === "unusable",
+          "prose was read as JSON keys, so a transcript with no machine output could pass",
+        );
+        // Labels win when both are present; a labelled mismatch must not be
+        // rescued by the JSON path.
+        assert(
+          transcriptIsSelfConsistent({ program: JS, output: 'FATAL boom\n{"stepLog": []}' }).verdict === "mismatched",
+          "a printed label absent from the program was excused because the output also contained JSON",
+        );
+      }
+
       // And the gate that decides the count.
       assert(
         engagementSupported({ engagement: { played_or_read: "遊んだ", transcript: { program: PROGRAM, output: GOOD } } }, SRC) === true,
@@ -4661,15 +4702,25 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
         "with no artifact to compare against, the round was downgraded anyway");
     }
 
-    // The live register: round 5 claims play, quotes its evidence, and the evidence
-    // is in the file. rounds_engaged must still read 0 after five rounds.
+    // The live register. This asserted rounds_engaged === 0 with the stated
+    // reason "no round has ever produced evidence a reader could not" — true
+    // when written, and falsified on 2026-08-10 by round 8 (task .s), which
+    // drove a headless Chrome and returned a chromedriver sessionId, a
+    // HeadlessChrome userAgent and a localStorage float produced by the tick
+    // loop. None of the three is in the artifact.
+    //
+    // Updated to the new specific number rather than loosened to >= 0. A bound
+    // that cannot fail is the vacuous pass this file already warns about twice,
+    // and the whole value of the old assertion was that it was exact. The
+    // read-only round must STILL be counted unsupported below — that half is
+    // what stops a good round from laundering a bad one.
     {
       const src = await readFile(join(root, "assets/free-demo/index.html"), "utf8");
-      const row = judge(pl, { now: new Date("2026-08-10T08:00:00Z"), artifactSources: { free_demo: src } })
+      const row = judge(pl, { now: new Date("2026-08-10T11:00:00Z"), artifactSources: { free_demo: src } })
         .rows.find((r) => r.id === "free_demo");
       assert(row.rounds >= 2, `free_demo lost a round: ${row.rounds}`);
-      assert(row.rounds_engaged === 0,
-        `free_demo reports ${row.rounds_engaged} engaged rounds; no round has ever produced evidence a reader could not`);
+      assert(row.rounds_engaged === 1,
+        `free_demo reports ${row.rounds_engaged} engaged rounds; exactly one round (8, task 2026-08-10.s) has produced evidence a reader could not`);
       assert(row.rounds_engagement_claimed_unsupported >= 1,
         "the round that claimed play with readable evidence is not being counted as such — " +
         "if the register stopped quoting engagement.evidence, this rule went quiet rather than green");
@@ -5005,9 +5056,17 @@ function assert(condition, message) {
     "an empty engagement value was resolved instead of left unknown",
   );
 
-  // The real file: no round has ever produced evidence of play that a reader could
-  // not have produced, so the rung it measures has zero engaged rounds however many
-  // rows it carries. This is the number the elected route's prerequisite rests on.
+  // The real file. This said "no round has ever produced evidence of play that a
+  // reader could not have produced", and on 2026-08-10 round 8 (task .s) produced
+  // exactly that: a chromedriver sessionId, a HeadlessChrome userAgent and a
+  // localStorage float from the tick loop, none of them in the artifact. So the
+  // number the elected route's prerequisite rests on is 1, not 0 — the first time
+  // it has been anything else.
+  //
+  // Pinned to the exact count rather than relaxed to >= 0, for the reason stated
+  // at the other live-register assertion: a bound that cannot fail is the vacuous
+  // pass this file warns about. The round that only READS is still uncounted, and
+  // that is checked immediately below.
   //
   // The artifact source is passed deliberately. Round 4 was 読んだ by its own word
   // and needed no comparison; round 5 says 遊んだ and is only distinguishable from a
@@ -5019,13 +5078,20 @@ function assert(condition, message) {
     const demo = real.offers.find((o) => o.id === "free_demo");
     const src = await readFile(join(root, demo.source.path), "utf8");
     const row = judgeProductLoop(real, {
-      now: new Date("2026-08-10T04:00:00Z"),
+      now: new Date("2026-08-10T11:00:00Z"),
       artifactSources: { free_demo: src },
     }).rows.find((r) => r.id === "free_demo");
     assert(demo.rounds.length >= 1, "free_demo lost its recorded round");
     assert(
-      row.rounds_engaged === 0 && row.rounds >= 1,
-      `free_demo should report rounds without engagement, got rounds=${row.rounds} engaged=${row.rounds_engaged}`,
+      row.rounds_engaged === 1 && row.rounds >= 1,
+      `free_demo should report exactly one engaged round (8, task 2026-08-10.s), got rounds=${row.rounds} engaged=${row.rounds_engaged}`,
+    );
+    // The half that keeps the other half honest: the round that claimed play on
+    // evidence quotable from the source is still NOT credited. One good round
+    // must not launder a weak one.
+    assert(
+      row.rounds_engagement_claimed_unsupported >= 1,
+      "the read-only round stopped being counted as an unsupported claim once a real one arrived",
     );
   }
 
