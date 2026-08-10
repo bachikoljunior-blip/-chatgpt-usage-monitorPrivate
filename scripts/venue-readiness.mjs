@@ -91,6 +91,14 @@ export const PREREQUISITE_INSTRUMENTS = {
   // returns counts, prices and publication state and nothing per-visitor. "clicks" is
   // absent on purpose and no other script supplies it.
   "scripts/read-gumroad.mjs": ["sales"],
+  // Registered 2026-08-10 for route_4_the_offer_form_is_the_binding_term, the first
+  // elected route whose prerequisite is not about a door. Every route before it was a
+  // distribution route, so every term this file could report was venue-shaped, and the
+  // vocabulary quietly encoded the premise route 4 abandons: that the offer is fine
+  // and the problem is reaching people. A route about the OFFER had nothing it was
+  // allowed to name. The rungs are the LADDER ids in scripts/product-loop.mjs, which
+  // judge() reports per offer and pulse.yml runs hourly.
+  "scripts/product-loop.mjs": ["promise_conformance", "stranger_reaction", "sells_against", "behaviour"],
 };
 
 export const termsForInstrument = (script) => PREREQUISITE_INSTRUMENTS[script] ?? null;

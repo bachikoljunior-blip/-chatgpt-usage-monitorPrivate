@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T02:17:27.697Z",
+  "fetched_at": "2026-08-10T02:28:16.610Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -40,26 +40,27 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.32
+      "days_unchanged": 0.33
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.32
+      "days_unchanged": 0.33
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
   "route_election": {
-    "elected": "route_3_use_the_reach_already_owned",
+    "elected": "route_4_the_offer_form_is_the_binding_term",
     "aligned": [
-      "point_the_reach_we_own_at_the_thing_we_sell"
+      "recurring_offer_on_the_rail_we_can_list_ourselves"
     ],
     "on_abandoned_route": [
       "high_intent_tool_site",
       "findable_surface_at_scale",
-      "honest_post_where_buyers_gather"
+      "honest_post_where_buyers_gather",
+      "point_the_reach_we_own_at_the_thing_we_sell"
     ],
-    "elected_route_has_no_unrefuted_candidate": true,
-    "elected_route_status": "every candidate serving the elected route (route_3_use_the_reach_already_owned) is refuted. The route is still elected and there is nothing under it to take. This is a route decision owed to the next lap: either give the route an unrefuted candidate, or elect a different route. Do not read the surviving 'elected' label as an instruction to take the refuted candidate anyway."
+    "elected_route_has_no_unrefuted_candidate": false,
+    "elected_route_status": null
   },
   "channels": [
     {
@@ -199,6 +200,67 @@
       "eta_effect_basis": "no comparable estimate recorded"
     },
     {
+      "kind": "zero_base_option",
+      "id": "recurring_offer_on_the_rail_we_can_list_ourselves",
+      "why": "Both external sweeps returned the same shape from different directions: 2026-08-10.a found this audience buying recurring memberships at 540-5,980 JPY a month and zero one-time developer downloads; 2026-08-10.b found conversion happening at and below our reach, in five cases, all high-ticket or recurring. The arithmetic is the point rather than the sentiment: 200,000 JPY a month needs roughly 54 buyers at the current 3,700 JPY one-time price, EVERY month, forever, from a channel whose strongest measured conversion event is 1 in 4,835. At 2,590 JPY a month recurring — the median .a read off the page — it needs 78 subscribers ONCE, and they carry over. The one-time form asks the funnel to do the whole job again every month.",
+      "serves_route": "route_4_the_offer_form_is_the_binding_term",
+      "owner_actions": "0 to list",
+      "days_to_first_yen_estimate": "unmeasured",
+      "estimate_not_measurement": true,
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "refuted": null,
+      "measured_surface": null,
+      "actionable_now": true,
+      "eta_effect_days": null,
+      "recurring_owner_actions_per_month": 1,
+      "estimate_reliability": "discredited_by_siblings",
+      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "eta_effect_basis": "no comparable estimate recorded",
+      "route_alignment": {
+        "serves_route": "route_4_the_offer_form_is_the_binding_term",
+        "elected_route": "route_4_the_offer_form_is_the_binding_term",
+        "status": "elected",
+        "elected_at": "2026-08-10T02:25:00Z",
+        "why": "Held for task 2026-08-10.b, which landed at 02:14Z and asked the one question that decides it: does a channel at or below this reach ever convert to a paying customer, and what were the numbers. The answer is 有 — five cases, the smallest at ~200 subscribers and ~1,000 monthly views against our ~1,200 views a day. So reach is not the blocker, and route 3 does not die of insufficient audience. The handoff's own rule was that if a case exists, WHAT IT SOLD is the candidate for the swap. What it sold, in all five: financial products at 500,000 to 15,000,000 JPY, a YouTube operations retainer at ~5,000,000 JPY a year, business acquisition support, consulting at 1-2,000,000 JPY a month, and a course closed at ~40% off individual consultations reached through LINE. Every one is high-ticket or recurring, and every one converts through a human step. Not one self-serve, one-time, low-price download at any scale in the sweep. Read beside 2026-08-10.a — same audience buys recurring memberships at 540-5,980 JPY a month, FP consultations and apps, and zero developer products — two independent sweeps on two different questions returned the same shape. Our offer is a one-time USD 25 self-serve download: the cheapest, least recurring form in the entire evidence set.",
+        "prerequisite": "AN ARTIFACT SOMEONE WHO DID NOT MAKE IT WOULD PAY FOR. Not reach — .b measured that conversion happens well below what we already hold, so reach is satisfied and is not the blocker. Not a venue, not an account, not a rule: every prerequisite this board has named until now was a door, because every route until now was a distribution route. This one is the offer.",
+        "prerequisite_measured": {
+          "term": "stranger_reaction",
+          "instrument": {
+            "script": "scripts/product-loop.mjs",
+            "how": "The rung free_demo already declares as next in state/product-loop.json. judge() reports it, pulse.yml runs the check hourly, and the round is a single Codex-lane task — so the term is settled by a reader that already runs, not by a lap remembering to look.",
+            "why_the_vocabulary_had_to_be_extended": "scripts/venue-readiness.mjs BINDING_CAUSES is postable, venue_rule, venue_unsettled, account, account_too_new — all five are venue states. A route about the OFFER had no term it was permitted to name, so prerequisiteCheck rejected this election on its first run with 'name it as one of' a list that could not express it. The vocabulary encoded the premise this route abandons. scripts/product-loop.mjs is registered in PREREQUISITE_INSTRUMENTS with its four LADDER rungs, and the venue revenue-path test is skipped as measured_elsewhere rather than passing vacuously on zero rows."
+          },
+          "counts": {
+            "postable": 1,
+            "venue_rule": 0,
+            "venue_unsettled": 1,
+            "account": 0,
+            "account_too_new": 1
+          },
+          "venues_on_the_named_term": null,
+          "language_mismatches": [
+            "r/gamedev"
+          ],
+          "venues_with_a_revenue_path": [
+            "itch.io — Release Announcements",
+            "GameDev.net — Your Announcements"
+          ],
+          "binding_venues_without_a_revenue_path": [],
+          "owner_requests_clearing_the_term": [],
+          "ok": true,
+          "problem": null,
+          "measured_elsewhere": "scripts/product-loop.mjs",
+          "note": "the elected route's prerequisite is \"stranger_reaction\", measured by scripts/product-loop.mjs. The venue revenue-path test below does not apply and was NOT run — it would have passed vacuously on zero rows. The venue rows are still derived and printed above, because a route change does not delete the evidence the previous route was elected on."
+        },
+        "language_mismatches": [
+          "r/gamedev"
+        ],
+        "binding_venues_without_a_revenue_path": [],
+        "owner_requests_clearing_the_prerequisite": [],
+        "elected_but_refuted": false
+      }
+    },
+    {
       "kind": "constraint_recheck",
       "id": "eta_effect_inheritance_via_unblocks",
       "why": "high for ranking quality: it is what lets design and machinery work answer 'how many days' at all, by deriving the answer from what they unblock instead of estimating it.",
@@ -278,10 +340,10 @@
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 60 days at the conservative end (estimate, not measured)",
       "route_alignment": {
         "serves_route": "route_2_unattended_findable_pages",
-        "elected_route": "route_3_use_the_reach_already_owned",
+        "elected_route": "route_4_the_offer_form_is_the_binding_term",
         "status": "on_abandoned_route",
-        "elected_at": "2026-08-09T22:55:00Z",
-        "why": "route_2_unattended_findable_pages: refuted by task .h — Datanyze lost 95.46% of organic traffic with exactly what that route proposes, and Stripe Fee Auditor ran the premise directly for three months to 5 clicks and zero revenue; it was additionally measured to have no starting point here (our ten pages return nothing from a controlled search). route_1_post_where_buyers_gather: not refuted, LEFT — see superseded_route_1.why_it_is_being_left. The two are abandoned for different reasons and the difference matters: route 2 was shown not to work for anyone, route 1 was shown to require a lift we did not have and now do.",
+        "elected_at": "2026-08-10T02:25:00Z",
+        "why": null,
         "prerequisite": null,
         "prerequisite_measured": null,
         "language_mismatches": null,
@@ -313,7 +375,7 @@
         "published_count": 10,
         "pages_found_by_search": 0,
         "verdict": "published_but_not_findable",
-        "measured_at": "2026-08-10T01:34:09.705Z",
+        "measured_at": "2026-08-10T02:17:28.853Z",
         "what_it_settles": "Not a shortage of pages. Ten serve 200 and a search index returned none of them, so page COUNT is not the binding term — the missing step is an inbound path from a surface that is already crawled. Building more pages buys nothing until that step exists.",
         "inbound_surface": {
           "verdict": "no_crawled_surface_found",
@@ -332,10 +394,10 @@
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_2_unattended_findable_pages",
-        "elected_route": "route_3_use_the_reach_already_owned",
+        "elected_route": "route_4_the_offer_form_is_the_binding_term",
         "status": "on_abandoned_route",
-        "elected_at": "2026-08-09T22:55:00Z",
-        "why": "route_2_unattended_findable_pages: refuted by task .h — Datanyze lost 95.46% of organic traffic with exactly what that route proposes, and Stripe Fee Auditor ran the premise directly for three months to 5 clicks and zero revenue; it was additionally measured to have no starting point here (our ten pages return nothing from a controlled search). route_1_post_where_buyers_gather: not refuted, LEFT — see superseded_route_1.why_it_is_being_left. The two are abandoned for different reasons and the difference matters: route 2 was shown not to work for anyone, route 1 was shown to require a lift we did not have and now do.",
+        "elected_at": "2026-08-10T02:25:00Z",
+        "why": null,
         "prerequisite": null,
         "prerequisite_measured": null,
         "language_mismatches": null,
@@ -376,10 +438,10 @@
       "repriced_because": "The candidate was carrying the route adopted at 3555e97 with no test of whether the act it names can be performed. It can not, today: 0 of 3 surveyed venues are postable from a standing start, and neither of the two hard refusals is about standing. Recorded on the candidate rather than in the constraint alone because the constraint is not what a lap picks from.",
       "route_alignment": {
         "serves_route": "route_1_post_where_buyers_gather",
-        "elected_route": "route_3_use_the_reach_already_owned",
+        "elected_route": "route_4_the_offer_form_is_the_binding_term",
         "status": "on_abandoned_route",
-        "elected_at": "2026-08-09T22:55:00Z",
-        "why": "route_2_unattended_findable_pages: refuted by task .h — Datanyze lost 95.46% of organic traffic with exactly what that route proposes, and Stripe Fee Auditor ran the premise directly for three months to 5 clicks and zero revenue; it was additionally measured to have no starting point here (our ten pages return nothing from a controlled search). route_1_post_where_buyers_gather: not refuted, LEFT — see superseded_route_1.why_it_is_being_left. The two are abandoned for different reasons and the difference matters: route 2 was shown not to work for anyone, route 1 was shown to require a lift we did not have and now do.",
+        "elected_at": "2026-08-10T02:25:00Z",
+        "why": null,
         "prerequisite": null,
         "prerequisite_measured": null,
         "language_mismatches": null,
@@ -504,51 +566,16 @@
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_3_use_the_reach_already_owned",
-        "elected_route": "route_3_use_the_reach_already_owned",
-        "status": "elected",
-        "elected_at": "2026-08-09T22:55:00Z",
-        "why": "Route 1's own justification names the thing that makes a first post work: 'every near-success in six surveys had a third party with reach point at the thing, or several venues on the same day' — and all_options_refuted.the_term_they_all_failed_on adds the third form, 'an audience that already existed'. That is a LIFT, and the route was elected on cases that had one. Two of the three were already measured absent here: no third party has ever pointed at anything of ours, and breadth was measured 0 postable across 6 venues in two batches and abandoned at 15:20Z. The third was never measured — because state/eta.json asserted the YouTube figures were 'not readable here'. Measured this lap: 1,208.75 views/day and 394.75 engaged views/day over 2026-08-04..08-07, unattended, hourly, zero owner actions. The loop has been trying to BUY reach at venue doors that each cost an owner action while owning reach it never counted.",
-        "prerequisite": "REACH THAT WE ALREADY HOLD, reported as a rate rather than as a state. It is satisfied today: 1,208.75 views/day and 394.75 engaged views/day over a four-day window, unattended. Unlike every prerequisite before it (standing, account, venue_rule) this one costs zero owner actions and is already met, so the route's blocker is no longer permission — it is whether the reach converts, which is a countable experiment rather than a queue.",
-        "prerequisite_measured": {
-          "term": "reach",
-          "instrument": {
-            "script": "scripts/measure-reach.mjs",
-            "function": "deriveReach",
-            "state_file": "state/youtube-scan.json",
-            "path": "record.views_by_day and record.totals",
-            "vocabulary": [
-              "reach"
-            ],
-            "note": "Registered in scripts/venue-readiness.mjs PREREQUISITE_INSTRUMENTS, which is what makes a non-venue term admissible at all. Until this lap prerequisiteCheck hard-failed every term outside the venue vocabulary, so a non-venue route was unelectable — not by argument but by the guard meant to keep elections honest. The guarantee kept is the one that matters: the term must be something a NAMED machine reports, so it can turn out to be wrong. This one goes red when the snapshot is stale past 7 days or the day series stops yielding a rate."
-          },
-          "counts": {
-            "postable": 1,
-            "venue_rule": 0,
-            "venue_unsettled": 1,
-            "account": 0,
-            "account_too_new": 1
-          },
-          "venues_on_the_named_term": null,
-          "language_mismatches": [
-            "r/gamedev"
-          ],
-          "venues_with_a_revenue_path": [
-            "itch.io — Release Announcements",
-            "GameDev.net — Your Announcements"
-          ],
-          "binding_venues_without_a_revenue_path": [],
-          "owner_requests_clearing_the_term": [],
-          "ok": true,
-          "problem": null,
-          "measured_elsewhere": "scripts/measure-reach.mjs",
-          "note": "the elected route's prerequisite is \"reach\", measured by scripts/measure-reach.mjs. The venue revenue-path test below does not apply and was NOT run — it would have passed vacuously on zero rows. The venue rows are still derived and printed above, because a route change does not delete the evidence the previous route was elected on."
-        },
-        "language_mismatches": [
-          "r/gamedev"
-        ],
-        "binding_venues_without_a_revenue_path": [],
-        "owner_requests_clearing_the_prerequisite": [],
-        "elected_but_refuted": true
+        "elected_route": "route_4_the_offer_form_is_the_binding_term",
+        "status": "on_abandoned_route",
+        "elected_at": "2026-08-10T02:25:00Z",
+        "why": null,
+        "prerequisite": null,
+        "prerequisite_measured": null,
+        "language_mismatches": null,
+        "binding_venues_without_a_revenue_path": null,
+        "owner_requests_clearing_the_prerequisite": null,
+        "elected_but_refuted": false
       }
     },
     {

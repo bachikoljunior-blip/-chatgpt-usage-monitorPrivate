@@ -697,6 +697,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T02:21:22.843Z",
+      "candidate": "route_4_the_offer_form_is_the_binding_term",
+      "kind": "route_change",
+      "mechanism": "Task 2026-08-10.b landed at 02:14Z and answered the question the route decision was held for. Cases DO convert at or below our reach: five, minimum ~200 subscribers and ~1,000 monthly views against our ~1,200 views/day. The handoff's own rule was 'if a case exists, what it sold is itself the candidate for the swap'. What it sold, in all five, was a high-ticket or recurring service converted through a consultation step — financial products, ops retainers, consulting, a course sold at ~40 percent close off individual consultations. Not one self-serve one-time low-price download at any scale. Read with 2026-08-10.a, which found that audience buying recurring memberships at 540-5,980 JPY per month and zero developer products, the two independent sweeps returned the same shape on different questions. Meanwhile all eight zerobase options across all three routes are refuted, and the term none of the three routes ever varied is the OFFER's form: routes 1, 2 and 3 each assumed the thing being sold was fine and distribution was the problem. That premise is what this abandons. The enabler measured earlier in this same session: creating a product on the selling rail is now observed end to end at zero owner actions, so a recurring offer can be listed without an owner request, which RUNBOOK 6 gate 3 currently forbids filing.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

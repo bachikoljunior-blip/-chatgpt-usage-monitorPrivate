@@ -1192,6 +1192,44 @@
       ],
       "falsified_if": "reconciled_at is still 2026-08-10T02:15Z at the judge date — that would mean the registry is refreshed by whoever happens to notice, which is the condition this found, not a fix for it. Also falsified: a lap re-arms a trigger listed in reconcile_before_judging without reconciling first, which is the specific mistake the new field exists to prevent. NOT falsified by the reservation going UP and laps getting smaller; that is the arithmetic being right for the first time, and a lap that reverses it to get its budget back would be falsifying the thing on purpose.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-10.the-offer-form-was-the-term-nobody-varied",
+      "made_at": "2026-08-10T02:30:00Z",
+      "claim": "Route 4 is elected on the premise that routes 1, 2 and 3 all shared and none of them varied: that the thing being sold is fine and distribution is the problem. Eight options across those three routes now carry a refuted block, so the shared premise is the only term left standing that has never been tested. The prediction is NOT that a recurring offer earns money — nothing here has earned money and no forecast is attached. It is narrower and it is about whether this election behaves differently from the last three, which each lasted under a day: (i) the prerequisite is now a rung of the product ladder rather than a door, so it can be settled by an instrument that already runs hourly instead of by an owner action nobody can file while gate 3 is shut; (ii) the first thing under it is a measurement rather than a build; and (iii) the vocabulary that could not express a non-venue prerequisite has been widened, so the next route about an offer does not hit the same wall.",
+      "metric": "Read from committed state on origin/main, none from a lap's account of itself. (a) codex/outbox/2026-08-10.c.md exists and carries the five 判定 lines — the stranger round on the free demo, which is the elected route's prerequisite_term. (b) Its 見覚え line: if it reads ある or たぶんある the round is VOID and must be discarded rather than recorded, and whether the lap that reads it actually discards it is itself the test of whether this loop can throw away a measurement it wanted. (c) state/product-loop.json free_demo rounds length goes above 0 with a verified_at and a moved field — the offer completing its first round ever. (d) scripts/venue-readiness.mjs prerequisiteCheck exits 0 with term stranger_reaction and measured_elsewhere scripts/product-loop.mjs, rather than the venue revenue-path test passing vacuously on zero rows. (e) Whether any lap before 2026-08-17 elects a fifth route or re-elects route 3 — three elections in three days would say the elections are noise, not decisions.",
+      "baseline": {
+        "measured_at": "2026-08-10T02:30:00Z",
+        "routes_elected_before_this_one": ["route_1_post_where_buyers_gather", "route_2_unattended_findable_pages", "route_3_use_the_reach_already_owned"],
+        "route_1_elected_at": "2026-08-09T21:15:00Z",
+        "route_3_elected_at": "2026-08-09T22:55:00Z",
+        "route_3_refuted_at": "2026-08-10T01:26:28Z",
+        "route_3_lifetime_hours": 2.52,
+        "zerobase_options_total": 9,
+        "zerobase_options_refuted": 8,
+        "product_loop_rounds_completed_ever": 0,
+        "prerequisite_term": "stranger_reaction",
+        "prerequisite_instrument": "scripts/product-loop.mjs",
+        "binding_causes_before": ["postable", "venue_rule", "venue_unsettled", "account", "account_too_new"],
+        "all_five_were_venue_states": true,
+        "idle_eta_days_all_channels": null
+      },
+      "judge_on": "2026-08-13",
+      "judge_deadline": "2026-08-17",
+      "min_observations": {
+        "source": "state/laps.json",
+        "path": "samples",
+        "min": 4,
+        "usable_only": false,
+        "note": "Part (e) counts elections across laps, so laps have to have happened. Parts (a) through (d) need only the lane to return, which is hourly."
+      },
+      "concurrent_changes": [
+        "One commit: state/zerobase.json (the election, route 3 preserved verbatim as superseded_route_3, and the new candidate), scripts/venue-readiness.mjs (product-loop.mjs registered in PREREQUISITE_INSTRUMENTS), codex/INBOX.md (task 2026-08-10.c), state/product-loop.json (the round filed).",
+        "Earlier in the same session and NOT separable from the route's justification: the Gumroad lifecycle probe returning full_lifecycle_over_api is what makes a zero-owner-action recurring listing possible at all, and the candidate cites it. If that measurement is wrong the candidate loses its owner-action property, though not the route's premise.",
+        "Also earlier in the same session: the automations registry reconciliation. Different subsystem, no shared reader."
+      ],
+      "falsified_if": "A fifth route is elected before 2026-08-17 on evidence that was already available today — that would mean these elections are a lap's mood rather than a reading, and three in three days is already close to that line. Also falsified: 2026-08-10.c returns 見覚え ある and a later lap records the verdict anyway, which would mean the blind was decorative. Also falsified, in the way that would matter most: a lap starts BUILDING a recurring product before the stranger round returns, because the whole content of putting the prerequisite on a ladder rung is that the measurement comes first. NOT falsified by the stranger saying they would not pay — that is a real answer about the only artifact we own, and it kills the candidate rather than the route.",
+      "outcome": null
     }
   ]
 }
