@@ -2,8 +2,8 @@
   "schema_version": 1,
   "status": "ok",
   "source": "codex-app-server",
-  "fetched_at": "2026-08-10T15:17:02.232Z",
-  "fresh_until": "2026-08-10T17:17:02.232Z",
+  "fetched_at": "2026-08-10T15:26:10.966Z",
+  "fresh_until": "2026-08-10T17:26:10.966Z",
   "plan_type": "pro",
   "quota_windows": [
     {
