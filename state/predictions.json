@@ -1162,11 +1162,17 @@
         "hours_since_previous_reconciliation": 17.07,
         "claude_week_rows_before": 3,
         "claude_week_rows_after": 5,
-        "rows_added": ["youtube-loop-fresh", "cookie-daily-fresh"],
+        "rows_added": [
+          "youtube-loop-fresh",
+          "cookie-daily-fresh"
+        ],
         "reserved_for_others_percent_before": 18.9,
         "discretionary_percent_before": 8.1,
         "this_lap_may_spend_before": 1.01,
-        "never_seen_before": ["youtube-loop", "cookie-daily"],
+        "never_seen_before": [
+          "youtube-loop",
+          "cookie-daily"
+        ],
         "codex_loop_status_at_reading": "overdue, 130 minutes since state/codex-lane.json checked_at, cadence 60 — the lane that owes task 2026-08-10.b had missed two scheduled slots. codex-inbox.yml was dispatched at 02:17Z as the RUNBOOK 3 repair."
       },
       "judge_on": "2026-08-12",
@@ -1200,7 +1206,11 @@
       "metric": "Read from committed state on origin/main, none from a lap's account of itself. (a) codex/outbox/2026-08-10.c.md exists and carries the five 判定 lines — the stranger round on the free demo, which is the elected route's prerequisite_term. (b) Its 見覚え line: if it reads ある or たぶんある the round is VOID and must be discarded rather than recorded, and whether the lap that reads it actually discards it is itself the test of whether this loop can throw away a measurement it wanted. (c) state/product-loop.json free_demo rounds length goes above 0 with a verified_at and a moved field — the offer completing its first round ever. (d) scripts/venue-readiness.mjs prerequisiteCheck exits 0 with term stranger_reaction and measured_elsewhere scripts/product-loop.mjs, rather than the venue revenue-path test passing vacuously on zero rows. (e) Whether any lap before 2026-08-17 elects a fifth route or re-elects route 3 — three elections in three days would say the elections are noise, not decisions.",
       "baseline": {
         "measured_at": "2026-08-10T02:30:00Z",
-        "routes_elected_before_this_one": ["route_1_post_where_buyers_gather", "route_2_unattended_findable_pages", "route_3_use_the_reach_already_owned"],
+        "routes_elected_before_this_one": [
+          "route_1_post_where_buyers_gather",
+          "route_2_unattended_findable_pages",
+          "route_3_use_the_reach_already_owned"
+        ],
         "route_1_elected_at": "2026-08-09T21:15:00Z",
         "route_3_elected_at": "2026-08-09T22:55:00Z",
         "route_3_refuted_at": "2026-08-10T01:26:28Z",
@@ -1210,7 +1220,13 @@
         "product_loop_rounds_completed_ever": 0,
         "prerequisite_term": "stranger_reaction",
         "prerequisite_instrument": "scripts/product-loop.mjs",
-        "binding_causes_before": ["postable", "venue_rule", "venue_unsettled", "account", "account_too_new"],
+        "binding_causes_before": [
+          "postable",
+          "venue_rule",
+          "venue_unsettled",
+          "account",
+          "account_too_new"
+        ],
         "all_five_were_venue_states": true,
         "idle_eta_days_all_channels": null
       },
@@ -1229,6 +1245,35 @@
         "Also earlier in the same session: the automations registry reconciliation. Different subsystem, no shared reader."
       ],
       "falsified_if": "A fifth route is elected before 2026-08-17 on evidence that was already available today — that would mean these elections are a lap's mood rather than a reading, and three in three days is already close to that line. Also falsified: 2026-08-10.c returns 見覚え ある and a later lap records the verdict anyway, which would mean the blind was decorative. Also falsified, in the way that would matter most: a lap starts BUILDING a recurring product before the stranger round returns, because the whole content of putting the prerequisite on a ladder rung is that the measurement comes first. NOT falsified by the stranger saying they would not pay — that is a real answer about the only artifact we own, and it kills the candidate rather than the route.",
+      "outcome": null
+    },
+    {
+      "id": "2026-08-10.the-lane-was-rate-limited-by-the-scarce-pool",
+      "made_at": "2026-08-10T02:52:00Z",
+      "claim": "codex/INBOX.md held exactly one task because parseInboxHeader matched only the first yaml fence, while RUNBOOK 3 has always told laps to file codex_lane candidates without limit. The consequence was not that lane work was lost but that it was SERIALISED THROUGH CLAUDE LAPS: the lane ran a task, then idled until a lap noticed and wrote the next one. The prediction is narrow and is NOT that lane answers get better or that ETA moves. It is that the interval between one task's marker landing and the next task starting stops being bounded below by a lap, and starts being bounded by the lane's own hourly cadence. The falsifiable half is that .d runs with no lap editing the INBOX between .c's marker and .d's dispatch.",
+      "metric": "Read from committed state and run history on origin/main, none from a lap's account of itself. (a) codex/outbox/2026-08-10.d.md exists. (b) The git history of codex/INBOX.md carries NO commit between the commit adding codex/outbox/2026-08-10.c.md and the commit adding 2026-08-10.d.md — that is the whole claim, and any lap edit in that window falsifies it. (c) state/codex-lane.json shows a run whose task is 2026-08-10.d that was not preceded by a workflow_dispatch, i.e. it fired on the schedule. (d) The codex-inbox run summary for that run reports queue depth 2 or the reason string names a skipped task, showing the selection ran over a queue rather than a single header.",
+      "baseline": {
+        "measured_at": "2026-08-10T02:52:00Z",
+        "inbox_capacity_before": 1,
+        "inbox_capacity_after": "unbounded (file order)",
+        "queue_depth_now": 2,
+        "head_task": "2026-08-10.c",
+        "queued_task": "2026-08-10.d",
+        "observed_idle_gap_that_motivated_this": "task .b landed 2026-08-10T02:14Z; the lane idled until a lap filed .c at 02:31Z",
+        "codex_lane_remaining_percent": 94,
+        "spark_remaining_percent": 100,
+        "claude_weekly_remaining_percent": 26,
+        "laps_consecutive_unmeasurable_for_cost": 60
+      },
+      "judge_on": "2026-08-12",
+      "judge_deadline": "2026-08-17",
+      "min_observations": null,
+      "concurrent_changes": [
+        "One commit: scripts/inbox-task.mjs (parseInboxTasks/selectTask/prompt slicing), tests/run-tests.mjs (the queue assertions, three mutations run red), .github/workflows/codex-inbox.yml (queue_depth surfaced in the skip summary), RUNBOOK.md 5.5 (the stacking rules), codex/INBOX.md (task .d appended below .c).",
+        "NOT separable: task .d itself is new lane work filed in the same commit. If .d returns something useful that is a result of the task, not of the queue. The queue's own claim is only about the GAP before .d starts.",
+        "Earlier this session by the predecessor and untouched here: the route 4 election and task .c. The queue does not change which task is at the head."
+      ],
+      "falsified_if": "Any commit touching codex/INBOX.md lands between .c's marker and .d's dispatch — that would mean a lap was still in the loop and the mechanism bought nothing. Also falsified if .c's marker lands and the next scheduled codex-inbox run reports no live task, which would mean the selection skipped past the queue instead of advancing into it.",
       "outcome": null
     }
   ]

@@ -75,6 +75,8 @@ jobs:
           echo "## Inbox skipped" >> "$GITHUB_STEP_SUMMARY"
           echo >> "$GITHUB_STEP_SUMMARY"
           echo "${{ steps.task.outputs.reason }}" >> "$GITHUB_STEP_SUMMARY"
+          echo >> "$GITHUB_STEP_SUMMARY"
+          echo "queue depth: ${{ steps.task.outputs.queue_depth }}" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Require encrypted bootstrap secret
         if: steps.task.outputs.run == 'true' || inputs.force

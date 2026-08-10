@@ -713,6 +713,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T02:43:18.246Z",
+      "candidate": "codex_lane_queue",
+      "kind": "prerequisite",
+      "mechanism": "The elected route route_4's prerequisite_term is stranger_reaction, a lane measurement, and the ladder rungs above it (promise_conformance, sells_against) are lane measurements too. codex/INBOX.md holds exactly ONE task: parseInboxHeader matches only the first yaml fence and decide returns a single verdict, so the lane executes one task and then IDLES until a Claude lap files the next. That makes the scarce pool (Claude 26% weekly) the rate limiter of the abundant one (codex 94%, spark 100%) - the exact inversion RUNBOOK 3 splits its two selection lists to prevent. Measured today: .b landed 02:14Z, the lane idled until a lap filed .c at 02:31Z, and codex-loop sat overdue 130 minutes before that. With a queue the lane drains itself on its hourly cadence, so the remaining rungs cost lane cycles instead of Claude laps. after-idle stays inf because no channel has a finite rate: this changes how fast the elected route's rungs can be MEASURED, not revenue, which is why it is filed as prerequisite and not direct.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

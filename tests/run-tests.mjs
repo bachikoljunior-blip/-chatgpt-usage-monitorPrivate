@@ -20,6 +20,7 @@ import { buildLaneRecord, LANE_STATE_PATH } from "../scripts/record-lane-run.mjs
 import { applyRepricings, applyRouteElection } from "../scripts/repricing.mjs";
 import {
   ATTACHMENTS, buildPrompt, decide, markerEarned, parseInboxHeader,
+  parseInboxTasks, selectTask,
 } from "../scripts/inbox-task.mjs";
 import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/revenue-rate.mjs";
 import { decideVerdict, KINDS } from "../scripts/gate-verdict.mjs";
@@ -724,6 +725,78 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(
     Boolean(parseInboxHeader("```yaml\ntask_id: x\n```").error),
     "a header missing valid_until and done_marker parsed as valid",
+  );
+
+  // The queue. RUNBOOK 3 says codex_lane candidates are filed without limit;
+  // until 2026-08-10 the mechanism held exactly one, so the lane ran a task and
+  // then idled until a Claude lap wrote the next — the scarce pool rate-limiting
+  // the abundant one. These assertions are what makes the queue real rather
+  // than announced.
+  const q = (...ids) =>
+    "preamble\n" +
+    ids
+      .map(
+        ([id, until]) =>
+          "```yaml\n" +
+          `task_id: ${id}\nvalid_until: ${until}\n` +
+          `done_marker: codex/outbox/${id}.md\ndone_signal: "## x"\n` +
+          "```\n" +
+          `body of ${id}\n`,
+      )
+      .join("");
+
+  const two = parseInboxTasks(q(["t.a", "2026-08-17"], ["t.b", "2026-08-17"]));
+  assert(two.tasks.length === 2, `a two-task INBOX parsed as ${two.tasks.length}`);
+  assert(
+    selectTask(two, { today: "2026-08-10", markerExists: () => false }).task.task_id === "t.a",
+    "the queue did not run in file order",
+  );
+  // The one that matters: a finished head must not block the tail, or the queue
+  // is a single slot with extra syntax.
+  const afterA = selectTask(two, {
+    today: "2026-08-10",
+    markerExists: (m) => m === "codex/outbox/t.a.md",
+  });
+  assert(afterA.task.task_id === "t.b", "a marked head did not hand off to the next task");
+  assert(afterA.reason.includes("skipped 1"), "the skip was not reported");
+  assert(
+    selectTask(parseInboxTasks(q(["t.a", "2026-08-01"], ["t.b", "2026-08-17"])), {
+      today: "2026-08-10",
+      markerExists: () => false,
+    }).task.task_id === "t.b",
+    "an expired head did not hand off to the next task",
+  );
+  assert(
+    !selectTask(two, { today: "2026-08-10", markerExists: () => true }).run,
+    "a fully drained queue still reported work",
+  );
+
+  // The failure that would cost a real measurement: handing the model the whole
+  // queue lets it answer the wrong task, and the in-flight one is silently lost.
+  const selectedBody = two.preamble + two.tasks[0].section;
+  const prompt2 = buildPrompt("WHOLE FILE", [], selectedBody);
+  assert(prompt2.includes("body of t.a"), "the selected task was missing from its prompt");
+  assert(!prompt2.includes("body of t.b"), "a queued task leaked into the live task's prompt");
+  assert(!prompt2.includes("WHOLE FILE"), "the whole INBOX was sent despite a selected task");
+
+  // A yaml block without a task_id is an example, not a task. The INBOX is
+  // written by hand and pastes samples.
+  assert(
+    parseInboxTasks("```yaml\njust: an example\n```\n" + q(["t.a", "2026-08-17"])).tasks.length === 1,
+    "a yaml example block was counted as a queued task",
+  );
+
+  // The live file, against the live outbox: whichever task is actually next
+  // must be the one the transport would run.
+  const liveQueue = parseInboxTasks(inbox);
+  assert(!liveQueue.error, "the live INBOX does not parse as a queue");
+  assert(
+    liveQueue.tasks.every((t) => !t.error),
+    "a queued task in the live INBOX is missing a required field",
+  );
+  assert(
+    liveQueue.tasks.length === new Set(liveQueue.tasks.map((t) => t.task_id)).size,
+    "two queued tasks share a task_id, so one marker would suppress both",
   );
 
   // The old INBOX told ChatGPT to push and to skip the work if it could not.
