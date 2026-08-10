@@ -938,6 +938,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T10:15:51.571Z",
+      "candidate": "free_demo.blind_question_false_positive",
+      "kind": "route_change",
+      "mechanism": "Abandon the route of spending lane slots on rounds that void on a question the reviewer cannot answer correctly. .r came back 見覚え ある with the stated cause 'この会話にある記録' — the lane is stateless per run, so the only 'before' it has is reading the attachment this task handed it. The question as worded makes every careful reader of the attachment answer ある. rounds_engaged has been 0 for seven rounds. Reword the blind question to exclude reading the attachment itself while keeping authorship and prior-sighting fully catchable, and enforce the wording on outgoing tasks.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

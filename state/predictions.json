@@ -1646,7 +1646,16 @@
         "compute-eta.mjs now reads state/gumroad-recurring.json onto the candidate row",
         ".github/workflows/gumroad-monitor.yml gained a probe_recurring dispatch input"
       ],
-      "outcome": null
+      "outcome": {
+        "judged_at": "2026-08-10T10:32:00Z",
+        "judged_early_because": "judge_on was 2026-08-12 and the evidence arrived at 2026-08-10T10:05Z (commit ae75070). The date exists so a prediction is not left open, not to forbid reading an answer that has already come back.",
+        "verdict": "UNJUDGED",
+        "and_that_is_this_prediction_own_rule_not_a_dodge": "judge_by clause (a), written before the answer existed: 「codex/outbox/2026-08-10.r.md exists and its 見覚え line reads ない — if it reads ある the round is VOID and must be discarded rather than recorded, and this prediction is unjudged rather than wrong.」 It reads ある. The clause was written to stop a lap doing exactly what is tempting here, which is to read a void round for the answer it wanted.",
+        "what_was_actually_observed": "払わない, as predicted. But the prediction did not turn on the verdict — clause (c) named the REASON as the deciding term, and the reason DID move off the opening onto branching, operations and visible accumulation, while 一番弱いところ moved from tick() to a new 25-second gap between the first and second producer. That pattern is what the prediction would have called the change doing its work. It cannot be claimed, because it comes from a round that is void.",
+        "so_the_honest_state": "The 15-to-4 change is still unmeasured. What the round produced instead is a defect in the instrument: the blind question is answerable ある by any reviewer that reads the attachment carefully, so the gate voids careful readers and passes careless ones. That finding is worth more than the comparison it cost, and it is the reason the comparison has to be re-run rather than abandoned.",
+        "concurrent_changes_note": "The registered concurrent_changes (the recurring probe, the eta wiring, the dispatch input) touch nothing the reviewer saw. The one that matters is the one this lap ADDED and must declare: the re-run will carry a reworded 見覚え question. The five content questions stay verbatim from .k, so the comparison this prediction is about is preserved; the wording change is to the validity gate, not to the content.",
+        "and_the_reviewer_is_unknown_too": "Found after the first draft of this outcome was written. The .r answer has no ledger run — commit ae75070 carries the owner's identity, not the bot's — so which model reviewed is unestablished. The prediction's own design (SAME reviewer as .k, one variable) therefore did not hold either: the reviewer is not known to be the same. Two independent reasons this round cannot settle it, and only one of them was visible from the answer text."
+      }
     },
     {
       "id": "2026-08-10.absence-was-reported-without-its-reach",
@@ -1679,7 +1688,8 @@
         "state/automations.json reconciled against a complete list_triggers enumeration in the same lap, which is what moved both rows to ok. The status split and the reconciliation are separable: the split is visible in the 09:41Z run, taken BEFORE the reconciliation was pushed, where both rows read mark_stale rather than overdue.",
         "youtube-loop cadence corrected 60 -> 360 in the same commit. It changes the reservation arithmetic, not the status logic.",
         "scripts/record-lane-run.mjs DURABLE_KEYS gained derived_artifacts, and state/codex-lane.json gained the row — unrelated path, same push."
-      ]
+      ],
+      "outcome": null
     },
     {
       "id": "2026-08-10.the-lane-had-a-browser-the-whole-time",
@@ -1694,7 +1704,25 @@
         "state/codex-lane.json derived_artifacts recorded in the same lap, which is what let .r and .s pass lane-authorship rule 2. It changes whether the task may run, not what it measures.",
         "The heartbeat detector change in the same push. Unrelated path.",
         "assets/free-demo/index.html was NOT touched this lap, deliberately: .r is in flight and its prediction names an edit to that file as its own falsifier."
-      ]
+      ],
+      "outcome": null
+    },
+    {
+      "id": "2026-08-10.the-blind-question-had-no-true-answer",
+      "made_at": "2026-08-10T10:45:00Z",
+      "claim": "Round 7 (.r) voided on 見覚え ある. The reviewer named 「この会話にある記録」 as the cause and declined authorship. A lane run starts with no memory, so the only earlier moment it has is inside the run, where the task itself supplies the file via attach: — under that meaning of before, ある is the CORRECT answer for any reviewer that reads carefully, and the gate voids careful reviewers while passing careless ones. The question was narrowed this lap to exclude reading the supplied text, with roundRecognised() untouched and authorship and prior-sighting still asked. PREDICTION: the re-run (.t) comes back 見覚え ない and becomes the first round this offer has ever counted. WHAT WOULD REFUTE IT: .t comes back ある anyway. That would mean the wording was not the binding term and the recognition is real — most likely because the account default, which wrote this file, is what actually ran. The wording change would then have bought nothing, and the ledger, not the question, is the thing to fix.",
+      "metric": "codex/outbox/2026-08-10.t.md 見覚え line, and whether state/product-loop.json free_demo rounds (not void_rounds) gains a row",
+      "baseline_at_registration": "7 rounds attempted on free_demo, 4 void (rounds 1, 2, 3, 7), rounds_engaged 0. Round 7 is the first to void on ある from a task whose requested reviewer was a non-author.",
+      "judge_on": "2026-08-13",
+      "judge_deadline": "2026-08-17",
+      "judge_by": "Read from committed state on origin/main. (a) codex/outbox/2026-08-10.t.md exists. (b) Its 見覚え line. (c) WHETHER THE LEDGER HAS A RUN FOR IT — state/codex-lane.json runs[] carrying task_id 2026-08-10.t. If the answer arrives the way .n, .o and .r did, under the owner's identity with no ledger entry, then the reviewer is unknown again and this prediction is UNJUDGED rather than wrong, for the same reason the dead-opening one was: ある from the author is ordinary and ある from a non-author is the finding, and nothing in the text separates them. (d) rounds_engaged must NOT be moved by a text answer however confident — that bar is about what the reviewer RAN.",
+      "concurrent_changes": [
+        "the live task .s had the same rewording applied before it ran (it was queued and unstarted)",
+        "blindQuestionIsAnswerable() added to scripts/product-loop.mjs and asserted over live in-scope tasks in tests/run-tests.mjs",
+        "state/codex-lane.json gained .r under answers_with_no_ledger_run",
+        "rung 1 promise conformance was completed on idle_clicker_kit in the same session — a different offer, and it touched no file the .t reviewer sees"
+      ],
+      "outcome": null
     }
   ]
 }

@@ -354,6 +354,60 @@ export function inBlindScope(section) {
   return BLIND_SCOPED_KINDS.includes(produces);
 }
 
+/**
+ * Can the blind question be answered honestly?
+ *
+ * blindLeaks() protects the round from the TASK telling the reviewer too much.
+ * This protects it from the question having no true answer.
+ *
+ * 2026-08-10, round 7 (codex/outbox/2026-08-10.r.md) came back 見覚え: ある, from
+ * spark — a NON-author, reading code, the exact pairing that returned ない twice
+ * (.k and .l). The authorship explanation this file settled on does not cover it.
+ * The reviewer's own stated cause was not authorship, which it explicitly
+ * declined: it was 「この会話にある記録」. The lane starts every run with no memory
+ * (codex/INBOX.md preamble), so the only earlier moment it has is earlier in the
+ * same context — where the task handed it the file via `attach:`. Under the only
+ * meaning of "before" available to the reviewer, reading the attachment IS having
+ * seen it before, and answering ある is CORRECT.
+ *
+ * So the gate voided its most careful reviewer for being careful. That is the
+ * defect class this file already recorded once, when the engagement bar could not
+ * be cleared by a text lane however good the answer was: unreachable by
+ * construction, not by wording — except here it was by wording, and wording is
+ * cheap to fix.
+ *
+ * The fix is a narrowing of the QUESTION, never of the RULE. roundRecognised()
+ * still voids on ある, and the question still asks about authorship and about
+ * prior sightings. All that is excluded is the one sighting every reviewer
+ * necessarily has. A task that asks the old way is refused before it is sent,
+ * because the alternative is paying a lane slot to discover it again.
+ *
+ * @param {string} text one task section from codex/INBOX.md
+ * @returns {string[]} reasons the question cannot be answered honestly; empty is fine
+ */
+export function blindQuestionIsAnswerable(text) {
+  const s = String(text ?? "");
+  if (!/##\s*見覚え/.test(s)) return [];
+  const problems = [];
+  // The exclusion has to be present in some form. Matching on meaning is not
+  // available, so this matches the shape: something that says "other than what
+  // you were just given / just read".
+  const excludes = /(渡された|渡した|添付|この本文|いま読んだ|今読んだ)[^\n]{0,20}(以外|除いて|を除く)/.test(s);
+  if (!excludes) {
+    problems.push(
+      "the 見覚え question does not exclude reading the attachment this task supplies, so a careful reviewer must answer ある and the round voids for a sighting every reviewer has",
+    );
+  }
+  // And it has to say so, not merely imply it, or the reviewer is left to guess
+  // which reading of "before" was meant — which is what produced round 7.
+  if (!/理由になりません|根拠になりません/.test(s)) {
+    problems.push(
+      "the 見覚え question never states that reading the supplied text is not a reason for ある, leaving the reviewer to pick a meaning of before",
+    );
+  }
+  return problems;
+}
+
 export function blindLeaks(text) {
   const s = String(text ?? "");
   // The owner's account name is INSIDE the artifact's own URL

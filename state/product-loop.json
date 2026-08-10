@@ -402,6 +402,28 @@
           },
           "what_must_not_happen": "Do not cite round 3's 払わない or its stated reason as a stranger reaction, and do not count it toward rounds or rounds_engaged. Three rounds have now been run on this artifact and the register still correctly reads rounds=1 (engaged 0) — the one kept round being the weakest of the three. That is uncomfortable and it is the honest state.",
           "do_not_retry_a_fourth_time_unchanged": "The prediction said explicitly that a second recognised round means recording the more expensive world rather than retrying. Filing 2026-08-10.i as the same blind round with more emphatic wording is the move to avoid: two leak-free-ish attempts have now returned recognised, and a third would buy another void round and another lane slot."
+        },
+        {
+          "round": 7,
+          "attempted_at": "2026-08-10T10:05:00Z",
+          "recorded_at": "2026-08-10T10:30:00Z",
+          "task_id": "2026-08-10.r",
+          "source": "codex/outbox/2026-08-10.r.md",
+          "answer_commit": "ae75070726dbec7b11555881c8a8f0963dd09f82",
+          "verdict_DISCARDED": "払わない",
+          "recognised": "ある",
+          "recognised_verbatim": "ある。今回の評価より前に、同じ公開ページのタイトルとHTML冒頭を確認した記録がこの会話にあるためです。自分でこのファイルを書いたかどうかは未確認です。",
+          "why_void": "roundRecognised() is on the ANSWER, not the cause, and it said ある. The rule is not being bent here; it is being obeyed against a round whose content was the most useful this offer has produced.",
+          "reviewer_pairing": {
+            "reviewer_model_key": null,
+            "author_model_key": "account_default",
+            "how_this_was_established": "IT WAS NOT. codex/INBOX.md task 2026-08-10.r requests model: spark, and the request is all there is: the answer arrived as commit ae75070 under the owner's own identity with no ledger run, so state/codex-lane.json cannot say what ran. Recorded as null rather than as spark, because a header is a request and the ledger is the record — the distinction state/codex-lane.json answers_with_no_ledger_run exists to hold."
+          },
+          "the_row_the_causal_table_did_not_predict": "WITHDRAWN before it was pushed. The first draft of this entry said .r was non-author + code-read → ある and therefore a counterexample to the authorship explanation. That reads the INBOX header as the pairing. With the reviewer unknown, the answer fits BOTH cells: author + code-read → ある is what the table already predicts, and non-author + code-read → ある would break it. The evidence does not choose, so neither does this record.",
+          "what_the_reviewer_said_the_cause_was": "It named 「この会話にある記録」 and explicitly declined authorship (自分でこのファイルを書いたかどうかは未確認です). That is the reviewer's self-report about its own identity, from a run whose identity is unestablished — it is evidence, not a settlement. Kept because it is the observation that raised the wording question at all.",
+          "so_the_question_is_the_defect_not_the_reviewer": "STATED AS A HYPOTHESIS, NOT A FINDING. 「このゲームを以前に見たことがありますか」 has no true answer other than ある for a stateless reviewer that reads the attachment before answering, because the only prior moment it has is inside this run. That is true of the question independently of what ran, which is why the wording was narrowed this lap. What is NOT established is that the wording caused round 7: if the author ran it, ある needed no wording defect to explain it. The narrowing is cheap and loses nothing; the explanation is still open.",
+          "what_it_nevertheless_showed": "Recorded as observation, NOT as a counted verdict. The reasons given for 払わない are no longer about the opening: they are branching choices, operations beyond tap/exchange, and visible accumulation. The 一番弱いところ moved from tick()'s clamp to the gap between the FIRST and SECOND producer — 25 seconds with nothing happening, at generator cost ceil(4 × 1.15) = 5. So the dead stretch may have moved rather than closed. This cannot be claimed from a void round; it is the hypothesis the re-run exists to test.",
+          "kept_because": "RUNBOOK 5.4 and this file's own rule: a void round is recorded, not deleted. Its content is what identified the defect in the question."
         }
       ],
       "blind_reviewer_finding": {

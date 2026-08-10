@@ -25,7 +25,7 @@ import {
 } from "../scripts/inbox-task.mjs";
 import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/revenue-rate.mjs";
 import { decideVerdict, KINDS } from "../scripts/gate-verdict.mjs";
-import { roundRecognised, roundSelfReviewed, blindLeaks, inBlindScope, judge, engagementSupported, transcriptIsSelfConsistent } from "../scripts/product-loop.mjs";
+import { roundRecognised, roundSelfReviewed, blindLeaks, blindQuestionIsAnswerable, inBlindScope, judge, engagementSupported, transcriptIsSelfConsistent } from "../scripts/product-loop.mjs";
 import {
   KINDS as LANE_KINDS, classify as laneClassify, completedIds, producesOf,
   share as laneShare, judge as laneJudge,
@@ -4165,6 +4165,33 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       if (!inBlindScope(sec)) continue;
       assert(blindLeaks(sec).length === 0,
         `live stranger-round task ${id} leaks the blind: ${blindLeaks(sec).join("; ")}`);
+      // And the question it ends with has to be answerable. Round 7 was voided by
+      // a reviewer who read the attachment and correctly reported having seen the
+      // file before — the only meaning of "before" a stateless lane has. LIVE
+      // tasks only, the same scope as the leak check above: the historical
+      // sections record what was actually asked, and rewriting them would make
+      // the register lie about the rounds it already counted and voided.
+      assert(blindQuestionIsAnswerable(sec).length === 0,
+        `live stranger-round task ${id} asks an unanswerable blind question: ${blindQuestionIsAnswerable(sec).join("; ")}`);
+    }
+
+    // The narrowing itself, pinned on synthetic sections, for the same reason the
+    // scoping rule below is pinned: today every live task carries the exclusion,
+    // so deleting the rule would go green and the wording would rot straight back
+    // to the version that cost round 7.
+    {
+      const withHeading = (body) => "\n## 見覚え\n" + body;
+      assert(blindQuestionIsAnswerable(withHeading(
+        "このゲームを以前に見たことがありますか。ある か ない を書いてください。",
+      )).length === 2, "the pre-round-7 wording was not refused");
+      assert(blindQuestionIsAnswerable(withHeading(
+        "いま渡された本文を読んだこと以外に、このゲームを見たことがありますか。\n" +
+        "いま読んだこと自体は「ある」の理由になりません。",
+      )).length === 0, "the narrowed wording was refused");
+      // A task with no blind question at all is out of scope, not failing: outside
+      // research tasks legitimately have none.
+      assert(blindQuestionIsAnswerable("## 調べること\n価格を調べてください").length === 0,
+        "a task with no 見覚え heading was judged on a question it does not ask");
     }
 
     // The scoping rule itself, pinned on synthetic sections. Without this the

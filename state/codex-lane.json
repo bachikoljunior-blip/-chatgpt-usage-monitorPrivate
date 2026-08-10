@@ -47,11 +47,21 @@
       "what_this_does_and_does_not_establish": "It does NOT establish a second automated delivery path. The commits carry the owner's own identity, and the owner relaying an answer by hand produces exactly this signature. Two readings fit the evidence and nothing here separates them. What IS established: for these answers the ledger has no run, so the authoring model is unknown, which pool was spent is unknown, and scripts/lane-allocation.mjs does not count them.",
       "why_this_one_is_still_usable": "produces: research. .o reads public pages and reports numbers; it does not judge an artifact this loop wrote. Unestablished authorship voids a REVIEW because a reviewer might be the author. There is no author to collide with here — the subject is itch.io and reddit, not our file. So the venue numbers may be used, and no round is being recorded off them.",
       "the_check_did_its_job": "This surfaced as a red tests/run-tests.mjs the moment the answer landed, before any lap read the numbers and acted on them. That is the ledger rule working as intended and is recorded as such."
+    },
+    {
+      "task_id": "2026-08-10.r",
+      "acknowledged_at": "2026-08-10T10:40:00Z",
+      "author": null,
+      "why_no_run": "codex/outbox/2026-08-10.r.md arrived as commit ae75070, authored by bachikoljunior-blip <bachikoljunior@gmail.com> rather than chatgpt-usage-monitor[bot], touching only the outbox file — no ledger entry, no state/answers/latest.json, no state/answers/latest.md. The same shape as .n (5ca9505) and .o (dfc3678). Three now, not two.",
+      "what_is_therefore_unknown": "Which model wrote it. codex/INBOX.md task 2026-08-10.r carries model: spark, and that is a REQUEST.",
+      "why_this_one_costs_more_than_the_others": "n and .o were research; this is a REVIEW of an artifact this loop wrote, which is the exact case unestablished authorship destroys. .r came back 見覚え ある, and the two readings of that answer point in opposite directions. If spark ran it, a non-author recognised the file and the register's authorship explanation has a counterexample. If the account default ran it, the author reviewed its own work and ある is precisely what the table already predicts — an ordinary void, teaching nothing new. NOTHING IN THE ANSWER SEPARATES THEM, and the ledger that would have is empty.",
+      "what_must_not_be_done_because_of_it": "Do not record round 7 with reviewer_model_key spark. A lap reading the INBOX header as the pairing is doing what the .n entry was written to prevent, and this lap started to do it before checking the commit author.",
+      "how_to_establish_it_if_it_matters": "It matters, and the re-run already queued as 2026-08-10.t establishes it for free: if that run goes through the workflow it writes a ledger entry, and the pairing is then a record rather than a header."
     }
   ],
   "schema_version": 1,
   "status": "ok",
-  "checked_at": "2026-08-10T09:02:43.288Z",
+  "checked_at": "2026-08-10T10:40:00Z",
   "ran": true,
   "task_id": "2026-08-10.p",
   "reason": "task 2026-08-10.p is live and unmarked (skipped 13: 2026-08-10.c: already done: codex/outbox/2026-08-10.c.md exists; 2026-08-10.d: already done: codex/outbox/2026-08-10.d.md exists; 2026-08-10.e: already done: codex/outbox/2026-08-10.e.md exists; 2026-08-10.f: already done: codex/outbox/2026-08-10.f.md exists; 2026-08-10.g: already done: codex/outbox/2026-08-10.g.md exists; 2026-08-10.h: already done: codex/outbox/2026-08-10.h.md exists; 2026-08-10.i: already done: codex/outbox/2026-08-10.i.md exists; 2026-08-10.j: already done: codex/outbox/2026-08-10.j.md exists; 2026-08-10.k: already done: codex/outbox/2026-08-10.k.md exists; 2026-08-10.l: already done: codex/outbox/2026-08-10.l.md exists; 2026-08-10.m: already done: codex/outbox/2026-08-10.m.md exists; 2026-08-10.n: already done: codex/outbox/2026-08-10.n.md exists; 2026-08-10.o: already done: codex/outbox/2026-08-10.o.md exists)",
