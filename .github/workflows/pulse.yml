@@ -163,6 +163,12 @@ jobs:
           # can refresh the snapshot (cross-repo read), so red here means "a lap owes a
           # fetch", not "the workflow is broken".
           node scripts/measure-reach.mjs || rc=1
+          # A candidate may not claim its funnel is countable while a step of it has
+          # no named reader. Added 2026-08-10, after the elected candidate was found
+          # justifying itself with "clicks (measurable)" — a forecast in a
+          # measurement's grammar, with nothing in the repository able to take it.
+          # Red here means a candidate's claim has outrun its instruments.
+          node scripts/funnel-check.mjs || rc=1
           # The two files laps EDIT BY HAND that the gate then reads. Nothing ran the
           # checker on either, and it showed: verify-sanitized-state kept its own copy
           # of the lap-claim kinds, never learned about route_change, and rejected every

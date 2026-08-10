@@ -138,7 +138,22 @@
       "concurrent_changes": [
         "2026-08-09.derived-lap-cost"
       ],
-      "outcome": null
+      "outcome": {
+        "judged_at": "2026-08-10T00:15:00Z",
+        "judged_by": "eta-loop",
+        "measured": {
+          "source": "scripts/pacing.mjs --id=eta-loop, run at the head of this lap; usage fetched 2026-08-09T23:48:44Z from origin/main",
+          "reserved_for_others_percent": 21.0,
+          "reserved_derived_before_cap_percent": 67.43,
+          "automations_named_in_the_reservation": ["youtube-loop", "cookie-daily"],
+          "revenue_loop_present_in_the_reservation": false
+        },
+        "verdict": "CORRECT ON ITS OWN TERM, AND THE METRIC MOVED THE OTHER WAY",
+        "what_is_separable": "What the change claimed is directly readable and it happened: revenue-loop does not appear in the reservation breakdown at all. The gate reserves for two automations, both independently evidenced alive (sibling repo commit 2026-08-09T22:22Z, sibling repo push 22:40Z). No quota is held for the trigger the owner stopped.",
+        "what_is_NOT_separable": "The headline metric went 9.43% -> 21.00%, the opposite direction from the one the claim's grammar implies. That is not this change. 2026-08-09.derived-lap-cost replaced the per-run figure with a DERIVED UPPER BOUND of 0.2857%, and 118 remaining runs for each of two loops derives 67.43%, which the cap then cuts to 21.00%. Removing a dead trigger subtracts; repricing the live ones multiplies, and the second is far larger. Both edited the same sum in the same window, so the sum cannot separate them.",
+        "the_honest_reading": "\"Returns that share\" was judged against the wrong number. reserved_for_others_percent is a sum over live automations, so it cannot display the absence of a dead one once the survivors are repriced. The separable metric was the reservation's MEMBERSHIP, which is what actually settles it here.",
+        "what_this_changes_about_the_next_estimate": "Name the metric at the granularity of the claim. This claim was about who is in a set and was judged against the total over that set; a concurrent reprice of the remaining members swamped it. When a change adds or removes a term, predict the term list, not the total."
+      }
     },
     {
       "id": "2026-08-09.efficiency-demoted-while-eta-infinite",
@@ -654,7 +669,27 @@
         "RUNBOOK 3's stated success condition changed in the same commit. If a later reader finds the RUNBOOK and the machine disagreeing about what the goal is, that is a failure of THIS lap, since keeping them in step was the point."
       ],
       "falsified_if": "Any of these. state/gumroad-history.json still holds one reading after 18:37Z — then the append-and-commit path is broken and the whole question was moot, which is worth knowing separately. OR the two candidates open on the zero series anyway — then the predicate change did not take and the fix shipped the exact defect it named. OR the not_actionable_reason carries no channel values — then the condition is evaluated but still unreadable, which was half the original complaint. Note what this prediction does NOT claim: that anything gets closer to revenue. Nothing here sells anything. It claims only that a stated unlock now tells the truth, and a reader who wants the revenue question should read the 2026-08-13 tag prediction instead.",
-      "outcome": null
+      "outcome": {
+        "judged_at": "2026-08-10T00:18:00Z",
+        "judged_by": "eta-loop",
+        "verdict": "CONFIRMED on all four conditions, and it claims nothing about revenue",
+        "measured": {
+          "source": "state/eta.json recomputed this lap from origin/main inputs, plus scripts/check-predictions.mjs min_observations",
+          "gumroad_history_readings_at_least_2": true,
+          "revenue_rate_derivable": true,
+          "idle_eta_days_any_channel": null,
+          "candidates_waiting_unlock_condition_evaluated": true,
+          "candidates_still_actionable_now_false": [
+            "eta_effect_inheritance_via_unblocks",
+            "lap_throughput_to_days_calibration"
+          ],
+          "not_actionable_reason_verbatim": "waits on a measured condition: idle_eta_days is not null on some channel — not yet (gumroad=null, itch=null, youtube=null)"
+        },
+        "why_each_falsifier_did_not_fire": "The append-and-commit path works (two readings, so min_observations released this for judging at all rather than holding it as not-yet-measurable). The two candidates did NOT open on the zero series — which is the whole point, because the old predicate would have opened them at 18:37Z on two readings of ¥0. And the reason names every channel with its value, so 'not yet' is distinguishable from 'looking at the wrong field' without opening code.",
+        "what_is_separable": "The predicate change and the evaluator shipped together on purpose and cannot be separated — that is recorded in concurrent_changes and was deliberate, since the evaluator alone would have shipped the defect. What IS separable is the outcome each would have produced: the pre-fix behaviour was measured on a scratch copy before shipping (baseline.what_the_probe_showed), and the post-fix reading differs from it in exactly the predicted place. That probe is why this is a judgement rather than a guess.",
+        "what_it_does_not_license": "Nothing here moved revenue or ETA. idle_eta_days is still null on all three channels, which is also why RUNBOOK 3's top goal is still open. A confirmed prediction about an instrument telling the truth is not evidence that the instrument's reading is good news.",
+        "and_the_third_concurrent_change_was_checked": "RUNBOOK 3's stated success condition and the machine still agree: the RUNBOOK names 'idle_eta_days non-null on some channel' and the evaluated unlocks_when reads the same field. The lap that wrote both said a later disagreement would be its own failure; there is none as of this reading."
+      }
     },
     {
       "id": "2026-08-09.free-artifact-rule-outlives-the-note",

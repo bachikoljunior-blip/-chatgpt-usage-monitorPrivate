@@ -22,6 +22,13 @@
       "planned_eta_days": null,
       "measured_monthly_yen": 0,
       "top_candidate": "itch"
+    },
+    {
+      "at": "2026-08-10T00:11:17.002Z",
+      "idle_eta_days": null,
+      "planned_eta_days": null,
+      "measured_monthly_yen": 0,
+      "top_candidate": "gumroad_listing_is_automatable"
     }
   ]
 }

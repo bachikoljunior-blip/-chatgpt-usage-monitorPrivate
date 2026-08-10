@@ -29,7 +29,12 @@ import { evaluateUnlock } from "../scripts/unlock-condition.mjs";
 import { checkFreeArtifact, declaredLanguage, artifactLanguage } from "../scripts/check-free-artifact.mjs";
 import { publishedDemoVerdict } from "../scripts/check-published-demo.mjs";
 import { findableSurfaceVerdict, inboundSurfaceVerdict } from "../scripts/measure-findable-surface.mjs";
-import { prerequisiteCheck, venueReadiness } from "../scripts/venue-readiness.mjs";
+import {
+  PREREQUISITE_INSTRUMENTS,
+  prerequisiteCheck,
+  venueReadiness,
+} from "../scripts/venue-readiness.mjs";
+import { funnelCheck } from "../scripts/funnel-check.mjs";
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import {
   checkAddressee, checkRequestsAddressee, copyChanged, diffListing, pasteableStrings,
@@ -2772,6 +2777,119 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(
     live.free_link_permitted === false && live.paid_link_permitted === true,
     "the committed snapshot no longer derives the inverse-of-r/gamedev finding",
+  );
+}
+
+// --- a funnel step must have a reader, or the claim has to shrink --------------
+//
+// 2026-08-10. The elected candidate was justified partly by "the only candidate whose
+// whole funnel is countable end to end: views (already measured), clicks (measurable),
+// sales (already collected hourly)". Two were instruments and one was a forecast in a
+// measurement's grammar: nothing counts a click, because the Gumroad collector reads
+// /v2/products — counts, prices, publication state, nothing per-visitor.
+//
+// The cost is not tidiness. The act is one config edit waiting on one reply from the
+// sibling loop, and if it ships blind the trial returns the same zero whether the
+// audience ignored the link or clicked it and refused USD 25 — two answers that kill
+// different things. So the guarantee PREREQUISITE_INSTRUMENTS gives the elected TERM
+// is extended to the funnel's STEPS, and pinned here.
+{
+  const instruments = {
+    "scripts/measure-reach.mjs": ["reach"],
+    "scripts/read-gumroad.mjs": ["sales"],
+  };
+  const withGap = {
+    id: "c",
+    funnel: [
+      { term: "reach", measured_by: "scripts/measure-reach.mjs" },
+      { term: "clicks", measured_by: null, no_instrument_reason: "nothing reports it" },
+      { term: "sales", measured_by: "scripts/read-gumroad.mjs" },
+    ],
+    funnel_countable_end_to_end: false,
+  };
+
+  const honest = funnelCheck(withGap, instruments);
+  assert(honest.ok === true, `an honest funnel was rejected: ${honest.problem}`);
+  assert(
+    honest.gaps.length === 1 && honest.gaps[0] === "clicks",
+    "the unmeasured step was not reported as a gap",
+  );
+
+  // The defect exactly as it stood: the steps say clicks is unmeasured and a field
+  // says the funnel is countable end to end. This is the assertion that would have
+  // gone red on 2026-08-09.
+  const boasting = funnelCheck(
+    { ...withGap, why: "whose whole funnel is countable end to end: views, clicks, sales" },
+    instruments,
+  );
+  assert(
+    boasting.ok === false && /countable end to end/.test(boasting.problem),
+    "prose claiming end-to-end countability was accepted over steps that deny it",
+  );
+
+  // The declared boolean cannot drift from the steps underneath it.
+  const lying = funnelCheck({ ...withGap, funnel_countable_end_to_end: true }, instruments);
+  assert(lying.ok === false, "funnel_countable_end_to_end=true was accepted with an unmeasured step");
+  const undeclared = { ...withGap };
+  delete undeclared.funnel_countable_end_to_end;
+  assert(funnelCheck(undeclared, instruments).ok === false, "a funnel with no verdict was accepted");
+
+  // "Nobody looked" and "we looked and there is no way" must not collapse. That
+  // conflation is on this repository's record three times.
+  const silent = {
+    ...withGap,
+    funnel: [{ term: "clicks", measured_by: null }],
+  };
+  assert(funnelCheck(silent, instruments).ok === false, "an unmeasured step gave no reason and passed");
+
+  // An instrument has to actually report the term — pointing at a real script that
+  // reports something else is the dodge prerequisiteCheck already refuses.
+  const dodge = {
+    ...withGap,
+    funnel: [{ term: "clicks", measured_by: "scripts/read-gumroad.mjs" }],
+    funnel_countable_end_to_end: true,
+  };
+  assert(
+    funnelCheck(dodge, instruments).ok === false,
+    "clicks was admitted by pointing at an instrument that only reports sales",
+  );
+  assert(
+    funnelCheck({ ...dodge, funnel: [{ term: "clicks", measured_by: "scripts/nope.mjs" }] }, instruments)
+      .ok === false,
+    "an unregistered instrument was accepted",
+  );
+
+  // A retraction may quote the sentence it retracts, but only via a named field that
+  // exists — otherwise the exemption becomes the hiding place.
+  const quoting = {
+    ...withGap,
+    funnel_history_fields: ["the_claim_this_replaced"],
+    the_claim_this_replaced: "it used to say the funnel is countable end to end",
+  };
+  assert(funnelCheck(quoting, instruments).ok === true, "a named retraction field was not exempted");
+  assert(
+    funnelCheck({ ...quoting, funnel_history_fields: ["gone"] }, instruments).ok === false,
+    "funnel_history_fields named a field that does not exist and was accepted",
+  );
+  // Exempting one field does not exempt the phrase.
+  assert(
+    funnelCheck({ ...quoting, why: "the whole funnel is countable end to end" }, instruments).ok === false,
+    "a fresh claim slipped through because another field was exempted",
+  );
+
+  // A candidate with no funnel is not a failure. Most have none, and a check that
+  // failed on absence would have to be disabled while the thing it guards is built.
+  assert(funnelCheck({ id: "x" }, instruments).checked === false, "a funnel-less candidate was checked");
+
+  // And the committed candidate really carries it, with the real registry.
+  const zb = JSON.parse(await readFile(join(root, "state/zerobase.json"), "utf8"));
+  const elected = zb.options.find((o) => o.id === "point_the_reach_we_own_at_the_thing_we_sell");
+  assert(elected, "the elected candidate vanished from state/zerobase.json");
+  const real = funnelCheck(elected, PREREQUISITE_INSTRUMENTS);
+  assert(real.ok === true, `the committed candidate fails its own funnel check: ${real.problem}`);
+  assert(
+    real.gaps.includes("clicks"),
+    "the committed candidate stopped reporting clicks as unmeasured — if a click instrument now exists, say which script reports it",
   );
 }
 

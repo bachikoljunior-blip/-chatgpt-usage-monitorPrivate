@@ -617,6 +617,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T00:03:51.669Z",
+      "candidate": "point_the_reach_we_own_at_the_thing_we_sell",
+      "kind": "prerequisite",
+      "mechanism": "The elected candidate's justification claims its funnel is countable end to end (views, clicks, sales). views has an instrument (measure-reach.mjs) and sales has one (read-gumroad.mjs), but clicks has NONE: read-gumroad reads /v2/products, which returns counts and prices only, no views and no referrers. The candidate's own text says the first measurement it owes is a click count. So the route would ship its experiment blind and the reach would be spent with no reading. This does not move idle or planned ETA today and does not claim to; it makes the elected route's first owed measurement exist as a term with a named reader, before the sibling loop's reply makes the edit shippable.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

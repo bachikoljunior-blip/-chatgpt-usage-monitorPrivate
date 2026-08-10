@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T23:40:05.863Z",
+  "fetched_at": "2026-08-10T00:11:17.002Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [],
   "portfolio_caveat": {
@@ -45,11 +45,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.21
+      "days_unchanged": 0.23
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.21
+      "days_unchanged": 0.23
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -129,6 +129,51 @@
   ],
   "candidates": [
     {
+      "kind": "constraint_recheck",
+      "id": "gumroad_listing_is_automatable",
+      "why": "already large: removes the assumed 'one owner action to list a product' from every option that sells through this rail, which was the main reason some zero-base options ranked below others",
+      "owner_actions": 0,
+      "note": "Creating a product on Gumroad over the API is supported. It is capped at 10 per day, not unavailable.",
+      "measure_via": "here",
+      "actionable_now": true,
+      "eta_effect_days": null,
+      "eta_effect_basis": "no comparable estimate recorded"
+    },
+    {
+      "kind": "constraint_recheck",
+      "id": "no_standing_where_buyers_gather",
+      "why": "large: all seven zero-base options are now refuted and every one failed on the term this constraint names. This is the only route in the whole evidence set where a first buyer actually arrived, and the fastest on record. Written as 'five of the seven' when this entry was created at 11:05; codex/outbox/2026-08-09.j.md took the remaining two an hour later, which is why this constraint sorts first — nothing was moved by hand to put it there.",
+      "owner_actions": 0,
+      "note": "UNMEASURED ON OUR SIDE, EVIDENCED FROM OUTSIDE: what blocks the only route on record that ever reached a first buyer is STANDING in the community the buyers are in — prior participation, an existing following, or several venues hit at once. Not recurring owner actions. Standing accrues before the post; it is a prerequisite, not a repeat action. Whether the owner has standing anywhere has never been checked, so this entry records a blocker whose size is unknown, not a blocker known to be present.",
+      "measure_via": "here",
+      "actionable_now": true,
+      "eta_effect_days": null,
+      "eta_effect_basis": "no comparable estimate recorded"
+    },
+    {
+      "kind": "constraint_recheck",
+      "id": "listing_has_no_cover_image",
+      "why": "unknown in days, and the honest reason is that no channel has a derivable rate yet. Bounded claim only: it is a precondition for the tags added this day to do anything in Discover BROWSE. It is not a precondition for Discover SEARCH, where a text match can surface a tile regardless, so this does not retroactively make the tags worthless.",
+      "owner_actions": 0,
+      "note": "MEASURED, NOT INFERRED: the priced product has covers: [], main_cover_id: null, thumbnail_url: null and preview_url: null. Gumroad Discover browse is a visual grid of tiles, so the product now carries the eight tags that put it IN the index while presenting a blank tile to everyone the index shows it to. This is the immediate next blocker on the path opened the same day, and it was invisible until the tags made the path real: an untagged product is nowhere, and being nowhere hides the fact that it also has no picture.",
+      "measure_via": "here",
+      "owner_request": {
+        "id": "2026-08-09.gumroad-cover-upload",
+        "status": "pending",
+        "created_at": "2026-08-09T16:10:00Z",
+        "one_line": "Gumroad の商品ページに、画像を1枚アップロードしてください。ファイルはこちらで作ってあります。選ぶだけです。",
+        "owner_actions": 1,
+        "estimated_owner_minutes": 2,
+        "judge_by": "2026-08-16",
+        "source": "state/constraints.json listing_has_no_cover_image（api_capability_measured に測定の全文）",
+        "where": "state/owner-requests.json",
+        "read_this_before_acting": "The request is prepared. Do not prepare it again, and do not treat this candidate as work a lap can do — it waits on the owner. If it has been pending past judge_by with nothing happening, that is a finding about the request channel, not a reason to rewrite the request."
+      },
+      "actionable_now": true,
+      "eta_effect_days": null,
+      "eta_effect_basis": "no comparable estimate recorded"
+    },
+    {
       "kind": "channel_unblock",
       "id": "itch",
       "why": "turns an infinite path finite",
@@ -145,7 +190,7 @@
     {
       "kind": "zero_base_option",
       "id": "point_the_reach_we_own_at_the_thing_we_sell",
-      "why": "The channel delivers ~1,200 views/day unattended and currently points at nothing of ours. Putting a link in front of that traffic — description, pinned comment, end screen, or one short built from the kit — is a repo-side act with no venue rule, no account to create and no owner form. It is the only candidate on the board whose whole funnel is countable end to end: views (already measured), clicks (measurable), sales (state/gumroad-history.json, already collected hourly).",
+      "why": "The channel delivers ~1,200 views/day unattended and currently points at nothing of ours. Putting a link in front of that traffic — description, pinned comment, end screen, or one short built from the kit — is a repo-side act with no venue rule, no account to create and no owner form. Its two ENDS are counted by machines that already run hourly: views by scripts/measure-reach.mjs, sales by scripts/read-gumroad.mjs. The middle is not — see funnel below.",
       "serves_route": "route_3_use_the_reach_already_owned",
       "owner_actions": "0",
       "days_to_first_yen_estimate": "unmeasured",

@@ -77,6 +77,13 @@ export const PREREQUISITE_INSTRUMENTS = {
   // elected on reach is falsified by that snapshot going stale or the rate going to
   // zero, and measure-reach.mjs exits 1 on both, from pulse.yml, hourly.
   "scripts/measure-reach.mjs": ["reach"],
+  // Reported by the hourly Gumroad collector: sales_count and sales_usd_cents per
+  // product. Registered 2026-08-10 for scripts/funnel-check.mjs, which asks the same
+  // question of a candidate's funnel steps that prerequisiteCheck asks of a route's
+  // elected term. Note what is NOT in this list: the endpoint is /v2/products, which
+  // returns counts, prices and publication state and nothing per-visitor. "clicks" is
+  // absent on purpose and no other script supplies it.
+  "scripts/read-gumroad.mjs": ["sales"],
 };
 
 export const termsForInstrument = (script) => PREREQUISITE_INSTRUMENTS[script] ?? null;

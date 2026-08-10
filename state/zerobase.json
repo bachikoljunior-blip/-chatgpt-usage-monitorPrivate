@@ -189,7 +189,28 @@
       "days_to_first_yen": "unmeasured",
       "months_to_target": "unmeasured",
       "owner_actions": "0",
-      "why": "The channel delivers ~1,200 views/day unattended and currently points at nothing of ours. Putting a link in front of that traffic — description, pinned comment, end screen, or one short built from the kit — is a repo-side act with no venue rule, no account to create and no owner form. It is the only candidate on the board whose whole funnel is countable end to end: views (already measured), clicks (measurable), sales (state/gumroad-history.json, already collected hourly).",
+      "why": "The channel delivers ~1,200 views/day unattended and currently points at nothing of ours. Putting a link in front of that traffic — description, pinned comment, end screen, or one short built from the kit — is a repo-side act with no venue rule, no account to create and no owner form. Its two ENDS are counted by machines that already run hourly: views by scripts/measure-reach.mjs, sales by scripts/read-gumroad.mjs. The middle is not — see funnel below.",
+      "funnel": [
+        {
+          "term": "reach",
+          "measured_by": "scripts/measure-reach.mjs",
+          "note": "deriveReach(), hourly from pulse.yml, red when the snapshot goes stale past 7 days or the rate goes to zero."
+        },
+        {
+          "term": "clicks",
+          "measured_by": null,
+          "no_instrument_reason": "Nothing in this repository counts a click and nothing could today. scripts/read-gumroad.mjs calls Gumroad /v2/products, which returns sales counts, prices and publication state — no page views, no referrers, nothing per-link. state/gumroad-history.json inherits exactly those fields. The destination is a bare short_url shared by every future surface, so even a first sale would not name its source. This environment cannot reach an external analytics surface to ask, and no owner action has been priced for one."
+        },
+        {
+          "term": "sales",
+          "measured_by": "scripts/read-gumroad.mjs",
+          "note": "state/gumroad.json and state/gumroad-history.json, hourly. Measured 0 to date, which is a measured zero rather than an unread one."
+        }
+      ],
+      "funnel_countable_end_to_end": false,
+      "funnel_history_fields": ["the_claim_this_replaced"],
+      "the_claim_this_replaced": "Until 2026-08-10 this field read \"the only candidate on the board whose whole funnel is countable end to end: views (already measured), clicks (measurable), sales (already collected hourly)\". Two of the three were true. `clicks (measurable)` was a forecast wearing a measurement's grammar, and it was written into the justification of the route that was elected the same hour — three fields below `estimate_deliberately_absent`, which says the first measurement this candidate owes is a click count. Nothing could take it. Read by scripts/funnel-check.mjs.",
+      "what_the_gap_costs_if_it_ships_unfixed": "The act is one config edit on the sibling repo and it is waiting on one reply. If it lands, ~1,200 views/day begin passing a destination nobody can count, and the trial returns the same zero whether the audience ignored the link or clicked it and refused USD 25. Those are different answers pointing at different routes — the first kills the reach as a channel, the second kills the product — and a blind trial returns neither while spending the reach to do it. The gap is therefore load-bearing BEFORE the reply arrives, not after.",
       "added_at": "2026-08-09T22:55:00Z",
       "added_because": "The route change needs a candidate under it or applyRouteElection has nothing to elect, and a route with no candidate is the same empty gesture as a correction with no reader.",
       "estimate_deliberately_absent": "No days-to-first-yen. Every number produced by estimate in this round was refuted on exactly those numbers. The first measurement this candidate owes is a click count, not a forecast.",
