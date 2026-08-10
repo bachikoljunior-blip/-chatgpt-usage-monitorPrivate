@@ -29,6 +29,10 @@ on:
         description: "Create a throwaway carrying a CONTENT document and read it back. Settles whether a TEXT offer can be delivered with no file upload — the cheap branch of the delivery route, and the one the pack whose source we hold actually needs. The hourly half only checks that the parameter is recognised and creates nothing."
         type: boolean
         default: false
+      probe_payload_listing:
+        description: "Send the REAL prompt_pack document (codex/outbox/payload-01.md) through the content route on a throwaway, compare the text at both ends, and delete it. The route was measured with one test paragraph; this measures the payload, whose headings and fenced code blocks are where a rich text API loses content quietly. Publishes nothing."
+        type: boolean
+        default: false
   push:
     branches: [main]
     paths:
@@ -222,6 +226,19 @@ jobs:
           node scripts/verify-sanitized-state.mjs state/gumroad-rich-content.json
           cp state/gumroad-rich-content.json "$RUNNER_TEMP/gumroad-rich-content.json"
 
+      # The step above proves a PARAGRAPH lands. This one sends the document the
+      # route exists for. Separate because the answers are separate: a route that
+      # carries a test sentence and drops fenced code blocks would read as working
+      # in every file here while the product it is for arrives incomplete.
+      - name: Probe whether the REAL payload survives the content route
+        if: always() && inputs.probe_payload_listing
+        env:
+          GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
+        run: |
+          node scripts/probe-payload-listing.mjs state/payload-listing.json
+          node scripts/verify-sanitized-state.mjs state/payload-listing.json
+          cp state/payload-listing.json "$RUNNER_TEMP/payload-listing.json"
+
       # always(), and deliberately AFTER the probe's own `set -e` can kill the
       # step above. The probe exits 1 when it cannot delete its throwaway, which
       # is correct reporting and is not cleanup — on 2026-08-10T10:38Z that is
@@ -265,6 +282,7 @@ jobs:
               gumroad-file-replacement \
               gumroad-presign \
               gumroad-rich-content \
+              payload-listing \
               product-source
             do
               if [ -f "$RUNNER_TEMP/$probe_state.json" ]; then

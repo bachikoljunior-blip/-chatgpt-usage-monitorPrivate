@@ -86,6 +86,10 @@ const { value: uploadProbe } = await readStateJson("state/gumroad-presign.json",
 const { value: richContentProbe } = await readStateJson("state/gumroad-rich-content.json", {
   preferLocal,
 });
+// The route carrying a test PARAGRAPH and the route carrying the actual offer are
+// two readings, and only the second one makes anything listable. Read here for the
+// same reason as the other two: a measurement the picker cannot see has not arrived.
+const { value: payloadListing } = await readStateJson("state/payload-listing.json", { preferLocal });
 
 // The elected route rests on one number nobody had measured: whether a RECURRING
 // offer can be listed without a person. "0 owner actions to list" was inherited
@@ -478,11 +482,35 @@ if (zerobase?.verdict === "adopt_for_next_test") {
                     source: "state/gumroad-rich-content.json",
                   }
                 : null,
+              // The payload walk, kept as its own row. The paragraph probe answering
+              // yes is what makes this question askable; it is not an answer to it.
+              payload_walk: payloadListing
+                ? {
+                    verdict: payloadListing.verdict ?? null,
+                    identical: payloadListing.comparison?.identical ?? null,
+                    sent_chars: payloadListing.comparison?.sent_chars ?? null,
+                    returned_chars: payloadListing.comparison?.returned_chars ?? null,
+                    measured_at: payloadListing.fetched_at ?? null,
+                    source: "state/payload-listing.json",
+                  }
+                : null,
               what_it_settles:
-                richContentProbe?.verdict === "text_is_deliverable_over_the_api"
-                  ? "A TEXT offer is deliverable at zero owner actions. prompt_pack can be listed, " +
-                    "which makes something here buyable for the first time. Says nothing about the " +
-                    "priced kit, whose buyer downloads a file."
+                payloadListing?.verdict === "payload_survives_the_round_trip"
+                  ? "THE OFFER ITSELF SURVIVES THE ROUTE, character for character, not just a test " +
+                    "paragraph. prompt_pack is listable at zero owner actions with its content " +
+                    "intact. What remains before it is worth listing is rung 2 — a reviewer who " +
+                    "did not author it — and that is queued on the lane, not here."
+                  : payloadListing?.verdict === "payload_partially_survives"
+                    ? "PARTIAL. The route carries a paragraph and loses part of the real document. " +
+                      "state/payload-listing.json comparison.diverges_at says where: a cut at a " +
+                      "round number is a size limit, a cut at a node boundary is a node type the " +
+                      "deployment discards. Listing it in this state ships an incomplete product."
+                  : richContentProbe?.verdict === "text_is_deliverable_over_the_api"
+                  ? "A TEXT offer is deliverable at zero owner actions — measured with ONE test " +
+                    "paragraph, which is not the same as the ten-section document prompt_pack is. " +
+                    "The next act is that walk: dispatch gumroad-monitor.yml with " +
+                    "probe_payload_listing, which publishes nothing. Says nothing about the priced " +
+                    "kit, whose buyer downloads a file."
                   : richContentProbe?.verdict === "recognised_but_create_refused"
                     ? "PASSAGE WAS ATTEMPTED AND REFUSED AT THE DOOR — do not dispatch the probe " +
                       "again expecting news. No product was created, so nothing was read back and " +

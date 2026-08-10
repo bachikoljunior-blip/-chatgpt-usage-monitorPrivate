@@ -1162,6 +1162,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T15:21:23.822Z",
+      "candidate": "walk_the_upload_and_content_routes_end_to_end",
+      "kind": "prerequisite",
+      "mechanism": "The route just proved a one-paragraph document lands. The offer that route exists for is 10KB of structured Japanese markdown, which is a different question: node types beyond paragraph, code blocks, headings and size are all unmeasured, and a listing that silently drops half the payload is worse than none. Converting the payload and reading it back settles whether prompt_pack can be listed at all, which is the term rungs 3 and 4 both wait on.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

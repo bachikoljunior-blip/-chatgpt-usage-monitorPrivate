@@ -55,6 +55,8 @@ import {
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import { classifyLifecycle } from "../scripts/probe-gumroad-lifecycle.mjs";
 import { contentLanded, verdictOf as richContentVerdictOf } from "../scripts/probe-gumroad-rich-content.mjs";
+import { blocksOf, compareRoundTrip, inlineText, plainTextOf, toProseMirrorDoc } from "../scripts/markdown-to-prosemirror.mjs";
+import { listingVerdict } from "../scripts/probe-payload-listing.mjs";
 import { recurrenceOf, classifyRecurrence, listingMeasurement } from "../scripts/probe-gumroad-recurring.mjs";
 import { promisesPresent, manifestOf, extractionDir } from "../scripts/fetch-product-source.mjs";
 import {
@@ -2195,6 +2197,80 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
 // a zero-owner-action rail was one classification away from being recorded as
 // needing a person. Held here because that misreading is invisible in the
 // output — every field looked well-formed.
+// A CONVERTER MUST NOT DROP WHAT IT DOES NOT UNDERSTAND.
+//
+// The content route was measured with one test paragraph. The offer it exists for is
+// ten sections of Japanese markdown with fenced code blocks, so the conversion is
+// where content goes missing, and it goes missing in the one way nobody sees: the
+// create succeeds, a page comes back, and the document is short. Every case here is
+// a way that happens.
+{
+  const md = ["# 見出し", "", "本文の**強調**あり。", "", "```text", "貼るもの", "```", "", "尾"].join("\n");
+  const doc = toProseMirrorDoc(md);
+
+  assert(
+    doc.content.map((n) => n.type).join(",") === "heading,paragraph,codeBlock,paragraph",
+    "the block sequence was not preserved — a heading, a paragraph, a fence and a trailing paragraph must all survive",
+  );
+
+  // The fence must arrive as its own node with its text intact. Folding it into a
+  // paragraph is the failure that matters most here: the fenced block IS the
+  // product — it is the thing a buyer pastes.
+  const code = doc.content[2];
+  assert(code.type === "codeBlock" && plainTextOf(code) === "貼るもの", "a fenced block lost its text or its node type");
+
+  // Inline markers are removed, never left literal and never allowed to eat the
+  // text around them. Bold arriving as asterisks reads as a typo in a paid product.
+  assert(
+    inlineText("本文の**強調**あり。") === "本文の強調あり。" && inlineText("`code`") === "code",
+    "inline markers were left in the text or took the text with them",
+  );
+
+  // An unterminated fence keeps its tail. The payload is written by a model and a
+  // truncated answer is a real case; dropping the remainder loses it silently.
+  const open = toProseMirrorDoc(["```text", "行1", "行2"].join("\n"));
+  assert(
+    open.content.length === 1 && plainTextOf(open) === "行1\n行2",
+    "an unterminated fence discarded its contents instead of keeping them as code",
+  );
+
+  // blocksOf is exported because the fence rule is the fiddly part: a shorter fence
+  // inside a longer one must not close it.
+  assert(
+    blocksOf(["````text", "```", "なか", "````"].join("\n")).length === 1,
+    "a shorter fence inside a longer one closed the block early",
+  );
+
+  // PARTIAL IS ITS OWN ANSWER. A round trip that returns most of the document is
+  // the case that ships a product missing its last sections, so it must not round
+  // to either neighbour.
+  const sent = toProseMirrorDoc("# あ\n\n本文です。");
+  const whole = compareRoundTrip(sent, [{ description: sent }]);
+  assert(whole.identical === true && whole.diverges_at === null, "an intact round trip was reported as lossy");
+
+  const cut = compareRoundTrip(sent, [{ description: toProseMirrorDoc("# あ") }]);
+  assert(
+    cut.identical === false && cut.returned_chars < cut.sent_chars && cut.common_prefix_chars > 0,
+    "a truncated round trip was not reported as shorter with a common prefix",
+  );
+
+  assert(
+    listingVerdict({ created: true, comparison: cut }) === "payload_partially_survives" &&
+      listingVerdict({ created: true, comparison: whole }) === "payload_survives_the_round_trip" &&
+      listingVerdict({ created: true, comparison: { returned_chars: 0 } }) === "created_but_empty" &&
+      listingVerdict({ created: false, comparison: null }) === "create_refused",
+    "the listing verdict collapsed partial delivery into success, emptiness or refusal",
+  );
+
+  // The comparison reads BOTH shapes the API has answered with: a bare doc and a
+  // page object carrying it under `description`. Reading only one would report a
+  // landed page as empty.
+  assert(
+    plainTextOf([{ description: { type: "doc", content: [{ type: "text", text: "x" }] } }]) === "x",
+    "the round-trip reader could not see text inside a page object's description",
+  );
+}
+
 // A REFUSAL AT THE DOOR IS NOT AN EMPTY ROOM.
 //
 // 2026-08-10T15:07Z: the content probe's create was refused ("rich_content must be

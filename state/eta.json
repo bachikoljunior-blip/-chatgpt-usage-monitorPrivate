@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T15:19:12.225Z",
+  "fetched_at": "2026-08-10T15:24:44.898Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -40,11 +40,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.86
+      "days_unchanged": 0.87
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.86
+      "days_unchanged": 0.87
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -343,7 +343,8 @@
           "measured_at": "2026-08-10T15:17:10.829Z",
           "source": "state/gumroad-rich-content.json"
         },
-        "what_it_settles": "A TEXT offer is deliverable at zero owner actions. prompt_pack can be listed, which makes something here buyable for the first time. Says nothing about the priced kit, whose buyer downloads a file."
+        "payload_walk": null,
+        "what_it_settles": "A TEXT offer is deliverable at zero owner actions — measured with ONE test paragraph, which is not the same as the ten-section document prompt_pack is. The next act is that walk: dispatch gumroad-monitor.yml with probe_payload_listing, which publishes nothing. Says nothing about the priced kit, whose buyer downloads a file."
       },
       "actionable_now": true,
       "eta_effect_days": null,
