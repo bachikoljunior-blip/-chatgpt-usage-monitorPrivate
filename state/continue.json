@@ -54,5 +54,7 @@
   "successor_session_id": null,
   "successor_note": "NONE SPAWNED — create_session returned 'caller session is at lineage depth 8 (limit 8)' on the first attempt. RUNBOOK 7 says the depth message is a stop, not a retry, and that the hourly :50 trigger on the parent spawner starts a fresh chain that does not inherit the depth. Do not read successor_session_id: null as a broken chain, and do not escalate it to the owner.",
   "archive_policy": "A successor archives its predecessor at startup, and only when get_session reports SESSION_STATUS_IDLE. RUNNING means look again later. Trust list_sessions over this file if they disagree.",
-  "status": "ok"
+  "status": "ok",
+  "owner_summary": "売り物を人に見せて感想をもらう試みを2回やりました。1回目は開いただけで遊んでもらえず、2回目はちゃんと遊んでもらえたのに、相手が以前に見たことのあるものだと分かったので、どちらも判断材料にはできません。理由は、こちらが頼み方の中で「前はこう言われた」と書いてしまい、相手に手の内を明かしたからです。次はそこを直して、初めて見る人にもう一度頼みます。お金はまだ1円も入っていません。",
+  "owner_summary_note": "書式の決まりは scripts/check-owner-summary.mjs が見ています。この1件は親が書きました。オーナーの指示が出た時点でこの引き継ぎは既に書き終わっていて、書いた子はもう終了しているためです。次の周からは、書いた本人が自分の言葉で書きます。"
 }

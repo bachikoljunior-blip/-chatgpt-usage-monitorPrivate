@@ -51,6 +51,7 @@ import {
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import { classifyLifecycle } from "../scripts/probe-gumroad-lifecycle.mjs";
 import { checkGoal, GOAL, BEGIN as DIRECTIVE_BEGIN } from "../scripts/check-goal-intact.mjs";
+import { checkSummary, FIELD as SUMMARY_FIELD } from "../scripts/check-owner-summary.mjs";
 import { judge as judgeSpark, sparkModelCandidate, sparkWindow } from "../scripts/spark-model.mjs";
 import { judge as judgeProductLoop, MAX_ROUND_AGE_DAYS as PRODUCT_MAX_ROUND_AGE_DAYS, roundEngaged } from "../scripts/product-loop.mjs";
 import {
@@ -4256,4 +4257,53 @@ function assert(condition, message) {
     "a block with no fenced text passed as though it carried the directive",
   );
   assert(DIRECTIVE_BEGIN.length > 0, "the block marker export went missing");
+}
+
+// --- The last thing a lap says, to the one reader who cannot ask again -------
+// Owner, 2026-08-10: 子セッションは最後の報告を日本語で用語を使わず説明するようにして.
+//
+// state/continue.json carried twenty-one fields and every one was addressed to the
+// next lap. The owner — the only reader who cannot put a follow-up question to the
+// machine — had none. A rule about how to write is the easiest kind to agree with
+// and not follow, because nothing ever contradicts you, so it is a field with a
+// reader rather than a paragraph in the runbook.
+{
+  const good =
+    "売り物を人に見せて感想をもらう試みを2回やりました。1回目は開いただけで遊んでもらえず、" +
+    "2回目は遊んでもらえたのに相手が前に見たことのあるものでした。だからどちらも判断には使えません。" +
+    "次は初めて見る人にもう一度頼みます。お金はまだ1円も入っていません。";
+  assert(checkSummary(good).ok, `a plain Japanese summary was rejected: ${checkSummary(good).problems.join(" / ")}`);
+
+  // Absent is the state this was written for, and it must be loud.
+  assert(!checkSummary(undefined).ok, "a missing summary passed");
+  assert(!checkSummary("   ").ok, "a blank summary passed");
+
+  // Each rule has to be shown to fire, or it is decoration.
+  assert(!checkSummary("短い。").ok, "a label passed as an explanation");
+  assert(
+    !checkSummary("The lap ran and the gate admitted the candidate, so the work proceeded as expected today.").ok,
+    "an English summary passed the Japanese requirement",
+  );
+  assert(
+    !checkSummary(good + "ETAは変わっていません。").ok,
+    "the loop's own vocabulary passed as plain language",
+  );
+  assert(
+    !checkSummary(good + "詳しくは state/eta.json を見てください。").ok,
+    "a file path passed, and the owner does not have the file open",
+  );
+  assert(
+    !checkSummary(good + "idle_eta_days は空のままです。").ok,
+    "an identifier passed as a word",
+  );
+  assert(
+    !checkSummary(good + "記録は 901debad にあります。").ok,
+    "a hash passed, and it names something to a machine and nothing to a reader",
+  );
+  assert(!checkSummary(good.repeat(6)).ok, "an unbounded summary passed as a summary");
+
+  // And the live file, which is the point of the whole thing.
+  const live = JSON.parse(readFileSync(join(root, "state/continue.json"), "utf8"));
+  const verdict = checkSummary(live[SUMMARY_FIELD]);
+  assert(verdict.ok, `the committed handoff has no readable summary: ${verdict.problems.join(" / ")}`);
 }
