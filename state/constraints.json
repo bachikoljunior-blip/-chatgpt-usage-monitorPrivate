@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T08:42:01.015Z",
+  "fetched_at": "2026-08-10T09:03:20.499512Z",
   "note": "Everything here is what was true when it was measured, not a permanent property of the world. Each entry carries a recheck date because on 2026-08-08 two items declared impossible were solved the same day. A constraint falling away usually moves the ETA more than any ordinary improvement does, so rechecks are ETA candidates in their own right.",
   "constraints": [
     {
@@ -905,6 +905,23 @@
       "how_to_measure": "Do not start by inventing a finer meter. First check whether one already exists: state/claude-usage.json is a committed snapshot with a history, and the daily token buckets in state/usage.json are integers far finer than one percent. If a finer number is already being collected, the fix is to read it rather than to build anything. If it is not, the honest options are to measure over N laps instead of one (a batch big enough to cross a meter step, divided back down) or to accept that per-lap cost is unmeasurable and say so with a date, rather than leaving 107 discarded samples looking like work in progress.",
       "what_this_is_not": "A request to lower the cap or to guess harder. The cap exists because everything is unmeasured, and raising the guess without measuring is how a registry deadlocks the laps that would measure it.",
       "why_it_took_this_long": "Nothing put it in front of a chooser. The recording ran on every lap and failed on every lap, and a failure that is correctly recorded as a failure produces no alarm — 107 discarded samples read exactly like a young measurement that has not accumulated yet. Registered here because state/eta.json candidates are what a lap actually picks from, and until now this was not among them."
+    },
+    {
+      "id": "the_loop_stops_thinking_when_the_claude_pool_empties",
+      "claim": "When the Claude weekly window runs out, every part of this system that DECIDES anything stops, and stays stopped until the window resets. The collectors keep collecting and the ChatGPT lane keeps answering, but neither chooses work: the lane only runs a task already written into its inbox, and nothing writes one without Claude. So the outage is not a slowdown — it is a period in which the loop cannot pick, gate, judge or hand off, and the hourly trigger keeps firing into a session that can only note it has no budget.",
+      "evidence": "scripts/pacing.mjs on origin/main at 2026-08-10T08:55Z: weekly remaining 19%, 4.54 days to reset, observed burn 32.92%/day against a flat-rate 14.29%/day. At the observed rate the pool empties in roughly 14 hours and the reset is 4.5 days out, leaving about 3.9 days with no Claude at all. This is not a hypothetical outage; it is the current trajectory. state/laps.json also shows the shape of it: exit code 10 ends a lap and the lap records nothing but the stop.",
+      "measured_at": null,
+      "recheck_after": "2026-08-11",
+      "measure_via": "here",
+      "eta_effect_if_lifted": "Direct and large. Permanent instruction A10 is that automation must never stop; the honest reading of today is that it stops for most of every week and only the measuring half survives. Anything that keeps the deciding half alive through the empty days converts dead time into laps, and laps are the only thing that has ever moved anything here.",
+      "how_to_measure": "Do not design first. Establish what actually survives an empty window, by looking at what ran during the last one rather than by reasoning about it: which workflows fired, which lane tasks completed, what changed on main. Then the question is what work can be moved onto the surfaces that survive.",
+      "leads_already_on_the_board": {
+        "the_free_pool_is_nearly_full": "The ChatGPT side reads 93% and 99% remaining on its two windows while Claude reads 19%. One of those two was unreachable until 2026-08-10 because nothing named it. The scarce resource and the idle resource are not the same resource.",
+        "the_lane_holds_exactly_one_task": "Its inbox parses a single header, so a queue cannot be left behind for the empty days. That limit is already recorded against the product loop. Filling a queue BEFORE the pool empties is the cheapest-looking version of this and it is blocked by that limit.",
+        "actions_do_not_spend_claude_at_all": "The hourly pulse already computes the target, the candidate list and the stop-detector with no Claude involved. What it does not do is CHOOSE. How much of choosing can be expressed as a computation is the open question, and the honest answer may be 'not much' — say so with evidence rather than assuming either way."
+      },
+      "what_this_is_not": "A request to spend less so the pool lasts. That is the efficiency candidate and it is ranked last while the ETA is infinite, for the reason RUNBOOK 3 gives: going twice as fast toward infinity buys zero days. This is about what happens during the empty period, not about postponing it.",
+      "the_trap_to_avoid": "Deciding during the outage is not the same as deciding well. A cheaper model or a computation that picks work badly, unattended, for four days, can spend the next window undoing itself. Whatever survives has to be judgeable afterwards — it should leave a record a returning lap can check, not a pile of changes nobody chose."
     }
   ]
 }
