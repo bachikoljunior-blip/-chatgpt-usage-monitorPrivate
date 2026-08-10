@@ -157,6 +157,18 @@ jobs:
           # was written, which reads as "the probe found nothing".
           cp state/gumroad-file-replacement.json "$RUNNER_TEMP/gumroad-file-replacement.json"
 
+      # always(), and deliberately AFTER the probe's own `set -e` can kill the
+      # step above. The probe exits 1 when it cannot delete its throwaway, which
+      # is correct reporting and is not cleanup — on 2026-08-10T10:38Z that is
+      # exactly what happened (DELETE answered HTTP 502) and a product was left
+      # on a live storefront. A probe cannot be its own recovery, because the
+      # case needing recovery is the probe failing.
+      - name: Sweep any probe product left on the account
+        if: always() && inputs.probe_file_replacement
+        env:
+          GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
+        run: node scripts/sweep-gumroad-probe-products.mjs
+
       - name: Commit current state
         if: steps.collect.outcome == 'success' && steps.verify.outcome == 'success'
         env:

@@ -319,7 +319,20 @@ try {
   console.log(`\nverdict: ${result.verdict} — ${result.verdict_reason}`);
 } finally {
   // --- 6. clean up, and confirm it ------------------------------------------
-  const del = await call(`products/${enc}`, { method: "DELETE" });
+  // Retried, because the first run of this script left a product on a live
+  // storefront: Gumroad answered the DELETE with HTTP 502 at 2026-08-10T10:38Z,
+  // in the same second it 502'd a PUT, so the API was briefly unwell rather than
+  // the call being wrong. A single attempt turns a transient fault into litter
+  // on somebody's shop. scripts/sweep-gumroad-probe-products.mjs is the
+  // belt-and-braces half, because the failure mode here is "the probe could not
+  // finish" and a probe cannot be its own recovery.
+  let del = { status: 0, json: null };
+  for (let attempt = 1; attempt <= 4; attempt += 1) {
+    del = await call(`products/${enc}`, { method: "DELETE" });
+    if (del.status === 200 && del.json?.success === true) break;
+    console.error(`delete attempt ${attempt} failed (HTTP ${del.status}); retrying`);
+    await new Promise((r) => setTimeout(r, 1000 * 2 ** attempt));
+  }
   result.throwaway.deleted = del.status === 200 && del.json?.success === true;
   const collection = await call("products");
   const stillThere = (collection.json?.products ?? []).some((p) => p.id === throwawayId);
