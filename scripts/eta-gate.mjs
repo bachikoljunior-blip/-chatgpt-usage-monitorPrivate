@@ -41,7 +41,13 @@
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { readStateJson, REPO } from "./state-source.mjs";
-import { decideVerdict, scanRun, KINDS, MAX_CONSECUTIVE_PREREQUISITES } from "./gate-verdict.mjs";
+import {
+  decideVerdict,
+  scanRun,
+  roundTimestamps,
+  KINDS,
+  MAX_CONSECUTIVE_PREREQUISITES,
+} from "./gate-verdict.mjs";
 import { blockedByDirective, directiveBlockers } from "./directive-block.mjs";
 
 const preferLocal = process.argv.includes("--local");
@@ -178,17 +184,21 @@ const movedAfter = (iso) => {
 // snapshot would, which is the failure that would quietly hand back the metronome.
 // A route change that produces a round changed direction for real. One followed by
 // nothing but the next route change did not.
-const roundTimes = [];
-for (const offer of productLoop?.offers ?? []) {
-  for (const r of offer?.rounds ?? []) {
-    if (r?.at) roundTimes.push(Date.parse(r.at));
-  }
-  for (const r of offer?.void_rounds ?? []) {
-    // Void rounds count. The verdict is discarded, the MEASUREMENT happened, and a
-    // rule that only counted rounds we liked would pay laps for agreeable answers.
-    if (r?.recorded_at) roundTimes.push(Date.parse(r.recorded_at));
-  }
-}
+// The field names are read from the register rather than assumed, and that is not
+// pedantry — it is the defect this line HAD. It read `r.at`, and no round in
+// state/product-loop.json has ever carried `at`: rounds are written with `ran_at`
+// and `verified_at`, void rounds with `attempted_at` and `recorded_at`. Nine rounds
+// on record, zero visible. So the refill this whole block exists to grant could not
+// fire, the run never broke, and the gate spent 2026-08-10 telling laps to record a
+// round and then not seeing the round they recorded. Both other lanes were shut at
+// the time, which made the route lane the only door and manufactured exactly the
+// metronome the refill was added to stop.
+//
+// Instrument repair, not a candidate (RUNBOOK 3.9's one exception): asking this gate
+// for permission to fix this gate's own input is the circularity that clause names.
+// roundTimestamps is exported from gate-verdict.mjs so tests/run-tests.mjs can drive
+// it against the register's real shape — a report of the fix is not evidence of it.
+const roundTimes = roundTimestamps(productLoop);
 const measuredAfter = (iso) => {
   const t = Date.parse(iso);
   return roundTimes.some((r) => Number.isFinite(r) && r > t);

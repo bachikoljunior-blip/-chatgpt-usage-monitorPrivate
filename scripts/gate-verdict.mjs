@@ -223,6 +223,40 @@ export function decideVerdict({
 // rules in scripts/product-loop.mjs --check, which pulse.yml runs hourly and which
 // refuse a round that claims engagement it cannot evidence — the same gatekeeper
 // that voided four rounds this project wanted to keep.
+/**
+ * When each round in state/product-loop.json landed, in epoch milliseconds.
+ *
+ * This is here, exported and pure, because the version inlined in eta-gate.mjs read
+ * `r.at` — a field the register has never written. Rounds carry `ran_at` (and
+ * `verified_at`, which is when the change was re-measured rather than when the round
+ * ran); void rounds carry `attempted_at` and, once ruled void, `recorded_at`. Nine
+ * rounds were on record and this returned an empty list, so "a route change that
+ * produces a round" could not be detected and the groundwork budget could not refill.
+ *
+ * ran_at is preferred over verified_at, and attempted_at is the fallback for a void
+ * round that never reached recorded_at: an attempt that produced no verdict is still
+ * a measurement, which is the same reason void rounds count at all. `at` is still
+ * accepted last so a future writer using it is not silently dropped — the failure
+ * being fixed is a reader that knew one name, not a register that used the wrong one.
+ *
+ * @param {{offers?: Array<object>}} productLoop
+ * @returns {number[]} finite timestamps, unordered
+ */
+export function roundTimestamps(productLoop) {
+  const out = [];
+  const push = (v) => {
+    const t = Date.parse(v ?? "");
+    if (Number.isFinite(t)) out.push(t);
+  };
+  for (const offer of productLoop?.offers ?? []) {
+    for (const r of offer?.rounds ?? []) push(r?.ran_at ?? r?.at ?? r?.verified_at);
+    // Void rounds count. The verdict is discarded, the MEASUREMENT happened, and a
+    // rule that only counted rounds we liked would pay laps for agreeable answers.
+    for (const r of offer?.void_rounds ?? []) push(r?.recorded_at ?? r?.attempted_at ?? r?.at);
+  }
+  return out;
+}
+
 export function scanRun({ claims = [], movedAfter, measuredAfter }) {
   let consecutivePrerequisites = 0;
   let routeChangesWithoutMovement = 0;

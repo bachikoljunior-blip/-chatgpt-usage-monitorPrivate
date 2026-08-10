@@ -24,7 +24,7 @@ import {
   parseInboxTasks, selectTask, resolveMarker,
 } from "../scripts/inbox-task.mjs";
 import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/revenue-rate.mjs";
-import { decideVerdict, scanRun, KINDS } from "../scripts/gate-verdict.mjs";
+import { decideVerdict, scanRun, roundTimestamps, KINDS } from "../scripts/gate-verdict.mjs";
 import { roundRecognised, roundSelfReviewed, blindLeaks, blindQuestionIsAnswerable, inBlindScope, judge, engagementSupported, transcriptIsSelfConsistent } from "../scripts/product-loop.mjs";
 import {
   KINDS as LANE_KINDS, classify as laneClassify, completedIds, producesOf,
@@ -1911,6 +1911,45 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       .consecutivePrerequisites === 3,
     "a measurement older than the route change refilled the groundwork budget",
   );
+  // roundTimestamps: the refill above is only reachable if a real round in
+  // state/product-loop.json can be SEEN. It could not. eta-gate.mjs read `r.at`, the
+  // register writes `ran_at`, and nine rounds returned an empty list — so the lane
+  // the gate tells laps to use ("record a round") was wired to a field nothing wrote,
+  // and on 2026-08-10 that left the route lane as the only open door, which is the
+  // metronome the refill exists to prevent. Driven against the register's real shape
+  // rather than an invented one, because inventing the shape is the defect.
+  const registerShape = {
+    offers: [
+      { id: "a", rounds: [{ round: 1, ran_at: "2026-08-10T14:55:00Z", verified_at: "2026-08-10T14:57:00Z" }] },
+      { id: "b", void_rounds: [{ attempted_at: "2026-08-10T09:00:00Z", recorded_at: "2026-08-10T09:30:00Z" }] },
+      { id: "c", void_rounds: [{ attempted_at: "2026-08-10T08:00:00Z" }] },
+    ],
+  };
+  const seen = roundTimestamps(registerShape);
+  assert(
+    seen.length === 3,
+    `a round written the way the register writes them was invisible to the gate (saw ${seen.length} of 3)`,
+  );
+  assert(
+    seen.includes(Date.parse("2026-08-10T14:55:00Z")),
+    "ran_at was not read, so the round that refills the groundwork budget cannot be seen",
+  );
+  assert(
+    seen.includes(Date.parse("2026-08-10T09:30:00Z")),
+    "recorded_at was not preferred for a void round that reached a verdict",
+  );
+  assert(
+    seen.includes(Date.parse("2026-08-10T08:00:00Z")),
+    "a void round that never reached recorded_at was dropped; an attempt is still a measurement",
+  );
+  // The real register, not a fixture: if this ever returns empty again the refill is
+  // dead in exactly the way it was dead before, and a passing unit test on a made-up
+  // object would not say so.
+  assert(
+    roundTimestamps(JSON.parse(readFileSync(new URL("../state/product-loop.json", import.meta.url)))).length > 0,
+    "no round in the real state/product-loop.json is visible to the gate",
+  );
+
   // An improving claim outranks the treadmill entirely — this branch is reached
   // before any of it, and a loop that can move the number is not stuck.
   assert(
