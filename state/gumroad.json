@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T12:27:45.231Z",
+  "fetched_at": "2026-08-10T12:43:58.545Z",
   "total_sales_count": 0,
   "total_sales_usd_cents": 0,
   "product_count": 1,
@@ -21,6 +21,8 @@
       "file_info_keys": [
         "Size"
       ],
+      "file_size_bytes": null,
+      "file_size_value_shape": "string",
       "cover_count": 1,
       "thumbnail_url_present": false,
       "main_cover_id_present": true,
