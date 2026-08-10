@@ -178,7 +178,13 @@ export function artifactLanguage(path, text) {
 const isMain = process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url));
 if (isMain) {
   const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-  const path = resolve(root, process.argv[2] ?? FREE_ARTIFACT_PATH);
+  const rel = process.argv[2] ?? FREE_ARTIFACT_PATH;
+  // Reported as the SUBJECT, not as the default. RUNBOOK tells a lap to run this
+  // against a COPY of a returned candidate before it goes near the live file, and
+  // until 2026-08-10 every line below named FREE_ARTIFACT_PATH whatever was
+  // actually read — so checking a candidate printed a verdict about the published
+  // demo. The check was right and the sentence was about a different file.
+  const path = resolve(root, rel);
   let html = null;
   try {
     html = await readFile(path, "utf8");
@@ -188,12 +194,12 @@ if (isMain) {
 
   const result = checkFreeArtifact(html);
   if (!result.present) {
-    console.log(`free artifact check: ${FREE_ARTIFACT_PATH} not present — ${result.note}`);
+    console.log(`free artifact check: ${rel} not present — ${result.note}`);
     process.exit(0);
   }
   if (result.ok) {
     console.log(
-      `free artifact check: ${FREE_ARTIFACT_PATH} is free, unwalled and self-contained ` +
+      `free artifact check: ${rel} is free, unwalled and self-contained ` +
         `· declared language: ${result.declared_language ?? "none declared"}`,
     );
     process.exit(0);
