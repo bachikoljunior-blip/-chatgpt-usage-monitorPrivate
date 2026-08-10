@@ -22,6 +22,9 @@
 import { readFile, stat, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { readStateJson, REPO } from "./state-source.mjs";
+// Lives with the probe whose output it interprets, not here: importing this file
+// runs it, so a test that wanted the classifier got a whole ETA computation.
+import { listingMeasurement } from "./probe-gumroad-recurring.mjs";
 import { applyRepricings, applyRouteElection } from "./repricing.mjs";
 import { loadVenueRows, prerequisiteCheck } from "./venue-readiness.mjs";
 import { daysToTarget } from "./revenue-rate.mjs";
@@ -74,6 +77,17 @@ const [
 const { value: findableSurface } = await readStateJson("state/findable-surface.json", {
   preferLocal,
 });
+
+// The elected route rests on one number nobody had measured: whether a RECURRING
+// offer can be listed without a person. "0 owner actions to list" was inherited
+// from a probe that only ever created a one-time product — a different kind of
+// product than the one route 4 was elected for. Read here so the answer lands on
+// the candidate row the picker reads, rather than in a state file it does not.
+const { value: gumroadRecurring } = await readStateJson("state/gumroad-recurring.json", {
+  preferLocal,
+});
+
+const listingMeasurementFor = (id) => listingMeasurement(gumroadRecurring, id);
 
 const channels = [];
 
@@ -360,6 +374,14 @@ if (zerobase?.verdict === "adopt_for_next_test") {
       owner_actions: o.owner_actions ?? "unknown",
       days_to_first_yen_estimate: o.days_to_first_yen ?? null,
       estimate_not_measurement: true,
+      // LISTING ONLY, and named that way because the first version of this was
+      // not. It overwrote owner_actions, which feeds recurring_owner_actions_per_month,
+      // and that field fell from 1 to 0 — the candidate got cheaper on the monthly
+      // dimension because a probe measured the one-off one. What a membership costs
+      // to RUN each month is still the round's own guess and stays there.
+      // Its absence on the other options is the point: they carry a guess, and this
+      // field is how a reader tells the two apart without opening another file.
+      owner_actions_to_list_measured: listingMeasurementFor(o.id),
       note:
         "Days-to-first-yen is the falsifiable part; measure that. The month-count " +
         "figures in the round are the model's estimates and must not be carried " +

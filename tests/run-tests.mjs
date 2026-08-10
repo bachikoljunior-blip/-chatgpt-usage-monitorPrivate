@@ -51,6 +51,7 @@ import {
 } from "../scripts/owner-request-gate.mjs";
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import { classifyLifecycle } from "../scripts/probe-gumroad-lifecycle.mjs";
+import { recurrenceOf, classifyRecurrence, listingMeasurement } from "../scripts/probe-gumroad-recurring.mjs";
 import { checkGoal, GOAL, BEGIN as DIRECTIVE_BEGIN } from "../scripts/check-goal-intact.mjs";
 import { judge as judgeSpark, sparkModelCandidate, sparkWindow } from "../scripts/spark-model.mjs";
 import { judge as judgeProductLoop, MAX_ROUND_AGE_DAYS as PRODUCT_MAX_ROUND_AGE_DAYS, roundEngaged, playedEvidenceFor, roundHasReviewer } from "../scripts/product-loop.mjs";
@@ -5030,3 +5031,76 @@ function assert(condition, message) {
   assert(DIRECTIVE_BEGIN.length > 0, "the block marker export went missing");
 }
 
+
+// --- A recurring offer is a different measurement from a one-time one --------
+// state/eta.json carried "0 owner actions to list" on the option the elected
+// route rests on. That number came from the one-time lifecycle probe. The whole
+// reason route 4 exists is that the one-time form has no observed precedent for
+// this audience, so the number was measured on the form the route rejected and
+// spent on the form it chose.
+//
+// Two mutations were run red before these were kept: making listingMeasurement
+// answer for any option id, and letting a rate-limited probe report a number.
+{
+  const ok = {
+    verdict: "recurring_listable_over_api",
+    fetched_at: "2026-08-10T09:08:44.252Z",
+  };
+  const measured = listingMeasurement(ok, "recurring_offer_on_the_rail_we_can_list_ourselves");
+  assert(measured?.owner_actions === 0, "a membership created and read back as recurring did not settle the listing cost");
+
+  // A Gumroad answer says nothing about a rail we have never touched. This is
+  // the mutation that matters: widening the key by route, or by "any option
+  // mentioning a rail", makes one probe speak for marketplaces with their own
+  // account requirements.
+  assert(
+    listingMeasurement(ok, "npm_pypi_cli_pro") === null,
+    "a Gumroad measurement was attached to an option measured on a different rail",
+  );
+
+  // Silently dropped recurrence is the expensive answer and must be stated, not
+  // left absent — absent reads as "nobody looked".
+  const dropped = listingMeasurement(
+    { verdict: "recurrence_silently_dropped", fetched_at: "x" },
+    "recurring_offer_on_the_rail_we_can_list_ourselves",
+  );
+  assert(dropped?.owner_actions === "at least 1", "the API ignoring recurrence was not recorded as costing an owner action");
+
+  // A probe that could not run has measured nothing. It must leave the round's
+  // own unmeasured claim standing rather than write a number over it, because a
+  // number here outranks prose and would look like evidence.
+  for (const verdict of ["not_measurable_rate_limited", "create_refused", "not_measurable"]) {
+    assert(
+      listingMeasurement({ verdict, fetched_at: "x" }, "recurring_offer_on_the_rail_we_can_list_ourselves") === null,
+      `${verdict} produced an owner-action number, so a blocked instrument reads as a measurement`,
+    );
+  }
+}
+
+// --- What the product says about itself decides recurrence ------------------
+// A form-encoded API that does not know a parameter returns 200 and ignores it,
+// so the create response cannot answer this. The first run of the probe proved
+// the point from the other side: sending subscription_duration alone was refused
+// with "only valid for membership products" — a refusal that names the supported
+// thing. A probe that stopped at one shape would have written "create_refused"
+// and the next lap would have read it as the capability being absent.
+{
+  assert(recurrenceOf({ subscription_duration: "monthly" }).recurring === true, "a product declaring a subscription duration was not read as recurring");
+  assert(recurrenceOf({ is_recurring_billing: true }).recurring === true, "the recurring flag alone was not read as recurring");
+  assert(recurrenceOf({ is_recurring_billing: false }).recurring === false, "a one-time product was not read as one-time");
+  // Unreadable is not one-time. This is the reading that would let a failed GET
+  // become "recurrence was dropped" and refute a route on an instrument fault.
+  assert(recurrenceOf(null).recurring === null, "an unreadable product body was reported as a one-time product");
+
+  assert(
+    classifyRecurrence([
+      { step: "create", got_id: false, message: "Sorry, you can only create 10 products per day." },
+    ]).verdict === "not_measurable_rate_limited",
+    "the daily create cap was read as recurring products being unsupported",
+  );
+  assert(
+    classifyRecurrence([{ step: "create", got_id: true }, { step: "read_back", recurring: null }])
+      .owner_actions_to_list_recurring === null,
+    "a product that could not be read back still produced an owner-action count",
+  );
+}

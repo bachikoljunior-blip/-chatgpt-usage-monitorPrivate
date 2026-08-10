@@ -890,6 +890,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T09:07:20.575Z",
+      "candidate": "recurring_offer_on_the_rail_we_can_list_ourselves",
+      "kind": "route_change",
+      "mechanism": "Abandon the parameter the last several laps varied (polish the free demo and re-ask a reviewer) and test the elected route's own central assumption instead: the candidate carries '0 owner actions to list' for a RECURRING offer, inherited from a probe that only ever created a ONE-TIME product. If POST /v2/products silently drops recurrence, the recurring form costs an owner action and route_4's cheapest path does not exist — which re-ranks the candidate list before anything is built on it rather than after. Either answer changes owner_actions on the row the route rests on; neither is groundwork for a later lap to finish.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

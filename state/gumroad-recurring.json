@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-10T09:08:44.252Z",
+  "probe": "POST /v2/products with is_recurring_billing + subscription_duration, then GET to see what the product says about itself, then DELETE confirmed by absence from GET /v2/products",
+  "why": "state/eta.json recurring_offer_on_the_rail_we_can_list_ourselves claims 0 owner actions to list. That was measured on a ONE-TIME product. This measures it for the recurring form the route was elected for.",
+  "http_status": 200,
+  "verdict": "recurring_listable_over_api",
+  "owner_actions_to_list_recurring": 0,
+  "response_excerpt": "A recurring product was created and read back as recurring. The candidate's '0 owner actions to list' holds for the recurring form, not only the one-time form.",
+  "steps": [
+    {
+      "step": "create",
+      "http_status": 200,
+      "success": true,
+      "got_id": true,
+      "product_id": "26C3g6r4yOEQZv5N2cFvhw==",
+      "shape_that_worked": "native_type=membership",
+      "attempts": [
+        {
+          "shape": "native_type=membership",
+          "http_status": 200,
+          "success": true,
+          "message": null
+        }
+      ],
+      "message": null
+    },
+    {
+      "step": "read_back",
+      "http_status": 200,
+      "success": true,
+      "published": false,
+      "recurring": true,
+      "evidence": {
+        "is_recurring_billing": null,
+        "subscription_duration": "monthly",
+        "has_recurrence_prices": true
+      }
+    },
+    {
+      "step": "delete",
+      "http_status": 200,
+      "success": true
+    },
+    {
+      "step": "confirm_deleted",
+      "method": "absence from GET /v2/products",
+      "http_status": 200,
+      "product_count": 1,
+      "still_present": false
+    }
+  ]
+}

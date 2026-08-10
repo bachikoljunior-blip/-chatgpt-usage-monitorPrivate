@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T09:02:59.770Z",
+  "fetched_at": "2026-08-10T09:10:45.400Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -32,11 +32,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.6
+      "days_unchanged": 0.61
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.6
+      "days_unchanged": 0.61
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -59,16 +59,16 @@
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-10T09:00:11.471Z",
+      "measured_at": "2026-08-10T06:53:42.591Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
-      "revenue_window_days": 0.87,
-      "revenue_readings": 4,
+      "revenue_window_days": 0.617,
+      "revenue_readings": 3,
       "fx_usd_jpy_assumed": 150,
       "lifetime_sales": 0,
       "lifetime_usd_cents": 0,
       "idle_eta_days": null,
-      "idle_eta_reason": "the measured rate is zero, so the trajectory is flat",
+      "idle_eta_reason": "the window has no measurable growth yet: it cannot be split into two halves that each contain a rate, so only a level is known and a level does not reach a higher target",
       "owner_actions_required": 0,
       "automatable": true,
       "planned_eta_days": null,
@@ -76,7 +76,7 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-10T09:01:28.435Z",
+      "measured_at": "2026-08-10T06:56:36.367Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
       "revenue_window_days": 0.286,
@@ -100,7 +100,7 @@
       "idle_eta_reason": "measured, not unreadable: 1208.75/day views and 394.75/day engaged over 4 days (2026-08-04..2026-08-07), zero owner actions. Ad revenue is not the path — at this rate the YouTube Partner gate is 4000 days away on subscribers, and the sibling loop prices the far side of it in the ¥1,000s/month against a ¥200,000 target. What the ranking may use is the ADDRESSABLE reach and not this one: 2 of 4851 playbacks over 28d. No threshold is applied here — the two numbers are printed because a route was elected on the larger one while the smaller existed and had never been read. DELIVERY CEILING FIRST: 2 of 4851 playbacks over 28d reach a surface that renders the description (0.04%), so the ceiling on clicks to ANY url placed here is 2 per 28 days — independent of which url and of who the audience is. Everything below is about a link nobody arrives at. The surface PERMITS the paid product's link and FORBIDS the free demo's (github) — so route 1's entire payload cannot go here as hosted. That is the exact INVERSE of r/gamedev, which permits the free artifact and forbids being paid. A lap may NOT perform the edit; it is the sibling loop's act.",
       "owner_actions_required": 0,
       "stale": false,
-      "stale_days": 0.4,
+      "stale_days": 0.5,
       "reach": {
         "usable": true,
         "window_days": 4,
@@ -189,6 +189,12 @@
       "owner_actions": "0 to list",
       "days_to_first_yen_estimate": "unmeasured",
       "estimate_not_measurement": true,
+      "owner_actions_to_list_measured": {
+        "owner_actions": 0,
+        "measured_at": "2026-08-10T09:08:44.252Z",
+        "verdict": "recurring_listable_over_api",
+        "how": "a monthly membership was created over the API, read back as recurring, and deleted — confirmed absent from the product collection"
+      },
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
       "refuted": null,
       "measured_surface": null,
@@ -220,6 +226,7 @@
       "owner_actions": "0",
       "days_to_first_yen_estimate": "unmeasured",
       "estimate_not_measurement": true,
+      "owner_actions_to_list_measured": null,
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
       "refuted": null,
       "measured_surface": null,
@@ -251,6 +258,7 @@
       "owner_actions": "0",
       "days_to_first_yen_estimate": "unmeasured",
       "estimate_not_measurement": true,
+      "owner_actions_to_list_measured": null,
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
       "refuted": null,
       "measured_surface": null,
@@ -341,6 +349,7 @@
       "owner_actions": "1 initial",
       "days_to_first_yen_estimate": "7-21",
       "estimate_not_measurement": true,
+      "owner_actions_to_list_measured": null,
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
       "refuted": {
         "at": "2026-08-09T10:05:00Z",
@@ -367,6 +376,7 @@
       "owner_actions": "1 initial",
       "days_to_first_yen_estimate": "14-60",
       "estimate_not_measurement": true,
+      "owner_actions_to_list_measured": null,
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
       "refuted": {
         "at": "2026-08-09T11:15:00Z",
@@ -407,6 +417,7 @@
       "owner_actions": "0 recurring",
       "days_to_first_yen_estimate": "unmeasured",
       "estimate_not_measurement": true,
+      "owner_actions_to_list_measured": null,
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
       "refuted": {
         "at": "2026-08-09T10:36:00Z",
@@ -461,6 +472,7 @@
       "owner_actions": "1 initial + several hours of replies the same day, per attempt, not recurring",
       "days_to_first_yen_estimate": "unmeasured",
       "estimate_not_measurement": true,
+      "owner_actions_to_list_measured": null,
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
       "refuted": {
         "at": "2026-08-09T10:52:00Z",
@@ -513,6 +525,7 @@
       "owner_actions": "1 initial + 0-1 monthly",
       "days_to_first_yen_estimate": "7-21",
       "estimate_not_measurement": true,
+      "owner_actions_to_list_measured": null,
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
       "refuted": {
         "at": "2026-08-09T09:51:55Z",
@@ -539,6 +552,7 @@
       "owner_actions": "1 initial + 0-1 monthly",
       "days_to_first_yen_estimate": "3-14",
       "estimate_not_measurement": true,
+      "owner_actions_to_list_measured": null,
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
       "refuted": {
         "at": "2026-08-09T09:33:00Z",
@@ -565,6 +579,7 @@
       "owner_actions": "1 initial + 0-1 monthly",
       "days_to_first_yen_estimate": "7-30",
       "estimate_not_measurement": true,
+      "owner_actions_to_list_measured": null,
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
       "refuted": {
         "at": "2026-08-09T11:15:00Z",
@@ -592,6 +607,7 @@
       "owner_actions": "0",
       "days_to_first_yen_estimate": "unmeasured",
       "estimate_not_measurement": true,
+      "owner_actions_to_list_measured": null,
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
       "refuted": {
         "at": "2026-08-10T01:26:28Z",

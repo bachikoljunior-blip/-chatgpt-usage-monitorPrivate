@@ -13,6 +13,10 @@ on:
         description: "Create a draft product, read it back, then delete it. Mutating but self-cleaning; decides whether listing needs a person at all."
         type: boolean
         default: false
+      probe_recurring:
+        description: "Create a monthly membership draft, read back whether it is really recurring, then delete it. Settles whether the RECURRING form the elected route needs can be listed without a person, which the one-time lifecycle probe never answered."
+        type: boolean
+        default: false
       probe_cover:
         description: "Probe whether a cover image can be set through the API. Reads, plus two writes that carry no real product fields and cannot succeed into a bad state. Re-run to detect the day Gumroad adds the route."
         type: boolean
@@ -80,6 +84,22 @@ jobs:
           # which reads as "the probe found nothing" rather than "the result was
           # discarded". Park it outside the working tree so the reset cannot reach it.
           cp state/gumroad-capabilities.json "$RUNNER_TEMP/gumroad-capabilities.json"
+
+      # Kept behind a dispatch input rather than put on the schedule: it creates a
+      # real product, and Gumroad caps creates at ten a day. An hourly probe would
+      # spend that cap on a question whose answer changes rarely, and would leave
+      # nothing for the run that actually lists something.
+      - name: Probe whether a RECURRING offer can be listed over the API
+        if: always() && inputs.probe_recurring
+        env:
+          GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
+        run: |
+          node scripts/probe-gumroad-recurring.mjs state/gumroad-recurring.json
+          node scripts/verify-sanitized-state.mjs state/gumroad-recurring.json
+          # Same reason as the lifecycle probe above: the commit step resets to
+          # origin/main before staging and would delete this seconds after it was
+          # written, which reads as "the probe found nothing".
+          cp state/gumroad-recurring.json "$RUNNER_TEMP/gumroad-recurring.json"
 
       - name: Probe whether products can be created over REST
         if: always() && inputs.probe_create

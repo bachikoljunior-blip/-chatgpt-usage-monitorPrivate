@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T07:17:06.008Z",
+  "fetched_at": "2026-08-10T09:15:00Z",
   "note": "Every change made because it was claimed to shorten the ETA. judge_on is set when the change lands, not when it is convenient. concurrent_changes is what else was in flight, so a later reader can tell a clean attribution from a confounded one.",
   "predictions": [
     {
@@ -1611,6 +1611,40 @@
         "scripts/product-loop.mjs: rounds_engaged narrowed to reviewers only, rounds_played_here added — the first version of this counted the lap's own run and moved the number the elected route rests on",
         ".github/workflows/pulse.yml: play-artifact.mjs --check hourly",
         "state/product-loop.json: free_demo round 6, and the_instrument_that_was_missing"
+      ],
+      "outcome": null
+    },
+    {
+      "id": "2026-08-10.the-cheap-path-was-measured-on-the-form-the-route-rejected",
+      "made_at": "2026-08-10T09:15:00Z",
+      "claim": "recurring_offer_on_the_rail_we_can_list_ourselves carried \"owner_actions\": \"0 to list\" and route 4 was elected on the finding that this audience buys recurring memberships and has NO observed precedent for one-time self-service downloads. That 0 was inherited from scripts/probe-gumroad-lifecycle.mjs, which only ever created a ONE-TIME product — the number was measured on the form the route rejected and spent on the form it chose. Measured this lap: POST /v2/products with native_type=membership creates a monthly membership that reads back recurring (subscription_duration monthly, recurrence prices present) and deletes cleanly, so the 0 happens to hold. IT HELD BY LUCK, NOT BY EVIDENCE. The first shape tried was refused outright — \"subscription_duration is only valid for membership products\" — and a probe that stopped at one shape would have written create_refused and told the next lap the recurring form needs a person. THE NARROW CLAIM: the measured 0 reaches the side that picks work and stays distinguishable from the guess beside it. owner_actions_to_list_measured is deliberately a SEPARATE field from owner_actions, because the first version overwrote owner_actions and recurring_owner_actions_per_month silently fell 1 to 0 — the candidate got cheaper on the monthly dimension because a probe measured the one-off one.",
+      "metric": "state/eta.json candidate recurring_offer_on_the_rail_we_can_list_ourselves carries owner_actions_to_list_measured with verdict recurring_listable_over_api, while owner_actions stays \"0 to list\" and recurring_owner_actions_per_month stays 1",
+      "baseline_at_registration": "owner_actions \"0 to list\" (unmeasured, from the blind round), recurring_owner_actions_per_month 1, no measured field, state/gumroad-recurring.json did not exist",
+      "judge_on": "2026-08-13",
+      "judge_deadline": "2026-08-17",
+      "judge_by": "Read from committed state on origin/main, none from a lap's account of itself. (a) The candidate row carries owner_actions_to_list_measured and owner_actions is still the round's prose — if a later lap collapses them into one field the distinction between measured and guessed is gone and this is falsified. (b) recurring_owner_actions_per_month is still 1: nothing measured what a membership costs to RUN each month, and a 0 there means a listing probe was read as an operating measurement. (c) node tests/run-tests.mjs fails when any of these mutations is reapplied: listingMeasurement answering for an option id it did not measure, a rate-limited or unreadable probe producing an owner-action number, an unreadable product body reading as one-time, and the daily create cap classifying as unsupported. (d) THE ONE THAT DECIDES WHETHER THIS WAS WORTH A LAP: does any lap actually LIST a recurring offer, or does the measured 0 sit on the row unused the way delivery_unmeasured=0 was warned about? A capability measured and never exercised is a report. (e) Whether state/gumroad-recurring.json is ever refreshed after a Gumroad API change; nothing schedules it, by design, and that means it can go quietly stale.",
+      "concurrent_changes": [
+        "2026-08-10.r queued to codex/INBOX.md (round 7 on the free demo, same reviewer and same questions as .k)",
+        "scripts/probe-gumroad-recurring.mjs added and run once against the live Gumroad account",
+        "compute-eta.mjs now reads state/gumroad-recurring.json onto the candidate row",
+        ".github/workflows/gumroad-monitor.yml gained a probe_recurring dispatch input"
+      ],
+      "outcome": null
+    },
+    {
+      "id": "2026-08-10.the-dead-opening-was-or-was-not-the-binding-term",
+      "made_at": "2026-08-10T09:15:00Z",
+      "claim": "Round .k (Spark, 見覚え ない, a valid round) answered 払わない and named as its second improvement point \"初回到達目標を短時間で設計すること\" — the dead opening. The predecessor changed exactly one thing in assets/free-demo/index.html, the first producer cost 15 to 4, and verified 15 taps became 4 with a control that put the reading back at 15. Round .r is queued with the SAME reviewer and questions verbatim from .k, so the only variable is the file. PREDICTION: the verdict stays 払わない. The dead opening was the cheapest defect to name, not the binding one — .k's own 一番弱いところ pointed somewhere else entirely, at tick() clamping elapsed to one second so offline progress is structurally impossible, and that is untouched. If the reason moves off the opening and onto something new, the change did its work and the next binding term is visible; if it stays on the opening, the change did not reach the reviewer at all.",
+      "metric": "codex/outbox/2026-08-10.r.md 払うか verdict and the reason given, compared against .k",
+      "baseline_at_registration": ".k: 払わない; improvement points were (1) show what is different after paying, (2) design a short first goal — 15 taps, (3) show the free/paid difference numerically. 一番弱いところ was tick()'s Math.min(1, ...) clamp, not the opening.",
+      "judge_on": "2026-08-12",
+      "judge_deadline": "2026-08-17",
+      "judge_by": "Read from committed state on origin/main. (a) codex/outbox/2026-08-10.r.md exists and its 見覚え line reads ない — if it reads ある the round is VOID and must be discarded rather than recorded, and this prediction is unjudged rather than wrong. (b) Whether 払うか still reads 払わない. (c) THE ONE THAT DECIDES IT: whether the REASON moved. Same reason as .k means the dead opening was not the binding term and the 15-to-4 change bought nothing measurable — record that plainly rather than reading a changed word as movement. (d) Whether the lap that reads it writes an engagement block honestly: a text lane cannot prove it played, so rounds_engaged must not move on .r however confident the answer sounds. (e) Whether any lap edits assets/free-demo/index.html before .r returns. That destroys the comparison, and the file's last play-artifact run would then describe a file that no longer exists.",
+      "concurrent_changes": [
+        "2026-08-10.r queued to codex/INBOX.md (round 7 on the free demo, same reviewer and same questions as .k)",
+        "scripts/probe-gumroad-recurring.mjs added and run once against the live Gumroad account",
+        "compute-eta.mjs now reads state/gumroad-recurring.json onto the candidate row",
+        ".github/workflows/gumroad-monitor.yml gained a probe_recurring dispatch input"
       ],
       "outcome": null
     }
