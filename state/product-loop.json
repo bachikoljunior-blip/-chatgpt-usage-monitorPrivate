@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T01:45:00Z",
+  "fetched_at": "2026-08-10T01:25:31.248Z",
   "why_this_exists": "Owner, 2026-08-10: 提供するものは測定分析改善ループまわさないと需要のあるものになっていかない. Every loop in this repository measures the ROUTE — ETA, venues, findable surface, reach, usage, heartbeats. None took the offer itself as its subject, and state/portfolio.json has carried a field named not_examined since it was written. This file is the register the product loop runs on. scripts/product-loop.mjs derives loopability from it and pulse.yml runs the check hourly.",
   "the_ladder_is_in_the_script": "scripts/product-loop.mjs LADDER. Cheapest and fastest signal first: promise_conformance, stranger_reaction, sells_against, behaviour. The order is the design content — measuring conversion on an artifact that does not deliver what its page promises tells you about the promise, not the product.",
   "offers": [
@@ -9,7 +9,10 @@
       "id": "idle_clicker_kit",
       "what": "The priced product. USD 25, sold on Gumroad and listed on itch.io.",
       "live_to_buyers": true,
-      "sold_at": ["https://bachikoljunior-blip.itch.io/idle-clicker-kit", "gumroad (see state/gumroad.json)"],
+      "sold_at": [
+        "https://bachikoljunior-blip.itch.io/idle-clicker-kit",
+        "gumroad (see state/gumroad.json)"
+      ],
       "source": null,
       "source_measured_at": "2026-08-10T01:15:00Z",
       "source_finding": "NO SOURCE TREE EXISTS IN ANY REPOSITORY THIS ACCOUNT OWNS. The four artifacts the live listing promises — brand.config.json, generator.html, validate_config.py, test_engine.py — return zero hits across four GitHub code searches, against a positive control (filename:KIT_VERSION) that returns hits inside a PRIVATE repository and therefore proves the index reaches them. A built ZIP plausibly exists as a Gumroad attachment; no source does. Full record: state/constraints.json the_product_itself_has_never_been_opened.the_attempt_to_open_it.",
@@ -40,7 +43,9 @@
         "rung": "stranger_reaction",
         "why_this_rung": "promise_conformance is nearly vacuous here — a free demo promises almost nothing, so conformance would pass without telling us anything. The unanswered question is whether anyone who did not write it would play it twice, and that is answerable this week on the Codex pool for the cost of one INBOX task.",
         "how": "Hand the file to a reviewer who did not write it, blind to authorship, default verdict negative. Ask for a decision (would you keep playing / would you pay for more) plus the single strongest reason against. Not a rewrite, not a feature list — a verdict and a reason.",
-        "not_this_rung_yet": "behaviour. state/findable-surface.json establishes the page is served noindex,nofollow and nothing links it, so a view count today measures our distribution, not the artifact. Reading a zero as 'nobody wants it' would be the same mistake as reading it as 'wrong venue'."
+        "not_this_rung_yet": "behaviour. state/findable-surface.json establishes the page is served noindex,nofollow and nothing links it, so a view count today measures our distribution, not the artifact. Reading a zero as 'nobody wants it' would be the same mistake as reading it as 'wrong venue'.",
+        "queued_behind": "codex/INBOX.md currently carries task 2026-08-10.a (what the Japanese money-and-procedure audience actually buys, with prices), written by another lap. The lane holds one task at a time, so this round is task .b — do NOT overwrite .a to start it. Note that .a is itself a sells_against reading for a different audience; when it lands, read it as rung 3 evidence rather than filing it as an unrelated survey.",
+        "who_must_not_do_it": "Whoever wrote the artifact. The rule that makes a stranger reaction worth anything is that the reviewer is not the author, and the Codex lane WROTE assets/free-demo/index.html. So the reviewer must be told nothing about where it came from, and if the lane recognises it the round is void — say so rather than keeping the verdict."
       },
       "rounds": [],
       "why_it_is_here_at_all": "It is the only thing this account offers that can enter a loop. If the owner's rule is right — and nothing here contradicts it — then this is where demand can actually be built, and the priced product's un-loopability is the reason the two have to be ranked against each other rather than assumed complementary."
