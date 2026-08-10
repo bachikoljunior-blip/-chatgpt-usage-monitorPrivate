@@ -103,7 +103,7 @@ export function keyOfLandedModel(landed, sparkSlug) {
  *
  * @returns {string[]} task ids whose authorship is not established
  */
-export function unledgeredAnswers({ answers = [], runs = [], acknowledged = [] }) {
+export function unledgeredAnswers({ answers = [], runs = [], acknowledged = [], tasks = [] }) {
   const ledgered = new Set(runs.map((r) => r?.task_id).filter(Boolean));
   if (!ledgered.size) return [];
   const earliest = [...ledgered].sort()[0];
@@ -112,8 +112,33 @@ export function unledgeredAnswers({ answers = [], runs = [], acknowledged = [] }
       .map((a) => (typeof a === "string" ? a : a?.task_id))
       .filter(Boolean),
   );
+  // An answer's filename is not its task id, and assuming it is made this check
+  // accuse a task that HAD run. Every task up to 2026-08-10.w wrote its marker to
+  // codex/outbox/<task_id>.md, so stem and id were the same string and nothing
+  // needed to look; 2026-08-10.payload-01 declares done_marker
+  // codex/outbox/payload-01.md, and the moment it landed — ledgered, bot-committed,
+  // model recorded — this reported it as an answer of unknown authorship.
+  //
+  // The escape hatch made that worse rather than safer. The only way to clear the
+  // red would have been to list a RUN WE HAVE in answers_with_no_ledger_run, whose
+  // whole meaning is "nobody knows who wrote this". A check that can only be
+  // silenced by recording a falsehood gets silenced by recording a falsehood.
+  //
+  // done_marker is where the answer's name is declared, so it is what the join
+  // reads. Tasks are optional: with none, this degrades to the old stem-equals-id
+  // assumption rather than reporting everything as unledgered.
+  const idForStem = new Map();
+  for (const t of Array.isArray(tasks) ? tasks : []) {
+    const marker = t?.done_marker;
+    if (!marker || !t?.task_id) continue;
+    const stem = String(marker).replace(/^.*\//, "").replace(/\.md$/, "");
+    if (stem) idForStem.set(stem, t.task_id);
+  }
   return answers
-    .filter((id) => id >= earliest && !ledgered.has(id) && !ack.has(id))
+    .filter((stem) => {
+      const id = idForStem.get(stem) ?? stem;
+      return id >= earliest && !ledgered.has(id) && !ack.has(id) && !ack.has(stem);
+    })
     .sort();
 }
 
@@ -311,7 +336,7 @@ export function judge({ tasks, runs, sparkSlug, answers = [], acknowledged = [],
   }
 
   // Rule 3: an answer with no ledger run behind it. See unledgeredAnswers().
-  for (const id of unledgeredAnswers({ answers, runs, acknowledged })) {
+  for (const id of unledgeredAnswers({ answers, runs, acknowledged, tasks })) {
     problems.push(
       `${id}: an answer exists in codex/outbox/ with no run in ${LANE_STATE_PATH} — ` +
         "its authoring model is not established, so nothing can be paired against it. " +
