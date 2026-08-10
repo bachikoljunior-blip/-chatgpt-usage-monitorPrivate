@@ -127,12 +127,12 @@
   },
   "schema_version": 1,
   "status": "ok",
-  "checked_at": "2026-08-10T15:31:49.895Z",
-  "ran": true,
-  "task_id": "2026-08-10.payload-01-review",
-  "reason": "task 2026-08-10.payload-01-review is live and unmarked (skipped 21: 2026-08-10.c: already done: codex/outbox/2026-08-10.c.md exists; 2026-08-10.d: already done: codex/outbox/2026-08-10.d.md exists; 2026-08-10.e: already done: codex/outbox/2026-08-10.e.md exists; 2026-08-10.f: already done: codex/outbox/2026-08-10.f.md exists; 2026-08-10.g: already done: codex/outbox/2026-08-10.g.md exists; 2026-08-10.h: already done: codex/outbox/2026-08-10.h.md exists; 2026-08-10.i: already done: codex/outbox/2026-08-10.i.md exists; 2026-08-10.j: already done: codex/outbox/2026-08-10.j.md exists; 2026-08-10.k: already done: codex/outbox/2026-08-10.k.md exists; 2026-08-10.l: already done: codex/outbox/2026-08-10.l.md exists; 2026-08-10.m: already done: codex/outbox/2026-08-10.m.md exists; 2026-08-10.n: already done: codex/outbox/2026-08-10.n.md exists; 2026-08-10.o: already done: codex/outbox/2026-08-10.o.md exists; 2026-08-10.p: already done: codex/outbox/2026-08-10.p.md exists; 2026-08-10.r: already done: codex/outbox/2026-08-10.r.md exists; 2026-08-10.s: already done: codex/outbox/2026-08-10.s.md exists; 2026-08-10.t: already done: codex/outbox/2026-08-10.t.md exists; 2026-08-10.u: already done: codex/outbox/2026-08-10.u.md exists; 2026-08-10.v: already done: codex/outbox/2026-08-10.v.md exists; 2026-08-10.w: already done: codex/outbox/2026-08-10.w.md exists; 2026-08-10.payload-01: already done: codex/outbox/payload-01.md exists)",
+  "checked_at": "2026-08-10T15:35:15.900Z",
+  "ran": false,
+  "task_id": "2026-08-10.c",
+  "reason": "no live unmarked task in the queue: 2026-08-10.c: already done: codex/outbox/2026-08-10.c.md exists; 2026-08-10.d: already done: codex/outbox/2026-08-10.d.md exists; 2026-08-10.e: already done: codex/outbox/2026-08-10.e.md exists; 2026-08-10.f: already done: codex/outbox/2026-08-10.f.md exists; 2026-08-10.g: already done: codex/outbox/2026-08-10.g.md exists; 2026-08-10.h: already done: codex/outbox/2026-08-10.h.md exists; 2026-08-10.i: already done: codex/outbox/2026-08-10.i.md exists; 2026-08-10.j: already done: codex/outbox/2026-08-10.j.md exists; 2026-08-10.k: already done: codex/outbox/2026-08-10.k.md exists; 2026-08-10.l: already done: codex/outbox/2026-08-10.l.md exists; 2026-08-10.m: already done: codex/outbox/2026-08-10.m.md exists; 2026-08-10.n: already done: codex/outbox/2026-08-10.n.md exists; 2026-08-10.o: already done: codex/outbox/2026-08-10.o.md exists; 2026-08-10.p: already done: codex/outbox/2026-08-10.p.md exists; 2026-08-10.r: already done: codex/outbox/2026-08-10.r.md exists; 2026-08-10.s: already done: codex/outbox/2026-08-10.s.md exists; 2026-08-10.t: already done: codex/outbox/2026-08-10.t.md exists; 2026-08-10.u: already done: codex/outbox/2026-08-10.u.md exists; 2026-08-10.v: already done: codex/outbox/2026-08-10.v.md exists; 2026-08-10.w: already done: codex/outbox/2026-08-10.w.md exists; 2026-08-10.payload-01: already done: codex/outbox/payload-01.md exists; 2026-08-10.payload-01-review: already done: codex/outbox/payload-01-review.md exists; 2026-08-10.standing: already done: codex/outbox/standing-2026-08-10.md exists",
   "model_key": "spark",
-  "model": "gpt-5.3-codex-spark",
+  "model": null,
   "runs": [
     {
       "task_id": "2026-08-10.payload-01-review",
