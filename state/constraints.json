@@ -6,13 +6,14 @@
   "constraints": [
     {
       "id": "gumroad_listing_is_automatable",
-      "claim": "Creating a product on Gumroad over the API is supported. It is capped at 10 per day, not unavailable.",
-      "evidence": "2026-08-09 lifecycle probe: POST /v2/products returned HTTP 200 with \"Sorry, you can only create 10 products per day.\" A daily cap is only imposed on an operation the API performs. The account still shows product_count 1, so nothing was created and there is no residue to clean up. The full create/read/delete path has NOT yet been observed end to end — retry after the cap resets before relying on delete.",
-      "measured_at": "2026-08-09",
-      "recheck_after": "2026-08-10",
+      "claim": "LIFTED, end to end. A product can be created, read back and deleted on Gumroad entirely over the API. Listing a product costs zero owner actions. Creation is capped at 10 per day.",
+      "evidence": "2026-08-10T01:56Z, first run after the daily cap reset: POST /v2/products → 200, product id returned; GET by id → 200, published false; DELETE → 200 with \"The product was deleted successfully.\"; GET /v2/products → the collection carries product_count 1, the one real product, with the probe product absent. state/gumroad-capabilities.json verdict full_lifecycle_over_api. Nothing was left on the account — checked twice, once by the probe and once by listing the collection by hand.",
+      "measured_at": "2026-08-10",
+      "recheck_after": "2026-09-10",
       "blocks": [],
       "eta_effect_if_lifted": "already large: removes the assumed 'one owner action to list a product' from every option that sells through this rail, which was the main reason some zero-base options ranked below others",
-      "note": "The first classification of this same measurement was wrong: it recorded create_refused, which reads as 'the API cannot create products'. Rate limiting is evidence for a capability, not against it. The probe now separates the two."
+      "what_this_does_and_does_not_price": "It prices CREATING a listing at zero owner actions, which matters because RUNBOOK 6 gate 3 is currently shut — a route needing an owner action to list cannot be filed at all right now, and a route that lists itself can proceed without asking. It does NOT price the artifact being sold, the cover image (state/constraints.json listing_has_no_cover_image is a separate owner action and is unaffected), or whether anyone buys. A rail with nothing to put on it is still a rail with nothing to put on it.",
+      "note": "This entry has now been misclassified twice by its own instrument, in opposite directions, and both times every field looked well-formed. 2026-08-09: the daily-cap message was recorded as create_refused, which reads as 'the API cannot create products' — rate limiting is evidence FOR a capability. 2026-08-10: the confirmation step asked GET /v2/products/<id> whether the deleted product was gone, and Gumroad answers that with HTTP 200, success true and a full product body — a tombstone. The run was classified create_works_cleanup_uncertain and sent the reader hunting for a leftover draft that did not exist. Deletion is now confirmed by ABSENCE FROM THE COLLECTION, the unknown case is three-valued so an unreadable collection can never report as clean, and the probe records the product id so residue can actually be named. tests/run-tests.mjs holds all four directions; four mutations were run and all four go red."
     },
     {
       "id": "external_repos_unreachable",

@@ -38,6 +38,7 @@ import { funnelCheck } from "../scripts/funnel-check.mjs";
 import { itchPaywallCheck } from "../scripts/check-itch-paywall.mjs";
 import { gateThreeState, ownerRequestGate } from "../scripts/owner-request-gate.mjs";
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
+import { classifyLifecycle } from "../scripts/probe-gumroad-lifecycle.mjs";
 import { judge as judgeSpark, sparkModelCandidate, sparkWindow } from "../scripts/spark-model.mjs";
 import { judge as judgeProductLoop, MAX_ROUND_AGE_DAYS as PRODUCT_MAX_ROUND_AGE_DAYS } from "../scripts/product-loop.mjs";
 import {
@@ -1289,6 +1290,67 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       "a dead browser was read as a network verdict",
     );
   }
+}
+
+// --- A delete is confirmed by absence, not by an endpoint that answers -------
+// 2026-08-10, the first lifecycle run after the daily create cap reset: create
+// worked, read-back worked, DELETE returned 200 and {"success":true,"message":
+// "The product was deleted successfully."} — and the probe reported the product
+// still present and told the reader to go find a leftover draft. There was none.
+// GET /v2/products/<id> serves a TOMBSTONE for a deleted product: HTTP 200,
+// success true, full body. GET /v2/products excludes it. The capability was
+// never in doubt; the instrument was reading success on the wrong endpoint, so
+// a zero-owner-action rail was one classification away from being recorded as
+// needing a person. Held here because that misreading is invisible in the
+// output — every field looked well-formed.
+{
+  const create = { step: "create", http_status: 200, success: true, got_id: true, product_id: "ABC==", message: null };
+
+  assert(
+    classifyLifecycle([
+      create,
+      { step: "confirm_deleted", still_present: false, by_id_still_resolves: true, product_count: 1 },
+    ]).verdict === "full_lifecycle_over_api",
+    "a product absent from the collection was not accepted as deleted, because a GET by id still answered",
+  );
+
+  // The direction that costs something: a real leftover must be named, not
+  // described. "check the account for a leftover draft" is not actionable.
+  const left = classifyLifecycle([
+    create,
+    { step: "confirm_deleted", still_present: true, by_id_still_resolves: true, product_count: 2 },
+  ]);
+  assert(
+    left.verdict === "create_works_delete_failed" && left.note.includes("ABC=="),
+    "a product still listed after delete was not reported as residue naming the product id",
+  );
+
+  // Three-valued, and the unknown must not collapse to clean. An unreadable
+  // collection is exactly when a draft gets left on the storefront, so it is
+  // exactly when "nothing was left behind" must not be printed.
+  assert(
+    classifyLifecycle([
+      create,
+      { step: "confirm_deleted", still_present: null, by_id_still_resolves: true, product_count: null },
+    ]).verdict === "create_works_cleanup_uncertain",
+    "an unreadable collection was read as a clean deletion",
+  );
+
+  // Rate limiting is evidence FOR the capability. Kept from the 2026-08-09 fix,
+  // which had classified the cap message as create_refused.
+  assert(
+    classifyLifecycle([
+      { step: "create", http_status: 200, success: false, got_id: false, product_id: null, message: "Sorry, you can only create 10 products per day." },
+    ]).verdict === "create_supported_rate_limited",
+    "a daily cap was read as the API refusing to create products",
+  );
+
+  assert(
+    classifyLifecycle([
+      { step: "create", http_status: 200, success: false, got_id: false, product_id: null, message: "New products should be created with a price" },
+    ]).verdict === "create_refused",
+    "a genuine refusal was not reported as one",
+  );
 }
 
 // --- The listing must keep addressing the buyer the route change chose -------

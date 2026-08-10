@@ -1115,6 +1115,41 @@
       ],
       "falsified_if": "Three or more laps run past the judge date with elected_route_has_no_unrefuted_candidate still true and no route decision recorded. That would mean the flag is decoration — the same defect one layer up, since this change's whole justification is that a refutation the picker cannot see changes nothing. Also falsified, differently and worse: a lap records a claim against the refuted candidate, meaning the 'elected' label beat the refutation in a real decision. NOT falsified if a lap resolves it by re-aiming the candidate and removing the refuted block — that is a resolution, and the constraints->zerobase test forces it to be deliberate.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-10.the-listing-rail-is-priced-at-zero",
+      "made_at": "2026-08-10T02:00:00Z",
+      "claim": "The Gumroad create/read/delete path is now observed end to end, so listing a product costs ZERO owner actions and every option that sells through this rail should be priced accordingly. Two halves, and they fail differently. The first is that the instrument stays honest: deletion is confirmed by absence from GET /v2/products, because GET by id serves a tombstone for a deleted product — HTTP 200, success true, a full body — and reading success there is what made the first run of the day report a leftover draft that did not exist. The second, and the one that matters to the goal, is that the price reaches the chooser: this is the second consecutive lap whose finding is only worth anything if the next decision reads it, and the route decision owed to the next lap is exactly where an option that needs a listing gets priced.",
+      "metric": "Read from committed state on origin/main, none from a lap's account of itself. (a) state/gumroad-capabilities.json verdict reads full_lifecycle_over_api, and node tests/run-tests.mjs fails when the collection-absence assertion or the three-valued cleanup assertion is removed — both mutations were run at 01:58Z and both went red, so a suite that passes with those assertions deleted does not count. (b) Whether any lap after 2026-08-10T02:00Z prices creating a Gumroad listing at one owner action — read from state/lap-claims.json mechanisms, state/continue.json, and state/owner-requests.json. A NEW owner request whose act is 'create a listing' falsifies the reach half outright; the two already pending (a cover upload and a Reddit account) do not, since neither is a listing. (c) When the route decision lands, whether the elected route's costing cites the zero-owner-action rail — adopted or rejected on its merits both count, never appearing does not.",
+      "baseline": {
+        "measured_at": "2026-08-10T01:56Z",
+        "verdict_before_today": "create_supported_rate_limited",
+        "verdict_now": "full_lifecycle_over_api",
+        "create_http": 200,
+        "read_back_published": false,
+        "delete_http": 200,
+        "collection_product_count_after_delete": 1,
+        "still_present_after_delete": false,
+        "by_id_still_resolves_after_delete": true,
+        "owner_actions_to_list_a_product": 0,
+        "owner_requests_pending_that_are_listings": 0
+      },
+      "judge_on": "2026-08-13",
+      "judge_deadline": "2026-08-17",
+      "min_observations": {
+        "source": "state/laps.json",
+        "path": "samples",
+        "min": 3,
+        "usable_only": false,
+        "note": "Three laps must have RUN after this one before the reach half is fair — one lap not mentioning a listing is not evidence that the price is unread. usable_only false for the same reason as the prediction above: 57 consecutive laps are unmeasurable for cost, so usable_only true would never reach 3 and the judgement would never come due.",
+        "the_half_that_needs_no_observations": "Half (a) is measurable the moment this is committed and does not wait on laps. If (a) has broken by the judge date, that is a finding on its own regardless of what (b) and (c) show."
+      },
+      "concurrent_changes": [
+        "One commit and the parts are inseparable: scripts/probe-gumroad-lifecycle.mjs (the instrument repair plus the main-guard that lets it be imported), tests/run-tests.mjs (four directions held), state/constraints.json gumroad_listing_is_automatable (the measurement), state/gumroad-capabilities.json (the reading). Splitting the repair from the reading would have committed a number produced by an instrument known to be wrong.",
+        "Not this change and running in the same window: codex/INBOX.md task 2026-08-10.b is in flight and will force the route decision when it returns. If the route is re-elected between now and the judge date, part (c) is judged against that election rather than against a hypothetical one."
+      ],
+      "falsified_if": "A later lap files an owner request to create a Gumroad listing, or costs an option at one owner action for listing, while this entry stands — that is the price failing to reach the chooser, which is the specific failure two consecutive handoffs have now recorded in other forms. Also falsified, and worse: the probe reverts to confirming deletion by an endpoint that answers for deleted objects, since the whole class of defect here is a well-formed reading of the wrong thing. NOT falsified by the route decision rejecting Gumroad — a rail that is cheap and still wrong is a legitimate answer, and this claims the price, not the venue.",
+      "outcome": null
     }
   ]
 }

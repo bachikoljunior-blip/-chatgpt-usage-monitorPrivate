@@ -681,6 +681,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T01:47:56.622Z",
+      "candidate": "gumroad_listing_is_automatable",
+      "kind": "prerequisite",
+      "mechanism": "Recheck due today (recheck_after 2026-08-10). The 2026-08-09 probe stopped at a 10-per-day cap, so create/read/delete has never been observed end to end; the constraint's own evidence says retry after the cap resets before relying on delete. Whichever way the route decision goes when 2026-08-10.b lands, every option that sells through Gumroad is priced at either zero owner actions or one, and nothing has ever measured which. RUNBOOK 6 gate 3 is shut, so a route needing an owner action to list is a route that cannot be filed at all; a route that can list itself is not. Claims no ETA improvement by itself: it changes the owner-action cost of a class of options, not a revenue rate.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

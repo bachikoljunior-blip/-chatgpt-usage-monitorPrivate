@@ -1,18 +1,38 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T06:53:35.480Z",
-  "probe": "POST /v2/products then GET then DELETE (creates a draft and removes it in the same run)",
+  "fetched_at": "2026-08-10T01:53:15.473Z",
+  "probe": "POST /v2/products then GET then DELETE, with deletion confirmed by absence from GET /v2/products",
   "http_status": 200,
-  "verdict": "create_supported_rate_limited",
-  "response_excerpt": "Creation is supported but capped right now: \"Sorry, you can only create 10 products per day.\". A daily cap is only imposed on something the API does. Treat listing as automatable and retry the lifecycle check after the cap resets before building on it.",
+  "verdict": "full_lifecycle_over_api",
+  "response_excerpt": "Create, read and delete all worked, and the deleted product is absent from GET /v2/products. Listing a product needs no owner action.",
   "steps": [
     {
       "step": "create",
       "http_status": 200,
-      "success": false,
-      "got_id": false,
-      "message": "Sorry, you can only create 10 products per day."
+      "success": true,
+      "got_id": true,
+      "product_id": "aFSjRR8ANPwDTBUuIUlRAQ==",
+      "message": null
+    },
+    {
+      "step": "read_back",
+      "http_status": 200,
+      "success": true,
+      "published": false
+    },
+    {
+      "step": "delete",
+      "http_status": 200,
+      "success": true
+    },
+    {
+      "step": "confirm_deleted",
+      "method": "absence from GET /v2/products",
+      "http_status": 200,
+      "product_count": 1,
+      "still_present": false,
+      "by_id_still_resolves": true
     }
   ]
 }
