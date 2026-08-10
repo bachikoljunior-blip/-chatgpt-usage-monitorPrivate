@@ -181,13 +181,28 @@ function deliveredMatches(relPath) {
  *
  * @returns {string} a clause to append, or "" when there is nothing to add
  */
+function uploadProbe() {
+  const f = path.join(ROOT, "state", "gumroad-presign.json");
+  if (!existsSync(f)) return null;
+  try {
+    return JSON.parse(readFileSync(f, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+function uploadRouteExists() {
+  return uploadProbe()?.upload_route_exists === true;
+}
+
 function uploadRouteReading() {
   const f = path.join(ROOT, "state", "gumroad-presign.json");
   if (!existsSync(f)) {
     return (
       " Whether ANY upload route exists is unprobed on the paths the vendor's source names" +
       " (POST /v2/files/presign, POST /v2/files/complete) — run scripts/probe-gumroad-presign.mjs" +
-      " before calling this a ceiling.";
+      " before calling this a ceiling."
+    );
   }
   let probe;
   try {
@@ -247,7 +262,15 @@ function deliveryChannel() {
     return {
       verdict: v,
       route,
-      sentence: `MEASURED ${probe.fetched_at}: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable in place.${routeSentence} ${probe.verdict_reason ?? ""}`.trim(),
+      // verdict_reason is the replacement probe's own prose and it still recites
+      // "the presigned upload endpoint ... is absent from this surface (12
+      // path/method pairs)". That sentence is the one state/gumroad-presign.json
+      // just refuted, so carrying it under the refutation would print a claim and
+      // its correction side by side and let a reader take either. Dropped, not
+      // rewritten — the probe regenerates that file and a hand-edit there would be
+      // overwritten within the hour, which this repository has already done three
+      // times.
+      sentence: `MEASURED ${probe.fetched_at}: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable in place.${routeSentence}${uploadRouteExists() ? "" : ` ${probe.verdict_reason ?? ""}`}`.trim(),
     };
   }
   if (v === "replaceable") {
