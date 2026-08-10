@@ -100,6 +100,107 @@ export function roundEngaged(round) {
   return null;
 }
 
+export const VERDICT_STREAK_LIMIT = 3;
+
+/**
+ * The reviewer's decision on this round, normalised, or null if it recorded none.
+ *
+ * The register writes this field in two languages — 払わない from the lane's
+ * Japanese tasks, would_not_pay from the earlier English ones — and rule 4 below
+ * never read it in either.
+ *
+ * @param {object} round
+ * @returns {string|null}
+ */
+export function roundVerdict(round) {
+  const raw = String(round?.verdict ?? "").trim();
+  if (!raw) return null;
+  if (/払わない|would_not_pay|no_pay|would not pay/i.test(raw)) return "would_not_pay";
+  if (/払う|would_pay|would pay/i.test(raw)) return "would_pay";
+  return raw.toLowerCase();
+}
+
+/**
+ * How many rounds in a row have returned the SAME verdict at the same rung.
+ *
+ * Rule 4 counted `moved === false` and nothing else. Every round in this register
+ * writes `moved` as a prose object describing what the LAP learned, so the strict
+ * comparison never matched and the counter never advanced. free_demo is the case
+ * that shows the cost: rounds 4, 5 and 8 are all stranger_reaction, all 払わない,
+ * and round 8's own moved object says in words — the_verdict_did_not_move,
+ * "Three independent reviewers now agree" — the very thing rule 4 exists to catch.
+ * The machine read that object as movement. What moved each time was the
+ * INSTRUMENT (a reviewer who played, an opening that changed); the answer did not.
+ *
+ * An offer can therefore be polished forever on the strength of its measurements
+ * getting better while its verdict stays put, and this lap was about to translate
+ * that demo into English before reading the three refusals underneath it.
+ *
+ * Guard, and it is the same one the code comment on rule 4 already argued for:
+ * a streak made ENTIRELY of reads cannot demand an approach change, because
+ * RUNBOOK 5.4 fixes 払わない as rung 2's default and a reviewer who did not
+ * exercise the artifact has returned the default rather than judged it. At least
+ * one round in the streak must be engaged.
+ *
+ * @param {Array<object>} rounds
+ * @returns {{length: number, verdict: string|null, rung: string|null, engaged: boolean}}
+ */
+export function verdictStreak(rounds) {
+  let best = { length: 0, verdict: null, rung: null, engaged: false };
+  const runs = new Map();
+  for (const r of Array.isArray(rounds) ? rounds : []) {
+    const rung = r?.rung ?? null;
+    if (approachChangeIsDescribed(r)) {
+      // Only for THIS rung. free_demo round 6 carries approach_changed on a
+      // promise_conformance round, and it was silencing a stranger_reaction
+      // streak. Changing how promises are checked is not a changed approach to
+      // whether a stranger would pay: they are different questions, which is
+      // the whole reason the ladder has separate rungs.
+      runs.set(rung, []);
+      continue;
+    }
+    const verdict = roundVerdict(r);
+    if (!verdict) continue;
+    const run = runs.get(rung) ?? [];
+    const prev = run[run.length - 1];
+    if (prev && roundVerdict(prev) !== verdict) run.length = 0;
+    run.push(r);
+    runs.set(rung, run);
+    const engaged = run.some((x) => roundEngaged(x) === true);
+    if (run.length > best.length || (run.length === best.length && engaged && !best.engaged)) {
+      best = { length: run.length, verdict, rung, engaged };
+    }
+  }
+  return best;
+}
+
+/**
+ * Does this round's approach change say what it changed?
+ *
+ * free_demo round 6 is `approach_changed: true` with an empty what_changed and
+ * nothing else. A bare boolean silenced rule 4b for every later round, and the
+ * offer went on collecting the same refusal. RUNBOOK 8: 決めたことは、同じ周の
+ * うちに「ファイル」と「それを読む機械」の両方になる — a flag whose only content
+ * is that somebody set it is the file half with the reason left out, and here it
+ * is load-bearing enough to switch a check off.
+ *
+ * Not retroactive punishment: an undescribed flag stops RESETTING the streak, it
+ * does not itself become a problem. The round stays exactly as it was recorded.
+ *
+ * @param {object} round
+ * @returns {boolean}
+ */
+export function approachChangeIsDescribed(round) {
+  const flag = round?.approach_changed;
+  if (!flag) return false;
+  if (typeof flag === "string") return flag.trim().length > 0;
+  if (typeof flag === "object") return Object.keys(flag).length > 0;
+  // `true` on its own is only as good as the prose beside it.
+  return ["what_changed", "approach_changed_note", "why_this_one"]
+    .map((k) => String(round?.[k] ?? "").trim())
+    .some((v) => v.length > 0);
+}
+
 /**
  * Can the round's claim of play be told apart from a careful read?
  *
@@ -796,6 +897,20 @@ export function judge(doc, { now, artifactSources = {}, playMeasurements = null,
       problems.push(
         `${offer.id} has ${noMove} consecutive rounds that moved nothing. The rule is change the ` +
           "approach, not the parameter — set approach_changed on the round that does it.",
+      );
+    }
+
+    // 4b. Three rounds in a row returning the same ANSWER. Rule 4 above asks
+    //     whether anything moved; this asks whether the thing being measured
+    //     moved. They came apart on free_demo, where every round improved the
+    //     instrument and all three reviewers said the same word.
+    const streak = verdictStreak(rounds);
+    if (streak.length >= VERDICT_STREAK_LIMIT && streak.engaged) {
+      problems.push(
+        `${offer.id} has ${streak.length} consecutive ${streak.rung} rounds all returning ` +
+          `${streak.verdict}, at least one of them engaged. The verdict has not moved, whatever ` +
+          "the rounds moved. Change the approach, not the parameter — set approach_changed on " +
+          "the round that does it, or retire the offer.",
       );
     }
 

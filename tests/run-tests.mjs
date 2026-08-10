@@ -5695,6 +5695,92 @@ function assert(condition, message) {
     "an empty engagement value was resolved instead of left unknown",
   );
 
+  // Rule 4b: three rounds in a row returning the same ANSWER.
+  //
+  // Rule 4 counts `moved === false`. Every round in this register writes `moved`
+  // as a prose object about what the LAP learned, so the strict comparison never
+  // matched and the counter never advanced — while free_demo collected three
+  // 払わない, one of them from a reviewer who actually played, and round 8's own
+  // moved object said the_verdict_did_not_move in words. The machine read that
+  // object as movement. A lap on 2026-08-10 was about to translate that demo
+  // into English before reading the three refusals underneath it.
+  {
+    const { verdictStreak, roundVerdict, approachChangeIsDescribed, VERDICT_STREAK_LIMIT } =
+      await import("../scripts/product-loop.mjs");
+
+    // Both languages the register actually uses.
+    assert(roundVerdict({ verdict: "払わない" }) === "would_not_pay", "the Japanese verdict was not normalised");
+    assert(roundVerdict({ verdict: "would_not_pay" }) === "would_not_pay", "the English verdict was not normalised");
+    assert(roundVerdict({ rung: "promise_conformance" }) === null, "a round with no verdict was given one");
+
+    // THE REAL REGISTER, not an invented object. A unit test on a hand-built
+    // round is exactly what stays green while the register is broken — the same
+    // lesson gate-verdict's roundTimestamps fix recorded on 2026-08-10.
+    const register = JSON.parse(readFileSync(new URL("../state/product-loop.json", import.meta.url), "utf8"));
+    const demo = register.offers.find((o) => o.id === "free_demo");
+    assert(demo, "free_demo left the register — if it was retired, this assertion should be too");
+    const real = verdictStreak(demo.rounds ?? []);
+    assert(
+      real.length >= VERDICT_STREAK_LIMIT && real.rung === "stranger_reaction" && real.engaged,
+      `free_demo's real streak reads ${JSON.stringify(real)} — rule 4b is not seeing the three refusals`,
+    );
+
+    // A streak of reads alone cannot demand an approach change: RUNBOOK 5.4 fixes
+    // 払わない as rung 2's default, so an unengaged round returned the default
+    // rather than judged the artifact.
+    const reads = [1, 2, 3].map((round) => ({
+      round,
+      rung: "stranger_reaction",
+      verdict: "払わない",
+      engagement: { played_or_read: "読んだ" },
+    }));
+    assert(verdictStreak(reads).engaged === false, "three reads were treated as three measurements");
+
+    // A different answer breaks the streak. Otherwise the rule would fire on an
+    // offer that is actually moving.
+    const mixed = [
+      { round: 1, rung: "stranger_reaction", verdict: "払わない", engagement: { played_or_read: "遊んだ" } },
+      { round: 2, rung: "stranger_reaction", verdict: "払う", engagement: { played_or_read: "遊んだ" } },
+      { round: 3, rung: "stranger_reaction", verdict: "払わない", engagement: { played_or_read: "遊んだ" } },
+    ];
+    assert(verdictStreak(mixed).length === 1, "a changed verdict did not break the streak");
+
+    // An approach change at ANOTHER rung must not silence this one. This is the
+    // mutation that was live: free_demo round 6 is promise_conformance with a
+    // bare approach_changed, and it was resetting a stranger_reaction streak.
+    const crossRung = [
+      { round: 1, rung: "stranger_reaction", verdict: "払わない", engagement: { played_or_read: "遊んだ" } },
+      { round: 2, rung: "promise_conformance", approach_changed: "rewrote the conformance probe" },
+      { round: 3, rung: "stranger_reaction", verdict: "払わない", engagement: { played_or_read: "遊んだ" } },
+      { round: 4, rung: "stranger_reaction", verdict: "払わない", engagement: { played_or_read: "遊んだ" } },
+    ];
+    assert(
+      verdictStreak(crossRung).length === 3,
+      "an approach change at a different rung silenced the streak",
+    );
+
+    // A described approach change at the SAME rung does reset it — that is the
+    // rule working, not being evaded.
+    const sameRung = [
+      { round: 1, rung: "stranger_reaction", verdict: "払わない", engagement: { played_or_read: "遊んだ" } },
+      { round: 2, rung: "stranger_reaction", approach_changed: "asked buyers instead of reviewers" },
+      { round: 3, rung: "stranger_reaction", verdict: "払わない", engagement: { played_or_read: "遊んだ" } },
+    ];
+    assert(verdictStreak(sameRung).length === 1, "a described approach change at the same rung did not reset");
+
+    // A bare `true` with nothing describing it does not silence anything.
+    assert(approachChangeIsDescribed({ approach_changed: true }) === false, "an unexplained flag was accepted");
+    assert(
+      approachChangeIsDescribed({ approach_changed: true, what_changed: "stopped tuning the opening" }) === true,
+      "a flag with prose beside it was rejected",
+    );
+    assert(
+      approachChangeIsDescribed({ approach_changed: "switched audiences" }) === true,
+      "a described approach change was rejected",
+    );
+    assert(approachChangeIsDescribed({ round: 1 }) === false, "a round with no flag was read as changing approach");
+  }
+
   // The real file. This said "no round has ever produced evidence of play that a
   // reader could not have produced", and on 2026-08-10 round 8 (task .s) produced
   // exactly that: a chromedriver sessionId, a HeadlessChrome userAgent and a
