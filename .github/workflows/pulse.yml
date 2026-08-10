@@ -183,6 +183,14 @@ jobs:
           # token cannot reach, so the check that matters most was the one guaranteed
           # not to run on the schedule that never stops. This is the local half.
           node scripts/check-goal-intact.mjs || rc=1
+          # The report the owner actually reads. state/continue.json claimed for
+          # several handoffs that a script watched its format; no such script
+          # existed, and the claim was copied forward with the summary it
+          # described. check-wiring cannot see that failure — a sentence in a
+          # state file asserting a reader is invisible to a tool that looks for
+          # real ones. This is the reader. It checks the decidable part and says
+          # out loud, on every green, which part of the instruction it cannot see.
+          node scripts/check-owner-summary.mjs --check || rc=1
           # What the ABUNDANT pool is spent on. Route 5 (2026-08-10) was elected on
           # the measurement that 22 completed lane tasks produced exactly one thing a
           # buyer would receive, while the route above names an artifact as its own

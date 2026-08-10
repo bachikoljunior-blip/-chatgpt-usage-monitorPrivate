@@ -3980,6 +3980,47 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       "round 2 was discarded without being recorded — a thrown-away measurement still has to leave a trace");
   }
 
+  // The owner's report, and the reason this test exists: state/continue.json said
+  // for several handoffs that scripts/check-owner-summary.mjs watched its format,
+  // and the script did not exist. A false claim of a reader is invisible to
+  // check-wiring, which looks for real ones.
+  {
+    const { judgeSummary } = await import("../scripts/check-owner-summary.mjs");
+
+    assert(judgeSummary("").length > 0, "an empty owner_summary passed");
+    assert(judgeSummary("This lap did some things.").some((x) => /kana/.test(x)),
+      "an English owner_summary passed the 日本語で rule");
+    assert(judgeSummary("今回は state/eta.json を見ました。").some((x) => /state file path/.test(x)),
+      "a state path handed to the owner passed");
+    assert(judgeSummary("今回は scripts/pacing.mjs を直しました。").some((x) => /script filename/.test(x)),
+      "a script filename handed to the owner passed");
+    assert(judgeSummary("後継は session_01Ep5n5DrQoEqCV5sTXVKVo7 です。").some((x) => /session id/.test(x)),
+      "a session id handed to the owner passed");
+    // Shared vocabulary is not jargon. Stripping the words the owner uses himself
+    // would be the short paraphrase the instruction warns against, not a fix.
+    assert(judgeSummary("itch と Gumroad と ChatGPT の売上は今も0円です。").length === 0,
+      "product names the owner uses himself were treated as jargon");
+    // The failure mode this rule is most likely to have next: a full field that
+    // nobody rewrote. Existence checks pass; the owner reads last lap's report.
+    assert(judgeSummary("同じ文章です。", { previous: "同じ文章です。" }).some((x) => /identical/.test(x)),
+      "an inherited owner_summary passed");
+    assert(judgeSummary("新しい文章です。", { previous: "古い文章です。" }).length === 0,
+      "a rewritten owner_summary was rejected");
+
+    // The live field, which is the half that can rot.
+    const live = JSON.parse(await readFile(join(root, "state/continue.json"), "utf8"));
+    assert(judgeSummary(live.owner_summary).length === 0,
+      `the live owner_summary fails its own check: ${judgeSummary(live.owner_summary).join("; ")}`);
+    // And the note that started this: it may no longer promise a reader that is
+    // not there. Named explicitly because the sentence survived several laps by
+    // being copied along with the summary it described.
+    const noteText = String(live.owner_summary_note ?? "");
+    if (/check-owner-summary/.test(noteText)) {
+      const { readFile: rf } = await import("node:fs/promises");
+      await rf(join(root, "scripts/check-owner-summary.mjs"), "utf8");
+    }
+  }
+
   // The pairing rule: who was ASKED, which is the cause the recognition rule kept
   // catching one round too late.
   {
