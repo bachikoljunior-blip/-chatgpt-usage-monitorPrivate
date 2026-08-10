@@ -33,7 +33,7 @@
 //
 //   node scripts/lane-authorship.mjs --check
 //
-// Two rules, both mechanical:
+// Three rules, all mechanical:
 //
 //   1. A task declaring `reviews_authored_by:` must run on a different model
 //      key. This is the void round, refused before it is dispatched rather than
@@ -43,8 +43,12 @@
 //      default when a named slug is refused, which is the right behaviour for a
 //      survey and fatal for a review, because it swaps the reviewer without
 //      saying so. The ledger makes it visible; this makes it loud.
+//   3. An ANSWER in codex/outbox/ with no ledger run behind it has no established
+//      author at all. Rules 1 and 2 both assume the ledger saw the run; a file that
+//      arrived some other way is outside both of them, and the INBOX header it
+//      claims to answer is a request rather than a record. See unledgeredAnswers().
 
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import { REPO, readStateJson } from "./state-source.mjs";
 import { parseInboxTasks, MODEL_KEYS, DEFAULT_MODEL_KEY } from "./inbox-task.mjs";
@@ -66,9 +70,51 @@ export function keyOfLandedModel(landed, sparkSlug) {
 }
 
 /**
+ * Which answers in codex/outbox/ have no ledger run behind them.
+ *
+ * The pairing rule that makes rung 2 worth anything rests on knowing which model
+ * wrote each artifact. state/codex-lane.json is the only place that records it,
+ * and it is written by the workflow — so an answer that appears in the repository
+ * WITHOUT a ledger run has no established author, whatever the INBOX task asked for.
+ *
+ * 2026-08-10 produced the first one. codex/outbox/2026-08-10.n.md was committed as
+ * 5ca9505 by bachikoljunior-blip, not by chatgpt-usage-monitor[bot]; it is the only
+ * outbox commit in the repository's history not made by the bot, and it touched no
+ * ledger and no state/answers. The task header says model: account_default. Nothing
+ * confirms that ran. A later lap pairing a reviewer against "account_default wrote
+ * .n" would be pairing against a header rather than a measurement, and if the header
+ * is wrong the round is void and a lane slot is gone — one round too late, which is
+ * the exact cost roundSelfReviewed() exists to avoid.
+ *
+ * Scoped by task id rather than by time. Ids sort within a day, the ledger starts at
+ * its earliest recorded run, and everything before that predates the ledger and is
+ * history rather than a gap — the same grandfathering rule 2 applies to runs that
+ * recorded neither half.
+ *
+ * The escape is data, not silence: list the id in state/codex-lane.json under
+ * answers_with_no_ledger_run with a reason. That keeps the fact machine-readable
+ * instead of letting a green check imply every answer has a known author.
+ *
+ * @returns {string[]} task ids whose authorship is not established
+ */
+export function unledgeredAnswers({ answers = [], runs = [], acknowledged = [] }) {
+  const ledgered = new Set(runs.map((r) => r?.task_id).filter(Boolean));
+  if (!ledgered.size) return [];
+  const earliest = [...ledgered].sort()[0];
+  const ack = new Set(
+    (Array.isArray(acknowledged) ? acknowledged : [])
+      .map((a) => (typeof a === "string" ? a : a?.task_id))
+      .filter(Boolean),
+  );
+  return answers
+    .filter((id) => id >= earliest && !ledgered.has(id) && !ack.has(id))
+    .sort();
+}
+
+/**
  * @returns {{ok: boolean, problems: string[], notes: string[]}}
  */
-export function judge({ tasks, runs, sparkSlug }) {
+export function judge({ tasks, runs, sparkSlug, answers = [], acknowledged = [] }) {
   const problems = [];
   const notes = [];
 
@@ -109,6 +155,19 @@ export function judge({ tasks, runs, sparkSlug }) {
     }
   }
 
+  // Rule 3: an answer with no ledger run behind it. See unledgeredAnswers().
+  for (const id of unledgeredAnswers({ answers, runs, acknowledged })) {
+    problems.push(
+      `${id}: an answer exists in codex/outbox/ with no run in ${LANE_STATE_PATH} — ` +
+        "its authoring model is not established, so nothing can be paired against it. " +
+        "Establish it, or list it under answers_with_no_ledger_run with a reason",
+    );
+  }
+  for (const a of Array.isArray(acknowledged) ? acknowledged : []) {
+    const id = typeof a === "string" ? a : a?.task_id;
+    if (id) notes.push(`${id}: no ledger run, author UNESTABLISHED and acknowledged as such`);
+  }
+
   return { ok: problems.length === 0, problems, notes };
 }
 
@@ -124,10 +183,18 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const { sparkModelCandidate } = await import("./spark-model.mjs");
   const sparkSlug = usage ? sparkModelCandidate(usage) : null;
 
+  // The answers actually present, taken from the directory rather than from any
+  // register — a list that describes itself cannot report a file nobody logged.
+  const answers = (await readdir(resolve(REPO, "codex/outbox")).catch(() => []))
+    .filter((f) => f.endsWith(".md"))
+    .map((f) => f.slice(0, -3));
+
   const verdict = judge({
     tasks: parsed.tasks ?? [],
     runs: Array.isArray(lane?.runs) ? lane.runs : [],
     sparkSlug,
+    answers,
+    acknowledged: lane?.answers_with_no_ledger_run ?? [],
   });
 
   for (const note of verdict.notes) console.log(`  ok  ${note}`);

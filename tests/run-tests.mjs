@@ -2,7 +2,7 @@
 
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
-import { chmod, copyFile, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { chmod, copyFile, mkdtemp, readdir, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -25,7 +25,7 @@ import {
 } from "../scripts/inbox-task.mjs";
 import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/revenue-rate.mjs";
 import { decideVerdict, KINDS } from "../scripts/gate-verdict.mjs";
-import { roundRecognised, roundSelfReviewed, blindLeaks, inBlindScope, judge } from "../scripts/product-loop.mjs";
+import { roundRecognised, roundSelfReviewed, blindLeaks, inBlindScope, judge, engagementSupported } from "../scripts/product-loop.mjs";
 import {
   KINDS as LANE_KINDS, classify as laneClassify, completedIds, producesOf,
   share as laneShare, judge as laneJudge,
@@ -766,7 +766,15 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       modelKey: "spark",
       model: "gpt-5.3-codex-spark",
     });
-    const withFinding = { ...before, which_pool_a_named_run_actually_spends: { answer: "spark" } };
+    const withFinding = {
+      ...before,
+      which_pool_a_named_run_actually_spends: { answer: "spark" },
+      // Written by a lap, rewritten hourly by the workflow. Rule 3 of
+      // lane-authorship.mjs reads it, so losing it here would turn that check red
+      // one hour after every lap that acknowledges an unledgered answer — and a
+      // check that goes red on a schedule teaches laps to stop reading it.
+      answers_with_no_ledger_run: [{ task_id: "2026-08-10.n", author: null }],
+    };
     const after = buildLaneRecord({
       now: new Date("2026-08-10T07:00:00Z"),
       ran: false,
@@ -777,6 +785,11 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       after.which_pool_a_named_run_actually_spends?.answer === "spark",
       "a lane run erased the lap conclusion stored beside it; a regenerated file is a fine place for a " +
       "machine's output and a terrible place for a finding, and the two look identical once both are JSON",
+    );
+    assert(
+      after.answers_with_no_ledger_run?.[0]?.task_id === "2026-08-10.n",
+      "the acknowledgement of an answer with no ledger run was erased by the next run; the check that " +
+      "reads it would then go red every hour on a fact that was already recorded",
     );
     assert(
       after.runs.some((r) => r.task_id === "2026-08-10.k"),
@@ -837,6 +850,50 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       judgeAuthorship({ tasks: [], runs: [{ task_id: "old", model_key: null, model: null }], sparkSlug: "x" }).ok,
       "a pre-ledger run with nothing recorded was scored as a fallback",
     );
+
+    // Rule 3. An answer that exists with no run behind it has no established
+    // author, whatever its INBOX header asked for. 2026-08-10.n arrived as a
+    // commit by the owner's identity rather than the bot, wrote no ledger entry,
+    // and would otherwise have been paired against a request.
+    const ledger = [{ task_id: "2026-08-10.k", model_key: "spark", model: "gpt-5.3-codex-spark" }];
+    const SLUG = "gpt-5.3-codex-spark";
+    assert(
+      !judgeAuthorship({ tasks: [], runs: ledger, sparkSlug: SLUG, answers: ["2026-08-10.k", "2026-08-10.n"] }).ok,
+      "an answer with no ledger run was accepted as having a known author",
+    );
+    // Grandfathering: ids below the ledger's earliest run predate the ledger, and
+    // an absence there is history rather than a gap. Without this the rule fires
+    // on all thirty answers written before the ledger existed and gets switched off.
+    assert(
+      judgeAuthorship({ tasks: [], runs: ledger, sparkSlug: SLUG, answers: ["2026-08-09.c", "2026-08-10.k"] }).ok,
+      "an answer older than the ledger itself was scored as a missing run",
+    );
+    // The escape has to be data. Acknowledging it in state/codex-lane.json keeps
+    // the fact machine-readable; deleting the check would keep nothing.
+    assert(
+      judgeAuthorship({
+        tasks: [], runs: ledger, sparkSlug: SLUG,
+        answers: ["2026-08-10.k", "2026-08-10.n"],
+        acknowledged: [{ task_id: "2026-08-10.n", author: null }],
+      }).ok,
+      "an acknowledged unledgered answer still counted as a problem",
+    );
+    // And the live pair: the register's acknowledgement must actually cover the
+    // answers on disk, or the check is green because someone edited the list.
+    {
+      const lane = JSON.parse(await readFile(join(root, "state/codex-lane.json"), "utf8"));
+      const onDisk = (await readdir(join(root, "codex/outbox")))
+        .filter((f) => f.endsWith(".md")).map((f) => f.slice(0, -3));
+      const live = judgeAuthorship({
+        tasks: [], runs: lane.runs ?? [], sparkSlug: "gpt-5.3-codex-spark",
+        answers: onDisk, acknowledged: lane.answers_with_no_ledger_run ?? [],
+      });
+      assert(live.ok, `the live lane ledger does not account for every answer: ${live.problems.join("; ")}`);
+      for (const a of lane.answers_with_no_ledger_run ?? []) {
+        assert(a.author === null,
+          `${a.task_id} is listed as unledgered but names an author — if it is established, it does not belong here`);
+      }
+    }
   }
 
   // The header field the rule above reads has to survive the parser, or the check
@@ -4243,6 +4300,70 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       "round 1 was removed from rounds without being recorded as self-reviewed in void_rounds");
     assert((demo?.rounds ?? []).some((r) => r.task_id === "2026-08-10.k"),
       "the first non-author round is not in the register");
+
+    // A claim of play whose every piece of evidence is readable off the artifact.
+    // 2026-08-10 task .m was written so the answers could not be produced without
+    // playing, and all three of them could: assets/free-demo/index.html RENDERS
+    // 小さな衛星まで 15 on the opening screen and declares perSecond 0.2 next to it.
+    const SRC = "const producerTypes = [{ name: '小さな衛星', baseCost: 15, perSecond: 0.2 }]";
+    assert(
+      engagementSupported({ engagement: { played_or_read: "遊んだ", evidence: ["15", "小さな衛星", "0.2"] } }, SRC) === false,
+      "evidence entirely present in the artifact source read as support for a claim of play",
+    );
+    // One item the source does not contain is enough. Evidence about the RUN — a
+    // command, its output — is the kind that separates playing from reading.
+    assert(
+      engagementSupported({ engagement: { played_or_read: "遊んだ", evidence: ["15", "chromium --headless exited 0"] } }, SRC) === true,
+      "evidence the artifact cannot contain was not read as support",
+    );
+    // Absent is null, twice over, for the same reason roundEngaged's null is: no
+    // quoted evidence, or no source to check against, is not a refutation.
+    assert(engagementSupported({ engagement: { played_or_read: "遊んだ" } }, SRC) === null,
+      "a round quoting no evidence was convicted rather than left unknown");
+    assert(engagementSupported({ engagement: { played_or_read: "遊んだ", evidence: ["15"] } }, null) === null,
+      "a missing artifact source was treated as proof the evidence is readable");
+
+    // The count is where it has to bite. A register that recorded the downgrade in
+    // prose and still reported engaged=1 would be the RUNBOOK 8 failure again.
+    {
+      const claimed = {
+        offers: [{
+          id: "x", live_to_buyers: false,
+          source: { repo: "r", path: "p" },
+          measurement: { rung: "stranger_reaction" },
+          rounds: [{
+            round: 1, verified_at: "2026-08-10T03:00:00Z", verdict: "would_not_pay",
+            recognised: "ない",
+            engagement: { played_or_read: "遊んだ", evidence: ["小さな衛星", "0.2"] },
+            reviewer_pairing: { reviewer_model_key: "spark", author_model_key: "account_default" },
+          }],
+        }],
+      };
+      const withSrc = judge(claimed, { now: new Date("2026-08-10T04:00:00Z"), artifactSources: { x: SRC } })
+        .rows.find((r) => r.id === "x");
+      assert(withSrc.rounds_engaged === 0 && withSrc.rounds_engagement_claimed_unsupported === 1,
+        `a claim of play backed only by readable evidence was counted as engaged: ${JSON.stringify(withSrc)}`);
+      // Without the source there is nothing to check it against, and the round
+      // keeps its word. The downgrade must come from a comparison, never from a
+      // default that quietly disbelieves every round.
+      const noSrc = judge(claimed, { now: new Date("2026-08-10T04:00:00Z") }).rows.find((r) => r.id === "x");
+      assert(noSrc.rounds_engaged === 1 && noSrc.rounds_engagement_claimed_unsupported === 0,
+        "with no artifact to compare against, the round was downgraded anyway");
+    }
+
+    // The live register: round 5 claims play, quotes its evidence, and the evidence
+    // is in the file. rounds_engaged must still read 0 after five rounds.
+    {
+      const src = await readFile(join(root, "assets/free-demo/index.html"), "utf8");
+      const row = judge(pl, { now: new Date("2026-08-10T08:00:00Z"), artifactSources: { free_demo: src } })
+        .rows.find((r) => r.id === "free_demo");
+      assert(row.rounds >= 2, `free_demo lost a round: ${row.rounds}`);
+      assert(row.rounds_engaged === 0,
+        `free_demo reports ${row.rounds_engaged} engaged rounds; no round has ever produced evidence a reader could not`);
+      assert(row.rounds_engagement_claimed_unsupported >= 1,
+        "the round that claimed play with readable evidence is not being counted as such — " +
+        "if the register stopped quoting engagement.evidence, this rule went quiet rather than green");
+    }
   }
 
   // And the live board: every pending request must carry a machine-readable test.
@@ -4574,14 +4695,23 @@ function assert(condition, message) {
     "an empty engagement value was resolved instead of left unknown",
   );
 
-  // The real file: round 1 is on record as unengaged, so the rung it measures has
-  // zero engaged rounds however many rows it carries. This is the number the
-  // elected route's prerequisite actually rests on.
+  // The real file: no round has ever produced evidence of play that a reader could
+  // not have produced, so the rung it measures has zero engaged rounds however many
+  // rows it carries. This is the number the elected route's prerequisite rests on.
+  //
+  // The artifact source is passed deliberately. Round 4 was 読んだ by its own word
+  // and needed no comparison; round 5 says 遊んだ and is only distinguishable from a
+  // read by checking its quoted evidence against the file. Judging the live register
+  // without the artifact would report engaged=1 on a self-report — which is what this
+  // assertion did until round 5 arrived and turned it red.
   {
     const real = JSON.parse(await readFile(join(root, "state/product-loop.json"), "utf8"));
     const demo = real.offers.find((o) => o.id === "free_demo");
-    const row = judgeProductLoop(real, { now: new Date("2026-08-10T04:00:00Z") }).rows
-      .find((r) => r.id === "free_demo");
+    const src = await readFile(join(root, demo.source.path), "utf8");
+    const row = judgeProductLoop(real, {
+      now: new Date("2026-08-10T04:00:00Z"),
+      artifactSources: { free_demo: src },
+    }).rows.find((r) => r.id === "free_demo");
     assert(demo.rounds.length >= 1, "free_demo lost its recorded round");
     assert(
       row.rounds_engaged === 0 && row.rounds >= 1,

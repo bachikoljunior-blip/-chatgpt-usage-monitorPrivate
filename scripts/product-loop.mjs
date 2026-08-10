@@ -46,7 +46,7 @@
 // 4 is the rule the note repository's IMPROVEMENT_LOOP already states and nothing
 // enforced: three no-move rounds means change the approach, not the parameter.
 
-import { readStateJson } from "./state-source.mjs";
+import { readState, readStateJson } from "./state-source.mjs";
 
 export const STATE_PATH = "state/product-loop.json";
 export const MAX_ROUND_AGE_DAYS = 14;
@@ -98,6 +98,59 @@ export function roundEngaged(round) {
   if (/遊ん|played|plaid/i.test(said)) return true;
   if (/読ん|read|looked/i.test(said)) return false;
   return null;
+}
+
+/**
+ * Can the round's claim of play be told apart from a careful read?
+ *
+ * roundEngaged() reads the reviewer's own word. That was the whole instrument,
+ * and RUNBOOK 3 forbids exactly it: 自己申告を測定として扱わない。小さくても現物を
+ * 1つ出させて、届いたかどうかで判定してください。
+ *
+ * 2026-08-10 task .m was written to close that gap and did not. It demanded three
+ * numbers "you cannot write without playing": how many taps, the name and price of
+ * the first thing bought, and the per-second rate before and after. The answer came
+ * back 15 / 小さな衛星 15粒 / 0 → 0.2, and all three are correct — and all three are
+ * in the artifact the reviewer was pointed at. assets/free-demo/index.html line 91
+ * RENDERS 小さな衛星まで 15 on the opening screen before any input, and line 106 is
+ * `{ name: '小さな衛星', baseCost: 15, perSecond: 0.2 }`. The proof-of-play question
+ * was answerable by reading the file.
+ *
+ * That is not a flaw in one task. The artifact is a single self-contained HTML file
+ * with its logic inline, so EVERY fact about it is in the text the reviewer opens.
+ * No question of the form "tell me a number from the game" can distinguish playing
+ * from reading, for this artifact or any other of its class. Evidence that separates
+ * them has to come from outside the file — what the reviewer RAN, not what the
+ * artifact SAYS.
+ *
+ * So the rule is mechanical and it is checked against the artifact rather than
+ * against the reviewer: quote the evidence in `engagement.evidence`, and if every
+ * quoted item appears verbatim in the artifact's own source, the claim is not
+ * supported and the round does not count toward rounds_engaged.
+ *
+ * Tri-state. `null` is "cannot tell" — no evidence quoted, or no source to check
+ * against — and it does NOT downgrade, for the same reason roundEngaged's null does
+ * not: rounds predate the field.
+ *
+ * Substring matching over-reports readability: a short token like "15" matches
+ * `Math.pow(1.15` too. That bias is deliberate and it is the safe direction, the
+ * same one RUNBOOK 2 takes with unmeasurable laps — refusing to credit a
+ * measurement costs a repeat, crediting a false one costs every decision downstream.
+ *
+ * @param {object} round
+ * @param {string|null|undefined} artifactSource
+ * @returns {boolean|null} true = at least one item is not in the source
+ */
+export function engagementSupported(round, artifactSource) {
+  const e = round?.engagement;
+  if (!e || typeof e !== "object") return null;
+  const quoted = (Array.isArray(e.evidence) ? e.evidence : [])
+    .map((s) => String(s ?? "").trim())
+    .filter(Boolean);
+  if (!quoted.length) return null;
+  const src = String(artifactSource ?? "");
+  if (!src) return null;
+  return quoted.some((item) => !src.includes(item));
 }
 
 /**
@@ -295,13 +348,16 @@ export function loopable(offer) {
 
 /**
  * @param {{offers?: Array<any>}} doc
- * @param {{now: Date}} ctx
+ * @param {{now: Date, artifactSources?: Record<string,string|null>}} ctx
+ *   artifactSources maps offer id -> the artifact's own source text. Absent means
+ *   "not available", which leaves engagement claims unchecked rather than refuted.
  */
-export function judge(doc, { now }) {
+export function judge(doc, { now, artifactSources = {} }) {
   const problems = [];
   const rows = [];
 
   for (const offer of doc?.offers ?? []) {
+    const artifactSource = artifactSources[offer.id] ?? null;
     const loop = loopable(offer);
     const rounds = Array.isArray(offer.rounds) ? offer.rounds : [];
     const newest = rounds.length ? rounds[rounds.length - 1] : null;
@@ -410,6 +466,15 @@ export function judge(doc, { now }) {
       }
     }
 
+    // 8. A claim of play whose every piece of evidence is in the artifact's own
+    //    source. Not a PROBLEM — the register is recording honestly when it quotes
+    //    the evidence and lets this fire. The failure it prevents is silent: a
+    //    later lap reading played_or_read 遊んだ and concluding the rung is
+    //    measured. So it is counted and printed rather than made red.
+    const engagedClaimedUnsupported = rounds.filter(
+      (r) => roundEngaged(r) === true && engagementSupported(r, artifactSource) === false,
+    ).length;
+
     // 4. Three no-move rounds without an approach change.
     let noMove = 0;
     for (const r of rounds) {
@@ -437,8 +502,14 @@ export function judge(doc, { now }) {
       next_rung: offer.measurement?.rung ?? null,
       rounds: rounds.length,
       // The count that means something for this rung. A rung whose only rounds
-      // are unengaged has not been measured, however many rows it has.
-      rounds_engaged: rounds.filter((r) => roundEngaged(r) === true).length,
+      // are unengaged has not been measured, however many rows it has. A claim of
+      // play whose evidence is entirely readable from the artifact does not count:
+      // it is a careful read that says 遊んだ, and this rung's question is whether
+      // anyone would keep PLAYING.
+      rounds_engaged: rounds.filter(
+        (r) => roundEngaged(r) === true && engagementSupported(r, artifactSource) !== false,
+      ).length,
+      rounds_engagement_claimed_unsupported: engagedClaimedUnsupported,
       newest_round_age_days: ageDays,
       consecutive_no_move: noMove,
     });
@@ -455,7 +526,17 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.error(`product loop: ${STATE_PATH} could not be read (${via})`);
     process.exit(1);
   }
-  const verdict = judge(doc, { now: new Date() });
+  // The artifact each offer's engagement claims are checked against. Read the same
+  // way state is read — from origin/main — because a claim checked against a stale
+  // checkout is checked against a file the reviewer never saw.
+  const artifactSources = {};
+  for (const offer of doc.offers ?? []) {
+    const path = offer?.source?.path;
+    if (!path) continue;
+    artifactSources[offer.id] = (await readState(path)).text;
+  }
+
+  const verdict = judge(doc, { now: new Date(), artifactSources });
   console.log(`product loop at ${new Date().toISOString()} (source: ${via})`);
   for (const r of verdict.rows) {
     console.log(
@@ -463,6 +544,13 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         `rounds=${r.rounds} (engaged ${r.rounds_engaged}) · next=${r.next_rung ?? "(none)"}`,
     );
     for (const why of r.why_not ?? []) console.log(`      ${why}`);
+    if (r.rounds_engagement_claimed_unsupported > 0) {
+      console.log(
+        `      ${r.rounds_engagement_claimed_unsupported} round(s) SAY 遊んだ and are not counted: every ` +
+          "piece of evidence they quote is in the artifact's own source, so the claim cannot be told " +
+          "from a careful read. Evidence that separates them has to be about what the reviewer RAN.",
+      );
+    }
   }
   for (const p of verdict.problems) console.log(`  PROBLEM ${p}`);
   if (process.argv.includes("--check") && !verdict.ok) process.exit(1);

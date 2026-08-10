@@ -56,5 +56,16 @@
       "at": "2026-08-10T06:15:49.487Z"
     }
   ],
-  "note": "Written by every run of .github/workflows/codex-inbox.yml, including the runs that skip because the task already carries its done marker. state/automations.json points codex-loop's liveness here for that reason."
+  "note": "Written by every run of .github/workflows/codex-inbox.yml, including the runs that skip because the task already carries its done marker. state/automations.json points codex-loop's liveness here for that reason.",
+  "answers_with_no_ledger_run": [
+    {
+      "task_id": "2026-08-10.n",
+      "acknowledged_at": "2026-08-10T07:30:00Z",
+      "author": null,
+      "why_no_run": "codex/outbox/2026-08-10.n.md arrived as commit 5ca9505, authored by bachikoljunior-blip rather than chatgpt-usage-monitor[bot]. It is the ONLY outbox commit in this repository's history not made by the bot. It touched no ledger entry, no state/answers/latest.json and no state/answers/latest.md, all three of which .github/workflows/codex-inbox.yml writes on every run that produces an answer. So the answer exists and the run that produced it does not.",
+      "what_is_therefore_unknown": "Which model wrote it. codex/INBOX.md task 2026-08-10.n carries model: account_default, and that is a REQUEST. The ledger is the only record of what actually ran, and it has nothing. If Spark in fact produced this text, then Spark wrote both .j and .n, and the alternation the task was created to preserve did not happen.",
+      "what_must_not_be_done_because_of_it": "Do not file a review of .n paired against author_model_key account_default. roundSelfReviewed() would return false on that pairing and it would be false on a guess — the pairing rule's whole value is that it fires before a lane slot is spent, and pairing against an unverified header spends the slot and finds out afterwards.",
+      "how_to_establish_it_if_it_matters": "Re-run the task through the lane under a fresh task_id so the workflow writes a ledger entry, and compare the two answers. That costs one lane slot on the abundant pool and zero Claude budget. Cheaper alternative: treat .n as authorless and have BOTH models review it, since a round is only void when the reviewer IS the author, and at most one of the two can be."
+    }
+  ]
 }

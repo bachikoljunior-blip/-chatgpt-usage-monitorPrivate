@@ -1569,6 +1569,32 @@
         "codex/INBOX.md gained task .o in the same commit. Queue depth 13, .n still live and undisplaced."
       ],
       "outcome": null
+    },
+    {
+      "id": "2026-08-10.the-proof-of-play-was-readable",
+      "made_at": "2026-08-10T07:36:00Z",
+      "claim": "rounds_engaged has stayed at 0 for five rounds not because the right task had not been written yet, but because no task of that shape can work. Task 2026-08-10.m demanded three numbers 'you cannot write without playing' and every one of them is in assets/free-demo/index.html — line 91 renders 小さな衛星まで 15 on the opening screen before any input, line 106 declares perSecond 0.2. The artifact is a single self-contained file, so every fact about it is in the text the reviewer is handed, and 'name a number from the game' cannot separate playing from reading for this artifact or any other of its class. The narrow claim: evidence of engagement has to be about the RUN (what was executed, what it printed) rather than about the artifact, and until a round carries that kind of evidence, rounds_engaged is not merely empty but unreachable through this lane. The falsifiable half: 2026-08-10.p will report whether the lane can execute anything at all, and if it comes back with a browser and a rendered document.title, then engagement was reachable all along and only the questions were wrong.",
+      "metric": "Whether rounds_engaged ever moves off 0, and whether the round that moves it cites evidence external to the artifact.",
+      "baseline_at_registration": "state/product-loop.json free_demo: rounds 2 kept (4 and 5), 3 void, rounds_engaged 0, rounds_engagement_claimed_unsupported 1. Round 5 is the first round in this file's history to SAY 遊んだ; it is not counted. Rounds 2 and 3 also reported play (25 and 33 taps) and are void on recognition, so no round has ever combined a valid blind with checkable engagement. state/codex-lane.json has 3 ledger runs and 1 acknowledged unledgered answer.",
+      "judge_on": "2026-08-13",
+      "judge_deadline": "2026-08-17",
+      "judge_by": [
+        "(a) codex/outbox/2026-08-10.p.md exists and its 判定 section carries a ブラウザ line backed by the raw output of a `which` call rather than by a sentence. A p.md that answers 可/不可 with no command output is itself the finding: the lane will assert capability it cannot demonstrate, which is the same failure one level up.",
+        "(b) node scripts/product-loop.mjs prints free_demo rounds=2 (engaged 0) and a line naming 1 round whose claim of play is unsupported. If engaged moves to 1, check what the round cited: an artifact fact means the rule was bypassed, a command and its output means the claim above is refuted and that is the good outcome.",
+        "(c) node tests/run-tests.mjs fails when any of these seven mutations is reapplied: engagementSupported never downgrading; the rounds_engaged filter dropping the support check; a missing artifact source convicting the round instead of leaving it unknown; unledgeredAnswers returning nothing; it losing its grandfathering; the acknowledgement list stopping exempting; and DURABLE_KEYS dropping answers_with_no_ledger_run. All seven were run at 07:3xZ and all seven went red.",
+        "(d) THE ONE THAT CAN FAIL QUIETLY: whether a later lap records a round with engagement.played_or_read 遊んだ and NO engagement.evidence array. The rule downgrades on a comparison and returns null when there is nothing to compare, so a round that simply stops quoting its evidence passes silently and counts as engaged. tests/run-tests.mjs asserts rounds_engagement_claimed_unsupported >= 1 on the live register precisely to make that regression visible, but it can be satisfied by round 5 alone while every new round omits the field.",
+        "(e) Whether 2026-08-10.n's author is ever established, or whether a lap pairs a reviewer against the INBOX header. state/codex-lane.json answers_with_no_ledger_run carries author: null and the test asserts it stays null; a lap filling it in from the header rather than from a ledger run would be the failure this rule exists to prevent."
+      ],
+      "concurrent_changes": [
+        "scripts/product-loop.mjs: engagementSupported() added, judge() takes artifactSources, rounds_engaged filtered by it, CLI reads each offer's source from origin/main.",
+        "scripts/lane-authorship.mjs: rule 3 (unledgeredAnswers) added, CLI reads codex/outbox/ from disk.",
+        "scripts/record-lane-run.mjs: DURABLE_KEYS gained answers_with_no_ledger_run.",
+        "state/product-loop.json: round 5 recorded, replacement_candidate_v5 recorded, the_engagement_cell_is_not_merely_unfilled recorded.",
+        "state/codex-lane.json: answers_with_no_ledger_run seeded with 2026-08-10.n.",
+        "codex/INBOX.md: tasks 2026-08-10.p and .q appended.",
+        "NOTE: two instruments changed in one lap. They measure different things (engagement evidence; answer provenance) and neither is an experiment with a predicted ETA effect, so they do not confound each other — but if a later reading is ambiguous, the difference belongs to both."
+      ],
+      "outcome": null
     }
   ]
 }

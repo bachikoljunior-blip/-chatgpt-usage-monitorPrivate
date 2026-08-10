@@ -56,7 +56,12 @@ export const LEDGER_LIMIT = 40;
 // place for a conclusion, and the two look identical once they are both JSON.
 // Carrying an explicit whitelist rather than "everything unrecognised" keeps a
 // stray key from becoming immortal by accident.
-export const DURABLE_KEYS = ["which_pool_a_named_run_actually_spends"];
+// Keys a lap writes that the workflow's wholesale rewrite must not erase.
+// answers_with_no_ledger_run is the acknowledgement rule 3 of lane-authorship.mjs
+// demands; it is written by a lap and rewritten by this workflow, so leaving it out
+// would mean the check goes green for one hour and red again on the next run — a
+// check that flaps on a schedule teaches laps to ignore it.
+export const DURABLE_KEYS = ["which_pool_a_named_run_actually_spends", "answers_with_no_ledger_run"];
 
 /**
  * Build the record. Pure so the invariant below can be tested without a runner:

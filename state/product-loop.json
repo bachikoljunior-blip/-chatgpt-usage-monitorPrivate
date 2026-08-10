@@ -102,6 +102,56 @@
             "what_it_does_not_establish": "Anything behavioural, and anything about the paid kit. Also nothing about play: no one has yet PLAYED this artifact without having written it.",
             "grade": "one blind reviewer, code read rather than play, no instrumentation. Better than every earlier round on blindness, worse than rounds 2 and 3 on engagement — and those two are void."
           }
+        },
+        {
+          "round": 5,
+          "rung": "stranger_reaction",
+          "ran_at": "2026-08-10T06:55:31Z",
+          "verified_at": "2026-08-10T07:30:00Z",
+          "task_id": "2026-08-10.m",
+          "answer": "codex/outbox/2026-08-10.m.md",
+          "answer_commit": "2c0553b",
+          "reviewer_pairing": {
+            "reviewer_model_key": "spark",
+            "author_model_key": "account_default",
+            "reviewer_model": "gpt-5.3-codex-spark",
+            "how_this_was_established": "codex/INBOX.md task 2026-08-10.m carries model: spark and reviews_authored_by: account_default; state/codex-lane.json runs[] records model gpt-5.3-codex-spark against task_id 2026-08-10.m, so the transport did not fall back; node scripts/lane-authorship.mjs --check exits 0 on the pair. Same three-place agreement as round 4."
+          },
+          "blind_held": {
+            "recognised": "ない",
+            "recognised_verbatim": "この見た目・進行ループは、今回の体験では記憶にある既知作品の直接的な再利用には見えなかった。",
+            "so": "VALID and kept. Non-author reviewer, blind held. This is the second kept round in this file's history and the second one whose ない means anything.",
+            "what_was_disclosed": "The public URL and nothing else. WEAKER leak than round 4, which named the file by its repository-relative path. blindLeaks() is clean on the task section."
+          },
+          "verdict": "would_not_pay",
+          "verdict_verbatim": "払わない",
+          "ceiling_offered": null,
+          "strongest_objection_verbatim": "自発的に何度もタップしたくなるイベント性（ボーナス/実績/期間限定要素）がないと、無料で同等体験できるため",
+          "strongest_objection_in_english": "Nothing makes you want to tap repeatedly of your own accord — no bonuses, achievements or timed events — so the same experience is available free elsewhere. Named the weakest stretch as taps 1 through 14.",
+          "what_it_confirms_rather_than_adds": "The dead opening round 4 named. Round 4 read it out of the source and called it 15 taps with no reward; round 5, on a different prompt, independently names taps 1-14 as the most boring stretch. Two non-author reviewers on the same artifact converge on the same defect, which is the first replication this rung has produced.",
+          "the_internal_contradiction_kept_rather_than_smoothed": "やめる理由 says 閉じる理由は見つからなかった — it found no reason to close — and 一番弱いところ names taps 1 through 14 as the most boring stretch, and the verdict is 払わない. The task asked how many SECONDS until it wanted to close and got no number. A reviewer that cannot say when it would quit has not told us when it would quit, and this is recorded rather than resolved in the register's favour.",
+          "engagement": {
+            "played_or_read": "遊んだ",
+            "claimed_verbatim": "## 遊んだ記録 / 1. 15 / 2. 小さな衛星（15粒）/ 3. 毎秒 0 → 0.2",
+            "evidence": [
+              "15",
+              "小さな衛星",
+              "0.2"
+            ],
+            "minutes": null,
+            "why_this_does_not_count": "ALL THREE quoted numbers are correct AND all three are in the artifact's own source. assets/free-demo/index.html line 91 renders 次に交換できるもの 小さな衛星まで 15 on the opening screen before any input, and line 106 is { name: '小さな衛星', baseCost: 15, perSecond: 0.2 }. The task was written specifically so the answers could not be produced without playing, and every one of them could be produced by reading. scripts/product-loop.mjs engagementSupported() now checks the quoted evidence against the artifact source and rounds_engaged does not count this round.",
+            "and_the_tap_count_points_the_same_way": "15 is exactly the minimum needed to afford the first item — the number a reader computes, not the number a player happens to stop at. Rounds 2 and 3, which did report play, gave 25 and 33.",
+            "not_a_claim_that_the_reviewer_lied": "It may well have played. The finding is that this round cannot distinguish the two, and an instrument that cannot distinguish them is not measuring engagement. RUNBOOK 3: 自己申告を測定として扱わない。"
+          },
+          "changed": null,
+          "moved": null,
+          "moved_note": "Nothing was changed between round 4 and round 5. Two blind baselines on the same unchanged artifact, agreeing.",
+          "how_much_this_carries": {
+            "n": 2,
+            "what_it_establishes": "A second non-author reviewer, on a clean blind, refuses to pay and independently names the same opening as the weak part. Replication of round 4's finding by a different prompt.",
+            "what_it_does_not_establish": "Anything about play. rounds_engaged stays 0 after five rounds, and this round is the one that was designed to move it.",
+            "grade": "one blind reviewer, engagement claimed and unverifiable, no instrumentation."
+          }
         }
       ],
       "why_it_is_here_at_all": "It is the only thing this account offers that can enter a loop. If the owner's rule is right — and nothing here contradicts it — then this is where demand can actually be built, and the priced product's un-loopability is the reason the two have to be ranked against each other rather than assumed complementary.",
@@ -225,6 +275,30 @@
         "so_the_defect_rate_did_not_go_to_zero_it_moved": "v2 (.h) had three defects in the persistence and offline-credit path. v3 (.j) closes all three and leaves a fourth in the same function. One rebuild is not a trend, but the shape to watch is that the defects stay in the offline-credit path across authors — that path is where an idle game keeps its promise, and it is the part no reviewer exercises by playing for thirty seconds.",
         "what_this_does_to_the_review_cost_route_5_priced_at_zero": "The predecessor measured that reviewing .h cost a full Claude-context read of 665 lines and concluded the scarce pool reviews rather than moves files. Half of that is now cheaper: a non-author on the abundant pool FOUND the defect for one lane slot and zero Claude budget. The half that did not get cheaper is the one this block just demonstrated — the judge's magnitude claim was wrong, and separating \"real defect\" from \"roughly 2x\" took reading the code anyway. Finding is delegable; sizing is not, at n=1.",
         "not_transplanted": "assets/free-demo/index.html is untouched. A candidate carrying a verified double-credit defect does not replace a byte-verified published file, and state/public-host.json mirrors that file to a second repository this session has never had."
+      },
+      "the_engagement_cell_is_not_merely_unfilled": {
+        "measured_at": "2026-08-10T07:30:00Z",
+        "supersedes": "the known_gaps line that read 'rounds_engaged has never left 0. The queued .m exists to fix exactly this' — .m ran, came back valid, and did not fix it",
+        "claim": "NO QUESTION ABOUT THIS ARTIFACT CAN DISTINGUISH PLAYING FROM READING. assets/free-demo/index.html is a single self-contained file with its logic inline, so every fact about the game is in the text the reviewer is handed. 'Name a number you could only get by playing' has no satisfiable instance here, and .m is the demonstration: three questions chosen to be unfakeable, three correct answers, all three readable off the opening screen and the source.",
+        "so_the_evidence_has_to_change_kind": "Not a fact about the artifact — a fact about the RUN. What command was executed, what it printed, whether a browser exists in that sandbox at all. That is outside the file and therefore outside what a reader can produce.",
+        "and_that_is_now_the_open_question": "Whether the Codex lane can execute anything at all. Every 'played' round in this file's history (rounds 2 and 3, and the .i control) is a self-report from a text sandbox, and none was ever checked. If the lane cannot run a browser, rounds_engaged is not merely empty — it is UNREACHABLE by this lane, and the rung needs a different reviewer or a different kind of evidence. Task 2026-08-10.p is filed to measure exactly this, and it demands the command and its raw output rather than an answer to 'can you'.",
+        "now_mechanical": "scripts/product-loop.mjs engagementSupported() plus the rounds_engaged filter in judge(). A round claiming play whose quoted evidence is entirely present in the artifact source is not counted, and the CLI prints how many rounds that silently applies to."
+      },
+      "replacement_candidate_v5": {
+        "what": "codex/outbox/2026-08-10.n.md — a rebuild of .j commissioned to fix the double-credit defect and the dead opening. NOT live, NOT transplanted. Like the .j block, this is not a round on the offer.",
+        "authored_by": null,
+        "authored_by_why_null": "UNESTABLISHED. The answer arrived as commit 5ca9505 authored by bachikoljunior-blip, the only outbox commit in this repository not made by chatgpt-usage-monitor[bot], and it wrote no ledger run. codex/INBOX.md asked for account_default; nothing records what ran. Full record and the rule that now catches it: state/codex-lane.json answers_with_no_ledger_run, scripts/lane-authorship.mjs unledgeredAnswers().",
+        "so_it_cannot_be_paired_yet": "A review of .n filed against author_model_key account_default would be paired against a request rather than a record. The cheap way through is to have BOTH models review it: a round is void only when the reviewer IS the author, and at most one of the two can be.",
+        "the_commissioned_fix_landed": "applyOffline() now sets state.lastTick = now after crediting (line 449), so the immediately following tick() computes elapsed 0 and cannot re-credit the same span. The early return below one second still happens BEFORE the assignment, which is correct — it must not advance a clock it did not spend. This is the defect .l found in .j and it is closed.",
+        "and_the_dead_opening_was_addressed_differently_than_asked": "The first producer's baseCost is 4 rather than .j's 18, so the opening is 2-4 taps instead of fifteen. But .n also puts an IRREVERSIBLE modal in front of the first tap — 進路を1回だけ選んでください, with tapping disabled until a branch is chosen and 'あとから戻せません' on screen. It replaced a stretch with no reward with a decision taken before any information. Whether that is better is exactly the kind of question this rung exists to answer, and no round has been run on it.",
+        "defects_found_by_reading_it_here": [
+          "exchange() contains state.runDust += 0; — a zero-valued no-op. The SAME shape of defect .j was commissioned to remove from applyChoice(), reappearing in a different function one rebuild later.",
+          "hardResetRun() contains state.totalTouched += 0; — the second instance of the same shape in the same file.",
+          "hardResetRun() zeroes units, runDust and runTapped but leaves state.dust untouched, so 'この周回を初期化' destroys the producers a player bought while keeping the balance. Not exploitable — spent dust is already gone — but it is a reset that half-resets, and nothing in the UI says so."
+        ],
+        "the_pattern_across_three_rebuilds": "v2 (.h): three defects in the persistence and offline-credit path. v3 (.j): those three closed, a fourth left in the same function. v5 (.n): that fourth closed, two zero-valued no-ops and a half-reset introduced. The defect count is not falling toward zero, it is circulating, and the shape that repeats is the zero-valued statement — a line that looks like bookkeeping and does nothing. Three rebuilds is thin, and it is the third time this file records the same shape.",
+        "verified_how": "Read line by line in this lap against the extracted HTML in codex/outbox/2026-08-10.n.md. Not transplanted, so no check-free-artifact run against a copy: that is the step this lap did not pay for and the next one must, before any transplant.",
+        "not_transplanted": "assets/free-demo/index.html is untouched. And the transplant's second half is still uncosted: state/public-host.json mirrors the live file to a repository this session has never had, so any accepted rebuild breaks the byte-identity check until that repository is updated too."
       }
     }
   ],
