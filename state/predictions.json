@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T16:25:00Z",
+  "fetched_at": "2026-08-10T01:14:03.102Z",
   "note": "Every change made because it was claimed to shorten the ETA. judge_on is set when the change lands, not when it is convenient. concurrent_changes is what else was in flight, so a later reader can tell a clean attribution from a confounded one.",
   "predictions": [
     {
@@ -1056,6 +1056,33 @@
         "Not this lap and still in flight: the route change onto measured reach, and the request to the sibling loop. If the itch page ever converts, none of these can be separated."
       ],
       "falsified_if": "A later lap re-derives the ride-along as a fresh idea, or performs it. Also falsified, more quietly, if (b) and (d) both stay empty through the judge date: a constraint nothing cites and a surviving route nothing ranks is a note, and this repository already knows what notes are worth. WHAT THIS DOES NOT CLAIM: that the demo should get its own page. That costs an owner action and RUNBOOK 6 gate 3 fails today — every channel reports ∞, so no ETA reduction stands behind the ask. The claim is only that the option must be visible to whoever chooses, and that the option that would have destroyed the product must not be.",
+      "outcome": null
+    },
+    {
+      "id": "2026-08-10.spark-is-reached-by-naming-it",
+      "made_at": "2026-08-10T01:20:00Z",
+      "claim": "The owner said Spark is only spent when the instruction names it, and the meter agreed: two weekly Codex windows exist, the lane never passed --model, and GPT-5.3-Codex-Spark sat at 100% for the lane's entire history while the default window burned. The dispatch now asks for a slug DERIVED from the meter (gpt-5.3-codex-spark, from limit_name) and falls back to the default if the CLI refuses it. The prediction is the derivation: that this slug is the name the CLI accepts, and that a run carrying it moves codex_bengalfox rather than codex. This is a hypothesis and is labelled one — the value of registering it is that a wrong slug fails SILENTLY into the fallback, producing a lane that looks healthy, answers arriving as usual, and a Spark window still at 100%. That is precisely the shape of the defect being fixed, so it must be judged rather than assumed.",
+      "metric": "Read state/usage.json on origin/main after the first codex-inbox run that reports asking with --model. (a) Did codex_bengalfox.used_percent move above 0? (b) Did codex.used_percent stay put across that same run? (c) Does the run summary say \"asked with --model gpt-5.3-codex-spark\" rather than \"was refused; retrying on the account default\"? (d) state/answers/latest.json model field: the slug, not \"default\". All four read from committed state, none from a lap's account of itself.",
+      "baseline": {
+        "measured_at": "2026-08-10T01:05:38.904Z",
+        "codex_remaining_percent": 94,
+        "spark_remaining_percent": 100,
+        "spark_used_percent": 0,
+        "last_ask_model": "default",
+        "lane_runs_that_ever_named_a_model": 0
+      },
+      "judge_on": "2026-08-11",
+      "judge_deadline": "2026-08-16",
+      "min_observations": {
+        "source": "state/codex-lane.json runs with ran:true after 2026-08-10T01:20Z",
+        "min": 1,
+        "note": "One named run settles it. A skipped run (the task already carries its marker) is not an observation — that is the distinction record-lane-run.mjs exists to preserve."
+      },
+      "concurrent_changes": [
+        "Same commit: scripts/spark-model.mjs (derivation + check), the pulse wiring, and the RUNBOOK/CLAUDE.md/constraints entries. Inseparable — they are one change.",
+        "Not this change and running anyway: codex/INBOX.md carries task 2026-08-10.a, written by another lap. The task text is untouched here; only which model receives it changes. That is what makes the measurement clean — same prompt, different pool."
+      ],
+      "falsified_if": "The lane reports the model was refused and fell back, or a named run still moves only the codex window. Either outcome means the slug is wrong, NOT that the rule is wrong — the rule is the owner's statement plus a 100% window, and neither depends on the slug. The repair in that case is to ask the lane itself what model names it accepts, which costs one INBOX task on the pool we are trying to reach. Also falsified, more quietly, if no codex-inbox run happens before the judge date: an unfired lane proves nothing, and reading it as confirmation would be the stale-measurement failure this project has already made twice.",
       "outcome": null
     }
   ]
