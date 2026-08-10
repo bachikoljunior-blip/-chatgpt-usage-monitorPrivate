@@ -641,7 +641,16 @@ export function judge(doc, { now, artifactSources = {}, playMeasurements = null,
     }
   }
 
+  // Which of the problems above belong to which offer. The list is flat because
+  // the exit code only ever needed a count; the ROW is what compute-eta.mjs reads,
+  // and a problem that never reaches a row never reaches the candidate list.
+  const promiseProblemsByOffer = new Map();
+  if (promiseConformance?.offer_id) {
+    promiseProblemsByOffer.set(promiseConformance.offer_id, problems.slice());
+  }
+
   for (const offer of doc?.offers ?? []) {
+    const problemsBefore = problems.length;
     const artifactSource = artifactSources[offer.id] ?? null;
     const play = playedEvidenceFor(offer.id, playMeasurements);
     const loop = loopable(offer);
@@ -846,10 +855,97 @@ export function judge(doc, { now, artifactSources = {}, playMeasurements = null,
       play_threw: play.threw,
       play_distinct_errors: play.measurement?.distinct_page_errors ?? null,
       play_tap_latency_ms: play.measurement?.tap_latency_ms ?? null,
+      // Everything this judgement found wrong with THIS offer, so a reader that
+      // is not the exit code can act on it. Without this the ladder is visible to
+      // a lap only while the offer has never been measured: compute-eta.mjs used
+      // to emit a candidate for `!loopable` or `rounds === 0` and nothing else, so
+      // an offer went silent the moment it started looping — which is the moment
+      // its findings start being about the product rather than about the plumbing.
+      problems: [
+        ...(promiseProblemsByOffer.get(offer.id) ?? []),
+        ...problems.slice(problemsBefore),
+      ],
     });
   }
 
   return { ok: problems.length === 0, problems, rows };
+}
+
+/**
+ * The product loop, as candidates rather than as a report.
+ *
+ * Owner, 2026-08-10: 提供するものは測定分析改善ループまわさないと需要のあるものに
+ * ならない. The register and its check landed the same day — and a check that only
+ * turns a workflow red is a report, which this repository has already established
+ * is worth nothing on its own. The distribution class had exactly this defect:
+ * the reranking existed and laps kept picking build candidates, because the
+ * ranking they read never carried the new class.
+ *
+ * Ranked ahead of the incumbents for the same reason zero-base options are: every
+ * measured channel is at infinity, and an offer nobody can measure is a worse
+ * place to spend the next lap than finding out whether it can be measured at all.
+ *
+ * THE THIRD BRANCH IS WHY THIS IS A FUNCTION. Until 2026-08-10 only the first two
+ * existed, so an offer that was loopable and had completed a round produced no
+ * candidate at all — the ladder went silent at exactly the moment its findings
+ * started being about the product instead of the plumbing. idle_clicker_kit sat
+ * with two failing rung-1 promises while the board offered no work that would
+ * clear either, and the ETA gate names "a product-loop round" as the thing that
+ * refills the prerequisite lane. The loop could be told to run a round and given
+ * nowhere to run it.
+ *
+ * @param {{rows: object[]}} verdict as returned by judge()
+ * @returns {object[]} candidate rows for state/eta.json
+ */
+export function productLoopCandidates(verdict) {
+  const out = [];
+  for (const row of verdict?.rows ?? []) {
+    if (!row.loopable) {
+      out.push({
+        kind: "product_loop",
+        id: `${row.id}.make_it_loopable`,
+        why:
+          "an offer nothing can measure cannot be improved toward demand, and every surface " +
+          "change already made to it is unjudgeable",
+        owner_actions: 0,
+        measure_via: "here",
+        note:
+          `${row.id}: ${(row.why_not ?? []).join("; ")}. Two ways out and neither is free — ` +
+          "rebuild the source, or retire the offer. state/product-loop.json carries both. " +
+          "Sunk listing work is not evidence for either.",
+        blocks_interpretation_of:
+          row.live_to_buyers
+            ? "any zero result on this offer, which will otherwise be read as the wrong venue"
+            : null,
+      });
+    } else if (row.rounds === 0) {
+      out.push({
+        kind: "product_loop",
+        id: `${row.id}.round_1`,
+        why: "the one thing on offer that CAN be measured has never been measured once",
+        owner_actions: 0,
+        measure_via: "codex_lane",
+        note:
+          `Next rung: ${row.next_rung ?? "(undeclared)"}. See state/product-loop.json for how, ` +
+          "and for which rung is deliberately NOT next and why.",
+      });
+    } else if (row.problems?.length) {
+      out.push({
+        kind: "product_loop",
+        id: `${row.id}.${row.next_rung ?? "next_rung"}`,
+        why:
+          "the offer is loopable and its own measurement says it is failing — a round that " +
+          "clears a named failure is the one kind of work that is about the thing being sold",
+        owner_actions: 0,
+        measure_via: "here",
+        note:
+          `Next rung: ${row.next_rung ?? "(undeclared)"}. ${row.problems.length} finding(s): ` +
+          row.problems.join(" | "),
+        product_loop_problems: row.problems,
+      });
+    }
+  }
+  return out;
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

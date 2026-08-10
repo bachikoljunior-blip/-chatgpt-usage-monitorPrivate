@@ -6263,3 +6263,97 @@ function assert(condition, message) {
     "the bars were moved above the numbers two reviewers complained about, which would make the check vacuous",
   );
 }
+
+// ---------------------------------------------------------------------------
+// The ladder must not go silent at the moment it starts working.
+//
+// compute-eta.mjs built product_loop candidates from two branches: an offer that
+// is NOT loopable, and a loopable offer with ZERO rounds. Both describe an offer
+// that has never been measured. An offer that is loopable AND has completed a
+// round fell through both and produced nothing — so the product loop appeared on
+// the board only while it had never run, and disappeared the moment its findings
+// became findings about the PRODUCT rather than about the plumbing.
+//
+// Observed 2026-08-10: `product-loop.mjs --check` was red with two failing rung-1
+// promises on the priced offer, and state/eta.json carried no product_loop
+// candidate at all. In the same hour the ETA gate rejected the prerequisite lane
+// at 3/3 and named "a product-loop round" as the thing that refills it. The loop
+// was told to run a round and given nowhere to run it.
+//
+// These assertions use SYNTHETIC rows on purpose. Pinning them to today's live
+// failure would make the test go red the day a lap FIXES the promise, and a test
+// that punishes the fix is a test somebody deletes.
+{
+  const { productLoopCandidates, judge: judgeLadder } = await import("../scripts/product-loop.mjs");
+
+  const row = (over) => ({
+    id: "an_offer",
+    loopable: true,
+    live_to_buyers: true,
+    rounds: 3,
+    next_rung: "promise_conformance",
+    problems: [],
+    ...over,
+  });
+
+  // The regression itself.
+  const failing = productLoopCandidates({ rows: [row({ problems: ["it fails X"] })] });
+  assert(
+    failing.length === 1 && failing[0].kind === "product_loop",
+    "a loopable offer with a completed round and a named failure produced no candidate — the ladder is invisible again",
+  );
+  assert(
+    failing[0].id === "an_offer.promise_conformance",
+    `the candidate must name the rung the round would run, got ${failing[0].id}`,
+  );
+  assert(
+    /it fails X/.test(failing[0].note) && failing[0].product_loop_problems.length === 1,
+    "the candidate did not carry the finding, so a lap reading the board still has to go and run the check to learn what is wrong",
+  );
+
+  // The half that keeps it from being vacuous: a clean offer must stay quiet.
+  // Emitting a round for an offer with nothing wrong would push the ladder to the
+  // top of the board forever and the branch would be worth nothing.
+  assert(
+    productLoopCandidates({ rows: [row({ problems: [] })] }).length === 0,
+    "an offer with no findings produced a candidate, so the branch fires unconditionally",
+  );
+  // And the two older branches still take precedence — an unmeasured offer is a
+  // different candidate from a failing one, and must not be relabelled.
+  assert(
+    productLoopCandidates({ rows: [row({ rounds: 0, problems: ["it fails X"] })] })[0].id ===
+      "an_offer.round_1",
+    "a never-measured offer was reported as a failing rung instead of as an unrun one",
+  );
+  assert(
+    productLoopCandidates({ rows: [row({ loopable: false, problems: ["it fails X"] })] })[0].id ===
+      "an_offer.make_it_loopable",
+    "an unloopable offer was reported as a failing rung, which asks for a round nothing can run",
+  );
+
+  // The upstream half: judge() has to ATTACH the failure to the offer's row.
+  // The problems list was flat because only the exit code ever read it, and a
+  // problem that reaches no row reaches no candidate.
+  {
+    const doc = {
+      offers: [
+        {
+          id: "priced",
+          live_to_buyers: true,
+          source: { path: "x" },
+          measurement: { rung: "promise_conformance", how: "…" },
+          rounds: [{ at: "2026-08-10T00:00:00Z", verdict: "no", moved: "no" }],
+        },
+      ],
+    };
+    const v = judgeLadder(doc, {
+      now: new Date("2026-08-10T01:00:00Z"),
+      promiseConformance: { offer_id: "priced", results: [{ id: "p1", verdict: "fails", observation: "o" }] },
+    });
+    const r = v.rows.find((x) => x.id === "priced");
+    assert(
+      (r.problems ?? []).some((p) => /p1/.test(p)),
+      "a failing rung-1 promise did not reach the row for the offer it is about",
+    );
+  }
+}

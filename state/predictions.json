@@ -1936,6 +1936,21 @@
       "what_would_refute_it": "(a) an unledgered answer stamped +00:00, or with author different from committer. (b) a ledgered answer authored by a human identity. (c) any register entry citing a re-run as having established an earlier answer author.",
       "judge_on": "2026-08-13",
       "outcome": null
+    },
+    {
+      "id": "2026-08-10.the-ladder-went-silent-when-it-started-working",
+      "made_at": "2026-08-10T14:06:00Z",
+      "claim": "compute-eta.mjs built product_loop candidates from two branches only — an offer that is NOT loopable, and a loopable offer with ZERO rounds. Both describe an offer that has never been measured, so the product loop was visible to a lap only while it had never run. It also called judge() with { now } alone, so the board ran a WEAKER judgement than the hourly check: no rung-1 verdicts, no play measurements, no artifact sources. Both failing promises on the priced offer therefore existed only inside product-loop.mjs --check, where nothing that chooses work reads them. In the same hour the ETA gate rejected the prerequisite lane at 3/3 and named \"a product-loop round\" as the thing that refills it — so the loop was told to run a round and given nowhere to run it. PREDICTION. (a) THE ROUND GETS ELECTED: a lap after this one elects idle_clicker_kit.promise_conformance and fixes balance_is_pre_tuned in source, rather than electing another constraint_recheck. (b) THE LANE REFILLS: the first eta-gate call after such a round is not rejected for consecutive prerequisite laps. (c) IT DOES NOT BECOME NOISE: the candidate disappears from the board on its own when the promise conforms — it is emitted from row.problems, not from a hand-written row, so nobody has to remember to retire it.",
+      "metric": "Read from committed state on origin/main, none from a lap account of itself. (a) state/lap-claims.json for a claim whose candidate is idle_clicker_kit.promise_conformance, joined against state/promise-conformance.json balance_is_pre_tuned moving to conforms. (b) the eta-gate verdict recorded for the lap after that round. (c) state/eta.json candidates filtered to kind product_loop, before and after the promise conforms.",
+      "baseline": "At 2026-08-10T14:06Z: state/eta.json carried ZERO candidates of kind product_loop while product-loop.mjs --check exited 1 with two PROBLEM lines, both naming idle_clicker_kit. eta-gate rejected prerequisite at 3/3 consecutive with 2 route changes that moved nothing. After the change the board carries exactly one: idle_clicker_kit.promise_conformance, measure_via here, ranked 6th, above every zero_base_option.",
+      "what_i_could_not_establish": "Whether being ON the board is enough. The distribution class had a working re-ranking and laps went on picking build candidates anyway — that is the precedent this change is betting against, and only a later lap choosing it settles it. Half (a) is the half that can fail while (b) and (c) both pass.",
+      "concurrent_changes": [
+        "The same lap moved the branch set out of compute-eta.mjs into productLoopCandidates() in product-loop.mjs. Pure refactor, asserted by four synthetic-row cases; it changes no verdict.",
+        "The same lap started passing artifactSources and playMeasurements to the board judgement. This can only make the board STRICTER (engagementSupported can return false only when it has a source), so a rounds_engaged count that drops is this, not a regression."
+      ],
+      "what_would_refute_it": "(a) three or more laps pass with the candidate on the board and none elects it — being visible is not being chosen, and the fix is in ranking or in the gate, not in emission. (b) a gate rejection for consecutive prerequisite laps AFTER a completed product-loop round. (c) the candidate persisting after state/promise-conformance.json reports the promise conforming.",
+      "judge_on": "2026-08-13",
+      "outcome": null
     }
   ]
 }

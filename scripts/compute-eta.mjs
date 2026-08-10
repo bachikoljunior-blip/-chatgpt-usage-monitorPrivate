@@ -21,7 +21,7 @@
 
 import { readFile, stat, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { readStateJson, REPO } from "./state-source.mjs";
+import { readState, readStateJson, REPO } from "./state-source.mjs";
 // Lives with the probe whose output it interprets, not here: importing this file
 // runs it, so a test that wanted the classifier got a whole ETA computation.
 import { listingMeasurement } from "./probe-gumroad-recurring.mjs";
@@ -32,7 +32,7 @@ import { externalEta } from "./measure-reach.mjs";
 import { constraintDue } from "./constraint-due.mjs";
 import { evaluateUnlock } from "./unlock-condition.mjs";
 import { blockedByDirective, directiveBlockers } from "./directive-block.mjs";
-import { judge as judgeProductLoop } from "./product-loop.mjs";
+import { judge as judgeProductLoop, productLoopCandidates } from "./product-loop.mjs";
 
 const write = process.argv.includes("--write");
 // Reads come from origin/main so a stale checkout cannot drive the ranking. That
@@ -86,6 +86,30 @@ const { value: findableSurface } = await readStateJson("state/findable-surface.j
 const { value: gumroadRecurring } = await readStateJson("state/gumroad-recurring.json", {
   preferLocal,
 });
+
+// The product loop's OTHER inputs. judgeProductLoop was being called here with
+// `{ now }` alone, so the board ran a weaker judgement than the hourly check did:
+// no rung-1 verdicts, no play measurements, no artifact sources. The two failing
+// promises on the priced offer existed only inside `product-loop.mjs --check`,
+// where nothing that chooses work reads them. Same files, same reader, one
+// judgement — otherwise the check and the board disagree and neither says so.
+const { value: promiseConformance } = await readStateJson("state/promise-conformance.json", {
+  preferLocal,
+});
+const { value: playMeasurements } = await readStateJson("state/play-measurements.json", {
+  preferLocal,
+});
+// The artifact text each offer's engagement claims are checked against. Omitting
+// it does not make the board neutral, it makes it LENIENT: engagementSupported
+// can only return false when it has a source to check against, so a round whose
+// evidence is entirely readable off the artifact counts as engaged here while the
+// hourly check refuses it. free_demo is in exactly that state right now.
+const productLoopArtifactSources = {};
+for (const offer of productLoop?.offers ?? []) {
+  const path = offer?.source?.path;
+  if (!path) continue;
+  productLoopArtifactSources[offer.id] = (await readState(path, { preferLocal })).text;
+}
 
 const listingMeasurementFor = (id) => listingMeasurement(gumroadRecurring, id);
 
@@ -318,41 +342,21 @@ for (const ch of channels) {
 // Ranked ahead of the incumbents for the same reason zero-base options are: every
 // measured channel is at infinity, and an offer nobody can measure is a worse
 // place to spend the next lap than finding out whether it can be measured at all.
-{
-  const verdict = judgeProductLoop(productLoop ?? {}, { now });
-  for (const row of verdict.rows) {
-    if (!row.loopable) {
-      candidates.push({
-        kind: "product_loop",
-        id: `${row.id}.make_it_loopable`,
-        why:
-          "an offer nothing can measure cannot be improved toward demand, and every surface " +
-          "change already made to it is unjudgeable",
-        owner_actions: 0,
-        measure_via: "here",
-        note:
-          `${row.id}: ${(row.why_not ?? []).join("; ")}. Two ways out and neither is free — ` +
-          "rebuild the source, or retire the offer. state/product-loop.json carries both. " +
-          "Sunk listing work is not evidence for either.",
-        blocks_interpretation_of:
-          row.live_to_buyers
-            ? "any zero result on this offer, which will otherwise be read as the wrong venue"
-            : null,
-      });
-    } else if (row.rounds === 0) {
-      candidates.push({
-        kind: "product_loop",
-        id: `${row.id}.round_1`,
-        why: "the one thing on offer that CAN be measured has never been measured once",
-        owner_actions: 0,
-        measure_via: "codex_lane",
-        note:
-          `Next rung: ${row.next_rung ?? "(undeclared)"}. See state/product-loop.json for how, ` +
-          "and for which rung is deliberately NOT next and why.",
-      });
-    }
-  }
-}
+//
+// The branch set lives in product-loop.mjs as a pure function of the verdict. It
+// was inline here, which made it untestable except by running this whole file
+// against today's live state — and an assertion pinned to today's live failure
+// goes red the day the failure is FIXED, so nobody would have kept it.
+candidates.push(
+  ...productLoopCandidates(
+    judgeProductLoop(productLoop ?? {}, {
+      now,
+      artifactSources: productLoopArtifactSources,
+      playMeasurements,
+      promiseConformance,
+    }),
+  ),
+);
 
 // Options from the zero-base round. Without this the round is a ritual: it runs,
 // it writes a verdict, and the loop that chooses work never sees it. A measurement
