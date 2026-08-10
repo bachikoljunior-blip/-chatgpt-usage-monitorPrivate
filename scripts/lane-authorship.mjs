@@ -221,15 +221,40 @@ export function judge({ tasks, runs, sparkSlug, answers = [], acknowledged = [],
   // Rule 2 only has an opinion about runs that recorded both halves. Every run
   // before this ledger existed recorded neither, and calling those a fallback
   // would be inventing a measurement out of an absence.
+  //
+  // Narrowed 2026-08-10, and the narrowing is the rule's own sentence taken
+  // seriously: the harm it names is "any REVIEW in that run was run by a model the
+  // task did not choose". A research task's model choice is about which POOL gets
+  // spent, and that question already has an owner — scripts/spark-model.mjs, run
+  // hourly by pulse.yml, which settles it by reading which window moved. So a
+  // fallback on a non-review task is reported as a NOTE and stays visible, while
+  // only a review keeps it a problem. Before this, one research run falling back
+  // turned tests/run-tests.mjs red permanently, with no path to clear it: rule 2 has
+  // no acknowledgement mechanism, by design, and a permanent red on the suite blocks
+  // every later change rather than getting one thing looked at. A task that cannot
+  // be found stays a PROBLEM — unknown is not innocent, which is the same rule the
+  // unledgered-answer path already follows.
+  const taskById = new Map((tasks ?? []).filter((t) => t?.task_id).map((t) => [t.task_id, t]));
   for (const run of runs) {
     if (!run?.model_key || !run?.model) continue;
     const landedKey = keyOfLandedModel(run.model, sparkSlug);
-    if (landedKey && landedKey !== run.model_key) {
-      problems.push(
-        `${run.task_id}: asked for ${run.model_key} and landed on ${run.model} (${landedKey}) — ` +
-          "the dispatch fell back silently, so any review in that run was run by a model the task did not choose",
+    if (!landedKey || landedKey === run.model_key) continue;
+    const task = taskById.get(run.task_id);
+    const isReview = task ? Boolean(task.reviews_authored_by) : null;
+    const line =
+      `${run.task_id}: asked for ${run.model_key} and landed on ${run.model} (${landedKey}) — ` +
+      "the dispatch fell back silently";
+    if (isReview === false) {
+      notes.push(
+        `${line}. Not a review, so no pairing was broken; which pool was actually spent is ` +
+          "scripts/spark-model.mjs's question, settled by which window moved",
       );
+      continue;
     }
+    problems.push(
+      `${line}, so any review in that run was run by a model the task did not choose` +
+        (isReview === null ? " (task not found in the inbox, so this is not assumed harmless)" : ""),
+    );
   }
 
   // Rule 4: a review of a DERIVED artifact must be paired against where the code

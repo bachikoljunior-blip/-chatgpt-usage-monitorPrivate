@@ -930,6 +930,32 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       judgeAuthorship({ tasks: [], runs: [{ task_id: "old", model_key: null, model: null }], sparkSlug: "x" }).ok,
       "a pre-ledger run with nothing recorded was scored as a fallback",
     );
+    // Rule 2 narrowed to what it protects. A fallback on a RESEARCH task spends the
+    // other pool and breaks no pairing, so it is a note; on a REVIEW it stays fatal;
+    // and a run whose task cannot be found stays a problem, because unknown is not
+    // innocent. All three directions asserted, so deleting one is not free.
+    {
+      const fell = [{ task_id: "r1", model_key: "spark", model: "gpt-5.1-codex" }];
+      const research = { task_id: "r1", produces: "research", model: "spark" };
+      const review = { task_id: "r1", produces: "review", model: "spark", reviews_authored_by: "account_default" };
+      assert(
+        judgeAuthorship({ tasks: [research], runs: fell, sparkSlug: "gpt-5.3-codex-spark" }).ok,
+        "a silent fallback on a research task still failed the check, which is what made one run redden the suite forever",
+      );
+      assert(
+        judgeAuthorship({ tasks: [research], runs: fell, sparkSlug: "gpt-5.3-codex-spark" })
+          .notes.some((n) => n.includes("fell back silently")),
+        "the fallback stopped being reported at all — narrowing it must not hide it",
+      );
+      assert(
+        !judgeAuthorship({ tasks: [review], runs: fell, sparkSlug: "gpt-5.3-codex-spark" }).ok,
+        "a silent fallback on a REVIEW task was let through; that is the swap the rule exists for",
+      );
+      assert(
+        !judgeAuthorship({ tasks: [], runs: fell, sparkSlug: "gpt-5.3-codex-spark" }).ok,
+        "a fallback whose task could not be found was assumed harmless",
+      );
+    }
 
     // Rule 3. An answer that exists with no run behind it has no established
     // author, whatever its INBOX header asked for. 2026-08-10.n arrived as a
@@ -1036,8 +1062,14 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       const lane = JSON.parse(await readFile(join(root, "state/codex-lane.json"), "utf8"));
       const onDisk = (await readdir(join(root, "codex/outbox")))
         .filter((f) => f.endsWith(".md")).map((f) => f.slice(0, -3));
+      // The real inbox, not an empty list. Rule 2 asks whether a silent fallback
+      // broke a REVIEW's pairing, and it cannot ask that without the task — passing
+      // [] made every fallback unknown-and-therefore-a-problem, so one research run
+      // falling back to the account default turned this suite red with no way to
+      // clear it. The live pair should be live on both sides.
+      const liveTasks = parseInboxTasks(await readFile(join(root, "codex/INBOX.md"), "utf8")).tasks ?? [];
       const live = judgeAuthorship({
-        tasks: [], runs: lane.runs ?? [], sparkSlug: "gpt-5.3-codex-spark",
+        tasks: liveTasks, runs: lane.runs ?? [], sparkSlug: "gpt-5.3-codex-spark",
         answers: onDisk, acknowledged: lane.answers_with_no_ledger_run ?? [],
       });
       assert(live.ok, `the live lane ledger does not account for every answer: ${live.problems.join("; ")}`);
