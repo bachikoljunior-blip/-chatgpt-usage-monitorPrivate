@@ -146,6 +146,61 @@ function deliveredMatches(relPath) {
   return sha(readFileSync(local, "utf8")) === row.sha256 ? "same" : "diverged";
 }
 
+/**
+ * Whether the delivered file can be REPLACED — which is a different question
+ * from whether it has diverged, and the one that decides if a divergence is
+ * repairable at all.
+ *
+ * This function exists because the sentence it replaces was an assertion.
+ * Until 2026-08-10 the diverged-licence observation below ended "Uploading a
+ * replacement attachment is not in the v2 API surface this lane holds", and
+ * state/product-loop.json said plainly that nobody had tried:  "this lap did
+ * NOT attempt it, so that is a reading of the documented surface rather than a
+ * measurement." Three inherited claims about this lane's reach had already been
+ * refuted by finally probing them, the most recent that morning. So the prose
+ * is gone and this reads scripts/probe-gumroad-file-replacement.mjs's answer.
+ *
+ * Absence is reported as absence. "unmeasured" is not "impossible", and the
+ * whole failure this replaces was those two being written as one word.
+ *
+ * @returns {{verdict: string, sentence: string}}
+ */
+function deliveryChannel() {
+  const f = path.join(ROOT, "state", "gumroad-file-replacement.json");
+  const unmeasured = {
+    verdict: "unmeasured",
+    sentence:
+      "Whether the attachment can be replaced over the API is UNMEASURED — not established as impossible. Run gumroad-monitor.yml with probe_file_replacement, which answers it against a throwaway product without touching the live listing.",
+  };
+  if (!existsSync(f)) return unmeasured;
+  let probe;
+  try {
+    probe = JSON.parse(readFileSync(f, "utf8"));
+  } catch {
+    return unmeasured;
+  }
+  const v = probe?.verdict;
+  if (v === "not_replaceable") {
+    return {
+      verdict: v,
+      sentence: `MEASURED ${probe.fetched_at}: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable and this promise cannot be repaired in place. ${probe.verdict_reason ?? ""}`.trim(),
+    };
+  }
+  if (v === "replaceable") {
+    return {
+      verdict: v,
+      sentence: `MEASURED ${probe.fetched_at}: the attachment CAN be replaced over the API with no owner action, so this promise is repairable in place and the only thing standing between the fixed source and the buyer is a lap that pushes it. ${probe.verdict_reason ?? ""}`.trim(),
+    };
+  }
+  if (v === "undecidable" || v === "partial") {
+    return {
+      verdict: v,
+      sentence: `The replacement probe ran ${probe.fetched_at} and did NOT settle it (${v}): ${probe.verdict_reason ?? ""} Re-run before concluding anything from this.`.trim(),
+    };
+  }
+  return unmeasured;
+}
+
 /** The play register is a measurement someone else took; read, never assumed. */
 function loadPlay() {
   const f = path.join(ROOT, "state", "play-measurements.json");
@@ -371,7 +426,9 @@ const PROMISES = [
         return {
           verdict: FAILS,
           observation:
-            "FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 Uploading a replacement attachment is not in the v2 API surface this lane holds. The promise stays failed until a re-fetch shows the delivered digest moved.",
+            "FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 " +
+            deliveryChannel().sentence +
+            " The promise stays failed until a re-fetch shows the delivered digest moved.",
         };
       }
       if (twoTiers && chooseAtPurchase && variants === 0) {

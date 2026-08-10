@@ -25,6 +25,10 @@ on:
         description: "Probe whether a cover image can be set through the API. Reads, plus two writes that carry no real product fields and cannot succeed into a bad state. Re-run to detect the day Gumroad adds the route."
         type: boolean
         default: false
+      probe_file_replacement:
+        description: "Probe whether the FILE A BUYER DOWNLOADS can be replaced over the API. Runs entirely against a throwaway product it creates and deletes; never writes to the live listing. Decides whether any source fix to the priced product is deliverable at all."
+        type: boolean
+        default: false
   push:
     branches: [main]
     paths:
@@ -132,6 +136,27 @@ jobs:
           GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
         run: node scripts/probe-gumroad-cover.mjs
 
+      # This one DOES write state, unlike the cover probe above, and the reason
+      # is the difference between the two answers. The cover answer was consumed
+      # once, by a lap, and turned into an owner request. This answer is a
+      # standing precondition: promise_conformance on the priced product is
+      # unreachable while the delivered file is frozen, so every later lap has to
+      # know it without re-probing. scripts/promise-conformance.mjs reads the
+      # file and derives its observation from the verdict rather than asserting
+      # it in prose — which is what it did before this existed, and it was
+      # asserting something nobody had measured.
+      - name: Probe whether the delivered file can be replaced over REST
+        if: always() && inputs.probe_file_replacement
+        env:
+          GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
+        run: |
+          node scripts/probe-gumroad-file-replacement.mjs state/gumroad-file-replacement.json
+          node scripts/verify-sanitized-state.mjs state/gumroad-file-replacement.json
+          # Same reason as the recurring probe: the commit step resets to
+          # origin/main before staging and would delete this seconds after it
+          # was written, which reads as "the probe found nothing".
+          cp state/gumroad-file-replacement.json "$RUNNER_TEMP/gumroad-file-replacement.json"
+
       - name: Commit current state
         if: steps.collect.outcome == 'success' && steps.verify.outcome == 'success'
         env:
@@ -148,9 +173,26 @@ jobs:
             node scripts/read-gumroad.mjs state/gumroad.json || exit 1
             node scripts/verify-sanitized-state.mjs state/gumroad.json state/gumroad-history.json || exit 1
             # Restore anything a probe produced before the reset above removed it.
-            if [ -f "$RUNNER_TEMP/gumroad-capabilities.json" ]; then
-              cp "$RUNNER_TEMP/gumroad-capabilities.json" state/gumroad-capabilities.json
-            fi
+            #
+            # This was a per-file `if` for gumroad-capabilities.json alone, while
+            # three probes copied their output to RUNNER_TEMP citing this exact
+            # reset as the reason. Two of them — the recurring probe and the
+            # product-source fetch — were never restored and never staged, so a
+            # dispatched run threw its own answer away and reported no change.
+            # Both files are in the repository only because laps committed them
+            # by hand afterwards, which is why nobody noticed. Named as a list so
+            # adding a probe cannot half-wire itself the same way again.
+            for probe_state in \
+              gumroad-capabilities \
+              gumroad-recurring \
+              gumroad-file-replacement \
+              product-source
+            do
+              if [ -f "$RUNNER_TEMP/$probe_state.json" ]; then
+                cp "$RUNNER_TEMP/$probe_state.json" "state/$probe_state.json"
+              fi
+              git add "state/$probe_state.json" 2>/dev/null || true
+            done
             git add state/gumroad.json
             # The dated series. state/gumroad.json is regenerated whole every run and
             # carries only the latest snapshot, which is why the ETA could never see a
@@ -159,7 +201,6 @@ jobs:
             # appends without committing throws the reading away and the series stays
             # one row long forever.
             git add state/gumroad-history.json
-            git add state/gumroad-capabilities.json 2>/dev/null || true
             if git diff --cached --quiet; then
               echo "no change"
               exit 0

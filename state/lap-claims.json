@@ -970,6 +970,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T10:31:37.982Z",
+      "candidate": "the_delivered_file_cannot_be_replaced",
+      "kind": "route_change",
+      "mechanism": "ROUTE UNDER TEST: 'sell the kit we already have, by fixing it'. It is on the board right now — product-loop reports idle_clicker_kit next=promise_conformance and FAILING two promises its live listing makes. One of them, licence determinacy, was already fixed in source at 000e35e and is STILL reported failed, because the buyer downloads the old attachment. So the binding term on that route is not any fix; it is delivery. state/product-loop.json says so in its own words and marks it unmeasured: replacing the attachment 'is not in the Gumroad v2 API surface this lane holds, and this lap did NOT attempt it, so that is a reading of the documented surface rather than a measurement', and it names establishing this as the precondition RUNBOOK 6 gate 1 requires before any owner request. This lap measures it, with the control design scripts/probe-gumroad-cover.mjs already validated on this same API (documented subresource vs fabricated subresource to tell 'route absent' from 'path wrong'; a deliberately fake parameter name first, so a 200 on the real one is only informative insofar as it DIFFERS). If replaceable: both failed promises become deliverable at zero owner actions and rung 1 becomes passable, so the route survives. If not replaceable: the listing is frozen, every source fix on it is undeliverable forever, this route is dead rather than slow, and the successor is already measured — gumroad-capabilities verdict full_lifecycle_over_api, listing a NEW corrected product at zero owner actions. NOT CLAIMED: any ETA movement; after-idle is inf deliberately, revenue is zero and this measurement earns none. NOT CLAIMED: that the answer is no. The last three inherited assertions about this lane's reach were all wrong when finally probed, most recently the browser at 09:02Z.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
