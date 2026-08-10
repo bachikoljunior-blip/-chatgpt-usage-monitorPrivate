@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-10T15:26:37.614Z",
+  "probe": "create a throwaway carrying the REAL prompt_pack document as ProseMirror, read it back, compare the text at both ends, delete it",
+  "question": "The content route was measured with one test paragraph. prompt_pack is ten sections with headings and fenced code blocks — does the payload itself survive, or only a paragraph?",
+  "conversion": {
+    "source": "codex/outbox/payload-01.md",
+    "source_chars": 4131,
+    "doc_text_chars": 3776,
+    "nodes": {
+      "heading": 11,
+      "paragraph": 51,
+      "codeBlock": 10
+    },
+    "node_types": [
+      "codeBlock",
+      "heading",
+      "paragraph"
+    ]
+  },
+  "steps": [
+    {
+      "step": "create_with_payload",
+      "http_status": 200,
+      "success": true,
+      "got_id": true,
+      "message": null
+    },
+    {
+      "step": "read_back",
+      "http_status": 200,
+      "pages": 1,
+      "sent_chars": 3741,
+      "returned_chars": 3741,
+      "identical": true,
+      "common_prefix_chars": 3741,
+      "diverges_at": null
+    },
+    {
+      "step": "delete",
+      "http_status": 200,
+      "success": true,
+      "still_present": false
+    }
+  ],
+  "comparison": {
+    "sent_chars": 3741,
+    "returned_chars": 3741,
+    "identical": true,
+    "common_prefix_chars": 3741,
+    "diverges_at": null
+  },
+  "verdict": "payload_survives_the_round_trip",
+  "verdict_reason": "Every character sent came back. prompt_pack is listable over the API at zero owner actions, with its content intact, and the delivery term that rungs 3 and 4 wait on is answered for this offer. It says nothing about the priced kit, whose buyer downloads a file.",
+  "what_this_does_not_settle": "Whether anyone would buy it. Rung 2 (a reviewer who did not author the document) is queued separately on the lane and has not returned. A listable product nobody wants is still zero."
+}
