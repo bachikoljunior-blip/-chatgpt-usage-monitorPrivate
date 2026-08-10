@@ -5571,3 +5571,102 @@ function assert(condition, message) {
     "the probe stopped stating a delivery route, so replacement and delivery collapse back into one question",
   );
 }
+
+// --- an answer nobody can attribute must not close the task ------------------
+//
+// Four answers have arrived committed under the owner's git identity, touching
+// only the outbox file and leaving no run in state/codex-lane.json: .n, .o, .r
+// and .t. For a REVIEW task that is fatal twice over. The round cannot be
+// counted, because the rule that gives a stranger reaction its worth is that the
+// reviewer is not the author and nothing here establishes which model answered.
+// And the marker the commit wrote closed the task for the transport that DOES
+// record who ran it — so the attributable answer could never arrive either.
+//
+// Mutations run red before this was kept: the reopen branch applying to research
+// tasks, a reopened task jumping the queue ahead of a never-answered one, and
+// attributionPredicate ignoring the ledger so a task that HAS run reopens
+// forever.
+{
+  const { decide, selectTask: pick, parseInboxTasks: parse, attributionPredicate } =
+    await import("../scripts/inbox-task.mjs");
+
+  const header = (produces) => ({
+    task_id: "t.x",
+    valid_until: "2026-08-17",
+    done_marker: "codex/outbox/t.x.md",
+    done_signal: "## x",
+    produces,
+  });
+
+  const reopened = decide(header("review"), {
+    today: "2026-08-10",
+    markerExists: true,
+    markerIsAttributable: false,
+  });
+  assert(
+    reopened.run && reopened.reopened === true,
+    "a review answered by a run nobody can attribute stayed closed, which is the state where the round can never be counted and no other answer can arrive",
+  );
+  assert(
+    !decide(header("research"), { today: "2026-08-10", markerExists: true, markerIsAttributable: false }).run,
+    "a research task was re-asked for want of attribution; research is judged by its sources, so that spends the pool to learn nothing",
+  );
+  assert(
+    !decide(header("review"), { today: "2026-08-10", markerExists: true, markerIsAttributable: true }).run,
+    "an attributable marker stopped counting as done",
+  );
+  assert(
+    !decide(header("review"), { today: "2026-08-20", markerExists: true, markerIsAttributable: false }).run,
+    "an expired task was reopened; the reopen must not outlive valid_until",
+  );
+
+  // Ordering: a re-ask is worth less than a question nobody has answered at all.
+  const inbox =
+    "preamble\n" +
+    [["t.a", "review"], ["t.b", "review"]]
+      .map(
+        ([id, produces]) =>
+          "```yaml\n" +
+          `task_id: ${id}\nvalid_until: 2026-08-17\nproduces: ${produces}\n` +
+          `done_marker: codex/outbox/${id}.md\ndone_signal: "## x"\n` +
+          "```\n" +
+          `body of ${id}\n`,
+      )
+      .join("");
+  const parsed = parse(inbox);
+  const held = pick(parsed, {
+    today: "2026-08-10",
+    markerExists: (m) => m === "codex/outbox/t.a.md",
+    markerAttributable: () => false,
+  });
+  assert(
+    held.task.task_id === "t.b",
+    "a reopened task jumped ahead of a task nobody has answered at all — an answer that exists but cannot be attributed is worth less than one that does not exist yet",
+  );
+  const nothingElse = pick(parsed, {
+    today: "2026-08-10",
+    markerExists: () => true,
+    markerAttributable: () => false,
+  });
+  assert(
+    nothingElse.run && nothingElse.task.task_id === "t.a",
+    "with every task marked, the reopened one was never reached, so the rule would only ever fire on an empty queue",
+  );
+
+  // The predicate. The ledger is CAPPED, so absence from it is not evidence for
+  // an old task id — which is why the reopen is opt-in per row and why a ledger
+  // run has to win over the flag.
+  const flagged = [{ task_id: "t.x", reopen: true }, { task_id: "t.y" }];
+  const p = attributionPredicate({ ledgerTaskIds: ["t.z"], unattributed: flagged });
+  assert(p({ task_id: "t.x" }) === false, "a row flagged for re-asking was still treated as attributable");
+  assert(
+    p({ task_id: "t.y" }) === true,
+    "a row filed as unattributed but NOT flagged reopened anyway; the register holds answers a lap decided to leave alone",
+  );
+  assert(p({ task_id: "t.z" }) === true, "a task with a ledger run was not attributable");
+  assert(
+    attributionPredicate({ ledgerTaskIds: ["t.x"], unattributed: flagged })({ task_id: "t.x" }) === true,
+    "a ledger run did not override the flag, so a task that HAS been run attributably would reopen forever",
+  );
+  assert(p({}) === true, "a task with no id was treated as unattributable");
+}

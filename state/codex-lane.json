@@ -57,6 +57,16 @@
       "why_this_one_costs_more_than_the_others": "n and .o were research; this is a REVIEW of an artifact this loop wrote, which is the exact case unestablished authorship destroys. .r came back 見覚え ある, and the two readings of that answer point in opposite directions. If spark ran it, a non-author recognised the file and the register's authorship explanation has a counterexample. If the account default ran it, the author reviewed its own work and ある is precisely what the table already predicts — an ordinary void, teaching nothing new. NOTHING IN THE ANSWER SEPARATES THEM, and the ledger that would have is empty.",
       "what_must_not_be_done_because_of_it": "Do not record round 7 with reviewer_model_key spark. A lap reading the INBOX header as the pairing is doing what the .n entry was written to prevent, and this lap started to do it before checking the commit author.",
       "how_to_establish_it_if_it_matters": "It matters, and the re-run already queued as 2026-08-10.t establishes it for free: if that run goes through the workflow it writes a ledger entry, and the pairing is then a record rather than a header."
+    },
+    {
+      "task_id": "2026-08-10.t",
+      "acknowledged_at": "2026-08-10T11:30:00Z",
+      "author": null,
+      "why_no_run": "codex/outbox/2026-08-10.t.md arrived as commit 56b812f, authored by bachikoljunior-blip rather than chatgpt-usage-monitor[bot], and the commit touches ONE file. Every run of .github/workflows/codex-inbox.yml that produces an answer also writes state/answers/latest.json, state/answers/latest.md and this ledger. None of them moved. So the answer exists and the run that produced it does not.",
+      "what_is_therefore_unknown": "Which model wrote it. That is the whole question for a review task here: assets/free-demo/index.html was written by the account default, so 見覚え ない means something only if the reviewer is not the account default. This answer says ない — and if the account default produced it, ない contradicts .r's ある on the same artifact from (possibly) the same model, which would say the recognition question is noise rather than a blind. Two readings, and nothing in the text separates them.",
+      "reopen": true,
+      "reopen_reason": "FOURTH of these, and the first where the cost is visible in the mechanism rather than only in the register. The marker this commit wrote closes 2026-08-10.t for our own transport permanently, so the attributable run can never happen and the round can never be counted — the attribution rule makes the answer worthless and the marker rule then guarantees no other answer arrives. scripts/inbox-task.mjs now reads this flag: a review task whose marker exists with no ledger run is live again, and waits BEHIND every task nobody has answered at all. Opt-in per row on purpose: the ledger is capped, so absence from it is not evidence for an old task id, and .n/.o are research where attribution buys nothing while .r carries the pre-fix blind question and would only void again.",
+      "what_closes_it": "A run of codex-inbox.yml whose ledger entry names 2026-08-10.t. At that point attributionPredicate returns true for it whatever this row says, so the reopen cannot loop."
     }
   ],
   "derived_artifacts": [
@@ -112,5 +122,5 @@
       "at": "2026-08-10T06:15:49.487Z"
     }
   ],
-  "note": "Written by every run of .github/workflows/codex-inbox.yml, including the runs that skip because the task already carries its done marker. state/automations.json points codex-loop's liveness here for that reason."
+  "note": "Written by every run of .github/workflows/codex-inbox.yml, including the runs that skip because the task already carries its done marker. state/automations.json points codex-loop's liveness here for that reason. An answer arriving outside this workflow CONSUMES the task: it writes the done_marker, and until 2026-08-10 that closed the task for the transport that records who ran it. Four have arrived that way (.n, .o, .r, .t). scripts/inbox-task.mjs now reopens the review ones a lap has flagged here."
 }

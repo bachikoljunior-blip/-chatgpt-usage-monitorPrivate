@@ -1002,6 +1002,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T11:19:22.672Z",
+      "candidate": "the_unattributed_path_consumes_the_task",
+      "kind": "route_change",
+      "mechanism": "A fourth answer arrived under the owner git identity with no ledger run, touching only the outbox. The marker it writes closes the task for our own lane forever, so the attributable run never happens and the round cannot be counted. Make a marker with no ledger run stop counting as done for review tasks, and put reopened tasks behind never-answered ones so the queue order is not lost.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

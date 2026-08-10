@@ -477,6 +477,26 @@
           "so_the_question_is_the_defect_not_the_reviewer": "STATED AS A HYPOTHESIS, NOT A FINDING. 「このゲームを以前に見たことがありますか」 has no true answer other than ある for a stateless reviewer that reads the attachment before answering, because the only prior moment it has is inside this run. That is true of the question independently of what ran, which is why the wording was narrowed this lap. What is NOT established is that the wording caused round 7: if the author ran it, ある needed no wording defect to explain it. The narrowing is cheap and loses nothing; the explanation is still open.",
           "what_it_nevertheless_showed": "Recorded as observation, NOT as a counted verdict. The reasons given for 払わない are no longer about the opening: they are branching choices, operations beyond tap/exchange, and visible accumulation. The 一番弱いところ moved from tick()'s clamp to the gap between the FIRST and SECOND producer — 25 seconds with nothing happening, at generator cost ceil(4 × 1.15) = 5. So the dead stretch may have moved rather than closed. This cannot be claimed from a void round; it is the hypothesis the re-run exists to test.",
           "kept_because": "RUNBOOK 5.4 and this file's own rule: a void round is recorded, not deleted. Its content is what identified the defect in the question."
+        },
+        {
+          "round": 9,
+          "attempted_at": "2026-08-10T11:00:00Z",
+          "recorded_at": "2026-08-10T11:35:00Z",
+          "task_id": "2026-08-10.t",
+          "source": "codex/outbox/2026-08-10.t.md",
+          "answer_commit": "56b812fd26eaa7ad66e4adbde8cc346d6e1bd817",
+          "verdict_DISCARDED": "払わない",
+          "recognised": "ない",
+          "recognised_verbatim": "ない。いま渡された本文を読んだこと以外に、この会話の外でこのゲームを見た、または自分で書いたと判断できる心当たりはありません。",
+          "why_void": "NOT for recognition — this is the first answer to come back clean on the narrowed blind question, which is itself evidence the rewording worked. It is void because the REVIEWER IS UNKNOWN. The answer arrived as commit 56b812f under the owner's git identity, touching codex/outbox/2026-08-10.t.md and nothing else. Every run of codex-inbox.yml that produces an answer also writes state/answers/latest.json, state/answers/latest.md and state/codex-lane.json; none of them moved. The task requested model: spark against an artifact authored by the account default, and a request is not a record. Same shape as .n, .o and .r.",
+          "reviewer_pairing": {
+            "reviewer_model_key": null,
+            "author_model_key": "account_default",
+            "how_this_was_established": "IT WAS NOT, and that is the entry. If the account default answered, the reviewer is the author and the round fails the rule that gives a stranger reaction its worth. If Spark answered, it is a countable round. The text cannot separate them and neither can the commit."
+          },
+          "the_cost_that_was_not_visible_until_now": "The marker this commit wrote CLOSED the task for our own transport. scripts/inbox-task.mjs treated any existing done_marker as done, so the attributable run could never happen: the attribution rule makes the answer worthless, and the marker rule then guarantees no other answer arrives. Four tasks have been consumed this way. Fixed this lap — a review task whose marker exists with no ledger run, and which a lap has flagged reopen: true in state/codex-lane.json, is live again and waits BEHIND every task nobody has answered at all.",
+          "what_it_nevertheless_showed": "Recorded as observation, never as a verdict. It names the SAME defect as round 8 from the opposite method: round 8 played the artifact in a real browser and said the second and third producers stay locked so the choice set never widens; this one read the source and named producerTypes, the jump from 4 星くず to 100 between the first and second type, in its own words 最初の成功が次の発見につながりません. Two reviewers, one playing and one reading, converging on the gap AFTER the first purchase rather than the wait before it. That is the strongest signal this offer has produced, and it is worth exactly as much as its provenance allows — which is why it sits here rather than in rounds.",
+          "kept_because": "Discarding the verdict is the rule. Discarding the OBSERVATION would mean the loop pays for an answer and then destroys it, and the next lap would re-ask the same question to rediscover it. The register keeps what it cannot count, in the place where uncountable things live."
         }
       ],
       "blind_reviewer_finding": {

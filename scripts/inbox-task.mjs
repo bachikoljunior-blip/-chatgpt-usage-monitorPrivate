@@ -20,7 +20,7 @@
 // task that was simply already done.
 
 import { readFile } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -138,20 +138,39 @@ export function parseInboxTasks(text) {
  * whole point. The lane drains itself: .c finishes, its marker lands, and the
  * next hourly run picks up .d without a lap in between.
  */
-export function selectTask(parsed, { today, markerExists }) {
+export function selectTask(parsed, { today, markerExists, markerAttributable = () => true }) {
   if (parsed.error) return { run: false, reason: parsed.error, task: null };
   const skipped = [];
+  const reopened = [];
   for (const task of parsed.tasks) {
     // One definition of "should this run", asked once per task. A queue that
     // judged entries by its own rules would drift from the single-task rules
     // the tests pin.
-    const verdict = decide(task, { today, markerExists: markerExists(task.done_marker) });
+    const verdict = decide(task, {
+      today,
+      markerExists: markerExists(task.done_marker),
+      markerIsAttributable: markerAttributable(task),
+    });
     if (task.error) return { run: false, reason: verdict.reason, task: null };
+    // A re-ask waits behind every task nobody has answered at all. The queue is
+    // still a queue; what a reopened task loses is its place, because an answer
+    // that exists but cannot be attributed is worth less than an answer that
+    // does not exist yet.
+    if (verdict.run && verdict.reopened) {
+      reopened.push({ task, verdict });
+      skipped.push(`${task.task_id}: held behind never-answered tasks (${verdict.reason})`);
+      continue;
+    }
     if (verdict.run) {
       const behind = skipped.length ? ` (skipped ${skipped.length}: ${skipped.join("; ")})` : "";
       return { run: true, reason: `${verdict.reason}${behind}`, task };
     }
     skipped.push(`${task.task_id}: ${verdict.reason}`);
+  }
+  if (reopened.length) {
+    const { task, verdict } = reopened[0];
+    const behind = skipped.length > 1 ? ` (${skipped.length - 1} other task(s) skipped)` : "";
+    return { run: true, reason: `${verdict.reason}${behind}`, task };
   }
   const detail = skipped.length ? `: ${skipped.join("; ")}` : "";
   return { run: false, reason: `no live unmarked task in the queue${detail}`, task: null };
@@ -188,7 +207,7 @@ export function markerEarned(header, answerText) {
 /**
  * @returns {{run: boolean, reason: string}}
  */
-export function decide(header, { today, markerExists }) {
+export function decide(header, { today, markerExists, markerIsAttributable = true }) {
   if (header.error) return { run: false, reason: header.error };
   // Date-only comparison on purpose: valid_until is a day, and a lexical
   // compare of YYYY-MM-DD is the same ordering without a timezone to get wrong.
@@ -196,6 +215,24 @@ export function decide(header, { today, markerExists }) {
     return { run: false, reason: `expired: valid_until ${header.valid_until} < today ${today}` };
   }
   if (markerExists) {
+    // THE MARKER IS NOT ALWAYS OURS. Four answers have arrived committed under
+    // the owner's git identity, touching only the outbox file and leaving no run
+    // in state/codex-lane.json — .n, .o, .r and now .t. The marker each one
+    // writes closes the task for the transport that COULD be attributed, so the
+    // attributable run never happens and the round can never be counted: the
+    // rule that a reviewer must be established makes such an answer worth
+    // nothing, and the marker rule then makes sure no other answer arrives.
+    //
+    // Only for `produces: review`, because attribution is what a review is FOR.
+    // A research answer is judged by its sources, and re-asking it would spend
+    // the pool to learn nothing.
+    if (header.produces === "review" && markerIsAttributable === false) {
+      return {
+        run: true,
+        reopened: true,
+        reason: `${header.done_marker} exists, but no run in state/codex-lane.json produced it and a lap has flagged it for re-asking, so the reviewer is unknown and the round cannot be counted`,
+      };
+    }
     return { run: false, reason: `already done: ${header.done_marker} exists` };
   }
   return { run: true, reason: `task ${header.task_id} is live and unmarked` };
@@ -281,6 +318,52 @@ export function buildPrompt(inboxText, attachments, body = null) {
   return parts.join("\n\n");
 }
 
+/**
+ * Which markers were produced by a run this repository can account for.
+ *
+ * Pure in everything that decides: given the ledger's run list and the laps'
+ * register of answers that arrived without one, it returns the predicate
+ * selectTask wants. Split out so the reading can be attacked in tests without a
+ * checkout, and so the file read is the only impure part.
+ *
+ * The reopen is OPT-IN per row, and that is the load-bearing choice. The ledger
+ * is capped, so old task ids fall off it, and "absent from a truncated list"
+ * must never be read as "nobody ran it" — that reading would re-ask months of
+ * finished work. A lap looks at the answer, decides the re-ask is worth it, and
+ * writes reopen: true.
+ */
+export function attributionPredicate({ ledgerTaskIds = [], unattributed = [] }) {
+  const ran = new Set(ledgerTaskIds.filter(Boolean));
+  const flagged = new Set(
+    unattributed.filter((row) => row && row.reopen === true).map((row) => row.task_id),
+  );
+  return (task) => {
+    const id = task?.task_id;
+    if (!id) return true;
+    // A ledger run WINS over the flag, so the re-ask cannot loop: the moment our
+    // transport answers the task, it is attributable whatever the register says.
+    if (ran.has(id)) return true;
+    return !flagged.has(id);
+  };
+}
+
+function attributionFromLedger() {
+  try {
+    const lane = JSON.parse(readFileSync(resolve(REPO, "state/codex-lane.json"), "utf8"));
+    return attributionPredicate({
+      ledgerTaskIds: (lane.runs ?? []).map((r) => r?.task_id),
+      unattributed: lane.answers_with_no_ledger_run ?? [],
+    });
+  } catch (err) {
+    // An unreadable ledger must not reopen anything. Loud for anything that is
+    // not a missing file, because a bare catch here swallowed a ReferenceError
+    // once while this was being written and turned the whole rule into a no-op
+    // that reported success.
+    if (err?.code !== "ENOENT") console.error(`attribution unavailable: ${err?.message ?? err}`);
+    return () => true;
+  }
+}
+
 if (import.meta.url === `file://${process.argv[1]}`) {
   const argOf = (name, fallback) => {
     const i = process.argv.indexOf(`--${name}`);
@@ -303,7 +386,13 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   // about which task the run is for.
   const parsed = parseInboxTasks(text);
   const onDisk = (marker) => existsSync(resolve(REPO, marker ?? ""));
-  const selected = selectTask(parsed, { today, markerExists: onDisk });
+  // Attribution comes from the ledger, never from the answer's own text: a run
+  // that spent the pool is recorded by the workflow that spent it.
+  const selected = selectTask(parsed, {
+    today,
+    markerExists: onDisk,
+    markerAttributable: attributionFromLedger(),
+  });
 
   // --prompt writes the assembled prompt to a path and prints nothing else.
   const promptOut = argOf("prompt-out", null);

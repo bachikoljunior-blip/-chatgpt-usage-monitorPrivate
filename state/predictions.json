@@ -1798,6 +1798,22 @@
       ],
       "what_would_make_this_wrong_in_a_way_worth_recording": "If the next lap fixes the balance and the promise STILL fails for a reason nobody has measured — the play harness reading a stale build, say — then 'the shipment waits until everything is ready' is a plan whose ready-state cannot be established, and holding the owner request would be indefinite rather than efficient. The tell is state/play-measurements.json fetched_at not advancing when brand.config.json changes.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-10.the-unattributed-answer-was-consuming-the-task",
+      "made_at": "2026-08-10T11:40:00Z",
+      "claim": "Four answers (.n, .o, .r, .t) arrived as commits under the owner's git identity, touching only the outbox file, with no run in state/codex-lane.json. The register already refused to count them, and that refusal was only half the cost: the done_marker each one wrote also closed the task for the transport that DOES record who ran it, so the attributable answer could never arrive. The two rules met and cancelled the task. PREDICTION: with the reopen in place, 2026-08-10.t runs on our transport AFTER .u, produces a ledger entry naming it, and free_demo gains its first countable round from a re-ask. NOT CLAIMED: that the round will pass. If the answer comes back 見覚え ある, or from the account default that authored the artifact, it voids again and that is a real answer about the lane rather than about this fix. NOT CLAIMED either that the unattributed path is a fault — it is the owner-side ChatGPT lane doing what it was told, and it produced the two best observations this offer has (.t's producerTypes reading converges with .s's played one). What is fixed is that it no longer silences the lane that can be attributed.",
+      "metric": "Read from committed state on origin/main, none from a lap's account of itself. (a) state/codex-lane.json runs[] contains an entry whose task_id is 2026-08-10.t, and codex/outbox/2026-08-10.t.md is at that point a bot commit rather than 56b812f. (b) ORDER: the .u marker lands BEFORE the .t re-ask runs. A re-ask that jumps ahead of a never-answered task means the two-pass ordering is not doing what it was built for, and .u is the task that decides whether the delivery ceiling is real. (c) THE ONE THAT CAN FAIL QUIETLY: does the re-ask loop? Once a ledger run for .t exists, attributionPredicate must return true whatever the register says. A second re-ask of the same task falsifies this outright. (d) node tests/run-tests.mjs fails when the reopen is applied to research tasks, when a reopened task jumps the queue, or when the ledger stops overriding the flag — all three mutations were run red before this was kept.",
+      "baseline": "At 2026-08-10T11:40Z: state/codex-lane.json runs[] holds 5 entries (.s .p .m .l .k), answers_with_no_ledger_run holds 4 (.n .o .r .t, of which only .t carries reopen: true). free_demo rounds 5 with rounds_engaged 1; void_rounds 5. node scripts/inbox-task.mjs selects 2026-08-10.u.",
+      "judge_on": "2026-08-12",
+      "judge_deadline": "2026-08-17",
+      "judge_on_why": "The lane runs hourly and holds one task at a time, so .u then .t is two runs — hours, not days. Two days leaves room for the lane to be idle or for a run to fail without forcing a judgement on a mechanism that never got to fire.",
+      "concurrent_changes": [
+        "codex/INBOX.md task .u had its premise block rewritten in the previous commit of the same lap, with the task_id kept because .u has never run and no marker for it can exist. That changes what .u asks, not whether it runs first.",
+        "state/product-loop.json gained void round 9 (.t) in the same commit; it is the record this prediction's (a) would supersede."
+      ],
+      "what_would_make_this_wrong_in_a_way_worth_recording": "If the owner-side lane answers .t again before ours does, the marker is rewritten by the same unattributable path and the reopen has produced a loop of two writers rather than an attributable round. The tell is a second commit to codex/outbox/2026-08-10.t.md under bachikoljunior-blip. That would mean the fix belongs on the marker's identity rather than on the selection rule.",
+      "outcome": null
     }
   ]
 }
