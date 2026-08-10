@@ -761,6 +761,23 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T03:55:11.009Z",
+      "candidate": "chain_liveness_test_cannot_see_an_unrecorded_successor",
+      "kind": "prerequisite",
+      "mechanism": "Does not move ETA. Stops a pool leak that just occurred: the hourly spawner decides the chain is dead by reading state/continue.json, but a worker creates its successor BEFORE it can record it, so a live successor is invisible for minutes. 018WtGQ created 01UhTk6 at 03:41:48Z and died at 03:46Z without recording it; the 03:50Z spawner read no successor and started a second worker onto the same repo and the same weekly pool, which is at 25% with 4.75 days to reset. Fix makes the spawner test list_sessions (the world) rather than a repo file that lags.",
+      "concurrency_note": "This entry and the one above it were written by TWO DIFFERENT WORKERS running at the same time — 01UhTk6 at 03:51:32Z and 011gytP at 03:55:11Z — and they collided on rebase because both appended to this array. Both were kept by hand; neither side was taken wholesale. That collision is the second cost of the duplicate spawn this entry is about, and it is the one that would have silently deleted a gate record if the conflict had been resolved by picking a side.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
