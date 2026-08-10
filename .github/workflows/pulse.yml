@@ -169,6 +169,15 @@ jobs:
           # measurement's grammar, with nothing in the repository able to take it.
           # Red here means a candidate's claim has outrun its instruments.
           node scripts/funnel-check.mjs || rc=1
+          # A priced itch project must still be a kind itch charges for. Browser
+          # play and an enforced minimum are mutually exclusive on one project —
+          # itch takes payment on embed kinds as donations only — and the failure is
+          # invisible in every field collected before 2026-08-10: min_price_cents
+          # reports 2500 on both sides of it. Red here means the paid kit is a free
+          # download, which is the one state on this board that cannot be undone.
+          # It runs hourly rather than per lap because the change that causes it is
+          # an owner action in a web UI, not a commit.
+          node scripts/check-itch-paywall.mjs || rc=1
           # The two files laps EDIT BY HAND that the gate then reads. Nothing ran the
           # checker on either, and it showed: verify-sanitized-state kept its own copy
           # of the lap-claim kinds, never learned about route_change, and rejected every

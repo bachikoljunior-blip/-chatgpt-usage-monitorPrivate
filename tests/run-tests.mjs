@@ -35,6 +35,7 @@ import {
   venueReadiness,
 } from "../scripts/venue-readiness.mjs";
 import { funnelCheck } from "../scripts/funnel-check.mjs";
+import { itchPaywallCheck } from "../scripts/check-itch-paywall.mjs";
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import {
   checkAddressee, checkRequestsAddressee, copyChanged, diffListing, pasteableStrings,
@@ -2964,6 +2965,69 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(
     itchChannel.revenue_is_a_lower_bound === true,
     "the itch channel stopped flagging its revenue figure as derived from purchases x min_price",
+  );
+}
+
+// --- a priced itch project must be one itch will actually charge for ----------
+//
+// 2026-08-10. The handoff rated an HTML build on the kit's itch page as the
+// strongest move on the board, at zero owner actions, because "itch permits BOTH"
+// the free demo and the paid kit on one page. itch's own docs say otherwise:
+// "Currently all HTML5 games on itch.io are set up to only take payments as
+// donations." Browser play and an enforced minimum are mutually exclusive on one
+// project, and the failure is silent — min_price_cents reports 2500 either way.
+//
+// These assertions pin the direction of the fail-closed rule, because the cheap
+// mistake here is to widen the allowlist to make a red run green, and the cost of
+// that mistake is a USD 25 product given away with no way to un-give it.
+{
+  const priced = (kind) => ({
+    status: "ok",
+    games: [{ title: "kit", min_price_cents: 2500, kind }],
+  });
+
+  assert(itchPaywallCheck(priced("default")).ok === true, "a downloadable priced project was flagged");
+
+  // The exact state the handoff's plan would have produced.
+  const html = itchPaywallCheck(priced("html"));
+  assert(html.ok === false, "a priced project set to browser play passed the paywall check");
+  assert(
+    /donation/i.test(html.findings.join(" ")),
+    "the failure did not say WHY browser play voids the price, so a later lap would read it as pedantry",
+  );
+  for (const kind of ["flash", "unity", "java"]) {
+    assert(itchPaywallCheck(priced(kind)).ok === false, `a priced ${kind} embed passed the paywall check`);
+  }
+
+  // Fail-closed, both ways an allowlist can be attacked: a kind nobody here has
+  // seen, and a kind that cannot be read at all. Neither is evidence of safety,
+  // and "we are selling something and cannot tell whether the paywall is on" is
+  // the state this check exists to make impossible to sit in quietly.
+  assert(itchPaywallCheck(priced("newkind")).ok === false, "an unrecognised kind was treated as safe");
+  assert(itchPaywallCheck(priced(null)).ok === false, "a priced project with no readable kind passed");
+
+  // A free project has no paywall to void, and a check that fired on those would
+  // be disabled the day the free demo gets its own page — which is the surviving
+  // route this constraint leaves open.
+  assert(
+    itchPaywallCheck({ status: "ok", games: [{ title: "demo", min_price_cents: 0, kind: "html" }] }).ok ===
+      true,
+    "a free browser-playable project was flagged, which would forbid the one route that survives",
+  );
+
+  // And the committed state passes with the real collector output. This is the
+  // assertion that goes red if the owner ever flips the live page.
+  const itchState = JSON.parse(await readFile(join(root, "state/itch.json"), "utf8"));
+  const live = itchPaywallCheck(itchState);
+  assert(live.ok === true, `the live itch page fails the paywall check: ${live.findings.join(" ")}`);
+  assert(
+    live.checked === true && live.rows.some((r) => r.charging === true),
+    "no priced itch project was actually examined, so this check is passing by having nothing to look at",
+  );
+  // The collector must keep serving the one field that separates the two states.
+  assert(
+    itchState.games.every((g) => typeof g.kind === "string"),
+    "read-itch.mjs stopped collecting `kind`, so nothing can tell a paid page from a donation page",
   );
 }
 
