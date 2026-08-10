@@ -629,6 +629,71 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     );
   }
 
+  // ...and ageing past the cadence is where the previous version stopped, which
+  // is the bug. `overdue` is the status RUNBOOK 3 spends the top of a lap on,
+  // and `repair` tells that lap to re-arm the trigger. Twice on 2026-08-10 the
+  // trigger had fired minutes before the alarm and the snapshot was what had
+  // stopped. So the aged reading must say UNKNOWN unless the observation is
+  // late enough to have measured the silence.
+  {
+    // cookie-daily as it actually read at 06:15Z: registry observed 06:18Z,
+    // scheduler reported a fire at 05:55Z, cadence 60. The deadline it would
+    // have to miss is 07:55Z, and nobody looked after that — so nothing here
+    // separates "stopped" from "nobody asked lately". It had in fact fired
+    // again at 08:56Z.
+    const fired = "2026-08-10T05:55:38Z";
+    const age = (Date.parse("2026-08-10T09:15:00Z") - Date.parse(fired)) / 60_000;
+    assert(
+      classify(age, 60, {
+        source: "registry:last_fired_at",
+        last_seen: fired,
+        observed_at: "2026-08-10T06:18:00Z",
+      }) === "mark_stale",
+      "a scheduler snapshot too old to prove a stop was still reported as overdue — the reading that twice aimed a lap's top priority at a trigger that never stopped",
+    );
+
+    // The exemption has to be able to turn back into an accusation, or it is a
+    // blanket excuse. Reconcile at 09:35Z and the scheduler still says 05:55Z:
+    // that IS a measurement of silence, because something asked after 07:55Z.
+    assert(
+      classify(age, 60, {
+        source: "registry:last_fired_at",
+        last_seen: fired,
+        observed_at: "2026-08-10T09:35:00Z",
+      }) === "overdue",
+      "a snapshot refreshed AFTER the deadline still reported the old fire and was not called overdue — the rule became a blanket exemption",
+    );
+
+    // A mark the automation moves itself does not get the exemption at all: it
+    // only goes stale when the automation stops.
+    assert(
+      classify(age, 60, {
+        source: "state_file:state/usage.json",
+        last_seen: fired,
+        observed_at: "2026-08-10T06:18:00Z",
+      }) === "overdue",
+      "a collector's own stale state file was excused as an unrefreshed snapshot",
+    );
+
+    // An unreadable observation cannot prove the stop either, and must not fall
+    // through to the accusation by accident.
+    assert(
+      classify(age, 60, {
+        source: "registry:last_fired_at",
+        last_seen: fired,
+        observed_at: null,
+      }) === "mark_stale",
+      "a row with no observation date was reported overdue on evidence nobody has",
+    );
+
+    // Called with two arguments — every caller that only holds an age — nothing
+    // changed.
+    assert(
+      classify(age, 60) === "overdue" && classify(30, 60) === "ok" && classify(null, 60) === "never_seen",
+      "the two-argument form of classify changed behaviour",
+    );
+  }
+
   // Every enabled automation in the real registry must have some mark available,
   // or it is one the detector structurally cannot watch.
   const registry = JSON.parse(await readFile(join(root, "state/automations.json"), "utf8"));

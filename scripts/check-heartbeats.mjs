@@ -187,12 +187,57 @@ export function resolveLastSeen(automation, evidence) {
   return best ? { last_seen: best.last_seen, source: best.source } : { last_seen: null, source: null };
 }
 
-export function classify(ageMinutes, cadence) {
+/**
+ * @param {number|null} ageMinutes
+ * @param {number} cadence
+ * @param {{source: string|null, last_seen: string|null, observed_at: string|null}|null} [evidence]
+ *
+ * The third argument separates "this automation stopped" from "nothing here can
+ * tell". Called with two arguments it behaves exactly as before, which is what
+ * every caller that only has an age wants.
+ *
+ * WHY IT EXISTS. `registry:last_fired_at` is a snapshot only a lap holding MCP
+ * can refresh, so between such laps it freezes while the trigger keeps firing.
+ * The row then ages past its cadence and reads `overdue` — and RUNBOOK 3 makes
+ * overdue the TOP priority for the scarce Claude pool, with `repair` telling the
+ * lap to re-arm. Measured twice on 2026-08-10: cookie-daily was reported overdue
+ * at 06:15Z (it had fired 20 minutes earlier) and again at 09:15Z (it had fired
+ * at 08:56Z, 19 minutes earlier). Both times the snapshot, not the trigger, was
+ * what had stopped. A false alarm here does not merely mislead — it redirects
+ * the one resource the whole loop is rationing.
+ *
+ * THE RULE, and it is falsifiable rather than a blanket exemption. A frozen
+ * snapshot can still prove a stop: if the registry was observed LATER than the
+ * moment this row was due, then the scheduler itself was asked after the
+ * deadline and still reported the old fire. That is a measurement of silence.
+ * If the observation predates the deadline, the snapshot is simply too old to
+ * distinguish the two worlds, and saying `overdue` asserts something nobody
+ * measured.
+ *
+ *   observed_at > last_fired_at + cadence * OVERDUE_FACTOR  → overdue (measured)
+ *   otherwise                                               → mark_stale (unknown)
+ *
+ * mark_stale is NOT green. It is reported with its own count and its own
+ * instruction, because the failure mode of the previous version was a status
+ * that overstated what it knew, and the failure mode of a silent exemption
+ * would be a status that understates it.
+ */
+export function classify(ageMinutes, cadence, evidence = null) {
   // never_seen is not the same as overdue. A newly registered automation has not
   // failed; it has not started. Reporting it as a failure would train the reader
   // to ignore this list.
   if (ageMinutes === null) return "never_seen";
-  return ageMinutes > cadence * OVERDUE_FACTOR ? "overdue" : "ok";
+  if (ageMinutes <= cadence * OVERDUE_FACTOR) return "ok";
+  if (!evidence) return "overdue";
+  // Marks the automation moves itself (a lap's own record, a collector's state
+  // file) go stale only when the automation stops. Those keep the old reading.
+  if (evidence.source !== "registry:last_fired_at") return "overdue";
+  const firedMs = Date.parse(evidence.last_seen ?? "");
+  const observedMs = Date.parse(evidence.observed_at ?? "");
+  // An unreadable or absent observation cannot prove the stop either. Unknown is
+  // the honest answer, and it carries an instruction that resolves it.
+  if (!Number.isFinite(firedMs) || !Number.isFinite(observedMs)) return "mark_stale";
+  return observedMs > firedMs + cadence * OVERDUE_FACTOR * 60_000 ? "overdue" : "mark_stale";
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) await main();
@@ -233,11 +278,16 @@ for (const a of enabled) {
     // one produced by a stale self-report.
     last_seen_source: source,
     age_minutes: ageMinutes === null ? null : Math.round(ageMinutes),
-    status: classify(ageMinutes, cadence),
+    status: classify(ageMinutes, cadence, {
+      source,
+      last_seen,
+      observed_at: a.observed_at ?? registry.reconciled_at ?? null,
+    }),
   });
 }
 
 const overdue = rows.filter((r) => r.status === "overdue");
+const markStale = rows.filter((r) => r.status === "mark_stale");
 const neverSeen = rows.filter((r) => r.status === "never_seen");
 const unverified = unverifiedReservations(registry, now.getTime());
 
@@ -247,6 +297,16 @@ const report = {
   fetched_at: now.toISOString(),
   overdue_factor: OVERDUE_FACTOR,
   overdue_count: overdue.length,
+  // Rows past their cadence whose only mark is a scheduler snapshot older than
+  // the deadline it would have to prove. Counted separately from overdue on
+  // purpose: RUNBOOK 3 spends the top of a lap on overdue, and twice on
+  // 2026-08-10 that top slot was aimed at a trigger that had fired minutes
+  // before the alarm. Not green — see mark_stale_instruction.
+  mark_stale_count: markStale.length,
+  marks_only_a_lap_can_refresh: markStale.map((r) => r.id),
+  mark_stale_instruction: markStale.length
+    ? "These are UNKNOWN, not stopped and not fine. Run list_triggers and reconcile state/automations.json (last_fired_at, next_run_at, observed_at). If the scheduler reports a recent fire the row was never late; if it reports the same old fire, the refreshed observed_at makes the next run report a real overdue; if the trigger is absent, set enabled:false rather than deleting the row."
+    : null,
   never_seen_count: neverSeen.length,
   // The repair instruction travels with the finding, so a lap that wakes into
   // this file does not have to remember what to do about it.
@@ -257,9 +317,10 @@ const report = {
   // from one whose own output stopped moving. The first may mean nothing worse
   // than "no lap has run list_triggers lately"; re-arming on that reading would
   // rebuild a trigger that never stopped. Reconcile first, then judge.
-  reconcile_before_judging: overdue
-    .filter((r) => r.last_seen_source === "registry:last_fired_at")
-    .map((r) => r.id),
+  reconcile_before_judging: [
+    ...markStale.map((r) => r.id),
+    ...overdue.filter((r) => r.last_seen_source === "registry:last_fired_at").map((r) => r.id),
+  ],
   // When did anything last check that these rows correspond to live triggers,
   // and which reservations are resting on rows older than that window. A row can
   // read ok here and not exist at all; see unverifiedReservations above for the
@@ -288,6 +349,14 @@ for (const r of rows) {
   );
 }
 if (overdue.length) console.log(`OVERDUE: ${overdue.map((r) => r.id).join(", ")}`);
+// Printed as loudly as OVERDUE and worded so it cannot be read as a pass. The
+// whole point of splitting it out is that the reader spends a different action
+// on it — reconcile, not re-arm — not that they spend nothing.
+if (markStale.length) {
+  console.log(
+    `UNKNOWN (mark only a lap can refresh, too old to judge): ${markStale.map((r) => r.id).join(", ")}`,
+  );
+}
 // Printed unconditionally, with its age, for the same reason pacing.mjs prints the
 // age of the cost bound: a number with no age beside it is read as current.
 console.log(
