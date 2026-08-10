@@ -752,6 +752,42 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     "the heartbeat cannot see the lane through the mark a skipped run leaves",
   );
 
+  // A lap's conclusion must survive the next run of the machine that rewrites the
+  // file it lives in. On 2026-08-10 a lap recorded which quota pool a named run
+  // actually spends — settled by which usage window moved — into
+  // state/codex-lane.json, and the 06:15 lane run regenerated the file wholesale
+  // fourteen minutes later. The finding existed only in git history, which is the
+  // one place nothing reads.
+  {
+    const before = buildLaneRecord({
+      now: new Date("2026-08-10T06:00:00Z"),
+      ran: true,
+      taskId: "2026-08-10.k",
+      modelKey: "spark",
+      model: "gpt-5.3-codex-spark",
+    });
+    const withFinding = { ...before, which_pool_a_named_run_actually_spends: { answer: "spark" } };
+    const after = buildLaneRecord({
+      now: new Date("2026-08-10T07:00:00Z"),
+      ran: false,
+      taskId: "2026-08-10.l",
+      previous: withFinding,
+    });
+    assert(
+      after.which_pool_a_named_run_actually_spends?.answer === "spark",
+      "a lane run erased the lap conclusion stored beside it; a regenerated file is a fine place for a " +
+      "machine's output and a terrible place for a finding, and the two look identical once both are JSON",
+    );
+    assert(
+      after.runs.some((r) => r.task_id === "2026-08-10.k"),
+      "the ledger did not survive the next run, so authorship is unanswerable one hour after it is recorded",
+    );
+    assert(
+      !after.runs.some((r) => r.task_id === "2026-08-10.l"),
+      "a SKIPPED run entered the authorship ledger, which answers 'who built this' with a model that never ran",
+    );
+  }
+
   // A reviewer must not be the author — the one condition rung 2 cannot survive,
   // and the one this project has broken twice without noticing until afterwards.
   // Added 2026-08-10, when it stopped being a worry and became reachable: the

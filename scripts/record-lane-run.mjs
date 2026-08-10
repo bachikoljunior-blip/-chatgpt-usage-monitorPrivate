@@ -43,6 +43,21 @@ export const LANE_STATE_PATH = "state/codex-lane.json";
 // play; it is not an archive, and codex/outbox/ already is one.
 export const LEDGER_LIMIT = 40;
 
+// Keys a LAP writes into this file that a RUN must not destroy.
+//
+// This file is regenerated wholesale every hour by codex-inbox.yml, and on
+// 2026-08-10 a lap wrote a settled measurement into it — which pool a named run
+// actually spends, evidenced by which usage window moved — and the 06:15 run
+// erased it fourteen minutes later. The finding survived only in git history,
+// which is exactly the place nothing reads.
+//
+// The general shape is worth naming because this project keeps meeting it: a
+// machine-regenerated file is a fine place for a machine's output and a terrible
+// place for a conclusion, and the two look identical once they are both JSON.
+// Carrying an explicit whitelist rather than "everything unrecognised" keeps a
+// stray key from becoming immortal by accident.
+export const DURABLE_KEYS = ["which_pool_a_named_run_actually_spends"];
+
 /**
  * Build the record. Pure so the invariant below can be tested without a runner:
  * `checked_at` is present whether or not the run did any work.
@@ -67,7 +82,12 @@ export function buildLaneRecord({
   // Newest first, one entry per task_id: a re-run supersedes rather than
   // accumulates, because the question the ledger answers has one answer.
   const runs = [...entry, ...carried.filter((r) => !entry.length || r?.task_id !== taskId)].slice(0, LEDGER_LIMIT);
+  const durable = {};
+  for (const key of DURABLE_KEYS) {
+    if (previous && previous[key] !== undefined) durable[key] = previous[key];
+  }
   return {
+    ...durable,
     schema_version: 1,
     status: "ok",
     // Dates the run, not the answer. Never omit this on a skip — a skip is the
