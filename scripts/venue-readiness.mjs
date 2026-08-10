@@ -58,7 +58,14 @@ import { FREE_ARTIFACT_PATH, artifactLanguage } from "./check-free-artifact.mjs"
 // Hence prerequisiteCheck: the elected route must name its prerequisite in this
 // vocabulary. `prerequisite_term` outside the four is a hard failure here and in
 // pulse.yml, for the same reason a condition in prose is: it cannot be wrong out loud.
-export const BINDING_CAUSES = ["postable", "venue_rule", "venue_unsettled", "account"];
+//   account_too_new — the venue is open, an account exists, and the venue's own
+//                     eligibility clock has not run out yet. Added 2026-08-10 when
+//                     the first account was created and the four values could not
+//                     say "exists and cannot post". It is deliberately NOT `account`:
+//                     that binding means an owner action is required, and this one is
+//                     cleared by waiting. Reading it as `postable` would spend the
+//                     route's single post attempt on a removal.
+export const BINDING_CAUSES = ["postable", "venue_rule", "venue_unsettled", "account", "account_too_new"];
 
 // The vocabulary above is this instrument's, and for a while it was silently treated
 // as the vocabulary of EVERY possible route. prerequisiteCheck hard-failed any term
@@ -345,7 +352,15 @@ export function prerequisiteCheck(election, result) {
 // sees. Venues do not receive the same artifact: r/gamedev gets the playable demo,
 // itch.io Release Announcements gets the announcement. One value for all of them was
 // right only for as long as everything we had was Japanese.
-export function venueReadiness(venues, evidence = {}, repoFiles = {}, artifactLanguages = undefined) {
+export function venueReadiness(
+  venues,
+  evidence = {},
+  repoFiles = {},
+  artifactLanguages = undefined,
+  // Explicit so the eligibility clock is testable in both directions. A function
+  // that reads the wall clock can only ever be tested on the day it is run.
+  today = new Date().toISOString().slice(0, 10),
+) {
   const rows = (Array.isArray(venues) ? venues : []).map((v) => {
     const account = v?.account;
     if (account === undefined) {
@@ -377,6 +392,30 @@ export function venueReadiness(venues, evidence = {}, repoFiles = {}, artifactLa
       } else if (doc.status && doc.status !== "ok") {
         problem = `evidence_state_file ${source} reports status ${doc.status}`;
         exists = null;
+      }
+    }
+
+    // An account that exists and may not post yet.
+    //
+    // Added 2026-08-10, when the owner created the Reddit account. Until that
+    // moment every account was binary: absent, and only an owner action could
+    // change it. r/gamedev's eligibility is "48 hours minimum account age" — the
+    // one numeric posting requirement found across six venue surveys — so for two
+    // days the row is in a state this instrument had no way to say. Read as
+    // `postable`, a lap would spend the single post attempt this route has on a
+    // submission the venue removes, and the removal would then be read as evidence
+    // about the venue or the artifact rather than about the clock.
+    //
+    // A date rather than a duration: nothing here can observe the account (reddit
+    // answers 403), so an age cannot be computed, only declared. The declaration
+    // is checkable against the calendar, which is the most a 403 allows.
+    const eligibleFrom = account?.eligible_from ?? null;
+    let tooNewUntil = null;
+    if (exists === true && eligibleFrom) {
+      if (!/^\d{4}-\d{2}-\d{2}/.test(String(eligibleFrom))) {
+        if (!problem) problem = `account.eligible_from is not a date: ${JSON.stringify(eligibleFrom)}`;
+      } else if (String(eligibleFrom).slice(0, 10) > today) {
+        tooNewUntil = String(eligibleFrom).slice(0, 10);
       }
     }
 
@@ -458,7 +497,11 @@ export function venueReadiness(venues, evidence = {}, repoFiles = {}, artifactLa
         "revenue step is forbidden in writing.";
     }
 
-    const computed = andKleene(exists, blocker.holds);
+    // The clock shuts the row while it runs. Deliberately AFTER the AND rather
+    // than folded into `exists`: the account genuinely does exist, and flattening
+    // the two would put the row back to reading `account` — the binding that means
+    // 'an owner action is required'. No owner action clears this one; two days do.
+    const computed = tooNewUntil ? false : andKleene(exists, blocker.holds);
     const stored = Object.prototype.hasOwnProperty.call(v ?? {}, "postable_today") ? v.postable_today : undefined;
     if (stored === undefined) {
       if (!problem) problem = "no postable_today field";
@@ -481,7 +524,10 @@ export function venueReadiness(venues, evidence = {}, repoFiles = {}, artifactLa
       // after the AND. Which half is shut is the whole question the election got
       // wrong; collapsing them into one boolean is what made it invisible.
       venue_blocker: blocker.holds,
-      binding: bindingCause(exists, blocker.holds, computed),
+      binding: tooNewUntil ? "account_too_new" : bindingCause(exists, blocker.holds, computed),
+      eligible_from: eligibleFrom,
+      // null once the date has passed, so "waiting" cannot linger as a stale string.
+      too_new_until: tooNewUntil,
       audience_language: audience ?? null,
       artifact: artifactPath ?? null,
       artifact_language: artifactLang,
@@ -505,7 +551,9 @@ export function venueReadiness(venues, evidence = {}, repoFiles = {}, artifactLa
       postable_declared: stored ?? null,
       postable_reason: blocker.reason,
       blocked_on:
-        exists === true
+        tooNewUntil
+          ? `the account exists and is too new to post here until ${tooNewUntil}; no owner action clears this, only time`
+          : exists === true
           ? (v?.blocked_on ?? "nothing recorded — check the venue row")
           : exists === false
             ? "no account at this venue"

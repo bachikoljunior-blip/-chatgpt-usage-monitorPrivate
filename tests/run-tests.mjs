@@ -3118,3 +3118,49 @@ function assert(condition, message) {
     "an exhausted Spark window was reported as unreachable",
   );
 }
+
+// --- An account that exists and may not post yet -----------------------------
+// 2026-08-10: the owner created the Reddit account. Until then every account was
+// binary — absent, and only an owner action could change it — so the instrument's
+// four bindings had no way to say "exists and cannot post". r/gamedev's eligibility
+// is 48 hours of account age, the one numeric posting requirement found across six
+// venue surveys, so for two days the row sits in exactly that state.
+//
+// Held here because reading it as `postable` costs something real and once: this
+// route has a single post attempt, an early submission gets removed, and the
+// removal then reads as evidence about the venue or the artifact rather than about
+// the clock. And `account` is the wrong answer in the other direction — that
+// binding means an owner action is required, and no owner action clears this one.
+{
+  const evidence = { "state/owner-requests.json": { status: "ok" } };
+  const repoFiles = { "assets/free-demo/index.html": true };
+  const row = {
+    venue: "r/gamedev",
+    postable_today: false,
+    postable_when: [{ repo_file: "assets/free-demo/index.html" }],
+    paid_promotion_permitted: false,
+    account: { exists: true, evidence_state_file: "state/owner-requests.json", eligible_from: "2026-08-12" },
+  };
+
+  const waiting = venueReadiness([row], evidence, repoFiles, undefined, "2026-08-10");
+  assert(waiting.rows[0].binding === "account_too_new", `a too-new account bound on ${waiting.rows[0].binding}`);
+  assert(waiting.rows[0].postable_today === false, "a too-new account was reported as postable");
+  assert(waiting.rows[0].account_exists === true, "the account was reported absent; it exists, it is just young");
+  assert(!waiting.rows[0].problem, `a legitimate waiting row was flagged: ${waiting.rows[0].problem}`);
+
+  // The other direction, which is what makes it a clock rather than a permanent no.
+  const ripe = venueReadiness([{ ...row, postable_today: true }], evidence, repoFiles, undefined, "2026-08-12");
+  assert(ripe.rows[0].binding === "postable", `the clock did not run out: ${ripe.rows[0].binding}`);
+  assert(ripe.rows[0].too_new_until === null, "too_new_until lingered after the date passed");
+
+  // A date that is not a date must be caught rather than silently ignored — an
+  // unparsed eligibility string would read as "no clock" and open the row.
+  const bad = venueReadiness(
+    [{ ...row, account: { ...row.account, eligible_from: "48 hours after creation" } }],
+    evidence,
+    repoFiles,
+    undefined,
+    "2026-08-10",
+  );
+  assert(bad.rows[0].problem, "prose in eligible_from passed as though there were no clock");
+}

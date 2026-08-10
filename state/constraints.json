@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T01:11:08.287Z",
+  "fetched_at": "2026-08-10T01:17:34.214Z",
   "note": "Everything here is what was true when it was measured, not a permanent property of the world. Each entry carries a recheck date because on 2026-08-08 two items declared impossible were solved the same day. A constraint falling away usually moves the ETA more than any ordinary improvement does, so rechecks are ETA candidates in their own right.",
   "constraints": [
     {
@@ -264,17 +264,22 @@
               }
             ],
             "postable_when_note": "The venue's rule forbids the paid kit and permits a free unwalled artifact in the same sentence, so what decides this row is whether such an artifact exists. It does not: task .q commissioned one from the codex lane and codex/outbox/2026-08-09.q.md has not arrived. False beats unknown in the AND, so this row reads shut on the artifact even though the account answer is unknown — which is correct, and also why the account question is not yet the binding blocker here. WHEN THE ARTIFACT LANDS THIS ROW TURNS unknown, NOT postable, and scripts/venue-readiness.mjs will fail until somebody answers the account question or records that it cannot be answered. That failure is the feature: it is the loop refusing to carry r/gamedev as an open route on an account nobody has established.",
-            "blocked_on": "the rule, not the account. A USD 25 paid kit is forbidden here regardless of standing, and no paid-product day thread or dedicated slot was found.",
+            "blocked_on": "the 48-hour account-age clock, which runs out 2026-08-12. No owner action clears it.",
             "owner_request_id": "2026-08-09.reddit-account-create",
             "owner_request_id_note": "Still pending and still worth making — for READERSHIP. This row's paid_promotion_permitted is false, so the request behind it cannot be the route's revenue step, which is why the election was re-pointed off this row at 22:3xZ rather than this request being withdrawn.",
             "what_it_opens_instead": "A free artifact with no signup wall is explicitly permitted by the same sentence. This is the one venue whose door is open to a different product form rather than to a better-standing account.",
             "account": {
-              "exists": false,
-              "measured_at": "2026-08-09",
-              "source": "owner statement, asked by owner request 2026-08-09.reddit-account-username and answered in chat: no Reddit account.",
-              "why_this_could_not_be_measured_here": "reddit.com answers 403 from this environment, and a grep of state/ finds no username. It was an owner fact, not a venue fact, which is why a seventh survey would have returned the same nothing.",
-              "what_it_settles": "postable_today for this venue is FALSE, not unknown. The free artifact requirement is met and the 48-hour age requirement cannot even start counting, because there is no account to age. This does not refute the venue — it prices it: reaching it costs one owner action plus a two-day wait, and that is now a number rather than a blank.",
-              "do_not_reopen_by_survey": "Asking the codex lane about r/gamedev again cannot change this row. Only the owner creating an account can."
+              "exists": true,
+              "measured_at": "2026-08-10",
+              "source": "owner statement in chat, 2026-08-10: 「Redditアカウント作ったよ」. Reported as created only — no post, which is what owner request 2026-08-09.reddit-account-create asked for.",
+              "created_on": "2026-08-10",
+              "username": null,
+              "username_note": "Not collected. The request asked for it so that elapsed time could be computed here, and that reason does not survive: reddit.com is 403 from this environment, so a username buys no observation. The 48-hour clock runs from the report. Ask only if a step needs it.",
+              "earliest_post_attempt": "2026-08-12",
+              "what_it_settles": "postable_today is still FALSE, and for a DIFFERENT reason than yesterday — the blocker moved from account to age. That distinction is the whole value of the row: on 2026-08-12 it clears with no further owner action, whereas yesterday it could not clear at all without one.",
+              "what_it_does_not_settle": "Whether a post survives. The surveyed 2026-03-20 auto-removal was for comment karma below 10, not account age, and whether r/gamedev carries that threshold was never confirmable from public information across six attempts. 48 hours is necessary, not sufficient.",
+              "evidence_state_file": "state/owner-requests.json",
+              "eligible_from": "2026-08-12"
             },
             "postable_today_changed_from_false_to_null": {
               "at": "2026-08-09T17:28:00Z",
