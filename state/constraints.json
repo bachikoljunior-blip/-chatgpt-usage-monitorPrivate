@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T05:08:26.322Z",
+  "fetched_at": "2026-08-10T05:24:35.579Z",
   "note": "Everything here is what was true when it was measured, not a permanent property of the world. Each entry carries a recheck date because on 2026-08-08 two items declared impossible were solved the same day. A constraint falling away usually moves the ETA more than any ordinary improvement does, so rechecks are ETA candidates in their own right.",
   "constraints": [
     {
@@ -393,11 +393,20 @@
       "claim": "The main branch of Simple-browser-cookie-clicker-game must not be modified.",
       "evidence": "Permanent directive A2.",
       "measured_at": "2026-08-08",
-      "recheck_after": null,
+      "recheck_after": "2026-09-10",
       "blocks": [
         "cookiestrateger_site_changes"
       ],
-      "eta_effect_if_lifted": "not applicable: this is a standing owner instruction, not an environmental limit. Never schedule a recheck against it."
+      "eta_effect_if_lifted": "not applicable: this is a standing owner instruction, not an environmental limit. Never schedule a recheck against it.",
+      "owner_directive": true,
+      "demoted_from_permanent": {
+        "at": "2026-08-10",
+        "by": "the owner, in chat: 最短で月収20万のみ変えないようにして、他の仕組みはそのままで、子セッションが変えられるようにして. Recorded verbatim as the tenth instruction in bachikoljunior-blip/note OPERATIONS/CORE_DIRECTIVE.md, directive_version 2026-08-10.user-verbatim.4.",
+        "what_changed": "This entry still refuses cookiestrateger_site_changes and every candidate that requires it — nothing about its effect today has changed. What changed is that it is no longer beyond lifting. A lap may take it off by editing this entry and recording why.",
+        "what_did_not_change": "A2 text. The owner said the other mechanisms stay in place, so the nine earlier instructions keep their wording and this rule keeps its teeth. Demoted is not repealed.",
+        "what_a_lap_must_not_do": "Lift it because it is now liftable. That is the absence of a prohibition, not a reason. The bar is the same as for any other constraint: a measurement, or an ETA the change buys. And the lift has to be worth a lap — this rule guards one public artifact, and the loop has never measured what changing it would earn."
+      },
+      "why_it_now_has_a_date": "Because it is now an ordinary standing rule, and every ordinary rule in this file carries a recheck date. An undated entry is how a limit outlives the thing that caused it — two constraints called impossible on 2026-08-08 were solved the same day. The date does not lift it; it schedules the question."
     },
     {
       "id": "product_form_vs_addressed_buyer",

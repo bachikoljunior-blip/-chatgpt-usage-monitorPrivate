@@ -50,6 +50,7 @@ import {
 } from "../scripts/owner-request-gate.mjs";
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import { classifyLifecycle } from "../scripts/probe-gumroad-lifecycle.mjs";
+import { checkGoal, GOAL, BEGIN as DIRECTIVE_BEGIN } from "../scripts/check-goal-intact.mjs";
 import { judge as judgeSpark, sparkModelCandidate, sparkWindow } from "../scripts/spark-model.mjs";
 import { judge as judgeProductLoop, MAX_ROUND_AGE_DAYS as PRODUCT_MAX_ROUND_AGE_DAYS, roundEngaged } from "../scripts/product-loop.mjs";
 import {
@@ -1399,7 +1400,9 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       claim: "The main branch of Simple-browser-cookie-clicker-game must not be modified.",
       evidence: "Permanent directive A2.",
       measured_at: "2026-08-08",
-      recheck_after: null,
+      // Declared, not inferred from a null date — see below.
+      owner_directive: true,
+      recheck_after: "2026-09-10",
       blocks: ["cookiestrateger_site_changes"],
     },
     { id: "forbidden", recheck_after: "2026-08-16", requires: ["cookiestrateger_site_changes"] },
@@ -1409,6 +1412,10 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     // acquire directive force: those get lifted by measurement, and this whole
     // mechanism exists to mark the ones that never do.
     { id: "merely_hard", recheck_after: "2026-12-01", blocks: ["some_hard_thing"] },
+    // The old test was `recheck_after === null`, and this row is why it had to stop
+    // being it: an undated environmental limit that names a block token. Under the
+    // inference it would have acquired directive force by leaving a field empty.
+    { id: "undated_limit", recheck_after: null, blocks: ["an_undated_thing"] },
   ];
   const blockers = directiveBlockers(constraints);
 
@@ -1416,6 +1423,11 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(
     !blockers.has("some_hard_thing"),
     "a dated environmental limit was treated as a standing directive, so measuring it away would look forbidden",
+  );
+  assert(
+    !blockers.has("an_undated_thing"),
+    "an undated environmental limit acquired directive force by leaving recheck_after empty — " +
+      "the exact over-block this file predicted before the marker became declared",
   );
 
   const byId = (id) => constraints.find((c) => c.id === id);
@@ -1466,24 +1478,31 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       "candidate as a directive violation",
   );
 
-  // The other direction, which costs more than it saves if it ever goes wrong. This
-  // mechanism refuses work permanently and with no appeal, so the marker that grants
-  // that power has to keep meaning what it means. `recheck_after === null` is
-  // inferred, not declared, and the registry ALREADY contains a row where null means
-  // something else: settings_change_cannot_be_done_by_any_session is an environmental
-  // limit with no recheck date. It is harmless today only because it carries no
-  // `blocks` — add one and an environmental limit acquires directive force, and the
-  // loop starts refusing work that a measurement could have cleared. Over-blocking is
-  // the worse failure of the two: a missed block wastes a lap, a false block removes
-  // a route for good and looks principled while doing it.
+  // The refusal has to say it can be lifted. On 2026-08-10 the owner narrowed the
+  // permanent set to the goal alone; the message that used to end "there is no
+  // experiment that lifts it" became false that day, and a stale refusal is obeyed
+  // without rechecking — which hands back discretion the owner had just granted.
+  assert(hit.liftable === true, "a directive block still reports itself as beyond lifting");
+  assert(
+    /子セッション|child sessions/.test(hit.why) && /recording why|理由/.test(hit.why),
+    "the refusal does not tell a lap how the rule may be taken off, so it reads as final",
+  );
+
+  // The other direction, which costs more than it saves if it ever goes wrong. The
+  // marker that grants a rule the power to refuse work has to keep meaning what it
+  // means. It is now DECLARED (`owner_directive: true`) rather than inferred from a
+  // null recheck date — the registry had already grown a row where null meant
+  // something else entirely, and under the inference any environmental limit could
+  // acquire directive force by leaving a field empty. Over-blocking is the worse
+  // failure of the two: a missed block wastes a lap, a false block removes a route
+  // and looks principled while doing it.
   for (const [token, hit] of liveBlockers) {
     const source = live.find((c) => c.id === hit.id);
     assert(
       /directive|恒久指示|\bA\d+\b/i.test(String(source?.evidence ?? "")),
-      `${hit.id} blocks ${token} with the force of a standing owner directive, but its evidence ` +
-        "does not cite one. A null recheck_after is permitted only for standing owner " +
-        "instructions; if this is an environmental limit, give it a real recheck date instead " +
-        "of directive power.",
+      `${hit.id} blocks ${token} with the force of a standing owner rule, but its evidence ` +
+        "does not cite one. owner_directive: true is a claim that the owner said this; if it is " +
+        "an environmental limit, drop the flag and let a measurement clear it.",
     );
   }
 }
@@ -4140,4 +4159,46 @@ function assert(condition, message) {
     judgeProductLoop({ offers: [{ ...healthy, rounds: flat(3, { approach_changed: "stopped tuning copy; changed who it is for" }) }] }, { now }).ok,
     "an approach change did not reset the no-move counter",
   );
+}
+
+// --- The one thing that is not ours to change ------------------------------
+// 2026-08-10: the owner narrowed the permanent set from nine items to one, so the
+// goal is now the whole fixed point. A loop whose objective can be edited by the
+// thing being optimised has no objective, and every other guard in this repository
+// refuses something while nothing at all asserted that the objective still said
+// what the owner said.
+//
+// The thorough integrity system is note/scripts/check_directive_integrity.py, in a
+// repository pulse.yml's token cannot reach — so the check that mattered most was
+// the one guaranteed not to run on the schedule that never stops.
+{
+  const live = readFileSync(join(root, "CLAUDE.md"), "utf8");
+
+  const intact = checkGoal(live);
+  assert(intact.ok, `the committed directive block does not check out: ${intact.problems.join(" / ")}`);
+  assert(intact.declared_sha === intact.actual_sha, "header and body hashes agreed by accident, not by equality");
+
+  // Every direction it has to fail in, because a guard that cannot be shown to fire
+  // is not a guard — the watchdogs that reported null for weeks are the precedent.
+  assert(!checkGoal("nothing here").ok, "a CLAUDE.md with no directive block passed");
+
+  // An edit inside the fence must not survive a header that still vouches for it.
+  const tampered = live.replace(GOAL, "目標は月収5万を達成することです");
+  assert(tampered !== live, "the goal sentence was not found to tamper with; the fixture is stale");
+  const caught = checkGoal(tampered);
+  assert(!caught.ok, "the goal was rewritten and the block still verified");
+  assert(
+    caught.problems.some((p) => /sha256/.test(p)),
+    "the mismatch was noticed but not attributed to the hash, so a reader cannot tell what moved",
+  );
+
+  // Deleting the goal while leaving the rest is the quiet version of the same edit.
+  assert(!checkGoal(live.replace(GOAL, "")).ok, "the goal sentence was removed and the check passed");
+
+  // A block present but carrying nothing hashable.
+  assert(
+    !checkGoal(live.split("\n```\n").join("\n")).ok,
+    "a block with no fenced text passed as though it carried the directive",
+  );
+  assert(DIRECTIVE_BEGIN.length > 0, "the block marker export went missing");
 }
