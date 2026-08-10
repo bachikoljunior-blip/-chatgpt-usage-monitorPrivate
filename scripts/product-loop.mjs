@@ -492,9 +492,26 @@ export function playedEvidenceFor(offerId, playDoc) {
  *   "not available", which leaves engagement claims unchecked rather than refuted.
  *   playMeasurements is state/play-measurements.json, or null when nothing has run.
  */
-export function judge(doc, { now, artifactSources = {}, playMeasurements = null }) {
+export function judge(doc, { now, artifactSources = {}, playMeasurements = null, promiseConformance = null }) {
   const problems = [];
   const rows = [];
+
+  // Rung 1's findings, surfaced HERE rather than only in their own script's exit
+  // code. RUNBOOK 5.4: a check that is merely red is a report, and this project
+  // has already proved reports do not steer it — the distribution class had a
+  // working re-ranking and the laps went on picking build candidates. The place a
+  // lap actually reads is this row set and the candidate list built from it, so a
+  // failed promise on a PRICED product has to arrive there. `fails` only: partial
+  // and blocked are findings a lap should read, not defects it must clear, and
+  // folding them in would make the loudest row the one about our own toolchain.
+  if (promiseConformance?.results) {
+    const failed = promiseConformance.results.filter((r) => r.verdict === "fails");
+    for (const r of failed) {
+      problems.push(
+        `${promiseConformance.offer_id} fails a promise its live listing makes — ${r.id}: ${r.observation}`,
+      );
+    }
+  }
 
   for (const offer of doc?.offers ?? []) {
     const artifactSource = artifactSources[offer.id] ?? null;
@@ -729,7 +746,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   // measurement that was taken but never pushed does not silently count.
   const { value: playMeasurements } = await readStateJson("state/play-measurements.json");
 
-  const verdict = judge(doc, { now: new Date(), artifactSources, playMeasurements });
+  // Rung 1's verdicts. Read from state like everything else, so a conformance run
+  // that was taken but never pushed does not count as the rung having happened.
+  const { value: promiseConformance } = await readStateJson("state/promise-conformance.json");
+
+  const verdict = judge(doc, { now: new Date(), artifactSources, playMeasurements, promiseConformance });
   console.log(`product loop at ${new Date().toISOString()} (source: ${via})`);
   for (const r of verdict.rows) {
     console.log(

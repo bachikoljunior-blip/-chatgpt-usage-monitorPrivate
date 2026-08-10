@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-10T10:09:59.958Z",
+  "rung": "promise_conformance",
+  "offer_id": "idle_clicker_kit",
+  "listing": {
+    "origin": "live",
+    "title": "放置クリッカー制作キット 商用ライセンス｜設定ファイル1枚でリスキンできる HTML/CSS/JS 一式",
+    "description": "<p><strong>放置クリッカーを1本、自分の作品として出すための土台一式です。</strong>ゲーム本体（HTML / CSS / JavaScript）、設定の誤りを指摘する検査、実ブラウザでの自動検査20項目、リスキン例3種が入っています。購入後すぐ手元で動かして中身を確かめられます。</p><p><strong>触るのは <code>brand.config.json</code> だけです。</strong>題名・配色・数えるものの名前・増やすもの8種・強化6種・到達メッセージ・誘導ボタン・フッターまで、すべてそこから決まります。ゲームロジックに手を入れずに別の作品になります。</p><p><strong>数値バランスは調整済みです。</strong>値段と毎秒の増加量は釣り合いを取った既定値が入っているので、名前と配色を変えた時点で遊べる状態になります。放置ゲームで一番時間を取られるところを飛ばせます。</p><h3>入っているもの</h3><ul>\n<li>ゲーム本体一式（HTML / CSS / JavaScript）</li>\n<li>\n<code>brand.config.json</code> — 書き換えるのはここだけ</li>\n<li>\n<code>generator.html</code> — フォームを埋めると設定ファイルが出てくるページ</li>\n<li>リスキン例3種（珈琲店・サロン・配信者）— 設定だけで見た目と文言がどこまで変わるかの実例</li>\n<li>\n<code>validate_config.py</code> — 設定の誤りを日本語で指摘する検査</li>\n<li>\n<code>test_engine.py</code> — 実ブラウザで20項目を自動検査（開発用）</li>\n<li>日本語 README とライセンス</li>\n</ul><h3>技術的なこと</h3><ul>\n<li>\n<strong>ビルド不要。</strong>フォルダを置くだけです。Node も PHP も要りません。あなたのビルド手順やフレームワークに合わせる必要がありません</li>\n<li>\n<strong>外部ライブラリなし・通信なし。</strong>あなたが設定したリンク以外へは何も送りません</li>\n<li>セーブは端末内（localStorage）。サーバーもデータベースも要りません</li>\n<li>スマホ縦画面前提。片手・タップだけで遊べます</li>\n<li>GitHub Pages / Netlify / Cloudflare Pages / 自前のサーバー、どこでも動きます</li>\n</ul><h3>ライセンス（商用可）</h3><ul>\n<li>あなたの作品・自社サイトなど、公開先1つで使えます。商用可・改変自由</li>\n<li>クライアントの案件へ納品する場合は、別途ご相談ください</li>\n<li>キット自体を素材・テンプレート商品として再販・再配布することはできません</li>\n</ul><h3>動作確認</h3><p>Chromium で20項目を自動検査しています（起動・タップ加算・購入で自動収入が発生する・放置で増える・再読込で進行が残る・設定差し替えで題名と配色と通貨名が変わる・壊れた設定では止まって理由を出す、ほか）。検査スクリプトも同梱しているので、改造したあとも同じ検査を回せます。</p><p>効果音・BGM・画像素材は入っていません。表示は絵文字とCSSだけで作っています。README・設定検査の出力・ライセンスは日本語です。</p>",
+    "price_cents": 2500,
+    "published": true,
+    "variants": [],
+    "short_url": "https://bachiko4.gumroad.com/l/fbozt"
+  },
+  "listing_sha256": "07da08fecdad643dbdd0da3ceaff10d3106b19825cac42c552101813e03358b7",
+  "listing_origin": "live",
+  "artifact_path": "product/brandable-idle-clicker",
+  "play_measured_at": "2026-08-10T09:54:57.440Z",
+  "promises_checked": 16,
+  "tally": {
+    "conforms": 12,
+    "blocked": 1,
+    "partial": 1,
+    "fails": 2
+  },
+  "results": [
+    {
+      "id": "files_present",
+      "quote": "ゲーム本体一式（HTML / CSS / JavaScript）",
+      "still_on_page": true,
+      "verdict": "conforms",
+      "observation": "all present: index.html, assets/engine.js, assets/style.css"
+    },
+    {
+      "id": "one_file_to_edit",
+      "quote": "触るのは brand.config.json だけです",
+      "still_on_page": true,
+      "verdict": "conforms",
+      "observation": "every advertised knob is a key in brand.config.json: meta, theme, currency, tapTarget, generators, upgrades, milestones, cta, footer"
+    },
+    {
+      "id": "generators_eight",
+      "quote": "増やすもの8種",
+      "still_on_page": true,
+      "verdict": "conforms",
+      "observation": "brand.config.json generators: 8"
+    },
+    {
+      "id": "upgrades_six",
+      "quote": "強化6種",
+      "still_on_page": true,
+      "verdict": "conforms",
+      "observation": "brand.config.json upgrades: 6"
+    },
+    {
+      "id": "reskin_examples_three",
+      "quote": "リスキン例3種（珈琲店・サロン・配信者）",
+      "still_on_page": true,
+      "verdict": "conforms",
+      "observation": "examples/: cafe.json, salon.json, creator.json"
+    },
+    {
+      "id": "generator_page",
+      "quote": "generator.html — フォームを埋めると設定ファイルが出てくるページ",
+      "still_on_page": true,
+      "verdict": "conforms",
+      "observation": "generator.html builds a downloadable file client-side (Blob/objectURL + download attribute)"
+    },
+    {
+      "id": "validator_japanese",
+      "quote": "validate_config.py — 設定の誤りを日本語で指摘する検査",
+      "still_on_page": true,
+      "verdict": "conforms",
+      "observation": "runs clean on the shipped config and reports in Japanese: brand.config.json: 問題ありません。そのまま公開できます。"
+    },
+    {
+      "id": "twenty_browser_checks",
+      "quote": "test_engine.py — 実ブラウザで20項目を自動検査",
+      "still_on_page": true,
+      "verdict": "blocked",
+      "observation": "20 check() calls counted in the source, which is the countable half. The suite CANNOT be executed here: it imports playwright, absent in this environment. Blocked is a fact about this environment, not about the kit."
+    },
+    {
+      "id": "no_build_step",
+      "quote": "ビルド不要。フォルダを置くだけです。Node も PHP も要りません",
+      "still_on_page": true,
+      "verdict": "conforms",
+      "observation": "no package.json, bundler config or Makefile in the kit; index.html loads assets/*.js directly"
+    },
+    {
+      "id": "no_external_libraries_no_network",
+      "quote": "外部ライブラリなし・通信なし。あなたが設定したリンク以外へは何も送りません",
+      "still_on_page": true,
+      "verdict": "conforms",
+      "observation": "no <script src> or stylesheet from another host; the only absolute URLs in code are the SVG namespace and the placeholder cta.url"
+    },
+    {
+      "id": "saves_on_device",
+      "quote": "セーブは端末内（localStorage）。サーバーもデータベースも要りません",
+      "still_on_page": true,
+      "verdict": "conforms",
+      "observation": "assets/engine.js reads and writes localStorage; no fetch to any origin outside the folder"
+    },
+    {
+      "id": "runs_immediately_after_purchase",
+      "quote": "購入後すぐ手元で動かして中身を確かめられます",
+      "still_on_page": true,
+      "verdict": "partial",
+      "observation": "It runs, and only over a server: the page fetches brand.config.json, so a double-clicked file:// open shows 読み込み中… forever. README §0/§5 documents this and gives the one command (python3 -m http.server 8000). Measured: transport http, zero page errors. The listing sentence does not carry that condition, and a buyer who double-clicks meets a blank page before any README."
+    },
+    {
+      "id": "balance_is_pre_tuned",
+      "quote": "数値バランスは調整済みです。値段と毎秒の増加量は釣り合いを取った既定値が入っているので、名前と配色を変えた時点で遊べる状態になります",
+      "still_on_page": true,
+      "verdict": "fails",
+      "observation": "measured on the shipped config: 15 taps before the first affordable purchase, with the rate reading \"毎秒 0円 ／ 1タップ 1円\" for every one of them. Two independent reviewers on the FREE demo named exactly this opening as their reason for 払わない (codex/outbox/2026-08-10.k.md, .l.md). \"調整済み\" is a claim about the shipped defaults, and the shipped defaults are what was measured."
+    },
+    {
+      "id": "license_tier_is_determinate",
+      "quote": "あなたの作品・自社サイトなど、公開先1つで使えます。商用可・改変自由 / クライアントの案件へ納品する場合は、別途ご相談ください",
+      "still_on_page": true,
+      "verdict": "fails",
+      "observation": "LICENSE.txt opens 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 and the live listing sells ONE option with no variants (GET /v2/products variants: []). There is nothing to choose at purchase, so the document a buyer receives does not determine which of its two mutually exclusive tiers governs them. The listing resolves it one way (client work: 別途ご相談) and README §7 resolves it the other (拡張ライセンス: 件数の上限なし), and neither is the file that says it is the licence."
+    },
+    {
+      "id": "japanese_readme_and_license",
+      "quote": "日本語 README とライセンス",
+      "still_on_page": true,
+      "verdict": "conforms",
+      "observation": "README.md and LICENSE.txt are both Japanese prose"
+    },
+    {
+      "id": "no_audio_or_image_assets",
+      "quote": "効果音・BGM・画像素材は入っていません。表示は絵文字とCSSだけで作っています",
+      "still_on_page": true,
+      "verdict": "conforms",
+      "observation": "no audio or raster/vector asset file anywhere in the kit; the UI is emoji plus CSS"
+    }
+  ],
+  "what_this_is_not": "An opinion about whether the kit is good. Every row is a claim the live listing makes, matched to an observation. `blocked` means this environment cannot reach the answer and is never folded into `conforms` — the error class the source recovery cost five handoffs to correct."
+}

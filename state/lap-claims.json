@@ -922,6 +922,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T10:07:17.574Z",
+      "candidate": "idle_clicker_kit.round_1",
+      "kind": "route_change",
+      "mechanism": "Abandon the route of buying reach for an offer nobody has audited. Rung 1 on the only priced product: enumerate every promise the live Gumroad listing makes against the recovered source, and name the ones that fail. The route being dropped is 'improve venue/reach/copy on top of an unexamined product' — RUNBOOK 5.4's finding that every loop here measured the path and none measured the thing being sold.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

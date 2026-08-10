@@ -129,6 +129,35 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
   if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at)) {
     throw new Error("probe state has no valid fetched_at timestamp");
   }
+} else if (state.results !== undefined && state.rung !== undefined) {
+  // Rung 1 promise conformance. Its own branch for the reason the probe and play
+  // branches above already record: a shape with no branch reaches the usage-state
+  // check, fails outright, and is therefore never credential-scanned at all —
+  // "everything under state/ is scanned" being false in practice. This shape is
+  // the fourth instance, and it carries the most external text of any of them:
+  // `listing.description` is whatever the sales page currently says, and each
+  // row's `observation` is output from a subprocess (validate_config.py) or from
+  // a file read. walk() above is the part that matters.
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at)) {
+    throw new Error("promise conformance record has no valid fetched_at timestamp");
+  }
+  if (typeof state.listing_sha256 !== "string" || !/^[0-9a-f]{64}$/.test(state.listing_sha256)) {
+    // Without this a verdict cannot be tied to the listing text it judged, and a
+    // page edited afterwards silently keeps the old verdicts.
+    throw new Error("promise conformance record does not digest the listing text it was checked against");
+  }
+  if (!["live", "cached"].includes(state.listing_origin)) {
+    throw new Error("promise conformance record does not say whether the listing was fetched or remembered");
+  }
+  for (const r of state.results) {
+    if (!["conforms", "fails", "partial", "blocked"].includes(r?.verdict)) {
+      throw new Error(`promise conformance row ${r?.id ?? "?"} has no recognised verdict`);
+    }
+    // A verdict with no observation is exactly what this rung exists to refuse.
+    if (typeof r.observation !== "string" || !r.observation.trim()) {
+      throw new Error(`promise conformance row ${r.id} states a verdict with no observation behind it`);
+    }
+  }
 } else if (state.artifacts !== undefined) {
   // The play register. Found unvalidated on 2026-08-10: it fell through to the
   // usage-state branch and was rejected for having no recommended_mode, which

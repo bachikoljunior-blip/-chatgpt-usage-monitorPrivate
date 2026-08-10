@@ -176,6 +176,14 @@ jobs:
           # when something is live to buyers that cannot be measured at all, and when
           # an offer that CAN be measured has gone a fortnight without a round.
           node scripts/product-loop.mjs --check || rc=1
+          # Rung 1 of that loop, run hourly for a reason the other checks do not have:
+          # the promises it judges are made by a page WE can edit at any time, so a
+          # verdict is only about the text it was rendered against. This re-fetches the
+          # listing, re-derives its digest, and goes red both on a failing promise and
+          # on the listing having changed underneath the recorded verdicts. An edit to
+          # the sales copy that quietly invalidates sixteen findings is exactly the
+          # decay this repository keeps rediscovering in prose registers.
+          node scripts/promise-conformance.mjs --check || rc=1
           # Whether the thing we ship has ever been RUN, and what it did. Rung 2 sat
           # at engaged 0 because the only reviewer available reads text, and no
           # question answerable in text separates playing from reading — the evidence

@@ -4352,6 +4352,37 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       "a recognised round kept in rounds did not raise a problem");
   }
 
+  // Rung 1's failing promises have to arrive in judge()'s problems, not just in
+  // their own script's exit code. The regression this guards is the one RUNBOOK
+  // 5.4 names outright: a check that is only red is a report, and reports have
+  // already been shown not to steer this loop. The second half matters as much —
+  // `partial` and `blocked` must NOT be raised, because blocked is a statement
+  // about THIS environment (playwright is absent) and raising it would put our
+  // own toolchain at the top of a list about the product.
+  {
+    const doc = { offers: [{ id: "k", live_to_buyers: true, source: { repo: "r", path: "p" },
+      measurement: { rung: "promise_conformance" },
+      rounds: [{ round: 1, verified_at: "2026-08-10T00:00:00Z" }] }] };
+    const conformance = {
+      offer_id: "k",
+      results: [
+        { id: "broken_promise", verdict: "fails", observation: "the page says 8 and the config has 3" },
+        { id: "our_tool_cannot_run", verdict: "blocked", observation: "playwright absent here" },
+        { id: "true_with_a_condition", verdict: "partial", observation: "runs, but only from a server" },
+      ],
+    };
+    const problems = judge(doc, {
+      now: new Date("2026-08-10T04:00:00Z"),
+      promiseConformance: conformance,
+    }).problems ?? [];
+    assert(problems.some((x) => /broken_promise/.test(x) && /fails a promise/.test(x)),
+      "a failing listing promise did not reach the product loop's problems");
+    assert(!problems.some((x) => /our_tool_cannot_run/.test(x)),
+      "a blocked check was raised as a product defect — blocked is about the environment");
+    assert(!problems.some((x) => /true_with_a_condition/.test(x)),
+      "a partial verdict was raised as a defect; it is a finding to read, not one to clear");
+  }
+
   // The live register: a recognised round must not be sitting in rounds, and the
   // void one must be recorded rather than deleted.
   {
