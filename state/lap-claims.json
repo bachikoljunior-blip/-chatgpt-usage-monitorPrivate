@@ -874,6 +874,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T08:26:46.104Z",
+      "candidate": "free_demo.the_dead_opening",
+      "kind": "route_change",
+      "mechanism": "Two independent non-author reviewers and one run agree the first 14-15 taps pay nothing and the rate reads zero throughout. Cut the first producer's cost so the first automatic reward arrives in a few taps, then re-measure the same way with play-artifact.mjs. This is the first time the offer itself changes because a measurement said so.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

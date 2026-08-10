@@ -88,7 +88,7 @@
     <p class="tap-help">タップするたび +1</p>
 
     <section class="panel goal" aria-label="次の生産物までの進み具合">
-      <div class="goal-row"><span>次に交換できるもの</span><strong id="goalText">小さな衛星まで 15</strong></div>
+      <div class="goal-row"><span>次に交換できるもの</span><strong id="goalText">小さな衛星まで 4</strong></div>
       <div class="bar"><span id="goalBar"></span></div>
     </section>
 
@@ -103,7 +103,8 @@
     const nextCost = (baseCost, owned) => Math.ceil(baseCost * Math.pow(1.15, owned));
 
     const producerTypes = [
-      { name: '小さな衛星', icon: '🛰️', baseCost: 15, perSecond: 0.2 },
+      // 最初の1つは 15 から 4 へ（2026-08-10）。理由と測り直しは state/product-loop.json の round 7。
+      { name: '小さな衛星', icon: '🛰️', baseCost: 4, perSecond: 0.2 },
       { name: '月面観測所', icon: '🔭', baseCost: 100, perSecond: 1.5 },
       { name: '星間工房', icon: '🚀', baseCost: 800, perSecond: 12 }
     ];

@@ -1,28 +1,28 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T08:10:56.430Z",
+  "fetched_at": "2026-08-10T08:37:55.362Z",
   "chromium": "/opt/pw-browsers/chromium-1194/chrome-linux/chrome",
   "artifacts": {
     "free_demo": {
       "browser_available": true,
       "page_errors": [],
       "tap_latency_ms": [
-        6,
         5,
         5,
+        4,
         5,
-        4
+        5
       ],
       "counter_at_start": "0",
       "rate_at_start": "毎秒 0",
-      "taps_to_first_affordable_purchase": 15,
+      "taps_to_first_affordable_purchase": 4,
       "rate_before_purchase": "毎秒 0",
       "rate_after_purchase": "毎秒 0.2",
       "distinct_page_errors": [],
       "source": "assets/free-demo/index.html",
       "live": true,
-      "measured_at": "2026-08-10T08:10:56.430Z"
+      "measured_at": "2026-08-10T08:37:55.362Z"
     }
   },
   "what_this_is_not": "A stranger's opinion. These are timings and thrown errors from a run, which is the half of rung 2 the Codex lane cannot produce. The verdict half still needs a reviewer."

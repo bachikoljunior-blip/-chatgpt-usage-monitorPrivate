@@ -231,6 +231,9 @@ async function play(exe, file, profile) {
       if (n) { await evalIn(`document.querySelectorAll(${JSON.stringify(sel.choose)})[0].click()`); await sleep(400); }
     }
 
+    const affordableIndex = () =>
+      evalIn(`[...document.querySelectorAll(${JSON.stringify(sel.buy)})].findIndex(b=>!b.disabled)`);
+
     out.counter_at_start = await textOf(sel.counter);
     out.rate_at_start = sel.rate ? await textOf(sel.rate) : null;
 
@@ -240,7 +243,14 @@ async function play(exe, file, profile) {
     );
     if (!box) throw new Error(`no tap target ${sel.tap}`);
 
+    // The latency samples are taps too, so the affordability count starts before
+    // them, not after. Counting only the taps that follow put a floor of 5 under
+    // taps_to_first_affordable_purchase — which reported 5 for an artifact whose
+    // first producer costs 4 and is reachable in 4. An instrument with a floor
+    // above the number it measures reports its own shape.
+    let firstAffordableAt = null;
     for (let i = 0; i < 5; i++) {
+      if (firstAffordableAt === null && (await affordableIndex()) >= 0) firstAffordableAt = i;
       const before = await textOf(sel.counter);
       const t0 = Date.now();
       for (const type of ["mousePressed", "mouseReleased"]) {
@@ -258,8 +268,7 @@ async function play(exe, file, profile) {
     // Keep tapping until the cheapest purchase is offered, and count the taps. This
     // is the number round 1 complained about, so it is measured the same way twice.
     let taps = out.tap_latency_ms.length;
-    const affordable = () =>
-      evalIn(`[...document.querySelectorAll(${JSON.stringify(sel.buy)})].findIndex(b=>!b.disabled)`);
+    const affordable = affordableIndex;
     while (taps < 400 && (await affordable()) < 0) {
       for (const type of ["mousePressed", "mouseReleased"]) {
         await h.cdp.send("Input.dispatchMouseEvent",
@@ -269,7 +278,8 @@ async function play(exe, file, profile) {
       await sleep(60);
     }
     const idx = await affordable();
-    out.taps_to_first_affordable_purchase = idx >= 0 ? taps : null;
+    out.taps_to_first_affordable_purchase =
+      firstAffordableAt !== null ? firstAffordableAt : idx >= 0 ? taps : null;
     out.rate_before_purchase = sel.rate ? await textOf(sel.rate) : null;
     if (idx >= 0) {
       await evalIn(`[...document.querySelectorAll(${JSON.stringify(sel.buy)})].filter(b=>!b.disabled)[0].click()`);

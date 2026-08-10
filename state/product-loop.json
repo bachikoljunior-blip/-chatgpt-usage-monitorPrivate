@@ -212,6 +212,53 @@
           "approach_changed": true,
           "approach_changed_what": "Stop buying rung-2 evidence from a text lane. It cannot produce it and the reason is structural rather than a matter of prompt quality. Behavioural facts get measured here with a browser; the lane keeps the half it can actually do, which is the verdict and the reason against.",
           "how_much_this_carries": "One run of each artifact, one machine, one browser, one lap. The tap-latency gap and the thrown error are reproducible and were reproduced with two drivers. Everything about what a PLAYER would feel — whether 245ms reads as sluggish on a phone, whether 15 dead taps is worse than an irreversible choice — is not measured here and is not claimed."
+        },
+        {
+          "round": 7,
+          "rung": "promise_conformance",
+          "ran_at": "2026-08-10T08:35:10Z",
+          "verified_at": "2026-08-10T08:36:00Z",
+          "task_id": null,
+          "answer": "state/play-measurements.json",
+          "measured_by": "scripts/play-artifact.mjs, the same instrument and the same run as round 6",
+          "what_changed": "assets/free-demo/index.html producerTypes[0].baseCost 15 -> 4, and the static goalText that duplicates it. ONE constant. perSecond, the other two producers, the 1.15 growth factor and every other term were left alone so the next measurement is about this and nothing else.",
+          "why_this_one": "The only defect two independent non-author reviewers converged on. Round 4 read it out of the source and called it fifteen taps with no reward; round 5, on a different prompt and a different model, independently named taps 1 through 14 as the weakest stretch; round 6 ran the file and measured the rate line reading 毎秒 0 across all fifteen taps, with the purchase costing exactly the fifteen the player has, so the counter returns to zero at the moment of the reward.",
+          "measured_before": {
+            "taps_to_first_affordable_purchase": 15,
+            "rate_shown_until_then": "毎秒 0",
+            "at": "2026-08-10T08:10:56Z"
+          },
+          "measured_after": {
+            "taps_to_first_affordable_purchase": 4,
+            "rate_after_first_purchase": "毎秒 0.2",
+            "tap_feedback_ms": [
+              6,
+              6,
+              4,
+              6,
+              4
+            ],
+            "runtime_errors": [],
+            "at": "2026-08-10T08:35:10Z"
+          },
+          "the_instrument_was_calibrated_against_a_control": "The old constant was restored on a scratch copy and the same instrument reported 15 again. Without that, '15 became 4' could have been the instrument changing rather than the artifact — and it nearly was: the first version of this measurement reported 5, because the five latency samples are taps and the affordability count started after them. An instrument with a floor above the number it measures reports its own shape. Fixed in the same lap, and the fix is why 4 is 4.",
+          "changed": "assets/free-demo/index.html, and the published mirror at bachikoljunior-blip/O commit 80cfe57.",
+          "mirror": "bachikoljunior-blip/O commits 80cfe57 then 5063e29, the second correcting the comment. scripts/check-published-demo.mjs re-run after each: identical, http 200. state/public-host.json demo_matches_repo_copy stayed true throughout. Five handoffs carried any fix breaks demo_matches_repo_copy as an uncosted gap; it cost two calls and the repo had to be added to the session first.",
+          "moved": true,
+          "moved_note": "The measured opening moved from 15 taps to 4, verified with the same instrument in both directions. That is the metric moving, not the offer succeeding — nobody has bought anything and no reviewer has seen the new version. The next round is a stranger on the changed file, and if it still says 払わない for the same reason, the dead opening was not the binding term and this round bought a fact rather than a sale.",
+          "what_would_falsify_the_change": "A reviewer on the new file naming the opening again, or naming a NEW defect the shorter opening created. Cutting the first cost by nearly four also shortens everything after it — the second satellite now costs 5 rather than 18 — so the early curve is flatter than any reviewer has seen. Nobody has measured whether that reads as generous or as trivial.",
+          "engagement": {
+            "played_or_read": "遊んだ",
+            "by": "this lap, in Chromium, not by a reviewer",
+            "evidence": [
+              "taps to first purchase 4",
+              "tap feedback 6ms",
+              "毎秒 0.2 after the first purchase"
+            ],
+            "what_it_is_not": "A stranger's verdict. rounds_played_here, not rounds_engaged."
+          },
+          "how_much_this_carries": "One constant, measured twice with a control. Everything about whether four taps is the right number — whether a player wants a longer climb, whether the reward at four feels earned — is unmeasured and unclaimed. The claim is narrow: the opening the reviewers named is gone as measured, and it is the first time in this file's history that the offer itself changed because a measurement said so.",
+          "a_check_caught_this_lap_breaking_the_route_it_was_serving": "The first version of the change carried an eight-line English comment next to the constant. scripts/check-free-artifact.mjs went red on the word purchase — the rule exists because r/gamedev permits free assets and forbids promoting paid ones in the same sentence, so the artifact that exists to open that door had just failed it. The check says fix the artifact, not the check, and that is what was done: one Japanese line pointing at this round. The explanation belongs in a register that gets updated, not duplicated in a shipped file where it goes stale in silence — which is the failure the RUNBOOK opens by warning about, committed inside the lap that was citing it."
         }
       ],
       "why_it_is_here_at_all": "It is the only thing this account offers that can enter a loop. If the owner's rule is right — and nothing here contradicts it — then this is where demand can actually be built, and the priced product's un-loopability is the reason the two have to be ranked against each other rather than assumed complementary.",
