@@ -165,14 +165,26 @@
       ],
       "outcome": null,
       "min_observations": {
-        "source": "state/laps.json",
-        "path": "samples",
+        "source": "state/lap-cost-derived.json",
+        "path": "segments",
         "min": 3,
-        "usable_only": true,
-        "why": "laps per day cannot be read off a pile of laps whose cost could not be measured. Six consecutive samples came back unusable, so a calendar date would have forced a verdict with no evidence under it."
+        "usable_only": false,
+        "why": "A span is the smallest unit in which lap cost is measurable: the endpoint's resolution is 1 point and a lap costs ~0.29, so only a multi-lap drop clears the quantum. Segments are usable by construction — derive-lap-cost.mjs emits a segment only where a real multi-point drop spans a known number of laps. Three spans rather than one because a single span cannot show whether the figure is stable."
       },
       "judge_deadline": "2026-08-13",
-      "deadline_reason": "if three usable samples have not appeared by then, the method itself is the finding — say so and stop waiting for it."
+      "deadline_reason": "if three usable samples have not appeared by then, the method itself is the finding — say so and stop waiting for it.",
+      "interim_observation": {
+        "at": "2026-08-10T03:05:00Z",
+        "what": "This prediction's min_observations required 3 samples in state/laps.json with usable_only true. That threshold cannot be reached, and not because laps keep going wrong: the usage endpoint reports WHOLE percentage points and one lap costs about 0.29 of one. So a single lap's delta is either 0 (rejected as below_measurement_resolution) or 1 (rejected as at_measurement_quantum), and record-lap.mjs is RIGHT to reject both — a 1-point reading on a 0.29-point quantity has error as large as the reading. Sixty-one consecutive unusable laps are arithmetic, not bad luck. The gate was waiting on evidence its own instrument can never produce.",
+        "what_changed": "min_observations now counts usable SPANS in state/lap-cost-derived.json, which is the only form in which this quantity is measurable at all: N laps between two collector readings, divided. That file already carried one span. The claim being judged is unchanged; only the counter that decides when it is measurable moved, from a form with resolution finer than the instrument to the form the instrument actually has.",
+        "previous_min_observations": {
+          "source": "state/laps.json",
+          "path": "samples",
+          "min": 3,
+          "usable_only": true
+        },
+        "do_not_read_this_as": "an excuse to record a per-lap 0. That is the specific failure record-lap.mjs's header warns about — pacing would then reserve nothing for this loop and let it eat the pool unaccounted."
+      }
     },
     {
       "id": "2026-08-09.revenue-loop-disabled-in-registry",
@@ -1274,6 +1286,36 @@
         "Earlier this session by the predecessor and untouched here: the route 4 election and task .c. The queue does not change which task is at the head."
       ],
       "falsified_if": "Any commit touching codex/INBOX.md lands between .c's marker and .d's dispatch — that would mean a lap was still in the loop and the mechanism bought nothing. Also falsified if .c's marker lands and the next scheduled codex-inbox run reports no live task, which would mean the selection skipped past the queue instead of advancing into it.",
+      "outcome": null
+    },
+    {
+      "id": "2026-08-10.the-cost-bound-had-no-refresher",
+      "made_at": "2026-08-10T03:08:00Z",
+      "claim": "The pacing gate divides the weekly pool by state/lap-cost-derived.json, and nothing regenerated that file. The committed verdict was 17.9 hours old, so every lap all night reserved at 0.2857%/lap — a figure measured at 2026-08-09T09:00Z from 2 points over 7 laps — while the live span read 0.3333% over 6. The prediction is deliberately NOT that discretionary budget improves. The predecessor measured that MAX_RESERVED_FRACTION is what binds, so a larger per-run figure should raise only the UNCAPPED total and leave discretionary where it is. What is claimed is narrower and testable: the number becomes current without a lap touching it, and its age becomes visible at the one place every lap already looks.",
+      "metric": "Read from committed state on origin/main and the pulse run log, none from a lap's account of itself. (a) state/lap-cost-derived.json fetched_at advances on the hourly pulse with no lap in between — check the committing author is pulse[bot], not a lap. (b) scripts/pacing.mjs prints a per-lap cost bound line whose age is under 6h and which no longer says STALE. (c) The reserved figure per unmeasured automation changes from 0.2857% to whatever the current span says, confirming the gate reads the fresh file. (d) The falsifiable half of the no-improvement claim: discretionary_percent stays at 7.80% and reserved_for_others_percent stays at 18.20% while reserved_uncapped_percent rises above 131.42%. If discretionary MOVES, the cap stopped binding and the untested reservation arithmetic below it is now live — which the predecessor flagged as the thing that would expose it.",
+      "baseline": {
+        "measured_at": "2026-08-10T03:00:00Z",
+        "derived_file_fetched_at_before": "2026-08-09T09:00:23.737Z",
+        "age_hours_when_found": 17.94,
+        "bound_before_percent_per_lap": 0.2857,
+        "bound_before_basis": "2 points over 7 laps, 2026-08-09T06:01Z..08:58Z",
+        "bound_now_percent_per_lap": 0.3333,
+        "bound_now_basis": "2 points over 6 laps, 2026-08-10T01:14Z..02:51Z",
+        "discretionary_percent": 7.8,
+        "reserved_for_others_percent": 18.2,
+        "reserved_uncapped_percent": 131.42,
+        "max_reserved_fraction": 0.7,
+        "consecutive_unusable_laps": 61
+      },
+      "judge_on": "2026-08-11",
+      "judge_deadline": "2026-08-14",
+      "min_observations": null,
+      "concurrent_changes": [
+        "One commit: .github/workflows/pulse.yml (derive-lap-cost --write in both the pre-loop and retry paths, plus staging), scripts/pacing.mjs (age and staleness reported), tests/run-tests.mjs (four assertions on the wire, two mutations run red), state/lap-cost-derived.json (refreshed), state/predictions.json (this entry and the min_observations correction below).",
+        "Same commit and NOT separable in its effect on this prediction: 2026-08-09.derived-lap-cost had its min_observations moved off a counter that was arithmetically unsatisfiable. Both changes are about the same instrument, so if the cost figure starts behaving, the credit is shared.",
+        "Earlier this session, different subsystem, no shared reader: the codex INBOX queue."
+      ],
+      "falsified_if": "state/lap-cost-derived.json fetched_at is still 2026-08-09T09:00Z after several pulse runs, meaning the workflow line does not execute or its output is not staged. Also falsified in the direction that matters more: if the file refreshes but pacing still reports the old bound, the gate is reading something other than what pulse writes.",
       "outcome": null
     }
   ]

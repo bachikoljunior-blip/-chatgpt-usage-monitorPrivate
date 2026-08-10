@@ -81,6 +81,17 @@ const derivedBound = Number(derivedCost?.best?.upper_bound_percent_per_lap);
 const fallbackPerRun = Number.isFinite(derivedBound) && derivedBound > 0
   ? derivedBound
   : UNMEASURED_COST_PERCENT;
+// How old the derived bound is. Nothing refreshed it until 2026-08-10, so it sat
+// at 0.2857%/lap for 17.5 hours while every lap divided the pool by it and no
+// output said how old it was. A number with no age printed beside it is read as
+// current. pulse.yml now regenerates it hourly; this is what makes a stopped
+// refresher visible rather than silently authoritative.
+const DERIVED_COST_STALE_HOURS = 6;
+const derivedCostAgeHours = derivedCost?.fetched_at
+  ? Number(((now - Date.parse(derivedCost.fetched_at)) / 3_600_000).toFixed(2))
+  : null;
+const derivedCostStale =
+  derivedCostAgeHours === null || derivedCostAgeHours > DERIVED_COST_STALE_HOURS;
 
 function fail(reason, detail) {
   const out = {
@@ -217,6 +228,8 @@ const report = {
   fallback_percent_per_run: fallbackPerRun,
   fallback_basis: fallbackPerRun === UNMEASURED_COST_PERCENT ? "unmeasured_default" : "derived_upper_bound",
   derived_from: derivedCost?.best ? { from: derivedCost.best.from, to: derivedCost.best.to, laps: derivedCost.best.laps_inside, drop_percent: derivedCost.best.drop_percent } : null,
+  derived_cost_age_hours: derivedCostAgeHours,
+  derived_cost_is_stale: derivedCostStale,
 };
 
 if (asJson) {
@@ -237,6 +250,12 @@ if (asJson) {
       `${r.basis === "sampled" ? "" : r.basis === "derived_upper_bound" ? " (DERIVED upper bound)" : " (UNMEASURED default)"} = ${r.reserved_percent}%`,
     );
   }
+  console.log(
+    `  per-lap cost bound: ${fallbackPerRun}% (${report.fallback_basis})` +
+    (derivedCostAgeHours === null
+      ? " · NEVER DERIVED"
+      : ` · derived ${derivedCostAgeHours}h ago${derivedCostStale ? " · STALE, pulse.yml is not refreshing it" : ""}`),
+  );
   console.log(`  discretionary: ${discretionary.toFixed(2)}%`);
   console.log(
     `  pace: observed ${observedPerDay?.toFixed(2) ?? "n/a"}%/day vs flat ${flatPerDay?.toFixed(2) ?? "n/a"}%/day`,

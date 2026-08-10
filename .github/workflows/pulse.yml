@@ -51,6 +51,15 @@ jobs:
           # fail here for the same reason as the two below — a stale reach number must
           # not cost the ETA refresh — and the reporting step turns it red.
           node scripts/measure-reach.mjs --write || echo "reach check reported a problem; the reporting step fails on it"
+          # The pacing gate's per-lap cost comes from here, and until 2026-08-10
+          # nothing ran it: the committed verdict was 17.5 hours old and the gate
+          # was still dividing the pool by 0.2857%/lap (2 points over 7 laps, read
+          # on 2026-08-09T09:00Z) while the current span read 0.3333%. It belongs
+          # in Actions rather than in a lap because it needs no network at all —
+          # it joins the git history of state/claude-usage.json to the lap stamps
+          # in state/laps.json, both of which are already in this checkout.
+          # BEFORE compute-eta for the same reason as the line above it.
+          node scripts/derive-lap-cost.mjs --write || echo "lap-cost derivation reported a problem; the reporting step fails on it"
           node scripts/compute-eta.mjs --write
           node scripts/check-heartbeats.mjs --write
           # Written here rather than in the reporting step below, which runs AFTER
@@ -89,6 +98,10 @@ jobs:
             git reset --hard origin/main
             node scripts/measure-reach.mjs --write || echo "reach check reported a problem"
             node scripts/verify-sanitized-state.mjs state/external-metrics.json || exit 1
+            # Regenerated inside the loop, like everything else here: the
+            # reset --hard above throws away the copy written before the loop.
+            node scripts/derive-lap-cost.mjs --write || echo "lap-cost derivation reported a problem"
+            node scripts/verify-sanitized-state.mjs state/lap-cost-derived.json || exit 1
             node scripts/compute-eta.mjs --write || exit 1
             node scripts/check-heartbeats.mjs --write || exit 1
             node scripts/verify-sanitized-state.mjs state/eta.json || exit 1
@@ -101,7 +114,7 @@ jobs:
             # The history has to be staged here or the scheduled run computes a
             # transition and then throws it away on the next reset --hard, leaving a
             # file that only ever records whatever a lap happened to run by hand.
-            git add state/eta.json state/heartbeat.json state/eta-history.json state/public-host.json state/findable-surface.json
+            git add state/eta.json state/heartbeat.json state/eta-history.json state/public-host.json state/findable-surface.json state/lap-cost-derived.json
             if git diff --cached --quiet; then
               echo "no change"
               exit 0

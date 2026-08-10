@@ -686,6 +686,36 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     laneWorkflow.includes(`- cron: "${lane.cron}"`),
     `state/automations.json says codex-loop runs at "${lane.cron}", which codex-inbox.yml does not schedule`,
   );
+
+  // The pacing gate divides the weekly pool by state/lap-cost-derived.json, and
+  // until 2026-08-10 NOTHING regenerated it: the committed verdict was 17.9 hours
+  // old and every lap was still reserving at 0.2857%/lap, a figure measured on
+  // 2026-08-09T09:00Z, while the live span read 0.3333%. The file was not wrong,
+  // it was unattended — which is worse, because a stale number reads exactly like
+  // a current one. These assertions are the refresher itself; without them the
+  // wire can be deleted and every check here still passes.
+  const pulse = await readFile(join(root, ".github/workflows/pulse.yml"), "utf8");
+  assert(
+    /node scripts\/derive-lap-cost\.mjs --write/.test(pulse),
+    "pulse.yml does not regenerate state/lap-cost-derived.json, so the pacing gate divides by whatever a lap last ran by hand",
+  );
+  assert(
+    /git add[^\n]*state\/lap-cost-derived\.json/.test(pulse),
+    "pulse.yml regenerates the derived lap cost but never stages it, so the next reset --hard throws it away",
+  );
+  // Regenerated before compute-eta for the same reason the reach measurement is:
+  // the reader must not run on the previous hour's copy.
+  assert(
+    pulse.indexOf("derive-lap-cost.mjs --write") < pulse.indexOf("compute-eta.mjs --write"),
+    "pulse.yml derives the lap cost after compute-eta reads it",
+  );
+  // And the gate has to say how old the number is. The whole failure was that it
+  // did not: 17.9 hours of staleness printed as nothing at all.
+  const pacingSrc = await readFile(join(root, "scripts/pacing.mjs"), "utf8");
+  assert(
+    /derived_cost_is_stale/.test(pacingSrc) && /derived_cost_age_hours/.test(pacingSrc),
+    "scripts/pacing.mjs consumes the derived cost without reporting its age, so a stopped refresher is invisible",
+  );
 }
 
 // The ChatGPT lane's cost control. A scheduled lane with a broken skip check
