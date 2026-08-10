@@ -35,6 +35,7 @@ import { constraintDue } from "../scripts/constraint-due.mjs";
 import { evaluateUnlock } from "../scripts/unlock-condition.mjs";
 import { checkFreeArtifact, declaredLanguage, artifactLanguage } from "../scripts/check-free-artifact.mjs";
 import { publishedDemoVerdict } from "../scripts/check-published-demo.mjs";
+import { routeElectionVerdict, newestRouteChange } from "../scripts/check-route-election.mjs";
 import { findableSurfaceVerdict, inboundSurfaceVerdict } from "../scripts/measure-findable-surface.mjs";
 import {
   PREREQUISITE_INSTRUMENTS,
@@ -3192,6 +3193,43 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   const prose = prerequisiteCheck({ route: "r" }, bindings);
   assert(prose.ok === false, "an election stating its prerequisite only in prose was accepted");
 
+  // A route can genuinely wait on nothing, and until 2026-08-10 that was
+  // indistinguishable here from a route whose prerequisite was never named — so
+  // route 5 (the payload is the term) could not be recorded honestly. Declaring it
+  // must cost something or it is a hatch: a written reason, and prose that agrees.
+  const declaredNone = prerequisiteCheck(
+    {
+      route: "r",
+      prerequisite: "NONE. Waits on no venue, no stranger, no owner action.",
+      prerequisite_none: "the pool that builds is idle and the instruction is a file in this repository",
+    },
+    bindings,
+  );
+  assert(declaredNone.ok === true, "a route that declares it waits on nothing was refused");
+  assert(
+    declaredNone.prerequisite_none,
+    "the accepted election did not carry the reason forward, so the print cannot tell it from prose-only",
+  );
+
+  const emptyNone = prerequisiteCheck(
+    { route: "r", prerequisite: "NONE.", prerequisite_none: "   " },
+    bindings,
+  );
+  assert(emptyNone.ok === false, "an empty prerequisite_none opened the hatch with no reason given");
+
+  const contradicts = prerequisiteCheck(
+    {
+      route: "r",
+      prerequisite: "SATISFIED 2026-08-10T10:52Z by a rung-2 round.",
+      prerequisite_none: "waits on nothing",
+    },
+    bindings,
+  );
+  assert(
+    contradicts.ok === false,
+    "an election claiming both a prerequisite and no prerequisite was accepted; a reader cannot tell which is true",
+  );
+
   // Two ways to name a term nothing reports, and they are DIFFERENT failures. Before
   // 2026-08-09T22:5xZ both collapsed into "not one of the four venue causes", which is
   // why a non-venue route was unelectable: the guard that keeps elections honest was
@@ -5086,6 +5124,98 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(
     successLine.includes("${local_sha}") && successLine.includes("origin/main is now"),
     "push-with-retry.sh reports a push without the SHA that landed; the caller cannot confirm it",
+  );
+}
+
+// --- an admitted route change must actually move the elected route ---------
+//
+// The gate writes the admission into state/lap-claims.json and the ranking reads
+// the route from state/zerobase.json. Nothing joined them, so on 2026-08-10 a
+// lap spent the only open lane on a route_5 candidate while the file still
+// elected route 4 — and the two states were indistinguishable to every later
+// reader. These pin the join, and the last two pin that it stays narrow: a
+// candidate that declares no route must not be forced into an alignment, since
+// guessing one is the failure the check exists to prevent.
+{
+  const zerobase = {
+    elected_distribution_route: { route: "route_5" },
+    options: [
+      { id: "builds_the_payload", serves_route: "route_5" },
+      { id: "the_offer_form", serves_route: "route_4" },
+      { id: "declares_nothing" },
+    ],
+  };
+  const claim = (candidate, kind = "route_change") => ({
+    claims: [
+      { at: "2026-08-10T12:00:00Z", candidate: "something_else", kind: "prerequisite" },
+      { at: "2026-08-10T13:00:00Z", candidate, kind },
+    ],
+  });
+
+  assert(
+    routeElectionVerdict({ lapClaims: claim("builds_the_payload"), zerobase }).status === "agrees",
+    "a route change naming a candidate that serves the elected route was not accepted",
+  );
+
+  const off = routeElectionVerdict({ lapClaims: claim("the_offer_form"), zerobase });
+  assert(
+    off.status === "disagrees",
+    "the lane was spent on a route_4 candidate while route_5 is elected and the check stayed quiet",
+  );
+  assert(
+    off.reason.includes("route_4") && off.reason.includes("route_5"),
+    "the disagreement does not name both routes, so a reader cannot tell which way it is wrong",
+  );
+
+  // Only the NEWEST route_change counts. An older aligned one must not mask a
+  // newer one that went off-route.
+  const stale = {
+    claims: [
+      { at: "2026-08-10T11:00:00Z", candidate: "builds_the_payload", kind: "route_change" },
+      { at: "2026-08-10T13:00:00Z", candidate: "the_offer_form", kind: "route_change" },
+    ],
+  };
+  assert(
+    routeElectionVerdict({ lapClaims: stale, zerobase }).status === "disagrees",
+    "an older aligned route change masked a newer one that did not move the route",
+  );
+  assert(
+    newestRouteChange(stale).candidate === "the_offer_form",
+    "newestRouteChange did not return the latest route_change",
+  );
+
+  // Narrowness. Prerequisite laps say nothing about the route, a candidate that
+  // is not a zero-base option declares no route, and neither may be reported as
+  // a disagreement.
+  assert(
+    routeElectionVerdict({ lapClaims: claim("the_offer_form", "prerequisite"), zerobase }).status
+      === "nothing_to_compare",
+    "a prerequisite lap was read as a route change",
+  );
+  assert(
+    routeElectionVerdict({ lapClaims: claim("a_constraint_recheck"), zerobase }).status
+      === "nothing_to_compare",
+    "a candidate that is not a zero-base option was forced into a route alignment",
+  );
+  assert(
+    routeElectionVerdict({ lapClaims: claim("declares_nothing"), zerobase }).status
+      === "nothing_to_compare",
+    "an option declaring no serves_route was forced into a route alignment",
+  );
+  assert(
+    routeElectionVerdict({ lapClaims: { claims: [] }, zerobase }).status === "nothing_to_compare",
+    "an empty claim register produced a verdict it has no evidence for",
+  );
+
+  // The check is worth nothing if the workflow does not run it.
+  const pulseYml = readFileSync(new URL("../.github/workflows/pulse.yml", import.meta.url), "utf8");
+  assert(
+    pulseYml.includes("scripts/check-route-election.mjs"),
+    "pulse.yml no longer runs the route-election check, so the join is unwatched again",
+  );
+  assert(
+    pulseYml.includes("scripts/check-payload.mjs"),
+    "pulse.yml no longer runs the payload contract check",
   );
 }
 

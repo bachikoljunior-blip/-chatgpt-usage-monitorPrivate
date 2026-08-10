@@ -300,6 +300,27 @@ export function prerequisiteCheck(election, result) {
     owner_requests_clearing_the_term: onTheTerm.map((r) => r.owner_request_id).filter(Boolean),
   };
   if (!election?.route) return { ...base, ok: true, problem: null };
+  // A route can genuinely wait on nothing. Every route this file was written
+  // against waited on a venue, so "no term" and "no prerequisite" were the same
+  // state here, and route 5 (the payload is the binding term) could not be
+  // recorded honestly: its whole claim is that it waits on no venue, no stranger
+  // and no owner action. Saying so must cost something, or it is an escape
+  // hatch, so it takes a written reason AND a prose prerequisite that says NONE
+  // — an election cannot claim both a prerequisite and no prerequisite.
+  const none = typeof election?.prerequisite_none === "string" ? election.prerequisite_none.trim() : "";
+  if (!term && none) {
+    const prose = typeof election?.prerequisite === "string" ? election.prerequisite.trim() : "";
+    if (!/^NONE\b/.test(prose)) {
+      return {
+        ...base,
+        ok: false,
+        problem:
+          "the election declares prerequisite_none while its prerequisite prose still describes one. " +
+          "One of the two is wrong, and a reader cannot tell which.",
+      };
+    }
+    return { ...base, ok: true, problem: null, prerequisite_none: none };
+  }
   if (!term) {
     return {
       ...base,
@@ -745,7 +766,7 @@ if (isMain) {
 
   const prereq = prerequisiteCheck(zerobase?.elected_distribution_route ?? null, result);
   console.log(
-    `\nelected route prerequisite: ${prereq.term ?? "PROSE ONLY"} · ` +
+    `\nelected route prerequisite: ${prereq.term ?? (prereq.prerequisite_none ? "NONE (declared)" : "PROSE ONLY")} · ` +
       BINDING_CAUSES.map((c) => `${c}=${prereq.counts[c]}`).join(" "),
   );
   if (prereq.measured_elsewhere) {

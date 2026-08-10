@@ -199,6 +199,11 @@ jobs:
           # red the moment something arrives that breaks a term, so a payload that
           # does not meet its own promise cannot become rung 1's subject.
           node scripts/check-payload.mjs || rc=1
+          # The gate records an admitted route change in state/lap-claims.json;
+          # the route the ranking actually uses lives in state/zerobase.json.
+          # Nothing joined the two, so spending the only open lane and leaving the
+          # election untouched looked exactly like carrying the route change out.
+          node scripts/check-route-election.mjs || rc=1
           # The other half of the same fix, and the half that bites. Naming Spark
           # made the second pool spendable and made the account default — the only
           # model here that authored none of the Spark-built artifacts — unreachable.
