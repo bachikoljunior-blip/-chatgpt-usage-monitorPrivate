@@ -1178,6 +1178,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T15:46:01.471Z",
+      "candidate": "no_standing_where_buyers_gather",
+      "kind": "route_change",
+      "mechanism": "Route 7 said delivery binds. Its text half was SOLVED at 15:26Z at zero owner actions, character for character, and the very next measurement on the offer it unblocked came back 払わない with a content reason from a reviewer who answered 誰の問題か いいえ. Solving delivery moved nothing because delivery was not the term. The term every zero shares is that nobody who holds the problem has ever arrived at anything we made. A venue reading returned at the lane measuring r/incremental_games — 100k weekly visitors, self-promo permitted on condition of a playable link, which state/public-host.json says we already serve at 200 and byte-identical — and state/constraints.json venue_survey does not contain that venue at all, so the ranking cannot see it. This lap folds a returned measurement into the file the ranking reads.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

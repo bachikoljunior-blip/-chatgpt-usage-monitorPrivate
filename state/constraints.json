@@ -210,7 +210,7 @@
         "measured_at": "2026-08-09T15:07:00Z",
         "source": "codex/outbox/2026-08-09.o.md — three venues, promotion rules QUOTED rather than summarised, eligibility asked for as a number or an explicit none, and a live dated slot asked for as evidence the venue is not dormant.",
         "venues_postable_today_from_a_standing_start": 1,
-        "venues_surveyed": 3,
+        "venues_surveyed": 4,
         "the_count_was_corrected_by_the_check_that_was_built_for_exactly_this": {
           "at": "2026-08-10T00:2xZ",
           "by": "eta-loop, after scripts/venue-readiness.mjs exited 1 during a post-rebase test run",
@@ -378,6 +378,44 @@
               "what_it_means_for_the_route": "FORTY TIMES the delivery of the venue that is open, and it is the venue whose account status nobody has ever established (binding cause venue_unsettled). The board is also slow enough that four replies is the median, which is engagement itch.io's board does not produce at all. If any venue on this survey is worth an owner action, the numbers now say it is this one — and the survey has spent six rounds ranking these boards without a single delivery figure in front of it.",
               "what_it_replaced": "Nobody has counted how many people a post here reaches. Declared rather than omitted, because an omitted field and an unmeasured one are indistinguishable — the same reason every row carries an `account` field with a nullable exists."
             }
+          },
+          {
+            "venue": "r/incremental_games",
+            "url": "https://www.reddit.com/r/incremental_games/",
+            "rule_quoted": "You can only post about your own content one time per 30 days. This includes your whole team, i.e, a second developer on the same game cannot post a week after you. Posting to our weekly feedback friday post does not count towards this rule. / You must include a link to something that is playable (playtest, demo, full release). Does not have to be free. / Developers and others associated with games will have to provide a section titled \"AI disclosure\" in their posts, as per this announcement post. / Spam whether in comments or posts will be removed, and the spammers will be banned. If you have any doubt about a link, contact a mod first. Do not post referral links.",
+            "audience_language": "en",
+            "audience_language_note": "An English-language subreddit: its rules, sidebar and the five thread titles the survey read are all English. Recorded because it decides whether the required playable link lands on readers who can use it, and every playable thing this account serves is Japanese.",
+            "artifact": "assets/free-demo/index.html",
+            "artifact_note": "This venue's rule 4 requires the post to LINK something playable, so the artifact is the playable file and not an announcement — the opposite of the itch.io row, where what the readers see is the post. The free demo is the only playable thing this project can edit; state/public-host.json serves it at 200 byte-identical to the repository copy.",
+            "paid_promotion_permitted": true,
+            "paid_promotion_note": "From this row's own rule_quoted, rule 4, second sentence: the required playable link 'Does not have to be free.' That is a venue permitting a reader to be shown a thing that costs money, stated in its own rules rather than inferred from silence. THIS IS THE FIELD THAT MAKES THE ROW WORTH ADDING: r/gamedev forbids paid assets in the same sentence that permits the post, so the one Reddit venue on the survey could never be the revenue step. This one can, on the same account, in the same genre as the only product this account sells.",
+            "eligibility_threshold": "NOT ESTABLISHED. The survey quoted rules 3 to 6 and none of them states an account age, karma floor or post count. Absence from the quoted rules is not absence: r/gamedev's 48-hour minimum was observed in a 2026 auto-removal notice and appears in no rule either. Treated as unpublished, which is the same term three of the six earlier surveyed venues failed on.",
+            "live_slot_evidence": "2998 posts per week, published on the subreddit's own sidebar, and two of the five thread titles the survey read are developers posting their own games ('I thought my game was done growing, then this happened', 'Hole Is Mine is OUT NOW!!!'). A fifth title — 'Can we stop allowing dev posts outside of specific days?' — is a live complaint that developer posts are frequent, which is stronger evidence that the slot is used than a slot count would be.",
+            "postable_today": null,
+            "postable_not_evaluable": "the venue publishes no eligibility threshold, so no predicate over anything readable here can settle whether this account may post. The account itself is settled — the same Reddit account as the r/gamedev row, reported created 2026-08-10 — so unlike GameDev.net the unknown is one venue fact rather than two.",
+            "blocked_on": "unverified eligibility. Counted as not-postable on purpose, on the same rule as GameDev.net: the measured failure mode in this evidence set is a standing-start account being auto-removed, and an unpublished threshold is exactly the condition that produced it.",
+            "blocked_on_is_one_lane_question": "Unlike GameDev.net, this row's unknown is cheap and outward-facing: reddit.com answers 403 from this container, and the lane reaches it — the survey that produced this row read the subreddit in a browser. Queued as codex/INBOX.md task 2026-08-10.incremental-eligibility. It costs no Claude budget, which is why it was queued in the same lap rather than ranked behind anything.",
+            "account": {
+              "exists": true,
+              "measured_at": "2026-08-10",
+              "source": "the same account as the r/gamedev row: owner statement in chat, 2026-08-10 「Redditアカウント作ったよ」. One Reddit account serves every subreddit, so this field is settled here by the same observation and is NOT an independent measurement.",
+              "created_on": "2026-08-10",
+              "username": null,
+              "evidence_state_file": "state/owner-requests.json",
+              "what_it_settles": "That the account half of this row needs no owner action. What remains is whether THIS subreddit lets a two-day-old account post, which the account observation cannot answer.",
+              "what_it_does_not_settle": "Whether r/gamedev's 48-hour clock applies here. Subreddits set their own thresholds; carrying r/gamedev's number across would be assuming the very thing eligibility_threshold records as unestablished."
+            },
+            "delivery": {
+              "reached_per_post": null,
+              "unit": null,
+              "measured_at": "2026-08-10T15:31:00Z",
+              "source": "codex/outbox/standing-2026-08-10.md (task 2026-08-10.standing), read in a browser with the subreddit URL quoted so the figures can be rechecked.",
+              "why_still_null": "MEASURED AND NOT AVAILABLE, the same as the r/gamedev row: Reddit publishes no per-post view count to a logged-out reader. The date records an attempt that failed, not an attempt not made.",
+              "surrogate": "100,000 weekly visitors and 2,998 posts per week, both printed on the subreddit sidebar; created 2013-09-14. Subscribers and visitors are a CEILING on an audience, not a delivery figure. Dividing visitors by posts would produce a number this survey has no basis for, and substituting a ceiling for delivery is the error the delivery field was added to stop — see the_field_that_was_missing_from_every_row.",
+              "what_it_means_for_the_route": "It cannot yet be compared with GameDev.net's 447 views per post, which is a measured median. What can be compared is genre: this is the only surveyed venue whose readers gather for the exact category of the only product this account sells, and the only one that permits showing them a paid thing AND already has its required artifact serving at 200."
+            },
+            "what_this_row_adds_that_the_other_three_did_not": "The three earlier rows each fail on a different term and none of them fails on genre. This one is the first where audience, permission and artifact line up at once, and its single open term is a fact somebody outside can read in one page. It also arrived from a lane answer that had returned and that nothing in the ranking read — RUNBOOK 5 names that exact shape as the failure where a decision is recorded and the loop does not change.",
+            "the_qualifier_that_must_not_be_dropped": "Rule 4 requires the playable link, and the only playable artifact this project serves declares lang=\"ja\" against a venue that reads English. So the term that makes this venue postable at all is satisfied by a file its readers cannot read. That is not a rule breach and it does not shut the row — it is the same LANGUAGE MISMATCH scripts/venue-readiness.mjs already prints for r/gamedev, and it is now true of the one venue where being seen could be paid for."
           }
         ],
         "what_this_does_to_the_lift_mechanism": "The route adopted at 3555e97 was substitute breadth for standing. Breadth is now measured rather than assumed, and it did not substitute: 0 of 3. But the reason is NOT that standing turned out to be required after all — no venue refused us for lack of standing. Two refused for reasons that have nothing to do with reputation: one wants a page on its own platform, one forbids the product form. Standing remains unmeasured on our side, as the claim above says. What has changed is that the next blocker is no longer reputational and is no longer unknown.",
@@ -420,6 +458,12 @@
           "the_arithmetic_nobody_had_done": "Eleven views per post is the whole delivery of the one open door. Even at a conversion rate no storefront reports, a post there does not produce a buyer. The same shape as the sibling loop's WATCH=2 finding on 2026-08-10: a surface was elected because it was PERMITTED, and the reachable half of it had never been counted. Two loops made the same error on the same day, independently, on different surfaces.",
           "what_this_does_not_say": "That posting to itch.io is worthless. Eleven readers is more than zero and the post costs nothing. It says the route cannot reach ¥200,000/month through that board, which is the question this loop asks. And it does NOT say GameDev.net will deliver 447 to us — that is the median of established members' posts, and no_standing_where_buyers_gather is exactly the term that would differ for a new account.",
           "the_measurement_reached_the_chooser": "scripts/venue-readiness.mjs deliveryKnown() needs a number AND a date. Two of the three rows now have both, so delivery_unmeasured stops binding on them and the next binding cause is visible instead. r/gamedev keeps a null with a date, which is measured-and-unavailable rather than unmeasured — the distinction the field was built to hold."
+        },
+        "fourth_venue_added": {
+          "at": "2026-08-10T15:50:00Z",
+          "venue": "r/incremental_games",
+          "why_a_fourth_after_the_survey_was_stopped": "route_after_two_batches stopped COMMISSIONING surveys, on the finding that a third batch would fail on the same unpublished-eligibility term. That decision stands and this row does not reopen it: nothing was commissioned. codex/outbox/standing-2026-08-10.md was already back, it names in its own text that state/constraints.json did not contain r/incremental_games, and folding a returned answer into the file the ranking reads is not the same act as ordering another batch. The prediction that a third batch adds nothing is in fact PARTLY BORNE OUT — this row too is unsettled on eligibility. What it is not is redundant, because it is the first row where the genre, the permission and the artifact all line up.",
+          "admitted_as": "route_change through scripts/eta-gate.mjs at 3/3 prerequisite with the ETA unmoved, recorded in state/lap-claims.json. The route being abandoned is route_7_delivery_is_the_binding_term: its text half was solved at 15:26Z at zero owner actions and the very next measurement on the offer it unblocked came back 払わない."
         }
       },
       "reprices_candidates": [
