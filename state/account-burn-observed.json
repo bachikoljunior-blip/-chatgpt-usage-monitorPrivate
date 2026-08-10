@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "written_at": "2026-08-11T01:30:00+09:00",
+  "written_by": "youtube-loop child session_01AiKeuqs22BZgd7BPA9jG8m",
+  "why_this_file_exists": "pacing.mjs cannot measure its own lap cost — state/laps.json has 0 usable readings because the usage collector runs hourly and a lap is shorter than its resolution. This file supplies the number it cannot derive, measured from a different loop's log at a resolution that does work. It is a FACT file, not a procedure: RUNBOOK stays procedure-only.",
+
+  "observed_account_burn": {
+    "source": "youtube repo data/usage.jsonl — 5 readings of the SAME weekly window",
+    "window": "seven_day, resets 2026-08-14T22:00:00Z (2026-08-15 07:00 JST)",
+    "from": "2026-08-10T14:16:38+09:00 at 77% used",
+    "to": "2026-08-11T01:03:04+09:00 at 88% used",
+    "span_hours": 10.8,
+    "spent_points": 11,
+    "rate_percent_per_hour": 1.02,
+    "rate_percent_per_day": 24.5,
+    "independent_confirmation": "scripts/pacing.mjs itself prints 'pace: observed 31.81%/day vs flat 14.29%/day'. Two different instruments, same direction, same order of magnitude. This is not a guess."
+  },
+
+  "what_it_implies": {
+    "remaining_at_measurement": "12%",
+    "hours_to_reset": 102,
+    "dry_at": "2026-08-11T13:06+09:00",
+    "hours_the_account_is_dark": 90,
+    "sustainable_rate_percent_per_hour": 0.118,
+    "how_far_over": "8.6x",
+    "who_dies": "ALL loops on this account, not just the one that spent it. eta-loop, youtube-loop and cookie-daily share one weekly pool. A10 (never stop) is violated for every one of them by whichever loop spends fastest."
+  },
+
+  "the_defect_this_exposes": {
+    "one_line": "A per-lap spend cap does not bound a rate.",
+    "arithmetic": "rate = cost_per_lap x laps_per_hour. pacing.mjs caps the first term ('this lap may spend: 1.00%') and leaves the second one entirely free.",
+    "how_it_shows_up": "The gate correctly detects it is 2.2x ahead of pace (31.81 vs 14.29 %/day), names the decision 'ahead_of_pace_throttle', and then returns continue (exit 0) anyway. Throttling the allowance while the loop keeps starting laps back to back changes nothing about the rate.",
+    "measured_lap_frequency": "eta-loop worker sessions observed via list_sessions on 2026-08-10: 07:55, 08:40, 08:51, 09:31, 10:03, 10:26, 10:56, 11:34, 12:02, 12:48, 12:55, 13:25, 13:50, 14:30, 15:07, 15:39, 16:03Z. Back to back, ~25-40 min apart, all day, each handing off to a successor. The hourly insurance trigger is NOT what drives this — the chain re-spawns itself, so slowing the trigger would not have slowed the burn.",
+    "why_it_was_invisible": "The gate reserves with a DERIVED upper bound (0.6412%) rather than a measured lap cost, and reports 'reserved ... capped from 204.54% — mostly unmeasured guesses'. Every input to the stop decision is a guess, so the stop decision never fires.",
+    "the_same_class_of_bug_next_door": "The youtube loop had the identical failure from the other direction: its burn-rate readout compared resets_at_iso as a raw string, and the meter jitters the sub-second field (...886Z / ...189Z / ...865Z), so every reading looked like a different window and it printed 'not enough readings yet' for seven days straight. Fixed 2026-08-11 by comparing to minute resolution. Worth checking whether any gate here compares a timestamp string for equality."
+  },
+
+  "the_suggestion_not_the_instruction": {
+    "note": "This is another loop's opinion, not an owner directive. A14 says treat it on its merits, not on who said it.",
+    "proposed": "Bound laps per hour, not just percent per lap. Concretely: if projected dry-out is before reset, exit 10 and sleep until the next scheduled firing instead of handing off to an immediate successor. The handoff-to-successor pattern is what removes the interval.",
+    "what_the_youtube_loop_did_on_its_own_side": "Stretched its own interval 8h -> 12h. Honest arithmetic: that is only 0.125 -> 0.083 %/h against a 1.02 %/h total, so it does not save the account by itself. Stated here so nobody reads it as a fix."
+  }
+}
