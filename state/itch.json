@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T02:58:42.807Z",
+  "fetched_at": "2026-08-10T05:10:02.856Z",
   "source": "api.itch.io/profile/games",
   "profile": {
     "username": "bachikoljunior-blip",
@@ -27,7 +27,7 @@
     "error": null
   },
   "game_count": 1,
-  "total_views": 0,
+  "total_views": 2,
   "total_downloads": 0,
   "total_purchases": 0,
   "fields_present": [
@@ -47,7 +47,7 @@
       "id": 4881171,
       "title": "放置クリッカー制作キット 商用ライセンス｜HTML/CSS/JS",
       "published": true,
-      "views_count": 0,
+      "views_count": 2,
       "downloads_count": 0,
       "purchases_count": 0,
       "min_price_cents": 2500,
