@@ -43,6 +43,7 @@ const [
   { value: gumroad },
   { value: gumroadHistory },
   { value: itch },
+  { value: itchHistory },
   { value: constraints },
   { value: external },
   { value: zerobase },
@@ -54,6 +55,7 @@ const [
   readStateJson("state/gumroad.json", { preferLocal }),
   readStateJson("state/gumroad-history.json", { preferLocal }),
   readStateJson("state/itch.json", { preferLocal }),
+  readStateJson("state/itch-history.json", { preferLocal }),
   readStateJson("state/constraints.json", { preferLocal }),
   readStateJson("state/external-metrics.json", { preferLocal }),
   readStateJson("state/zerobase.json", { preferLocal }),
@@ -116,17 +118,39 @@ if (gumroad?.status === "ok") {
 // --- itch.io ---------------------------------------------------------------
 if (itch?.status === "ok") {
   const games = Number(itch.game_count ?? 0);
+  // Until 2026-08-10 this channel carried `monthly_yen_now: 0` and `idle_eta_days:
+  // null` as CONSTANTS — the identical defect that was found load-bearing on the
+  // Gumroad channel above and fixed there on 2026-08-09. It was harmless while
+  // game_count was 0 and stopped being harmless at 2026-08-09T23:11:11Z, when the
+  // owner published a page priced at 2500 cents. From that moment a sale on itch
+  // could not have moved this number, exactly as a Gumroad sale could not before the
+  // fix, and this channel would have gone on reporting ∞ through its own first
+  // revenue. The fix was applied to one channel and the same shape was left standing
+  // next to it, which is why it is worth saying plainly: a correction that is not
+  // swept across its siblings is half a correction.
+  const projection = daysToTarget(itchHistory?.readings, { targetYen: TARGET_YEN_PER_MONTH });
+  const rate = projection.rate;
+  const noSeriesYet = (itchHistory?.readings?.length ?? 0) === 0;
   channels.push({
     id: "itch",
     measured_at: itch.fetched_at,
-    monthly_yen_now: 0,
+    monthly_yen_now: rate.derivable ? rate.monthly_yen_now : 0,
+    revenue_rate_derivable: rate.derivable === true,
+    revenue_window_days: rate.window_days ?? null,
+    revenue_readings: rate.readings ?? (itchHistory?.readings?.length ?? 0),
+    // itch serves no earnings field, so the series derives revenue as purchases x
+    // min_price. Carried here so no reader treats a yen figure from this channel as
+    // measured: it is a lower bound, and pay-what-you-want sales sit above it.
+    revenue_is_a_lower_bound: true,
     games,
     total_views: itch.total_views ?? null,
-    idle_eta_days: null,
+    idle_eta_days: projection.eta_days,
     idle_eta_reason:
       games === 0
         ? "no game pages exist; creating one is a web form with no API, so idle it never starts"
-        : "published but no revenue trajectory yet",
+        : noSeriesYet
+          ? "published and priced, but scripts/read-itch.mjs has not yet written a reading to state/itch-history.json — the first collector run after 2026-08-10T00:3xZ starts the series. A level is not a rate."
+          : projection.reason,
     // The one action that converts this from infinite to finite.
     owner_actions_required: games === 0 ? 1 : 0,
     planned_unblock: games === 0 ? "create one game page (form only); butler automates everything after" : null,

@@ -5,6 +5,36 @@
   "note": "Every change made because it was claimed to shorten the ETA. judge_on is set when the change lands, not when it is convenient. concurrent_changes is what else was in flight, so a later reader can tell a clean attribution from a confounded one.",
   "predictions": [
     {
+      "id": "2026-08-10.itch-channel-can-represent-its-own-revenue",
+      "made_at": "2026-08-10T00:30:00Z",
+      "claim": "The itch channel carried monthly_yen_now: 0 and idle_eta_days: null as CONSTANTS — the same defect found load-bearing on the Gumroad channel on 2026-08-09 and fixed there, left standing on its sibling. It was harmless only while game_count was 0. The owner published a page priced at 2500 cents at 2026-08-09T23:11:11Z, so from that hour a sale on itch could not have moved the ETA. Claimed: the channel now derives its ETA from a dated series, and the series actually grows because the collector's commit loop stages it.",
+      "metric": "Read from origin/main, not from any working tree. (a) state/itch-history.json carries strictly more than the 1 seeded reading — this is the half that historically breaks, because itch-monitor.yml does `git reset --hard origin/main` before regenerating and an unstaged append is discarded, which is precisely how gumroad-history nearly sat at one row forever. (b) state/eta.json channels[itch] carries revenue_rate_derivable and revenue_readings at all, rather than the constants; tests/run-tests.mjs asserts on the emitted channel and not only on revenue-rate.mjs, so restoring the constant goes red. (c) channels[itch].idle_eta_days stays null while the series is flat, and is NOT 0 — the null-coerced-to-zero bug that once made the goal read as already met.",
+      "baseline": {
+        "measured_at": "2026-08-10T00:26:00Z",
+        "itch_history_readings": 1,
+        "itch_revenue_rate_derivable": false,
+        "itch_idle_eta_days": null,
+        "itch_game_count": 1,
+        "itch_total_views": 0,
+        "itch_min_price_cents": 2500,
+        "what_the_probe_showed": "daysToTarget over a seeded two-row series with growth returns a finite ETA and a derivable rate; over a flat two-row series it returns null, not 0. Run before shipping, so the post-fix reading is a comparison rather than a hope."
+      },
+      "judge_on": "2026-08-11",
+      "judge_deadline": "2026-08-14",
+      "min_observations": {
+        "source": "state/itch-history.json",
+        "path": "readings",
+        "min": 2,
+        "usable_only": false
+      },
+      "concurrent_changes": [
+        "Same lap, same commit: scripts/read-itch.mjs gained the writer, compute-eta.mjs gained the reader, and itch-monitor.yml gained the staging line. These are one change on purpose — a writer with no reader, or a reader with no writer, is the defect this repository is named after, and the staging line alone decides whether either matters.",
+        "The seeded baseline row was transcribed by hand from state/itch.json rather than produced by a collector run, because ITCH_API_KEY is not available to a lap. If reading 2 never appears, that hand-seeded row is indistinguishable from a working series of length 1 — which is exactly why (a) demands strictly more than one."
+      ],
+      "falsified_if": "state/itch-history.json still holds exactly the seeded reading at the judge date — then the append-and-commit path is broken and the channel still cannot represent revenue, whatever the code says. OR channels[itch].idle_eta_days is a number while the series is flat — then a level was read as a trajectory and the goal will misreport, which is worse than ∞. What this does NOT claim: that anything sells. It claims only that if something sells there, the number can move.",
+      "outcome": null
+    },
+    {
       "id": "2026-08-09.a-rule-with-three-requirements-was-checked-for-one",
       "made_at": "2026-08-09T22:15:00Z",
       "claim": "itch.io Release Announcements is the one surveyed venue measured to permit showing the paid product, and its rule_quoted states three requirements: a link to the page on itch.io, a quick summary of the game, and at least one embedded image or video — with the next sentence saying posts that are just links are locked and removed. The row's postable_when checked one of the three (state/itch.json game_count positive). The claim is that this would have cost something real and not merely been untidy: owner request 2026-08-09.itch-page-for-the-kit is pending, and on the day it lands the row would have read POSTABLE while the summary requirement had nothing behind it in the language the board reads. The Japanese summary existed in that same owner request since 11:33Z and language_fit could not see it, because it derives the artifact's language from assets/free-demo/index.html — the r/gamedev artifact, not this row's. It returned the right verdict here by coincidence: both files are Japanese.",

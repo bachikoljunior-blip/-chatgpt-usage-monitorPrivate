@@ -17,7 +17,9 @@
 //
 //   ITCH_API_KEY=... node scripts/read-itch.mjs state/itch.json
 
-import { writeFile, mkdir } from "node:fs/promises";
+import { writeFile, mkdir, readFile } from "node:fs/promises";
+
+import { appendReading } from "./revenue-rate.mjs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -189,6 +191,75 @@ if (source) {
 
 await mkdir(dirname(out), { recursive: true });
 await writeFile(out, `${JSON.stringify(payload, null, 2)}\n`);
+
+// The snapshot is a LEVEL. A level never yields an ETA — deriveMonthlyRate needs two
+// dated readings, which is why state/gumroad-history.json exists and why gumroad is
+// the only channel that can report revenue_rate_derivable at all.
+//
+// Added 2026-08-10, the hour the owner published the itch.io page: game_count 0 -> 1,
+// published, priced at 2500 cents, 0 views. Before this, every future reading of that
+// page would have overwritten the last one, and the channel could not have reported a
+// rate no matter how much it sold. A storefront that starts selling while nothing is
+// keeping a series produces a number nobody can turn into days.
+//
+// It is written NOW, before the traffic, on purpose. Starting the series after the
+// first arrival loses the only clean zero baseline the page will ever have, and the
+// first window would then begin at an unknown level.
+//
+// The funnel is recorded alongside revenue because itch reports all three steps —
+// views, downloads, purchases — per game, hourly. That is the per-step instrument the
+// elected route's funnel does not have for Gumroad, where /v2/products returns no
+// per-visitor field at all (see scripts/funnel-check.mjs).
+if (payload.status === "ok") {
+  const historyOut = resolve(REPO, process.argv[3] ?? "state/itch-history.json");
+  const existing = await readFile(historyOut, "utf8")
+    .then((t) => JSON.parse(t))
+    .catch(() => null);
+
+  const rows = Array.isArray(existing?.readings) ? existing.readings : [];
+  // itch serves no earnings field — fields_present is id, title, published,
+  // views_count, downloads_count, purchases_count, min_price_cents, published_at. So
+  // revenue is DERIVED as purchases x min_price, and that is an assumption, not a
+  // measurement: itch allows paying above the minimum, so this is a LOWER BOUND. It is
+  // labelled here and in the file rather than left for a reader to infer, because an
+  // assumed figure that looks measured is the failure this repository keeps recording.
+  const cents = payload.games.reduce(
+    (n, g) => n + (g.purchases_count ?? 0) * (g.min_price_cents ?? 0),
+    0,
+  );
+  const appended = appendReading(rows, {
+    at: payload.fetched_at,
+    total_sales_count: payload.total_purchases,
+    total_sales_usd_cents: cents,
+  });
+
+  if (appended !== rows) {
+    const withFunnel = appended.map((row, i) =>
+      i === appended.length - 1
+        ? {
+            ...row,
+            views: payload.total_views,
+            downloads: payload.total_downloads,
+          }
+        : row,
+    );
+    await writeFile(
+      historyOut,
+      `${JSON.stringify(
+        {
+          schema_version: 1,
+          status: "ok",
+          fetched_at: payload.fetched_at,
+          revenue_is_a_lower_bound: true,
+          revenue_derivation: "purchases_count x min_price_cents, summed over games. itch.io serves no earnings field on this endpoint and permits paying above the minimum, so this under-reports whenever a buyer pays more. Never present it as measured revenue.",
+          readings: withFunnel,
+        },
+        null,
+        2,
+      )}\n`,
+    );
+  }
+}
 console.log(
   payload.status === "ok"
     ? `itch: ${payload.game_count} games · ${payload.total_views} views · ` +

@@ -51,7 +51,9 @@ jobs:
       # if: always() でコミットが走り、検査に落ちた状態ファイルが main に載った。
       - name: Verify no credentials entered committed state
         id: verify
-        run: node scripts/verify-sanitized-state.mjs state/itch.json
+        run: |
+          node scripts/verify-sanitized-state.mjs state/itch.json
+          node scripts/verify-sanitized-state.mjs state/itch-history.json
 
       - name: Commit current state
         if: steps.collect.outcome == 'success' && steps.verify.outcome == 'success'
@@ -66,7 +68,15 @@ jobs:
             git reset --hard origin/main
             node scripts/read-itch.mjs state/itch.json || exit 1
             node scripts/verify-sanitized-state.mjs state/itch.json || exit 1
-            git add state/itch.json
+            node scripts/verify-sanitized-state.mjs state/itch-history.json || exit 1
+            # state/itch-history.json MUST be staged here. The loop does
+            # `git reset --hard origin/main` before regenerating, so an append that is
+            # written but not staged is discarded on the next attempt and the series
+            # sits at one row forever. That is not hypothetical: it is the exact
+            # failure recorded against gumroad-history.json, and this workflow had the
+            # identical shape — `git add state/itch.json` alone — at the moment the
+            # history file was introduced.
+            git add state/itch.json state/itch-history.json
             if git diff --cached --quiet; then
               echo "no change"
               exit 0

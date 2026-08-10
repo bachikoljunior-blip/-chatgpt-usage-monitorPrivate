@@ -2893,6 +2893,80 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   );
 }
 
+// --- the itch channel can represent its own revenue ---------------------------
+//
+// 2026-08-10. The Gumroad channel's `monthly_yen_now: 0` / `idle_eta_days: null`
+// constants were found load-bearing on 2026-08-09 — a seeded 500 sales could not move
+// the number — and fixed. The IDENTICAL shape was left standing on the itch channel,
+// where it was harmless only because game_count was 0. At 23:11:11Z the owner
+// published a page priced at 2500 cents, and from that moment the channel would have
+// reported ∞ through its own first sale.
+//
+// So the same seeding probe the Gumroad fix was verified with, run against itch: a
+// series with real growth must produce a finite ETA and a non-null rate. If this goes
+// green with the constants restored, the fix is decorative.
+{
+  const seeded = [
+    { at: "2026-08-01T00:00:00.000Z", total_sales_count: 0, total_sales_usd_cents: 0 },
+    { at: "2026-08-11T00:00:00.000Z", total_sales_count: 40, total_sales_usd_cents: 100000 },
+  ];
+  const grew = daysToTarget(seeded, { targetYen: 200000 });
+  assert(
+    grew.rate.derivable === true && Number.isFinite(grew.eta_days),
+    "a growing itch series did not yield a finite ETA, so the channel still cannot represent revenue",
+  );
+
+  // And a flat series must stay ∞ rather than collapsing to 0 — the coercion bug that
+  // made the external channel report the goal as already met.
+  const flat = daysToTarget(
+    [
+      { at: "2026-08-01T00:00:00.000Z", total_sales_count: 0, total_sales_usd_cents: 0 },
+      { at: "2026-08-11T00:00:00.000Z", total_sales_count: 0, total_sales_usd_cents: 0 },
+    ],
+    { targetYen: 200000 },
+  );
+  assert(
+    flat.eta_days === null,
+    "a flat itch series produced a finite ETA — a level was read as a trajectory",
+  );
+
+  // The committed seed is a single row on purpose: one reading is a LEVEL, and the
+  // channel must say so rather than reporting a rate off one point.
+  const committed = JSON.parse(await readFile(join(root, "state/itch-history.json"), "utf8"));
+  assert(
+    Array.isArray(committed.readings) && committed.readings.length >= 1,
+    "the itch series lost its baseline reading",
+  );
+  assert(
+    committed.revenue_is_a_lower_bound === true,
+    "the itch series stopped declaring that its revenue figure is derived, not measured",
+  );
+  const fromOne = daysToTarget(committed.readings, { targetYen: 200000 });
+  assert(
+    fromOne.rate.derivable === false,
+    "a rate was derived from a single reading, which is a level and not a trajectory",
+  );
+
+  // The assertions above bind revenue-rate.mjs, which was already correct. They do
+  // NOT bind the itch CHANNEL to it — restoring the constant in compute-eta.mjs would
+  // leave every one of them green. That is the same "a copy asserted in the tests
+  // would have gone green while the reader stayed broken" trap the external-metrics
+  // fix recorded, so the wiring is pinned on its output: these fields exist only
+  // because the channel runs the projection.
+  const eta = JSON.parse(await readFile(join(root, "state/eta.json"), "utf8"));
+  const itchChannel = eta.channels.find((c) => c.id === "itch");
+  assert(itchChannel, "the itch channel vanished from state/eta.json");
+  assert(
+    typeof itchChannel.revenue_rate_derivable === "boolean" &&
+      itchChannel.revenue_readings !== undefined,
+    "the itch channel stopped reporting a rate — compute-eta is back to a constant, and a sale there could not move the ETA",
+  );
+  assert(
+    itchChannel.revenue_is_a_lower_bound === true,
+    "the itch channel stopped flagging its revenue figure as derived from purchases x min_price",
+  );
+}
+
 console.log("All usage monitor tests passed.");
 
 function run(command, args, extraEnv = {}, { allowFailure = false } = {}) {

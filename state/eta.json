@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T00:20:41.535Z",
+  "fetched_at": "2026-08-10T00:29:54.545Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -47,11 +47,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.24
+      "days_unchanged": 0.25
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.24
+      "days_unchanged": 0.25
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -88,10 +88,14 @@
       "id": "itch",
       "measured_at": "2026-08-10T00:04:11.549Z",
       "monthly_yen_now": 0,
+      "revenue_rate_derivable": false,
+      "revenue_window_days": null,
+      "revenue_readings": 1,
+      "revenue_is_a_lower_bound": true,
       "games": 1,
       "total_views": 0,
       "idle_eta_days": null,
-      "idle_eta_reason": "published but no revenue trajectory yet",
+      "idle_eta_reason": "fewer than two dated readings, so there is no window to measure a rate over",
       "owner_actions_required": 0,
       "planned_unblock": null,
       "automatable": true,
@@ -365,7 +369,7 @@
         "published_count": 10,
         "pages_found_by_search": 0,
         "verdict": "published_but_not_findable",
-        "measured_at": "2026-08-09T23:24:37.441Z",
+        "measured_at": "2026-08-10T00:20:42.798Z",
         "what_it_settles": "Not a shortage of pages. Ten serve 200 and a search index returned none of them, so page COUNT is not the binding term — the missing step is an inbound path from a surface that is already crawled. Building more pages buys nothing until that step exists.",
         "inbound_surface": {
           "verdict": "no_crawled_surface_found",
