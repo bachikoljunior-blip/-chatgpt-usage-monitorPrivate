@@ -650,6 +650,14 @@
             "author_model_key": "account_default",
             "how_this_was_established": "state/codex-lane.json runs[] carries {task_id 2026-08-10.payload-01-review, model_key spark, model gpt-5.3-codex-spark, at 2026-08-10T15:31:49.895Z}, and the authoring run 2026-08-10.payload-01 recorded model_key spark with model \"default\" — it asked for Spark and fell back. So the author is the account default and the reviewer provably is not. lane-authorship --check reports this pairing ok.",
             "why_it_matters_here": "Two earlier rung-2 rounds in this register were void for exactly this, and the handoff that queued this task named the fallback as the live risk. It was checked before the verdict was read, not after."
+          },
+          "engagement": {
+            "played_or_read": "読んだ",
+            "what_the_reviewer_did": "Read the document and answered. 読んだ範囲 says 10, i.e. all ten items. No prompt in it was executed, and the answer contains no output from having executed one.",
+            "evidence": null,
+            "why_evidence_is_null_rather_than_absent": "RUNBOOK 5.4 rung 2 wants evidence that separates a reviewer who exercised the artifact from one who read it carefully. This reviewer did NOT exercise it, so there is no such evidence to quote and inventing a field would assert the opposite. Null here means the round is honestly a read, not that the field was forgotten.",
+            "why_that_is_a_limit_on_this_round": "The verdict rests on 独自性 and 検証済みの価値 — both claims about what the prompts DO when used. A read cannot reach either. The round is recorded because a reason about the content is still a reason about the content; it is not treated as settling whether the prompts work.",
+            "what_would_have_separated_them": "Running one prompt and showing what came back, and running the same request WITHOUT the document and showing that too. Queued as codex/INBOX.md task 2026-08-10.payload-01-run."
           }
         }
       ],
