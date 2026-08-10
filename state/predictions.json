@@ -1171,12 +1171,19 @@
       },
       "judge_on": "2026-08-12",
       "judge_deadline": "2026-08-16",
+      "interim_observation": {
+        "at": "2026-08-10T02:18:00Z",
+        "part_a_confirmed": "state/heartbeat.json off the pushed registry: youtube-loop ok (61m, via registry:last_fired_at), cookie-daily ok (22m, same source), cookie-daily-fresh ok (14m). Two permanent never_seens cleared using a field that was already in the file. youtube-loop-fresh correctly reads never_seen — last_fired_at is null and its first run is 02:20Z — which is the honest reading and is also the live test of trigger_new_session_mode_does_not_fire.",
+        "part_b_measured_wrong_and_this_is_the_finding": "The prediction said the reservation would rise and the discretionary share would fall. IT DID NOT MOVE. Measured immediately after the push: reserved_for_others 18.90% and discretionary 8.10%, identical to the baseline. What changed is the UNCAPPED figure, 65.71% to 131.42%. MAX_RESERVED_FRACTION (0.7 of remaining) was already binding before this change and is still binding after it, so the registry's contents currently do not affect the budget at all.",
+        "what_that_means": "The gate is pacing on the cap, not on the registry. Both registry errors this project has found — revenue-loop reserved at 9.43% after the owner had stopped it, and today's two missing rows — were absorbed by the cap and changed no lap's budget. Keeping the registry accurate buys liveness detection, which demonstrably worked here, and buys nothing in budget accuracy while the cap binds. A later lap should NOT read this as a reason to stop reconciling; it should read it as: the reservation arithmetic below the cap is currently untested by any lap's experience, and the first thing that will expose it is the cap ceasing to bind.",
+        "recorded_rather_than_edited": "The claim and metric above are left as written. Half of a prediction being measurably wrong twenty minutes after it was made is worth more as a record than as a correction, and this half was wrong for a reason nothing in the baseline showed: the baseline recorded the capped number and not that it was capped."
+      },
       "min_observations": {
         "source": "state/laps.json",
         "path": "samples",
         "min": 3,
         "usable_only": false,
-        "note": "Parts (c) and (d) are about what later laps do, so they need laps to have happened. Parts (a) and (b) are measurable as soon as pulse runs and need no laps at all."
+        "note": "Parts (c) and (d) are about what later laps do, so they need laps to have happened. Parts (a) and (b) are measurable as soon as pulse runs and need no laps at all — and both were measured within twenty minutes; see interim_observation."
       },
       "concurrent_changes": [
         "One commit: scripts/check-heartbeats.mjs (read last_fired_at, and report reconcile_before_judging so a frozen snapshot is not mistaken for a dead trigger), state/automations.json (the reconciliation and the two new rows), tests/run-tests.mjs (three directions held; two mutations run and both go red).",
