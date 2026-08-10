@@ -112,8 +112,40 @@
             "the_general_form": "The blind was broken by the lap explaining itself. The sentence was added by a lap correctly fixing round 1 weakness, and it reads as helpful context right up until it costs the round.",
             "now_mechanical": "scripts/product-loop.mjs blindLeaks() and roundRecognised(); tests/run-tests.mjs asserts the live INBOX text is clean and that a recognised round cannot sit in rounds."
           }
+        },
+        {
+          "round": 3,
+          "attempted_at": "2026-08-10T05:05:00Z",
+          "task_id": "2026-08-10.g",
+          "source": "codex/outbox/2026-08-10.g.md",
+          "answer_commit": "3398043",
+          "verdict_DISCARDED": "払わない",
+          "recognised_verbatim": "たぶんある",
+          "why_void": "roundRecognised() is tri-state and たぶんある counts as recognised. The rule is on the ANSWER, not the cause, and it was written that way precisely so it would bite a round we wanted. Void, discarded, not counted.",
+          "what_makes_this_one_different_and_expensive": "THE PROMPT WAS CLEAN. Round 2 was void because the task text explained itself and quoted the previous answer; that was a fixable leak and it was fixed. .g was written leak-free and blindLeaks() confirmed it on the live file. It still came back recognised. So the prompt was NOT the whole cause, and this is the more expensive world the prediction named in advance rather than the cheap one.",
+          "the_pattern_across_three_rounds_which_is_a_hypothesis_not_a_finding": {
+            "round_1": "見覚え ない — and the reviewer only READ the opening screen and stopped. No play.",
+            "round_2": "見覚え ある — 25 taps, two exchanges, rate watched going 0 -> 0.2 -> 0.4.",
+            "round_3": "見覚え たぶんある — 33 taps, two exchanges, same mechanics experienced.",
+            "the_hypothesis": "Recognition tracks ENGAGEMENT, not the prompt. A reviewer who glances does not recognise it; a reviewer who actually plays the mechanics recognises the thing this lane wrote. If that is right, the leak was never mainly in the text — the artifact is recognisable to its author once experienced.",
+            "why_this_is_not_yet_established": "n=3, and the two variables moved together across all three, so nothing here separates them. Round 1 is also the weakest reading in the set. A round with a leak-free prompt AND a reviewer who plays AND comes back ない would refute it; there has not been one.",
+            "how_it_could_be_tested_cheaply": "Ask the lane to review an artifact this lane did NOT write — any comparable third-party idle game — with the same played-to-completion instructions. If recognition comes back ない there and たぶんある here, engagement is not the whole story and authorship is. That is one lane task and costs nothing from the Claude pool."
+          },
+          "what_this_costs_route_5": {
+            "the_collision": "Route 5 (elected this session) says: build payloads on the Codex lane, because it is the only pool that has ever produced one. stranger_reaction says: the reviewer must not be the author. If deep review by the lane reliably returns recognised, then every artifact route 5 produces is unreviewable BY THE LANE at exactly the depth that makes a review worth having. The cheap reviewer and the cheap builder are the same pool, and they cannot be both.",
+            "what_it_does_NOT_kill": "Route 5's production claim is untouched — whether the lane can BUILD is a separate question from whether it can judge, and 2026-08-10.h still tests it. It also does not kill the rung: it says the reviewer has to come from somewhere else.",
+            "the_options_nobody_has_priced": "A fresh Claude session with no context (create_session, different pool, and it did not write the artifact — but it is the same model family and costs the scarce pool); the owner (one action, and RUNBOOK 6 gate 3 is shut); a real external human (no channel exists); or Spark named explicitly, which is a different model on the untouched second window and is the only one of the four that is both cheap and not obviously the author. None is measured. Do not pick one from this list without measuring it."
+          },
+          "what_must_not_happen": "Do not cite round 3's 払わない or its stated reason as a stranger reaction, and do not count it toward rounds or rounds_engaged. Three rounds have now been run on this artifact and the register still correctly reads rounds=1 (engaged 0) — the one kept round being the weakest of the three. That is uncomfortable and it is the honest state.",
+          "do_not_retry_a_fourth_time_unchanged": "The prediction said explicitly that a second recognised round means recording the more expensive world rather than retrying. Filing 2026-08-10.i as the same blind round with more emphatic wording is the move to avoid: two leak-free-ish attempts have now returned recognised, and a third would buy another void round and another lane slot."
         }
-      ]
+      ],
+      "blind_reviewer_finding": {
+        "measured_at": "2026-08-10T05:05:00Z",
+        "claim": "The Codex lane has returned recognised on both rounds where the reviewer actually played, and unrecognised only on the round where the reviewer did not. Until that is broken, treat the lane as UNAVAILABLE as a blind reviewer for artifacts the lane wrote, at review depths worth having.",
+        "status": "hypothesis with n=3, engagement and authorship not separated",
+        "next_measurement_that_would_settle_it": "One lane task reviewing a third-party artifact of the same kind with the same played-to-completion instructions. Cheap, on the free pool, and it separates the two variables."
+      }
     }
   ],
   "what_this_file_must_not_become": "A list of what is already being offered. state/options.json decayed exactly that way on 2026-08-08 — every registry enumerated existing assets, so no amount of turning them could ever conclude 'this portfolio is wrong'. An offer that fails its loop is supposed to be able to leave."

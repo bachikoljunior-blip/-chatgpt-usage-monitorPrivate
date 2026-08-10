@@ -1400,7 +1400,19 @@
       "concurrent_changes": [
         "Same lap as the owner-request success_test change (prediction 2026-08-10.a-performed-owner-action-read-as-pending), which is unrelated machinery - one touches owner-request accounting, this one touches lap admission. They share only the session."
       ],
-      "outcome": null
+      "outcome": null,
+      "interim_observations": [
+        {
+          "at": "2026-08-10T05:02:00Z",
+          "by": "session_011cmA4vnFQ9dRhfxkoyX4Y3, the next worker after the one that made this prediction",
+          "why_this_is_not_an_outcome": "judge_on is 2026-08-13. RUNBOOK 4 forbids writing 'it did not work' before the judgement date, and this is not that. It is the first data point on metric (d), recorded now because the lap that can see it is the lap that hits it, and by 08-13 nobody will remember which laps were blocked from what.",
+          "metric_d_says": "'The falsifier for the fix being too harsh: if laps start reporting they cannot do necessary groundwork at all, the cap is starving real work and the threshold, not the principle, is wrong.'",
+          "what_this_lap_actually_hit": "prerequisite returned reject on the first ask (37 consecutive, ETA unchanged). direct is unavailable for a different reason — every channel reads idle ∞, so no honest finite `after` exists to beat it, and a fabricated one is the exact failure this board has refuted repeatedly. That leaves route_change as the only lane a Claude-pool candidate can enter. It was taken, honestly, and route 5 was elected on a measurement nobody had taken before. But the SECOND act — building the transplant path that the newly elected route depends on — is groundwork by any reading, and the gate forbids it. So the gate currently admits a route change and then forbids implementing the route it just admitted.",
+          "the_honest_counterweight_which_matters_more_than_the_complaint": "THIS LAP WAS NOT STARVED. It completed three laps of real work without needing the prerequisite lane once: the route election went through route_change legitimately; the registry reconciliation went through RUNBOOK 3.9's instrument exception, which is a named carve-out and not a loophole; and re-arming the stalled Codex lane went through RUNBOOK 3's overdue rule, which sits outside the candidate list entirely. Three different legitimate doors. So the correct reading today is 'the prerequisite lane is closed and the other doors carried the load', NOT 'the cap is starving real work'. Anyone reading this later must not cite it as the falsifier firing.",
+          "what_would_turn_this_into_the_falsifier": "A lap that has no overdue heartbeat to fix, no instrument to repair, and a route already elected — so that the only remaining useful act is groundwork under the elected route — and which therefore either does nothing or dresses groundwork as a route_change to get in. The second is the more likely and the more damaging, because it is invisible: it reads as a route change in state/lap-claims.json and inflates the very counter that closed the lane. Watch for a route_change whose mechanism describes building rather than redirecting.",
+          "n": 1
+        }
+      ]
     },
     {
       "id": "2026-08-10.the-blind-was-broken-by-explaining-itself",
