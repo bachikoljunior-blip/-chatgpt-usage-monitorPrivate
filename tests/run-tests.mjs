@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn, spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { chmod, copyFile, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -24,6 +24,7 @@ import {
 } from "../scripts/inbox-task.mjs";
 import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/revenue-rate.mjs";
 import { decideVerdict, KINDS } from "../scripts/gate-verdict.mjs";
+import { roundRecognised, blindLeaks, judge } from "../scripts/product-loop.mjs";
 import { blockedByDirective, directiveBlockers } from "../scripts/directive-block.mjs";
 import { constraintDue } from "../scripts/constraint-due.mjs";
 import { evaluateUnlock } from "../scripts/unlock-condition.mjs";
@@ -3603,6 +3604,78 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     ],
   };
   assert(resolvePath(twoProducts, urlPath).value === 0, "the selector matched the wrong product row");
+
+  // A leak must be caught while the task can still be changed. Scoped to tasks
+  // with no outbox marker yet: .f already shipped and its text stays in the file
+  // as the record of what went wrong, so scanning everything would go red over
+  // history nobody can edit.
+  {
+    const inbox = await readFile(join(root, "codex/INBOX.md"), "utf8");
+    const sections = inbox.split(/```yaml/).slice(1);
+    for (const sec of sections) {
+      const id = /task_id:\s*(\S+)/.exec(sec)?.[1];
+      if (!id) continue;
+      const marker = join(root, "codex/outbox", `${id}.md`);
+      if (existsSync(marker)) continue;
+      // Only stranger-round tasks: the blind applies to those, not to outside research.
+      if (!/hoshikuzu|free-demo/.test(sec)) continue;
+      assert(blindLeaks(sec).length === 0,
+        `live stranger-round task ${id} leaks the blind: ${blindLeaks(sec).join("; ")}`);
+    }
+  }
+
+  // --- the blind, as a machine ------------------------------------------------
+  // state/product-loop.json has said since the rung was declared that a recognised
+  // round is VOID. It was prose, and round 2 came back 見覚え ある — the best round
+  // this offer has ever had, and void anyway.
+  assert(roundRecognised({ recognised: "ある" }) === true, "ある did not read as recognised");
+  assert(roundRecognised({ recognised: "たぶんある" }) === true,
+    "たぶんある did not read as recognised; a maybe-blind round cannot be told from a broken one later");
+  assert(roundRecognised({ recognised: "ない" }) === false, "ない did not read as not-recognised");
+  // Absent stays null: rounds predate the field and silence is not a denial.
+  assert(roundRecognised({}) === null, "a missing recognition field read as a verdict");
+
+  // The leak that actually broke it, quoted from the task that shipped.
+  assert(blindLeaks("前回この依頼を出したとき、返ってきたのは「初期画面を見て止めた」でした。").length > 0,
+    "the exact sentence that broke round 2's blind was not caught");
+  assert(blindLeaks("次のページを開いてください。 https://example.com/x/").length === 0,
+    "a clean stranger-round task was flagged as leaking");
+
+  // Synthetic control for rule 6. Without this the live assertion passes on a
+  // register that correctly has no recognised round, so the rule itself is
+  // untested — the mutation "a recognised round may stay in rounds" came back
+  // GREEN until this was added.
+  {
+    const doc = {
+      offers: [{
+        id: "synthetic", live_to_buyers: true,
+        measurement: { rung: "stranger_reaction" },
+        rounds: [{
+          round: 1, verdict: "払わない", recognised: "ある", moved: false,
+          verified_at: "2026-08-10T00:00:00Z",
+          engagement: { played_or_read: "遊んだ" },
+        }],
+      }],
+    };
+    const problems = judge(doc, { now: new Date("2026-08-10T04:00:00Z") }).problems ?? [];
+    assert(problems.some((x) => /recognised/i.test(x)),
+      "a recognised round kept in rounds did not raise a problem");
+  }
+
+  // The live register: a recognised round must not be sitting in rounds, and the
+  // void one must be recorded rather than deleted.
+  {
+    const pl = JSON.parse(await readFile(join(root, "state/product-loop.json"), "utf8"));
+    for (const offer of pl.offers ?? []) {
+      for (const r of offer.rounds ?? []) {
+        assert(roundRecognised(r) !== true,
+          `${offer.id} keeps a recognised round in rounds; it belongs in void_rounds`);
+      }
+    }
+    const demo = (pl.offers ?? []).find((o) => o.id === "free_demo");
+    assert((demo?.void_rounds ?? []).some((v) => v.task_id === "2026-08-10.f"),
+      "round 2 was discarded without being recorded — a thrown-away measurement still has to leave a trace");
+  }
 
   // And the live board: every pending request must carry a machine-readable test.
   // Prose is not a test — nothing reads it, which is how this defect happened.

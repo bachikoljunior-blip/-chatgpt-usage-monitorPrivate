@@ -94,7 +94,26 @@
           "what_this_does_to_the_elected_route": "route_4_the_offer_form_is_the_binding_term names its prerequisite as AN ARTIFACT SOMEONE WHO DID NOT MAKE IT WOULD PAY FOR. Round 1 returns the opposite on the only artifact we own outright. The prerequisite is NOT satisfied and the route is not thereby refuted — one round is not a verdict on the route, and this lap deliberately does not re-elect. Three elections in three days would say the elections are noise."
         }
       ],
-      "why_it_is_here_at_all": "It is the only thing this account offers that can enter a loop. If the owner's rule is right — and nothing here contradicts it — then this is where demand can actually be built, and the priced product's un-loopability is the reason the two have to be ranked against each other rather than assumed complementary."
+      "why_it_is_here_at_all": "It is the only thing this account offers that can enter a loop. If the owner's rule is right — and nothing here contradicts it — then this is where demand can actually be built, and the priced product's un-loopability is the reason the two have to be ranked against each other rather than assumed complementary.",
+      "void_rounds": [
+        {
+          "round": 2,
+          "attempted_at": "2026-08-10T04:05:00Z",
+          "task_id": "2026-08-10.f",
+          "source": "codex/outbox/2026-08-10.f.md",
+          "verdict_DISCARDED": "払わない",
+          "why_void": "見覚え: ある. The reviewer recognised the page. state/product-loop.json has said since this rung was declared that a recognised round is VOID and discarded, and the rule is on the ANSWER rather than the cause.",
+          "and_this_is_the_hard_part": "It is the best round this offer has ever had. All five steps completed, two items exchanged, 25 taps, the per-second rate change observed (0 -> 0.2 -> 0.4), the most-wanted-again moment named (the instant idle income started), the most boring moment named (grinding to 15 by hand), and a specific reason for 払わない: nothing branches and nothing permanent accumulates. Round 1 was criticised for being none of that. Discarding it is what the rule is FOR - a rule that only bites data you did not want is not a rule.",
+          "what_must_not_happen": "Do not cite any of the content above as a stranger reaction, and do not count it toward rounds or rounds_engaged. It is recorded in this much detail so a later lap can see what was given up, not so the verdict can be smuggled back in.",
+          "cause": {
+            "what": "THE TASK TEXT LEAKED. codex/INBOX.md task 2026-08-10.f opened with 前回この依頼を出したとき、返ってきたのは「初期画面を見て止めた」でした - telling the reviewer the page had been reviewed before, while explaining why the instructions were stricter.",
+            "so_not_this": "The lane is NOT burned. codex exec runs stateless, so recognition could not have come from memory of round 1; it came from the sentence. A blind round on this artifact is still possible, which is the opposite of what the raw 見覚え ある reading suggests.",
+            "the_rule_already_existed": "measurement.no_longer_queued.how_the_blind_is_kept: the task carries the public URL and nothing else, no repository name, no authorship, no statement of why it is being asked. Prose, unread by any machine. Fourth instance of that shape this session.",
+            "the_general_form": "The blind was broken by the lap explaining itself. The sentence was added by a lap correctly fixing round 1 weakness, and it reads as helpful context right up until it costs the round.",
+            "now_mechanical": "scripts/product-loop.mjs blindLeaks() and roundRecognised(); tests/run-tests.mjs asserts the live INBOX text is clean and that a recognised round cannot sit in rounds."
+          }
+        }
+      ]
     }
   ],
   "what_this_file_must_not_become": "A list of what is already being offered. state/options.json decayed exactly that way on 2026-08-08 — every registry enumerated existing assets, so no amount of turning them could ever conclude 'this portfolio is wrong'. An offer that fails its loop is supposed to be able to leave."

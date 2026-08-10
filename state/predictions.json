@@ -1401,6 +1401,19 @@
         "Same lap as the owner-request success_test change (prediction 2026-08-10.a-performed-owner-action-read-as-pending), which is unrelated machinery - one touches owner-request accounting, this one touches lap admission. They share only the session."
       ],
       "outcome": null
+    },
+    {
+      "id": "2026-08-10.the-blind-was-broken-by-explaining-itself",
+      "made_at": "2026-08-10T04:40:00Z",
+      "claim": "Stranger round 2 (codex/outbox/2026-08-10.f.md) came back 見覚え: ある and is VOID. It is also the best round this offer has ever had - all five steps done, two items exchanged, 25 taps, the per-second rate change observed, the most-engaging and most-boring moments both named, and a specific reason for 払わない. It was discarded anyway, into void_rounds, and the register still reads rounds=1 (engaged 0). THE CAUSE IS NOT A BURNED LANE: codex exec is stateless, and the task text itself opened with 前回この依頼を出したとき、返ってきたのは「初期画面を見て止めた」でした. The blind was broken by the lap explaining why its instructions were stricter. The rule it violated was already written in state/product-loop.json - the task carries the public URL and nothing else, no authorship, no statement of why it is being asked - and nothing read it. Fourth instance of that shape this session. Round 3 is filed as 2026-08-10.g with the explanation removed and no reference to any previous round. NOT claimed: any ETA movement, and NOT claimed that the demo is or is not worth paying for - that question is now back to n=1 from an unengaged reader.",
+      "metric": "Read from committed state on origin/main, none from a lap account of itself. (a) codex/outbox/2026-08-10.g.md exists and its 見覚え line reads ない - if it reads ある again with the leak removed, the cause was NOT the prompt and the lane really is unusable for this artifact, which is the more expensive world and should be recorded as such. (b) node scripts/product-loop.mjs --check stays green on the blind rules, and node tests/run-tests.mjs fails when any of the four mutations is reapplied: たぶんある not counting as recognised, absent recognition reading as false, blindLeaks returning [], or a recognised round being allowed to sit in rounds. All four went red at 04:3xZ, the last only after a synthetic control was added - it passed vacuously before that, on a register that correctly had no recognised round. (c) THE ONE THAT CAN FAIL QUIETLY: does any later lap cite round 2 content - the 払わない, or the branching-and-permanence reason - as evidence about strangers? It is in void_rounds in full detail so the cost of discarding it is visible, which is exactly what makes it tempting to reuse. (d) Whether free_demo rounds_engaged reaches 1 honestly, i.e. only if .g comes back both played and unrecognised.",
+      "baseline": "At 2026-08-10T04:05Z: free_demo rounds=1 (engaged 0), void_rounds absent, roundRecognised and blindLeaks did not exist, and the live INBOX carried a stranger-round task containing three separate leak phrases. The blind rule existed only as prose in state/product-loop.json.",
+      "judge_on": "2026-08-12",
+      "judge_deadline": "2026-08-16",
+      "concurrent_changes": [
+        "Same session as the owner-request success_test change and the gate treadmill fix. All three are separate machinery; this one touches only the product loop and the codex task text."
+      ],
+      "outcome": null
     }
   ]
 }

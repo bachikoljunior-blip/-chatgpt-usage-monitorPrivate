@@ -100,6 +100,83 @@ export function roundEngaged(round) {
   return null;
 }
 
+/**
+ * Did the reviewer recognise the artifact?
+ *
+ * state/product-loop.json has carried the rule since the rung was declared: "A
+ * round that comes back recognised is VOID and must be discarded rather than
+ * kept." It was prose. Nothing read it.
+ *
+ * 2026-08-10, round 2 (codex/outbox/2026-08-10.f.md) came back 見覚え: ある. It is
+ * also the best round this offer has ever had — the reviewer followed all five
+ * steps, exchanged two items, reported 25 taps, named the exact moment the loop
+ * became interesting and the exact moment it became boring, and gave a specific
+ * reason for 払わない. Round 1 was criticised for being none of that.
+ *
+ * It is void anyway, and this function exists so that is not a judgement call
+ * made by whichever lap happens to want the data. The rule is on the ANSWER, not
+ * on the cause: a reviewer who recognises the page is not a stranger, whatever
+ * made them recognise it.
+ *
+ * Tri-state for the same reason as roundEngaged: absent is null, because rounds
+ * predate the field and silence is not a denial.
+ *
+ * @param {object} round
+ * @returns {boolean|null}
+ */
+export function roundRecognised(round) {
+  const said = String(round?.recognised ?? round?.engagement?.recognised ?? "").trim();
+  if (!said) return null;
+  // たぶんある counts as recognised: the rule names both, and a maybe-blind round
+  // cannot be told apart from a broken one afterwards.
+  if (/^(ある|たぶんある|yes|maybe)/i.test(said)) return true;
+  if (/^(ない|no)/i.test(said)) return false;
+  return null;
+}
+
+/**
+ * Does a stranger-round task text leak?
+ *
+ * The blind rule in state/product-loop.json is specific: "The task carries the
+ * public URL and nothing else — no repository name, no authorship, no statement
+ * of why it is being asked." Round 2's task opened with 前回この依頼を出したとき、
+ * 返ってきたのは「初期画面を見て止めた」でした — it told the reviewer this page had
+ * been reviewed before, in the course of explaining why the instructions were
+ * stricter this time.
+ *
+ * So the blind was not broken by the lane being burned; it was broken by the
+ * lap's urge to justify itself. That is worth catching mechanically because it
+ * is the sympathetic kind of mistake: the sentence was added by a lap correctly
+ * fixing round 1's weakness, and it reads as helpful context right up until it
+ * costs the round.
+ *
+ * @param {string} text
+ * @returns {string[]} the offending phrases, empty when clean
+ */
+export function blindLeaks(text) {
+  const s = String(text ?? "");
+  // The owner's account name is INSIDE the artifact's own URL
+  // (bachikoljunior-blip.github.io/O/hoshikuzu/), and the task cannot ask anyone
+  // to open the page without it. So prose is scanned with URLs removed.
+  //
+  // This is a narrowing, not an exemption, and the residual is real: the blind
+  // rule in state/product-loop.json says the task carries "no repository name",
+  // while the URL it prescribes carries both the account name and the repo name
+  // O. Round 1 came back 見覚え ない with that same URL, so the leak is weak — but
+  // weak is not absent, and it is recorded as a known limitation of this blind
+  // rather than deleted because it was inconvenient. A custom domain would remove
+  // it; that is a real fix and nobody has priced it.
+  const prose = s.replace(/https?:\/\/\S+/g, " ");
+  const PATTERNS = [
+    [/前回|前に(も)?(この|同じ)/, "refers to a previous round", prose],
+    [/もう一度(この|同じ)|again this same/i, "says the reviewer is seeing it again", prose],
+    [/初期画面を見て止め|opening screen and stopped/, "quotes the previous round's answer", prose],
+    [/bachikoljunior|-chatgpt-usage-monitor|gumroad\.com/i, "names the owner's account or storefront outside the URL", prose],
+    [/私たちが作|自分たちで作|we (built|made|wrote) (it|this)/i, "reveals authorship", prose],
+  ];
+  return PATTERNS.filter(([re, , where]) => re.test(where)).map(([, why]) => why);
+}
+
 // The measurement ladder, cheapest and fastest first. The ORDER is the design
 // content, not decoration: each rung's signal returns sooner than the one below
 // it, and a failure high up makes every lower reading uninterpretable. Measuring
@@ -217,6 +294,22 @@ export function judge(doc, { now }) {
         problems.push(
           `${offer.id} round ${r.round ?? "?"} records verdict "${r.verdict}" but no engagement — ` +
             "say whether the reviewer exercised the artifact, or the round cannot be told from its default",
+        );
+      }
+    }
+
+    // 6. A recognised round sitting in `rounds` at all. The rule in
+    //    state/product-loop.json is that such a round is VOID and discarded; a
+    //    void round kept in the list would be counted by every rule above it.
+    //    This fires on the register, not on the reviewer: the honest place for
+    //    round 2 is void_rounds, where it is a record of an attempt rather than a
+    //    measurement of a stranger.
+    for (const r of rounds) {
+      if (roundRecognised(r) === true) {
+        problems.push(
+          `${offer.id} round ${r.round ?? "?"} came back recognised (見覚え ある) and is still counted ` +
+            "as a round. A reviewer who recognises the artifact is not a stranger — move it to " +
+            "void_rounds. Keeping it because the content was good is the exact trade this rule exists to refuse",
         );
       }
     }
