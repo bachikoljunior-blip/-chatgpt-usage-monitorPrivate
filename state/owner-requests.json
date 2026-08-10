@@ -328,16 +328,11 @@
         "the_upload": "アップロードだけは、こちらからはできません。上の why_it_cannot_be_automated が実測の内容です。",
         "notifying_existing_buyers": "購入者への通知は不要です。売上は0件なので、通知すべき相手がまだいません。今回の差し替えは「これから買う人が受け取るもの」を直すためのものです。"
       },
-      "success_test": "state/gumroad.json の添付ファイルのサイズが 32471 バイトになる。または state/product-source.json のマニフェストで LICENSE.txt の sha256 が新しい値になる。",
+      "success_test": "state/product-source.json のマニフェストで LICENSE.txt か brand.config.json の sha256 が新しい値になる。これは毎時ひとりでに更新されます。",
       "success_test_machine": {
-        "note": "2つの経路を持たせてあるのは、片方が毎時、もう片方が手動起動だからです。file_size_bytes は read-gumroad.mjs が毎時集める（2026-08-10 に追加。それまでは file_info の キー名 だけを集めていて、値は集めていませんでした）。product-source の方が決定的だが、gumroad-monitor.yml の fetch_product_source 入力を誰かが起動したときにしか更新されない。決定的な方だけを見る検査は、誰も起動しないまま期限を迎え、「オーナーが動かなかった」と記録されます —— 2026-08-09.gumroad-cover-upload で実際にそうなりかけました。",
+        "note": "2026-08-10 訂正。この検査には当初3本目として file_size_bytes = 32471 がありました。趣旨は「決定的な方（product-source）は手動起動でしか更新されないので、毎時集まる安い方も併せて見る」で、趣旨自体は正しい —— 決定的な方だけを見る検査は誰も起動しないまま期限を迎え、「オーナーが動かなかった」と記録されます（2026-08-09.gumroad-cover-upload で実際にそうなりかけた）。壊れていたのは実装です。Gumroad は file_info.Size を「31.7 KB」という人間向けの文字列で返すので、sizeInBytes は正しく null を返し、バイト数と比べる節は永久に真になりません。つまり安全弁のつもりで足した節が、そもそも真になれない節でした。しかも「まだ真でない」と「真になれない」はログ上で見分けがつきません。",
+        "what_was_fixed_instead": "節を差し替えるのではなく、決定的な方を毎時にしました。scripts/fetch-product-source.mjs は gumroad-monitor.yml の毎時実行の一部になり（dispatch 入力は廃止）、product/ ではなく使い捨ての場所に展開してマニフェストだけを記録します。product/ は周が修正を入れる木で、買った人が受け取る木ではないからです。これで下の2節は誰も何も思い出さなくても1時間以内に真になります。",
         "any_of": [
-          {
-            "state_file": "state/gumroad.json",
-            "path": "products[short_url=https://bachiko4.gumroad.com/l/fbozt].file_size_bytes",
-            "predicate": "eq",
-            "value": 32471
-          },
           {
             "state_file": "state/product-source.json",
             "path": "manifest[path=brandable-idle-clicker/LICENSE.txt].sha256",
@@ -352,7 +347,7 @@
           }
         ]
       },
-      "not_success": "ZIP を落としただけ、あるいは追加したが古いファイルを消していない状態。前者は上のどの検査も動きません。後者は file_size_bytes が別の値になるか、そもそも1商品に2ファイル付いた状態になるので、file_count が変わったかどうかを見て判定します。",
+      "not_success": "ZIP を落としただけ、あるいは追加したが古いファイルを消していない状態。前者は上のどの検査も動きません。後者は state/product-source.json の file_count と manifest が両方のファイルを並べて示すので、そこで見分けます（この検査は添付を実際に落として展開するので、何個付いているかが見えます）。",
       "judge_by": "2026-08-17",
       "minimised": {
         "owner_actions": 1,

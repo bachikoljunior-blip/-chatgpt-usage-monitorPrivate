@@ -22,7 +22,7 @@
 // stated with the result or the next reader inherits a stronger claim than the
 // evidence.
 //
-//   GUMROAD_TOKEN=... node scripts/fetch-product-source.mjs [--write]
+//   GUMROAD_TOKEN=... node scripts/fetch-product-source.mjs [--write] [--into=DIR]
 //
 // THE SIGNED URL IS NEVER WRITTEN ANYWHERE. It carries a verify token and an
 // expiry; committing it would put a credential-shaped string under state/ and
@@ -64,6 +64,30 @@ export function promisesPresent(paths) {
   return { all_present: missing.length === 0, missing };
 }
 
+/**
+ * Where to unzip the recovered attachment.
+ *
+ * 2026-08-10. This script extracts what a BUYER currently downloads. product/ is
+ * where laps FIX that source before it ships. Those are two different trees that
+ * happened to share a path while the script ran once a week by hand — the moment
+ * it goes on the hourly schedule, the default silently reverts every fix a lap
+ * has made and the reversion looks like a routine collector commit.
+ *
+ * So the scheduled run extracts somewhere disposable and records only the
+ * manifest, which is the whole instrument anyway: state/product-source.json is
+ * what tells "the seller replaced the file" from "we fetched it twice". Passing
+ * --into is how a lap deliberately refreshes product/ after an upload lands.
+ *
+ * @param argv       process.argv-shaped list
+ * @param defaultDir the tree to use when nothing is named
+ */
+export function extractionDir(argv, defaultDir) {
+  const flag = (argv || []).find((a) => typeof a === "string" && a.startsWith("--into="));
+  if (!flag) return defaultDir;
+  const value = flag.slice("--into=".length).trim();
+  return value ? value : defaultDir;
+}
+
 async function main() {
   const write = process.argv.includes("--write");
   const token = process.env.GUMROAD_TOKEN;
@@ -89,22 +113,23 @@ async function main() {
     process.exit(1);
   }
 
-  await mkdir(DEST, { recursive: true });
+  const dest = resolve(REPO, extractionDir(process.argv, DEST));
+  await mkdir(dest, { recursive: true });
   const entries = [];
   for (const f of files) {
     if (!f?.url) continue;
     const bin = Buffer.from(await (await fetch(f.url, { signal: AbortSignal.timeout(60_000) })).arrayBuffer());
-    const zip = join(DEST, `${f.name ?? "attachment"}.zip`);
+    const zip = join(dest, `${f.name ?? "attachment"}.zip`);
     await writeFile(zip, bin);
     // unzip rather than a dependency: this repository installs nothing it can avoid,
     // and a recovery script that needs npm cannot run on the day it is needed.
-    execFileSync("unzip", ["-q", "-o", zip, "-d", DEST]);
+    execFileSync("unzip", ["-q", "-o", zip, "-d", dest]);
     const listed = execFileSync("unzip", ["-Z1", zip], { encoding: "utf8" })
       .split("\n")
       .map((s) => s.trim())
       .filter((s) => s && !s.endsWith("/"));
     for (const rel of listed) {
-      const abs = join(DEST, rel);
+      const abs = join(dest, rel);
       if (!existsSync(abs)) continue;
       const buf = await readFile(abs);
       entries.push({ path: rel, bytes: buf.length, sha256: createHash("sha256").update(buf).digest("hex") });
@@ -120,7 +145,11 @@ async function main() {
     source: "GET /v2/products/:id files[].url — the seller's own attachment, no owner action",
     note: "The signed download URL is deliberately absent: it carries a verify token and an expiry. The manifest is what a later run compares against.",
     product_id_shape: typeof product.id,
-    extracted_to: "product/",
+    // Not the path. A scheduled run extracts under RUNNER_TEMP, and writing that
+    // absolute path here would churn the diff every hour and say nothing. What a
+    // reader needs is whether product/ now holds the DELIVERED files or a lap's
+    // fixes — those are opposite states and only this distinguishes them.
+    extracted_into_repo_tree: dest === DEST,
     file_count: entries.length,
     promised_artifacts_present: promised.all_present,
     promised_artifacts_missing: promised.missing,
@@ -132,7 +161,7 @@ async function main() {
     await writeFile(STATE, `${JSON.stringify(doc, null, 2)}\n`);
   }
   console.log(
-    `recovered ${entries.length} file(s) into product/ · promised artifacts ${promised.all_present ? "all present" : `MISSING ${promised.missing.join(", ")}`}${write ? "" : " (dry run — pass --write to record)"}`,
+    `recovered ${entries.length} file(s) into ${doc.extracted_into_repo_tree ? "product/" : "a scratch tree"} · promised artifacts ${promised.all_present ? "all present" : `MISSING ${promised.missing.join(", ")}`}${write ? "" : " (dry run — pass --write to record)"}`,
   );
 }
 

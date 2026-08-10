@@ -1066,6 +1066,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T12:59:19.006Z",
+      "candidate": "idle_clicker_kit.deliver_both_rung_one_fixes",
+      "kind": "prerequisite",
+      "mechanism": "The only owner action outstanding is the attachment upload, and every clause of its success test is currently unreachable without a human dispatching a workflow: file_size_bytes is structurally null because Gumroad serves file_info.Size as a human string, and both product-source sha256 clauses refresh only on workflow_dispatch. So the request fails open at judge_by and records the owner as not having acted, which both loses the delivery and poisons the owner-request history the gate reads. Putting fetch-product-source.mjs on the hourly schedule makes the definitive clause self-evaluating, so the day the file lands is detected within an hour with no lap remembering anything.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

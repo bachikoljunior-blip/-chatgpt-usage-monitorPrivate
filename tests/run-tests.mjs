@@ -54,7 +54,7 @@ import {
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import { classifyLifecycle } from "../scripts/probe-gumroad-lifecycle.mjs";
 import { recurrenceOf, classifyRecurrence, listingMeasurement } from "../scripts/probe-gumroad-recurring.mjs";
-import { promisesPresent, manifestOf } from "../scripts/fetch-product-source.mjs";
+import { promisesPresent, manifestOf, extractionDir } from "../scripts/fetch-product-source.mjs";
 import {
   diffAgainstDelivered,
   shipmentIsWorthAsking,
@@ -5579,6 +5579,40 @@ function assert(condition, message) {
   ]);
   assert(m[0].path === "a" && m[1].path === "b", "the manifest is not ordered, so two identical recoveries compare unequal");
   assert(m.every((r) => r.sha256), "a manifest row lost its digest");
+}
+
+// --- The hourly recovery must not extract over the tree laps fix ------------
+// 2026-08-10. fetch-product-source.mjs went from a weekly dispatch to the hourly
+// schedule, because it is the only instrument that can see the seller replace the
+// attachment and a success test naming a dispatch-gated instrument fails open at
+// its deadline as "the owner did not act".
+//
+// The danger the move creates is the opposite one: this script downloads what a
+// buyer gets TODAY, and its default destination is product/, which is where laps
+// fix that source before it ships. At one run a week that collision was harmless.
+// At one an hour it reverts every fix, and the reversion arrives dressed as a
+// routine collector commit.
+//
+// Mutations run red before this was kept: extractionDir ignoring --into, and
+// extractionDir treating an empty --into= as a destination (which resolves to the
+// repo root and unzips the product over the checkout).
+{
+  assert(
+    extractionDir(["node", "s.mjs", "--write"], "product") === "product",
+    "a run with no --into stopped using the default tree",
+  );
+  assert(
+    extractionDir(["node", "s.mjs", "--write", "--into=/tmp/scratch"], "product") === "/tmp/scratch",
+    "--into was ignored, so the hourly run extracts the delivered files over the tree laps fix",
+  );
+  assert(
+    extractionDir(["node", "s.mjs", "--into="], "product") === "product",
+    "an empty --into= was taken as a destination, which resolves to the repository root",
+  );
+  assert(
+    extractionDir(["node", "s.mjs", "--into=  "], "product") === "product",
+    "a blank --into= was taken as a destination",
+  );
 }
 
 // --- A run that measured nothing is not a run -------------------------------

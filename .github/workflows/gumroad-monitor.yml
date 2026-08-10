@@ -17,10 +17,6 @@ on:
         description: "Create a monthly membership draft, read back whether it is really recurring, then delete it. Settles whether the RECURRING form the elected route needs can be listed without a person, which the one-time lifecycle probe never answered."
         type: boolean
         default: false
-      fetch_product_source:
-        description: "Re-download the sold product's own attachment from the seller API into product/ and refresh state/product-source.json. Non-mutating on Gumroad; detects the day the seller replaces the file."
-        type: boolean
-        default: false
       probe_cover:
         description: "Probe whether a cover image can be set through the API. Reads, plus two writes that carry no real product fields and cannot succeed into a bad state. Re-run to detect the day Gumroad adds the route."
         type: boolean
@@ -109,12 +105,29 @@ jobs:
           # written, which reads as "the probe found nothing".
           cp state/gumroad-recurring.json "$RUNNER_TEMP/gumroad-recurring.json"
 
-      - name: Recover the sold product's source from its own attachment
-        if: always() && inputs.fetch_product_source
+      # HOURLY, not behind a dispatch input. This is the only instrument that can
+      # see the seller replace the attachment, and it spent its whole life behind
+      # a checkbox: a success test naming it waits for a lap to remember, then
+      # fails open at judge_by and records the owner as not having acted. That
+      # nearly happened to 2026-08-09.gumroad-cover-upload, and on 2026-08-10 it
+      # was the ONLY live clause left on the open request — the cheap hourly
+      # alternative, file_info.Size, comes back as a human-formatted string
+      # ("31.7 KB"), so the byte-count clause reading it is null forever.
+      #
+      # --into a disposable directory, NOT product/. This downloads what a buyer
+      # gets today; product/ is where laps fix it before it ships. Sharing the
+      # path was harmless at one run a week and reverts every fix at one an hour.
+      # Only the manifest is kept, which is the whole instrument.
+      #
+      # continue-on-error because the sales collection above must not go red over
+      # a signed-URL hiccup: this step is an addition to that run, not a
+      # precondition for it.
+      - name: Recover the sold product's manifest from its own attachment
+        continue-on-error: true
         env:
           GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
         run: |
-          node scripts/fetch-product-source.mjs --write
+          node scripts/fetch-product-source.mjs --write --into="$RUNNER_TEMP/product-source-extract"
           node scripts/verify-sanitized-state.mjs state/product-source.json
           cp state/product-source.json "$RUNNER_TEMP/product-source.json"
 

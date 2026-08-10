@@ -113,19 +113,25 @@ try {
     // 2026-08-10. Delivery of any fix to this product is measured as one owner
     // upload with no API route, so the loop needs to be able to SEE that the upload
     // happened. The definitive instrument is state/product-source.json, which
-    // re-digests the actual attachment — but that only runs when someone dispatches
-    // gumroad-monitor.yml with fetch_product_source, so a request whose success test
-    // reads only that field sits at "not yet" until a lap remembers to dispatch, and
-    // then fails open at judge_by and is recorded as the owner not acting. That is
-    // precisely how 2026-08-09.gumroad-cover-upload was mis-recorded, and the lesson
-    // there was: collect the field, or point the test at an instrument that exists.
+    // re-digests the actual attachment, and this was added because that only ran
+    // behind a workflow_dispatch input, so a success test reading it sat at "not
+    // yet" until a lap remembered to dispatch and then failed open at judge_by as
+    // the owner not acting — precisely how 2026-08-09.gumroad-cover-upload was
+    // mis-recorded.
     //
-    // This is collected hourly by the existing schedule and changes the moment a
-    // different file is attached. Numbers only: a human-formatted "31.7 KB" cannot
-    // be compared against a built archive's byte count, and silently storing one
-    // would give a test that can never pass — the failure mode this exists to end.
-    // The shape is recorded next to it so null reads as "not a number" rather than
-    // as "not collected".
+    // MEASURED 2026-08-10, THE HOUR AFTER: this field is null and stays null.
+    // Gumroad serves file_info.Size as "31.7 KB", so sizeInBytes correctly refuses
+    // it (see the shape field below), and a success clause comparing it to a byte
+    // count can never pass. The substitute for the dispatch-gated instrument was
+    // itself unable to answer, which is worse than the gap it filled: an
+    // unreachable clause reads "not yet" exactly like a pending one.
+    //
+    // So the fix went where it belonged — fetch-product-source.mjs is on the
+    // hourly schedule now, extracting to a scratch tree and recording only the
+    // manifest. This field stays because a shape reading is still cheap evidence
+    // about what the API serves, and because null-with-a-shape is how the next
+    // reader learns that without paying for the measurement again. It is NOT a
+    // success clause any more.
     file_size_bytes: sizeInBytes(p.file_info),
     file_size_value_shape:
       p.file_info && typeof p.file_info === "object" && !Array.isArray(p.file_info)
