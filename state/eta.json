@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T06:12:41.875Z",
+  "fetched_at": "2026-08-10T06:58:12.772Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -32,11 +32,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.49
+      "days_unchanged": 0.52
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.49
+      "days_unchanged": 0.52
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -59,7 +59,7 @@
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-10T05:08:44.614Z",
+      "measured_at": "2026-08-10T06:53:42.591Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
       "revenue_window_days": 0.617,
@@ -76,16 +76,16 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-10T05:10:02.856Z",
+      "measured_at": "2026-08-10T06:56:36.367Z",
       "monthly_yen_now": 0,
-      "revenue_rate_derivable": false,
-      "revenue_window_days": null,
-      "revenue_readings": 1,
+      "revenue_rate_derivable": true,
+      "revenue_window_days": 0.286,
+      "revenue_readings": 2,
       "revenue_is_a_lower_bound": true,
       "games": 1,
       "total_views": 2,
       "idle_eta_days": null,
-      "idle_eta_reason": "fewer than two dated readings, so there is no window to measure a rate over",
+      "idle_eta_reason": "the window has no measurable growth yet: it cannot be split into two halves that each contain a rate, so only a level is known and a level does not reach a higher target",
       "owner_actions_required": 0,
       "planned_unblock": null,
       "automatable": true,
@@ -100,7 +100,7 @@
       "idle_eta_reason": "measured, not unreadable: 1208.75/day views and 394.75/day engaged over 4 days (2026-08-04..2026-08-07), zero owner actions. Ad revenue is not the path — at this rate the YouTube Partner gate is 4000 days away on subscribers, and the sibling loop prices the far side of it in the ¥1,000s/month against a ¥200,000 target. What is worth the ranking's attention is the REACH, which the elected route was blocked on and which nothing here had counted. The surface PERMITS the paid product's link and FORBIDS the free demo's (github) — so route 1's entire payload cannot go here as hosted. That is the exact INVERSE of r/gamedev, which permits the free artifact and forbids being paid. Whether a lap may perform the edit is NOT established — permission is not the question (A14), coordination with the sibling loop is.",
       "owner_actions_required": 0,
       "stale": false,
-      "stale_days": 0.3,
+      "stale_days": 0.4,
       "reach": {
         "usable": true,
         "window_days": 4,
@@ -410,7 +410,7 @@
         "published_count": 10,
         "pages_found_by_search": 0,
         "verdict": "published_but_not_findable",
-        "measured_at": "2026-08-10T06:08:11.575Z",
+        "measured_at": "2026-08-10T06:12:43.038Z",
         "what_it_settles": "Not a shortage of pages. Ten serve 200 and a search index returned none of them, so page COUNT is not the binding term — the missing step is an inbound path from a surface that is already crawled. Building more pages buys nothing until that step exists.",
         "inbound_surface": {
           "verdict": "no_crawled_surface_found",
