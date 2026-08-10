@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T06:58:13.414Z",
+  "fetched_at": "2026-08-10T07:01:01.427Z",
   "overdue_factor": 2,
   "overdue_count": 0,
   "never_seen_count": 0,
   "repair": null,
   "reconcile_before_judging": [],
   "registry_reconciled_at": "2026-08-10T06:18:00Z",
-  "registry_reconcile_age_minutes": 40,
+  "registry_reconcile_age_minutes": 43,
   "registry_stale": false,
   "reservations_resting_on_unverified_rows": [],
   "reconcile_instruction": null,
@@ -19,7 +19,7 @@
       "cadence_minutes": 60,
       "last_seen": "2026-08-10T06:56:00.000Z",
       "last_seen_source": "state_file:state/continue.json",
-      "age_minutes": 2,
+      "age_minutes": 5,
       "status": "ok"
     },
     {
@@ -28,7 +28,7 @@
       "cadence_minutes": 360,
       "last_seen": "2026-08-10T05:15:07.717698Z",
       "last_seen_source": "registry:last_fired_at",
-      "age_minutes": 103,
+      "age_minutes": 106,
       "status": "ok"
     },
     {
@@ -37,7 +37,7 @@
       "cadence_minutes": 60,
       "last_seen": "2026-08-10T05:55:38.060405Z",
       "last_seen_source": "registry:last_fired_at",
-      "age_minutes": 63,
+      "age_minutes": 65,
       "status": "ok"
     },
     {
@@ -46,7 +46,7 @@
       "cadence_minutes": 60,
       "last_seen": "2026-08-10T06:49:29.352Z",
       "last_seen_source": "state_file:state/usage.json",
-      "age_minutes": 9,
+      "age_minutes": 12,
       "status": "ok"
     },
     {
@@ -55,7 +55,7 @@
       "cadence_minutes": 60,
       "last_seen": "2026-08-10T06:49:34.834Z",
       "last_seen_source": "state_file:state/claude-usage.json",
-      "age_minutes": 9,
+      "age_minutes": 11,
       "status": "ok"
     },
     {
@@ -64,7 +64,7 @@
       "cadence_minutes": 60,
       "last_seen": "2026-08-10T06:53:42.591Z",
       "last_seen_source": "state_file:state/gumroad.json",
-      "age_minutes": 5,
+      "age_minutes": 7,
       "status": "ok"
     },
     {
@@ -73,7 +73,7 @@
       "cadence_minutes": 90,
       "last_seen": "2026-08-10T06:55:31.557Z",
       "last_seen_source": "state_file:state/codex-lane.json",
-      "age_minutes": 3,
+      "age_minutes": 5,
       "status": "ok"
     }
   ]
