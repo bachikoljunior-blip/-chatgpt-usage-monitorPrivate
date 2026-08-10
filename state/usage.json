@@ -2,8 +2,8 @@
   "schema_version": 1,
   "status": "ok",
   "source": "codex-app-server",
-  "fetched_at": "2026-08-10T16:06:23.974Z",
-  "fresh_until": "2026-08-10T18:06:23.974Z",
+  "fetched_at": "2026-08-10T17:37:34.195Z",
+  "fresh_until": "2026-08-10T19:37:34.195Z",
   "plan_type": "pro",
   "quota_windows": [
     {
@@ -42,7 +42,7 @@
   },
   "available_reset_credits": 0,
   "token_usage_summary": {
-    "lifetime_tokens": 3046426371,
+    "lifetime_tokens": 3049097432,
     "peak_daily_tokens": 833349372,
     "longest_running_turn_seconds": 16405,
     "current_streak_days": 5,
@@ -103,7 +103,7 @@
     },
     {
       "start_date": "2026-08-10",
-      "tokens": 33600757
+      "tokens": 36271818
     }
   ],
   "recommended_mode": "normal"
