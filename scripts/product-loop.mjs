@@ -47,6 +47,7 @@
 // enforced: three no-move rounds means change the approach, not the parameter.
 
 import { readState, readStateJson } from "./state-source.mjs";
+import { SHIPPED } from "./play-artifact.mjs";
 
 export const STATE_PATH = "state/product-loop.json";
 export const MAX_ROUND_AGE_DAYS = 14;
@@ -944,10 +945,28 @@ export function judge(doc, { now, artifactSources = {}, playMeasurements = null,
     //    it means the second would put a false finding in front of every lap. That
     //    the register must exist at all is asserted against the real file in
     //    tests/run-tests.mjs, not inferred here from its absence.
+    //
+    //    The same "never run" / "no instrument" confusion the paragraph above
+    //    guards against globally also happens PER OFFER, and that half was
+    //    missing. play-artifact.mjs drives a fixed list of targets (its SHIPPED
+    //    export); an offer absent from that list can never be played, so
+    //    "has never been RUN ... play-artifact.mjs --write is the measurement"
+    //    named a command that does nothing for it. prompt_pack is a markdown
+    //    document (codex/outbox/payload-01.md) with no listing and no artifact:
+    //    it was carrying an unclearable PROBLEM that kept --check red no matter
+    //    what any lap did, which is the "red-only check is a report" failure
+    //    RUNBOOK 5.4 names. The bar is not dropped — it is pointed at the
+    //    measurement the offer itself declares.
     if (playMeasurements && loop.ok && play.played !== true) {
+      const hasPlayTarget = SHIPPED.some((s) => s.id === offer.id);
       problems.push(
-        `${offer.id} has never been RUN — ${play.played === false ? "the last attempt did not play it" : "no run is on record"}. ` +
-          "Every round on it is a read. node scripts/play-artifact.mjs --write is the measurement.",
+        hasPlayTarget
+          ? `${offer.id} has never been RUN — ${play.played === false ? "the last attempt did not play it" : "no run is on record"}. ` +
+              "Every round on it is a read. node scripts/play-artifact.mjs --write is the measurement."
+          : `${offer.id} has no play-artifact target, so it cannot be RUN and the run bar does not apply to it. ` +
+              `The measurement it actually owes is its declared rung ${offer.measurement?.rung ?? "(none declared)"}: ` +
+              `${offer.measurement?.how ?? "(no method recorded)"} ` +
+              "Recording a play run against this offer would be recording the wrong instrument.",
       );
     }
 

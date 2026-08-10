@@ -6672,6 +6672,62 @@ function assert(condition, message) {
 }
 
 // ---------------------------------------------------------------------------
+// The RUN bar must point at an instrument that can actually reach the offer.
+//
+// Observed 2026-08-10: `product-loop.mjs --check` reported "prompt_pack has never
+// been RUN — node scripts/play-artifact.mjs --write is the measurement". That
+// command drives a fixed list of targets (play-artifact.mjs SHIPPED) and
+// prompt_pack is not on it — it is a markdown document with no listing and no
+// artifact. So the PROBLEM could not be cleared by the command it named, by any
+// lap, ever. --check stayed red on it regardless of work done, which is the
+// "a red-only check is a report" failure RUNBOOK 5.4 names, and it is the same
+// "never run" vs "no instrument" confusion the code already guarded against for
+// a MISSING REGISTER while leaving the per-offer half open.
+//
+// Both halves are pinned: the bar must stay for offers the runner targets, and
+// must name the offer's own declared rung for offers it does not.
+{
+  const { judge: judgeRunBar } = await import("../scripts/product-loop.mjs");
+  const { SHIPPED } = await import("../scripts/play-artifact.mjs");
+
+  const offer = (id) => ({
+    id,
+    live_to_buyers: false,
+    source: { repo: "owner/repo", path: "x" },
+    measurement: { rung: "stranger_reaction", how: "Hand it to a reviewer who did not write it." },
+    rounds: [{ at: "2026-08-10T00:00:00Z", verdict: "no", moved: "no" }],
+  });
+  // A register that exists but records nothing for either offer: "no instrument
+  // reached it", which is exactly the state that used to be reported as "never run".
+  const ctx = { now: new Date("2026-08-10T01:00:00Z"), playMeasurements: { artifacts: {} } };
+
+  const targeted = SHIPPED[0]?.id;
+  assert(targeted, "play-artifact.mjs exports no SHIPPED targets, so the run bar has nothing to apply to");
+
+  const kept = judgeRunBar({ offers: [offer(targeted)] }, ctx).rows.find((x) => x.id === targeted);
+  assert(
+    (kept.problems ?? []).some((p) => /has never been RUN/.test(p) && /play-artifact\.mjs --write/.test(p)),
+    `an offer play-artifact DOES target (${targeted}) lost its run bar — an unplayed shipped artifact is now silent`,
+  );
+
+  const notTargeted = "a_document_no_runner_targets";
+  assert(
+    !SHIPPED.some((s) => s.id === notTargeted),
+    "the fixture id collided with a real target, so the test proves nothing",
+  );
+  const doc = judgeRunBar({ offers: [offer(notTargeted)] }, ctx).rows.find((x) => x.id === notTargeted);
+  const docProblems = doc.problems ?? [];
+  assert(
+    !docProblems.some((p) => /play-artifact\.mjs --write/.test(p)),
+    "an offer no runner targets was told to run play-artifact.mjs — that command cannot reach it, so the finding is unclearable",
+  );
+  assert(
+    docProblems.some((p) => /stranger_reaction/.test(p)),
+    "an unmeasured offer outside the runner went quiet instead of naming the measurement it declares — the bar was dropped, not redirected",
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Rung 1 has to be RE-DERIVED on a schedule, not replayed on one.
 //
 // `promise-conformance.mjs --check` reads the recorded verdicts back out and
