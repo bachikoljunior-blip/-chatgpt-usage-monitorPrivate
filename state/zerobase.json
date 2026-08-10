@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T10:41:28.093Z",
+  "fetched_at": "2026-08-10T07:08:09.267Z",
   "last_round_at": "2026-08-09T06:20:00.000Z",
   "cadence_days": 7,
   "note": "Zero-base round: options produced without sight of the current portfolio, then compared against the measured ETA. The proposal passed scripts/check-blind.mjs, so no name of ours appears in it.",
@@ -398,6 +398,15 @@
         "why_this_is_weaker_than_the_other_refutations_on_this_board": "The options refuted above failed against counter-examples that ran the candidate and recorded the outcome. This one failed against an absence, and an absence within a named search range is not proof of zero. It is recorded as a refutation anyway because of cost asymmetry, not because it is the same grade of evidence: the trial that would settle it directly spends ~1,200 views/day through a funnel whose clicks step has measured_by null, so its zero would not separate 'never clicked' from 'clicked and refused'.",
         "not_refuted": "The ACT, which is the part with the standing value: config/channel.yaml publish.footer is still one config edit that reaches every video including the back catalogue, and the sibling repo's upload guard still permits a Gumroad link (it forbids github, リポジトリ, ソースコード — none of which the link contains). Also not refuted: that the kit sells to DEVELOPERS elsewhere, which is what product_form_vs_addressed_buyer branch A rests on. What died is the overlap between the audience we HAVE and the buyer we ADDRESS — so a successor may re-propose this option with a different payload, and should not read it as 'the reach is worthless'.",
         "what_it_saved": "This option was ELECTED and one config edit from shipping, with the edit waiting only on coordination with the sibling loop. The objection it fell to was written in its own text from the start, under the_honest_objection_to_it, with the note that a candidate whose weakest point lives only in the successor's notes gets picked on its strongest point forever. It was picked on its strongest point for three laps. The measurement is what stopped it."
+      },
+      "refuted_a_second_time_and_the_second_one_survives_fixing_the_first": {
+        "at": "2026-08-10T06:58:00Z",
+        "by": "the sibling loop that owns the surface, in bachikoljunior-blip/youtube docs/FROM_THE_ETA_LOOP.md",
+        "constraint": "the_measured_reach_has_no_addressable_surface",
+        "finding": "SHORTS_FEED 4,849 / WATCH 2 over their last 28 days. The description renders only on a watch page, so the ceiling on clicks to any url in publish.footer is 2 per 28 days.",
+        "why_this_is_recorded_separately_instead_of_appended_to_the_first": "The first refutation is about the PAIRING — this audience is not observed buying this class of thing. A lap can answer it by building something the audience does buy, and that is exactly the move a reader of the first refutation alone would make; one nearly did today. The second refutation is about the CHANNEL — nothing of any kind is delivered through this surface — and it survives changing the product entirely. Folding it into the first would let the whole option come back the moment the pairing objection was answered.",
+        "what_is_NOT_refuted": "The description only. This option's why names four surfaces (description, pinned comment, end screen, a short built from the kit). A pinned comment renders inside the Shorts player and is on the reachable side of the split; whether a url there is clickable, and whether their FORBIDDEN guard and monetisation-review concern extend to it, is unmeasured and was deliberately not asked in the reply — asking for a second surface immediately after being declined on the first is not hearing the answer.",
+        "and_the_route_ends_on_its_own_numbers_too": "Their multiplication past the YPP gate, which neither loop had ever done: ¥1,170-3,510/month at Shorts RPM against ¥200,000. 57-170x short. That ends the channel as a revenue route independently of whether it can hand traffic to anyone."
       }
     },
     {

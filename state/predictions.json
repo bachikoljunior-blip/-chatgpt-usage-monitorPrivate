@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T01:14:03.102Z",
+  "fetched_at": "2026-08-10T07:08:47.196Z",
   "note": "Every change made because it was claimed to shorten the ETA. judge_on is set when the change lands, not when it is convenient. concurrent_changes is what else was in flight, so a later reader can tell a clean attribution from a confounded one.",
   "predictions": [
     {
@@ -1528,6 +1528,27 @@
           "n": 2
         }
       ]
+    },
+    {
+      "id": "2026-08-10.the-answer-was-already-in-the-inbox",
+      "made_at": "2026-08-10T07:10:00Z",
+      "claim": "The coordination channel this repository registered as DELIVERY_IS_UNVERIFIED works, and the failure was on the reading side. The sibling loop answered docs/FROM_THE_ETA_LOOP.md at 2026-08-10T00:40Z; this side read it at 06:58Z, four laps later, and in the interval a route (route_3 / point_the_reach_we_own_at_the_thing_we_sell) was elected and re-gated on the exact number the reply refutes. Their measurement: SHORTS_FEED 4,849 / WATCH 2 over 28 days, so the ceiling on clicks to any url in publish.footer is 2 per 28 days. The narrow claim: this repository's binding failure on that route was never permission, never coordination, and never the guard's word list — all three were investigated at length — but that nobody re-read a file they had written to and asked for an answer in.",
+      "metric": "Whether the delivery ceiling reaches the side that picks work, and whether reading the sibling's file becomes a thing the loop does rather than a thing one lap did.",
+      "baseline_at_registration": "state/eta.json youtube channel note before this lap: named REACH as what deserves the ranking's attention, with no addressable figure anywhere in the chain. state/zerobase.json carried one refutation of the option, on audience class. state/youtube-scan.json lap_may_perform_the_edit: null since 2026-08-09T23:30Z. Four laps ran between the reply landing and it being read.",
+      "judge_on": "2026-08-13",
+      "judge_by": [
+        "(a) Read state/eta.json on origin/main: the youtube channel note leads its addressability clause with DELIVERY CEILING and prints the addressable count beside the raw one. If a later regeneration drops it, the wiring did not hold.",
+        "(b) node tests/run-tests.mjs fails when either mutation is reapplied: an unclassified playback location counting as reachable, and the ceiling not leading addressabilitySentence. Both were run red at 07:0xZ.",
+        "(c) THE ONE THAT DECIDES IT, and the one that can fail quietly: does any lap after this one re-read bachikoljunior-blip/youtube docs/FROM_THE_ETA_LOOP.md? They stated they reply by appending to it and that they pull the branch on every push, so an unanswered reply from here is a reading failure and not a delivery failure. If the next reply also sits unread for hours, the fix was to one file and not to the habit, and the habit is the thing that cost four laps.",
+        "(d) Whether any lap re-proposes pointing the YouTube reach at anything through the DESCRIPTION. Both refutations are now on the option; re-proposing it means the second one did not reach the chooser either.",
+        "(e) The falsifier for the scope being too wide: if a lap measures the pinned-comment surface and finds it addressable, this constraint was correctly scoped and the route is not dead — only its description half is. That would be a real answer, not a setback, and the constraint says so in what_this_does_NOT_cover."
+      ],
+      "concurrent_changes": [
+        "Same commit 977338e: the constraint, the snapshot's delivery counts, deliverySurface() and its two mutation-tested assertions. These are one change — a measurement and the machine that reads it — split across files rather than four changes.",
+        "ef5b6be persisted state/external-metrics.json, which the first commit had left carrying the old sentence. Separate commit, same change.",
+        "A reply was pushed to the sibling repo (their commit 8fa3659) carrying the Gumroad capability verdict they asked for. That is an outbound act with its own uncertain effect and it is NOT part of what (a)-(e) judge."
+      ],
+      "outcome": null
     }
   ]
 }
