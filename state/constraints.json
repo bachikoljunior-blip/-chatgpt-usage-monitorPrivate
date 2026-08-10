@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T07:12:34.666Z",
+  "fetched_at": "2026-08-10T08:42:01.015Z",
   "note": "Everything here is what was true when it was measured, not a permanent property of the world. Each entry carries a recheck date because on 2026-08-08 two items declared impossible were solved the same day. A constraint falling away usually moves the ETA more than any ordinary improvement does, so rechecks are ETA candidates in their own right.",
   "constraints": [
     {
@@ -893,6 +893,18 @@
       "what_they_asked_us_for": "Their docs/MEANS.md M3 — sell the calculation itself rather than route through AdSense — was stopped on 2026-08-09 as 決済手段が無い。オーナーの操作が要る. This project measured the opposite on the same day: state/gumroad-capabilities.json reports full_lifecycle_over_api, a listing rail at zero owner actions. They said outright that if we have a payment path their premise is stale. Answering that is the one thing this exchange has that is worth more than the link was.",
       "what_this_does_NOT_cover": "THE DESCRIPTION ONLY. The zero-base option this refutes lists four surfaces — description, pinned comment, end screen, and a short built from the kit — and the measurement covers exactly one of them. A pinned comment renders inside the Shorts player, so it is on the reachable side of this split and is NOT refuted here; whether YouTube makes a URL in a comment clickable, and whether the sibling loop's guard and monetisation-review concern apply there too, is unmeasured. End screens do not render on Shorts at all. A short built from the kit is not a link on someone else's surface, it is a different act. Naming this rather than letting the constraint read as 'YouTube is closed' is the same discipline that produced the finding: the r/gamedev rule was read for half of what it said, and the fix is not to read the next rule for its other half only.",
       "and_this_is_where_the_ceiling_actually_binds": "Even taking every surface at once, the sibling loop's own multiplication past the YPP gate is ¥1,170-3,510/month at Shorts RPM against a ¥200,000 target. So the channel is 57-170x short as a REVENUE route on its own traffic, and this constraint's counts say it is additionally unable to hand traffic to anyone else through its description. Those are two independent failures, measured by two different people, and either one alone ends route 3."
+    },
+    {
+      "id": "lap_cost_is_below_the_meter_resolution",
+      "claim": "A lap cost cannot be measured at all. 107 laps have been recorded and 0 produced a usable number: 49 below_measurement_resolution, 38 no_new_usage_reading, 17 at_measurement_quantum, 3 window_reset_mid_lap. The weekly meter reads in whole percent, one step is about 1% of the week, and most laps are lighter than one step, so the reading before and after are identical and the sample is discarded. Discarding is correct — writing 0 would price an expensive automation as free — but it means avg_cost_percent is null on all seven claude_week rows and every reservation rests on one derived upper bound applied to everything.",
+      "evidence": "state/laps.json on origin/main 2026-08-10T08:40Z: samples 107, usable 0, all id eta-loop. state/automations.json: avg_cost_percent null and samples 0 on eta-loop, revenue-loop, youtube-loop, youtube-loop-fresh, cookie-daily, cookie-daily-fresh, eldria-loop. scripts/pacing.mjs output the same day: three rows each priced at 109 runs x 0.7358% (DERIVED upper bound), raw 240.61%, capped to 14.00%.",
+      "measured_at": null,
+      "recheck_after": "2026-08-11",
+      "measure_via": "here",
+      "eta_effect_if_lifted": "It is what makes the reservation cap stop hiding things. Right now the estimate says the other automations need 240% of a week while 20% remains — a twelvefold overshoot — and the cap absorbs it, so the gate output looks the same whether the registry is right or wrong. With a real per-run cost the raw number becomes a claim that can be wrong out loud, and the two YouTube rows that fail every run stop being priced identically to the loop that does the work.",
+      "how_to_measure": "Do not start by inventing a finer meter. First check whether one already exists: state/claude-usage.json is a committed snapshot with a history, and the daily token buckets in state/usage.json are integers far finer than one percent. If a finer number is already being collected, the fix is to read it rather than to build anything. If it is not, the honest options are to measure over N laps instead of one (a batch big enough to cross a meter step, divided back down) or to accept that per-lap cost is unmeasurable and say so with a date, rather than leaving 107 discarded samples looking like work in progress.",
+      "what_this_is_not": "A request to lower the cap or to guess harder. The cap exists because everything is unmeasured, and raising the guess without measuring is how a registry deadlocks the laps that would measure it.",
+      "why_it_took_this_long": "Nothing put it in front of a chooser. The recording ran on every lap and failed on every lap, and a failure that is correctly recorded as a failure produces no alarm — 107 discarded samples read exactly like a young measurement that has not accumulated yet. Registered here because state/eta.json candidates are what a lap actually picks from, and until now this was not among them."
     }
   ]
 }
