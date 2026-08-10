@@ -80,10 +80,38 @@ export function diffAgainstDelivered(local, delivered) {
   for (const path of Object.keys(delivered)) {
     if (!(path in local)) removed.push(path);
   }
-  return { changed: changed.sort(), added: added.sort(), removed: removed.sort() };
+  return { changed: changed.sort(), added: added.sort(), removed: removed.sort(), conflicting: [] };
+}
+
+/**
+ * A manifest can describe MORE THAN ONE attachment, and on 2026-08-10 it did: the
+ * live product carried two zips, one stale and one correct, so every path appeared
+ * twice with different digests. Flattening that with Object.fromEntries keeps the
+ * LAST entry and throws the other away, which made this script print "nothing
+ * differs — there is no shipment here worth an owner action" about a product whose
+ * buyers were being handed two contradictory downloads.
+ *
+ * Silent is the problem, not duplication. Two entries agreeing is one file listed
+ * twice and is fine; two entries disagreeing means a buyer cannot tell which file is
+ * the product, and no diff against "the delivered file" is meaningful until that is
+ * resolved. Pure, so the reading is checkable without a live storefront.
+ *
+ * @returns paths carrying more than one distinct digest, sorted
+ */
+export function conflictingPaths(manifest) {
+  const seen = new Map();
+  for (const m of manifest ?? []) {
+    if (!m?.path) continue;
+    if (!seen.has(m.path)) seen.set(m.path, new Set());
+    seen.get(m.path).add(m.sha256);
+  }
+  return [...seen.entries()].filter(([, shas]) => shas.size > 1).map(([p]) => p).sort();
 }
 
 export function shipmentIsWorthAsking(diff) {
+  // A conflict is a shipment worth making even when every other path agrees: the
+  // fix is to make ONE file the product again.
+  if (diff.conflicting?.length > 0) return true;
   return diff.changed.length + diff.added.length + diff.removed.length > 0;
 }
 
@@ -100,6 +128,7 @@ export async function buildArchive({ outDir = "dist", quiet = false } = {}) {
   const source = JSON.parse(await readFile(resolve(REPO, "state/product-source.json"), "utf8"));
   const delivered = Object.fromEntries((source.manifest ?? []).map((m) => [m.path, m.sha256]));
   const diff = diffAgainstDelivered(local, delivered);
+  diff.conflicting = conflictingPaths(source.manifest);
 
   const out = resolve(REPO, outDir);
   await mkdir(out, { recursive: true });
@@ -134,6 +163,14 @@ export async function buildArchive({ outDir = "dist", quiet = false } = {}) {
     for (const p of diff.changed) console.log(`    CHANGED ${p}`);
     for (const p of diff.added) console.log(`    ADDED   ${p}`);
     for (const p of diff.removed) console.log(`    REMOVED ${p}`);
+    if (diff.conflicting.length > 0) {
+      console.log(
+        `    TWO DIFFERENT FILES ARE ATTACHED. ${diff.conflicting.length} path(s) appear with more than one digest,` +
+          " so a buyer downloads both and cannot tell which is the product:",
+      );
+      for (const p of diff.conflicting) console.log(`      CONFLICT ${p}`);
+      console.log("    The shipment here is making ONE file the product again.");
+    }
     if (!result.worth_asking) {
       console.log("    nothing differs — there is no shipment here worth an owner action");
     }

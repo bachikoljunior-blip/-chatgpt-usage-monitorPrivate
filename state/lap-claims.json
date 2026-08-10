@@ -1226,6 +1226,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T16:46:19.688Z",
+      "candidate": "idle_clicker_kit.deliver_both_rung_one_fixes",
+      "kind": "prerequisite",
+      "mechanism": "The route measured last lap is now used on the live listing: upload dist/brandable-idle-clicker.zip through presign, bytes, complete, then PUT it as the product's only file, then re-fetch what a buyer actually downloads. This does not move a measured ETA because the revenue rate is still zero. What it moves is the product loop's rung 1: both promise failures on the only priced product read FIXED IN SOURCE NOT YET DELIVERED, and rung 2 cannot be read on an offer that does not keep its own sales page's promises. It also removes a pending owner request that asks for a manual upload.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

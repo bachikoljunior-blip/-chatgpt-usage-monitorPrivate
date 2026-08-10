@@ -29,6 +29,10 @@ on:
         description: "Walk the whole upload route on a throwaway: presign, real bytes to S3, complete, attach, read back, then REPLACE the attachment with a second file and read back again. This is the probe that answered the question probe_file_replacement got wrong — that one used paths the vendor source does not name and a form encoding that cannot carry an array of objects. Creates and deletes its own product; never touches the live listing."
         type: boolean
         default: false
+      deliver_archive:
+        description: "SHIPS TO THE LIVE LISTING. Builds the kit archive from product/ and makes it the ONE file a buyer downloads, replacing whatever is attached. Keeps a copy of anything it drops under dist/superseded/ and refuses if it cannot. Then re-digests what a buyer actually gets and re-derives rung 1. Everything else in this workflow writes only to throwaways; this is the exception."
+        type: boolean
+        default: false
       probe_rich_content:
         description: "Create a throwaway carrying a CONTENT document and read it back. Settles whether a TEXT offer can be delivered with no file upload — the cheap branch of the delivery route, and the one the pack whose source we hold actually needs. The hourly half only checks that the parameter is recognised and creates nothing."
         type: boolean
@@ -260,6 +264,33 @@ jobs:
           # probe found nothing". Two probes were silently losing their output
           # this way before the restore list below was made explicit.
           cp state/gumroad-file-walk.json "$RUNNER_TEMP/gumroad-file-walk.json"
+
+      # The one step in this workflow that writes to the storefront.
+      #
+      # It is here rather than in a lap because this is where GUMROAD_TOKEN lives,
+      # and because a shipment that only ever happened inside one session is a
+      # shipment nobody can repeat. The product id is NOT an input: the script reads
+      # the single product out of state/gumroad.json and refuses if there is more
+      # than one, so this file carries no fact that can go stale.
+      #
+      # Order matters. fetch-product-source re-downloads the attachment and digests
+      # it, and promise-conformance --write re-derives rung 1 from that digest.
+      # Neither takes the delivery script's word for anything, which is the point:
+      # for most of 2026-08-10 the record said the fix was undelivered while the
+      # storefront was serving two files, one right and one stale.
+      - name: Ship the corrected archive as the only attachment
+        if: always() && inputs.deliver_archive
+        env:
+          GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
+        run: |
+          node scripts/deliver-product-archive.mjs --yes-live
+          node scripts/fetch-product-source.mjs state/product-source.json
+          node scripts/promise-conformance.mjs --write
+          node scripts/verify-sanitized-state.mjs state/product-source.json state/promise-conformance.json
+          # product-source is on the restore list below; promise-conformance is not,
+          # because the commit step re-derives it from the restored manifest anyway.
+          # Copying it here would put a second, older copy in the way of that.
+          cp state/product-source.json "$RUNNER_TEMP/product-source.json"
 
       # always(), and deliberately AFTER the probe's own `set -e` can kill the
       # step above. The probe exits 1 when it cannot delete its throwaway, which

@@ -100,9 +100,30 @@
       "what_this_adds_beyond_the_count": "Both paths read codex/INBOX.md and both respect the marker ordering: the bot took payload-01, which sits above the floor, and the second producer took the standing floor task, which by construction runs only when everything above it is marked. Whatever the second path is, it is reading the same file and the same ordering rules — which is why the queue is worth keeping deep, and why the ordering rules in RUNBOOK 5.5 govern both.",
       "what_must_not_be_done_because_of_it": "Do not record a product-loop round or any state/ measurement off this answer. Its author is unestablished, and RUNBOOK 5.4 rung 2 is void when the reviewer may be the author. Nothing here establishes that it is not.",
       "the_model_key_that_did_not_land": "Worth reading next to this: the payload-01 ledger row carries model_key spark and model \"default\". The named Spark slug was requested and the transport fell back to the account default, so the Spark window was not spent on it either. state/usage.json settles which window moved; the claim is not settled from this file."
+    },
+    {
+      "task_id": "2026-08-10.payload-01-run",
+      "acknowledged_at": "2026-08-10T17:05:00Z",
+      "author": null,
+      "why_no_run": "codex/outbox/payload-01-run.md is on disk and state/codex-lane.json runs[] has no entry for it. runs[] currently holds 2026-08-10.incremental-eligibility, which is NEWER, so this is not the cap dropping an old row — the answer arrived without the transport that attributes it. The EIGHTH of this shape (.n .o .r .t .v .w standing-2026-08-10 and this).",
+      "what_the_answer_says": "It ran three prompts from the pack and the same three requests bare, printed all six outputs in full, and judged: 差がある on one, and then — 買う理由になる大きさか: ならない, 払うとしたら: 0円. That is a SECOND content-based 払わない for prompt_pack, and it is the comparison the first round could not make because that round read the document and executed nothing from it.",
+      "and_it_cannot_be_counted": "state/product-loop.json's exit clause (1) retires prompt_pack on two content-based refusals. This would be the second. It is NOT recorded as a round, because a round whose reviewer cannot be distinguished from the author is void, and unestablished authorship is exactly that state — the register would then carry an entry it cannot conclude is wrong, which RUNBOOK 5.4 forbids. A void round is re-asked, not counted, and not treated as time passing.",
+      "why_this_is_not_a_technicality_here": "The direction matters. Voiding an answer that says 払わない keeps a doubted offer alive, which is the expensive error and the one this loop is prone to. It is still the right call: if authorship voided only the answers we dislike, the rule would be a filter rather than a rule. The fix is cheap — re-ask under a fresh task_id — and the lane pool is not the scarce one.",
+      "how_to_establish_it_if_it_matters": "It matters. Re-queue the same comparison under a fresh task_id in codex/INBOX.md. If that run goes through .github/workflows/codex-inbox.yml it writes a ledger entry and the verdict becomes countable; if it arrives the same way this one did, then eight-of-nine is the finding and the question stops being about prompt_pack and becomes 'why does the transport stop producing runs while answers keep arriving' — which the .w row already named as worth a lap on its own."
     }
   ],
   "derived_artifacts": [
+    {
+      "path": "codex/outbox/2026-08-10.j.md",
+      "derived_from": "codex/outbox/2026-08-10.h.md",
+      "inherited_fraction_measured_by": "scripts/lane-authorship.mjs pickAncestor, which reported 98% verbatim",
+      "effective_author": "unestablished",
+      "why": "2026-08-10.j has no ledger run, so the model that produced the 2% that is not .h is unknown. Every earlier handoff said no honest value could be written here and left the check red — SEVEN of them. That was true while the only writable values named a model. It stopped being true when \"unestablished\" became a distinct verdict in lane-authorship.mjs: it does not assert an author, it records that nobody knows, and it still refuses the pairing. Leaving the field null asserts nothing either, but it asserts it in a way that reads as 'not yet looked at'.",
+      "what_this_permits_and_what_it_does_not": "It permits NOTHING new. 2026-08-10.l has already answered, so its pairing cannot be changed and the row is carried as a fact rather than fixed as a failure. It does NOT license any future review of this artifact by either model: an unestablished ancestor blocks a task still in the queue, which is the case where a lane slot would otherwise be spent on a round nobody could tell from a self-review.",
+      "recorded_at": "2026-08-10T17:05:00Z",
+      "recorded_because": "The check has been red on this one row for seven handoffs, and a red check nobody can clear is a red check people stop reading — pulse.yml failing unnoticed for six hours is the same failure this repository has already had once.",
+      "what_would_change_it": "A ledger run naming 2026-08-10.j. That cannot happen now: the answer exists and the marker closes the task. So this row is permanent unless the answer is re-asked under a fresh id, and re-asking a research answer establishes nothing — which is why it is being carried rather than chased."
+    },
     {
       "path": "assets/free-demo/index.html",
       "derived_from": "codex/outbox/2026-08-09.q.md",

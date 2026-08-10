@@ -106,7 +106,26 @@ export function keyOfLandedModel(landed, sparkSlug) {
 export function unledgeredAnswers({ answers = [], runs = [], acknowledged = [], tasks = [] }) {
   const ledgered = new Set(runs.map((r) => r?.task_id).filter(Boolean));
   if (!ledgered.size) return [];
-  const earliest = [...ledgered].sort()[0];
+  // runs[] is CAPPED, so absence from it is not evidence about an old task — the
+  // boundary below is what keeps this from accusing every answer whose run aged out.
+  //
+  // The boundary must be the oldest run BY TIME, because time is what the cap drops.
+  // It used to be the lexicographic minimum of the ids, which was the same thing
+  // while every id ended in a single letter. It stopped being the same thing the day
+  // 2026-08-10.incremental-eligibility was ledgered: "i" sorts before "j", so the
+  // boundary jumped backwards past 2026-08-10.j, and an answer whose run had aged
+  // out months of laps ago was reported as unattributed. The only way to clear that
+  // red would have been to write a row asserting nobody knows who wrote .j — the
+  // exact "silenced by recording a falsehood" failure the comment below describes.
+  const dated = runs.filter((r) => r?.task_id && !Number.isNaN(Date.parse(r?.at ?? "")));
+  const earliest = dated.length
+    ? dated.reduce((a, b) => (Date.parse(a.at) <= Date.parse(b.at) ? a : b)).task_id
+    : [...ledgered].sort()[0];
+  // The COMPARISON below is still lexicographic, and that is a heuristic: it assumes
+  // ids sort in the order they ran. Mixed naming breaks it in principle. It is left
+  // as a heuristic rather than guessed at, because an answer file carries no
+  // timestamp this function can read — the honest fix is a dated answer, not a
+  // cleverer string comparison.
   const ack = new Set(
     (Array.isArray(acknowledged) ? acknowledged : [])
       .map((a) => (typeof a === "string" ? a : a?.task_id))

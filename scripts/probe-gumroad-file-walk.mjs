@@ -140,8 +140,15 @@ const call = async (path, method, body) => {
  * presign + s3 + complete, collapsed. Rungs 1-3 below stay written out longhand
  * because they are the measurement of the route itself; this is for the SECOND file,
  * where the route is already known and the question has moved on to replacement.
+ *
+ * Exported because scripts/deliver-product-archive.mjs ships the real archive through
+ * exactly this path. The probe and the shipment must not be two implementations of
+ * one route — a probe that measures a route nobody uses measures nothing.
+ *
+ * @param name  the filename Gumroad will show the buyer
+ * @param body  a string or a Buffer of the file's bytes
  */
-const uploadFile = async (name, body) => {
+export const uploadFile = async (name, body) => {
   const pre = await call(
     "files/presign",
     "POST",

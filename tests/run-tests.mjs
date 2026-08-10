@@ -6828,3 +6828,105 @@ function assert(condition, message) {
   assert(!newerThan(undefined, "2026-08-10T16:34:52Z"), "a walk with no timestamp outranked a dated probe");
   assert(!newerThan("not a date", "also not a date"), "two unparseable dates produced an ordering");
 }
+
+// A manifest can describe MORE THAN ONE attachment, and on 2026-08-10 it did: the
+// live product carried two zips, one stale and one correct. build-product-archive
+// flattened that with Object.fromEntries — last entry wins — and printed "nothing
+// differs — there is no shipment here worth an owner action" about a product whose
+// buyers were being handed two contradictory downloads. The bug was silence, so the
+// test is that the conflict is LOUD.
+{
+  const { conflictingPaths, shipmentIsWorthAsking, diffAgainstDelivered } = await import(
+    "../scripts/build-product-archive.mjs"
+  );
+
+  const twoAttachments = [
+    { path: "kit/brand.config.json", sha256: "old" },
+    { path: "kit/brand.config.json", sha256: "new" },
+    { path: "kit/engine.js", sha256: "same" },
+    { path: "kit/engine.js", sha256: "same" },
+  ];
+  assert(
+    JSON.stringify(conflictingPaths(twoAttachments)) === JSON.stringify(["kit/brand.config.json"]),
+    "a path delivered with two different digests is no longer reported as a conflict",
+  );
+  // One file listed twice is not a conflict. Treating duplication itself as the
+  // fault would make every future two-attachment read scream about files that agree.
+  assert(conflictingPaths([{ path: "a", sha256: "x" }, { path: "a", sha256: "x" }]).length === 0, "duplicate identical entries were reported as conflicting");
+  assert(conflictingPaths([]).length === 0 && conflictingPaths(null).length === 0, "an empty manifest produced conflicts");
+
+  // THE REGRESSION: every path agrees with the tree, so the plain diff is empty —
+  // and there is still a shipment to make, because two files are attached and only
+  // one of them is the product.
+  const cleanDiff = diffAgainstDelivered({ "kit/engine.js": "same" }, { "kit/engine.js": "same" });
+  assert(!shipmentIsWorthAsking(cleanDiff), "an empty diff with no conflict asked for a shipment");
+  assert(
+    shipmentIsWorthAsking({ ...cleanDiff, conflicting: ["kit/brand.config.json"] }),
+    "two contradictory files on the listing read as nothing worth shipping — this is exactly the silence that let a stale download stay live",
+  );
+}
+
+// Delivering is read back, never asserted. The reason the priced kit needed fixing
+// at all is that an upload happened and nobody checked what a buyer would receive.
+{
+  const { deliveredCleanly, soleProductId } = await import("../scripts/deliver-product-archive.mjs");
+  const good = [{ url: "https://files.gumroad.com/x/brandable-idle-clicker.zip?verify=1" }];
+  assert(deliveredCleanly(good, "brandable-idle-clicker.zip").ok, "a single correct attachment did not read as delivered");
+  assert(
+    !deliveredCleanly([...good, { url: "https://files.gumroad.com/x/old.zip" }], "brandable-idle-clicker.zip").ok,
+    "two attachments read as a clean delivery — that is the state this whole lap exists to end",
+  );
+  assert(!deliveredCleanly([], "brandable-idle-clicker.zip").ok, "an empty file list read as delivered; a buyer would get nothing");
+  assert(!deliveredCleanly(null, "brandable-idle-clicker.zip").ok, "a missing files array read as delivered");
+  assert(
+    !deliveredCleanly([{ url: "https://files.gumroad.com/x/something-else.zip" }], "brandable-idle-clicker.zip").ok,
+    "one attachment that is not the shipped archive read as delivered",
+  );
+
+  // The target is derived from state, never typed into a workflow. Refusing on
+  // anything but exactly one product is the safety property: "pick the first" would
+  // eventually pick a probe leftover and write to it.
+  assert(soleProductId({ products: [{ id: "abc" }] }) === "abc", "the sole product id stopped being readable from state");
+  for (const bad of [{ products: [] }, { products: [{ id: "a" }, { id: "b" }] }, {}, null]) {
+    let threw = false;
+    try {
+      soleProductId(bad);
+    } catch {
+      threw = true;
+    }
+    assert(threw, `soleProductId picked a live write target from ${JSON.stringify(bad)}`);
+  }
+}
+
+// runs[] is capped, so the unledgered-answer rule needs a boundary or it accuses
+// every answer whose run aged out. The boundary used to be the lexicographic minimum
+// of the ledgered ids, which was the same as "oldest" only while every id ended in a
+// single letter. On 2026-08-10 the id 2026-08-10.incremental-eligibility was ledgered
+// and "i" sorts before "j" — the boundary jumped backwards past 2026-08-10.j, whose
+// run had long since aged out, and the check demanded a row asserting that nobody
+// knows who wrote it. A check clearable only by recording a falsehood gets cleared
+// by recording a falsehood.
+{
+  const { unledgeredAnswers } = await import("../scripts/lane-authorship.mjs");
+  const runs = [
+    { task_id: "2026-08-10.k", at: "2026-08-10T06:15:49Z" },
+    { task_id: "2026-08-10.incremental-eligibility", at: "2026-08-10T16:40:00Z" },
+  ];
+  assert(
+    !unledgeredAnswers({ answers: ["2026-08-10.j"], runs }).includes("2026-08-10.j"),
+    "an answer older than every ledgered run was accused again — the cap dropped its run, that is not evidence about the answer",
+  );
+  // Still loud about a genuinely unledgered answer NEWER than the boundary.
+  assert(
+    unledgeredAnswers({ answers: ["2026-08-10.p"], runs }).includes("2026-08-10.p"),
+    "an answer inside the ledger's window with no run stopped being reported",
+  );
+  // Acknowledged rows still silence it, and a ledgered answer is never reported.
+  assert(unledgeredAnswers({ answers: ["2026-08-10.p"], runs, acknowledged: [{ task_id: "2026-08-10.p" }] }).length === 0, "an acknowledged answer was still reported");
+  assert(unledgeredAnswers({ answers: ["2026-08-10.k"], runs }).length === 0, "an answer with a ledger run was reported as unledgered");
+  // No usable timestamps: fall back rather than report everything.
+  assert(
+    unledgeredAnswers({ answers: ["2026-08-10.j"], runs: [{ task_id: "2026-08-10.k" }] }).length === 0,
+    "with no parseable run dates the boundary stopped falling back to the id sort",
+  );
+}
