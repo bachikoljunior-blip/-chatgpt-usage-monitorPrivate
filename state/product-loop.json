@@ -620,7 +620,39 @@
         "who_must_not_do_it": "THE ACCOUNT DEFAULT. This is measured, not assumed: state/codex-lane.json run 2026-08-10.payload-01 records model_key spark and model \"default\" — the named Spark slug was requested and the transport fell back, so the artifact was authored by the account default. A round reviewed by the account default is a self-review and void.",
         "the_live_risk_on_this_offer": "The reviewer must therefore be spark, and spark is exactly the key that just silently fell back. If the review run records model \"default\" again, the round is VOID and must be discarded rather than kept — that is lane-authorship rule 2, and this offer is the first case where it is load-bearing rather than hypothetical. Read state/codex-lane.json runs[] for the review task before recording any verdict from it."
       },
-      "rounds": [],
+      "rounds": [
+        {
+          "round": 1,
+          "rung": "stranger_reaction",
+          "ran_at": "2026-08-10T15:31:49.895Z",
+          "verified_at": "2026-08-10T15:36:00Z",
+          "task_id": "2026-08-10.payload-01-review",
+          "answer": "codex/outbox/payload-01-review.md",
+          "measured_by": "the Codex lane. The reviewer side, not this loop instrument.",
+          "recognised": "ない",
+          "read_scope": "10 of 10 items",
+          "verdict": "払わない",
+          "price_named": 0,
+          "reason_quoted": "購入するほどの独自性や検証済みの価値が本文内に示されず、既存のプロンプト文章をそのまま使う形に見えるため",
+          "where_the_reason_points": "The reviewer quoted the そのまま貼るもの block — the paste-ready prompt itself — so the objection is about the CONTENT and not about packaging, price or presentation. Under how_it_exits clause (1) this is one of the two content-based 払わない that would retire the offer.",
+          "the_qualifier_that_must_not_be_dropped": "The reviewer also answered 誰の問題か: いいえ — it does not itself hold the problem the document addresses. RUNBOOK 5.4 fixes the default verdict at 払わない, so 払わない from someone outside the audience is the WEAKEST form this evidence takes. It is recorded as a real round because the reason given is about the content; it is not recorded as a demand-measurement, because the one person asked said they are not the demand.",
+          "what_changed": "Nothing in the artifact. This is the first round this offer has ever had, and the first round in this register whose subject is a document rather than a playable artifact.",
+          "why_this_one": "rung 2 is the offer only remaining exit after the delivery clause closed at 15:26Z, and it was queued before delivery was measured, so the verdict is not contaminated by it.",
+          "moved": {
+            "rounds": "0 -> 1. The loop on this offer existed on paper only until now.",
+            "the_verdict_did_not_move_because_there_was_nothing_to_move_from": "This is round 1. One 払わない is not a trend, and the exit clause requires two.",
+            "where_the_reason_points_next": "独自性 and 検証済みの価値 — uniqueness and demonstrated value. Both are claims about what the prompts DO, and this round could not test either: the reviewer read the document and did not run a single prompt in it. That is the same gap product-loop --check names for this offer (never been RUN, every round on it is a read), and for a prompt pack the analogue of playing is running one prompt and reporting what came back.",
+            "what_did_not_move": "Nothing was edited. RUNBOOK 5.4: 編集したことは改善ではありません — and nothing was edited, so there is not even that."
+          },
+          "reviewer_pairing": {
+            "reviewer_model_key": "spark",
+            "reviewer_model": "gpt-5.3-codex-spark",
+            "author_model_key": "account_default",
+            "how_this_was_established": "state/codex-lane.json runs[] carries {task_id 2026-08-10.payload-01-review, model_key spark, model gpt-5.3-codex-spark, at 2026-08-10T15:31:49.895Z}, and the authoring run 2026-08-10.payload-01 recorded model_key spark with model \"default\" — it asked for Spark and fell back. So the author is the account default and the reviewer provably is not. lane-authorship --check reports this pairing ok.",
+            "why_it_matters_here": "Two earlier rung-2 rounds in this register were void for exactly this, and the handoff that queued this task named the fallback as the live risk. It was checked before the verdict was read, not after."
+          }
+        }
+      ],
       "retire": null,
       "how_it_exits": "RUNBOOK 5.4: a registered offer must be able to leave, and もう作ってあるから is not a reason to keep it. Exit (1) stands: a rung-2 round by a non-author returns 払わない with a reason about the CONTENT rather than the packaging, twice, with no approach change available — retire it. Exit (2) — no delivery route by 2026-08-24 — CLOSED 2026-08-10T15:26:37Z, met rather than expired: see delivery_measured. Recording that here rather than deleting the clause, because an exit that quietly disappears is indistinguishable from an exit that was never written, and this offer now has exactly one way out instead of two.",
       "the_exit_that_closing_one_exit_costs": "An offer with one remaining exit is easier to keep than one with two, and this one now depends entirely on a rung-2 round that has not returned. If that round is void again for authorship — the risk named in the_live_risk_on_this_offer — this offer has NO live exit at all, and that is the state RUNBOOK 5.4 forbids: a register that cannot conclude an entry is wrong. A void round must be re-asked, not counted, and not treated as time passing."
