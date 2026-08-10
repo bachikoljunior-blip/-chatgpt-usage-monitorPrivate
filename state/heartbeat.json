@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T13:24:37.917Z",
+  "fetched_at": "2026-08-10T13:38:36.861Z",
   "overdue_factor": 2,
   "overdue_count": 0,
   "mark_stale_count": 0,
@@ -11,7 +11,7 @@
   "repair": null,
   "reconcile_before_judging": [],
   "registry_reconciled_at": "2026-08-10T12:47:00Z",
-  "registry_reconcile_age_minutes": 38,
+  "registry_reconcile_age_minutes": 52,
   "registry_stale": false,
   "reservations_resting_on_unverified_rows": [],
   "reconcile_instruction": null,
@@ -20,9 +20,9 @@
       "id": "eta-loop",
       "kind": "claude-trigger",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-10T13:23:33.140Z",
-      "last_seen_source": "laps.samples",
-      "age_minutes": 1,
+      "last_seen": "2026-08-10T13:32:00Z",
+      "last_seen_source": "state_file:state/continue.json",
+      "age_minutes": 7,
       "status": "ok"
     },
     {
@@ -31,7 +31,7 @@
       "cadence_minutes": 360,
       "last_seen": "2026-08-10T06:16:41.408707Z",
       "last_seen_source": "registry:last_fired_at",
-      "age_minutes": 428,
+      "age_minutes": 442,
       "status": "ok"
     },
     {
@@ -49,7 +49,7 @@
       "cadence_minutes": 60,
       "last_seen": "2026-08-10T11:56:26.673650Z",
       "last_seen_source": "registry:last_fired_at",
-      "age_minutes": 88,
+      "age_minutes": 102,
       "status": "ok"
     },
     {
@@ -58,7 +58,7 @@
       "cadence_minutes": 60,
       "last_seen": "2026-08-10T13:16:41.411Z",
       "last_seen_source": "state_file:state/usage.json",
-      "age_minutes": 8,
+      "age_minutes": 22,
       "status": "ok"
     },
     {
@@ -67,7 +67,7 @@
       "cadence_minutes": 60,
       "last_seen": "2026-08-10T13:16:40.340Z",
       "last_seen_source": "state_file:state/claude-usage.json",
-      "age_minutes": 8,
+      "age_minutes": 22,
       "status": "ok"
     },
     {
@@ -76,7 +76,7 @@
       "cadence_minutes": 60,
       "last_seen": "2026-08-10T13:05:24.995Z",
       "last_seen_source": "state_file:state/gumroad.json",
-      "age_minutes": 19,
+      "age_minutes": 33,
       "status": "ok"
     },
     {
@@ -85,7 +85,7 @@
       "cadence_minutes": 90,
       "last_seen": "2026-08-10T12:30:00.122Z",
       "last_seen_source": "state_file:state/codex-lane.json",
-      "age_minutes": 55,
+      "age_minutes": 69,
       "status": "ok"
     }
   ]
