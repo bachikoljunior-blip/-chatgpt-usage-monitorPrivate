@@ -3,8 +3,8 @@
   "status": "ok",
   "fetched_at": "2026-08-10T09:35:00Z",
   "note": "Live automations and their measured cost per run. pacing.mjs reserves each one's expected consumption before the reset, so a lap plans with what is genuinely spare rather than with the whole pool. avg_cost_percent is filled in by scripts/record-lap.mjs from real start/end readings; null means never measured and is reserved at a high default.",
-  "reconciled_at": "2026-08-10T09:35:00Z",
-  "reconciled_note": "Reconciled against list_triggers at 2026-08-10T09:35:00Z by a lap with MCP, over a COMPLETE enumeration: page one 50 rows + cursor, page two 2 rows, 52 total, no has_more. Live cron rows: eta-loop trig_01HKmX99 (50 * * * *, fired 08:50:37Z, next 09:50Z), youtube-loop trig_01S5mtxk (9 */6 * * *, fired 06:16:41Z, next 12:09Z), cookie-daily trig_011CUbWR (55 * * * *, fired 08:56:07Z, next 09:55Z). revenue-loop remains disabled. Neither -fresh id is in the listing, a FOURTH independent observation. Two findings this reconciliation produced. (1) BOTH overdue alarms in state/heartbeat.json were false again — cookie-daily was reported overdue at 09:15Z having fired at 08:56Z, nineteen minutes earlier, the second false alarm on the same row in one day. (2) youtube-loop is six-hourly, not hourly; see its cadence_recorrection_2 note. The registry was 202 minutes old when this ran, inside the 360-minute staleness window the whole time, and wrong about both live trigger rows.",
+  "reconciled_at": "2026-08-10T12:47:00Z",
+  "reconciled_note": "Reconciled 2026-08-10T12:47Z by the eta-loop lap. cookie-daily had read mark_stale/UNKNOWN in check-heartbeats across three handoffs, and the mark was the stale thing, not the automation: it fired at 11:56Z, 51 minutes before this reading, well inside its 60m cadence. Nobody had spent a lap on it because the RUNBOOK 3 rule is to re-arm what is OVERDUE, and an UNKNOWN mark is not overdue — so it sat in known_gaps instead. Nothing was re-armed and nothing needed to be. This is the case prediction 2026-08-10.the-detector-was-accusing-a-stale-mark was written to catch, and it caught it.",
   "automations": [
     {
       "id": "eta-loop",
@@ -19,16 +19,17 @@
       "avg_cost_percent": null,
       "samples": 0,
       "last_seen": null,
-      "observed_at": "2026-08-10T09:35:00Z",
+      "observed_at": "2026-08-10T12:47:00Z",
       "observed_from": "list_triggers (the scheduler itself, not a repo file)",
-      "last_fired_at": "2026-08-10T08:50:37.545765Z",
+      "last_fired_at": "2026-08-10T11:50:51.297777Z",
       "liveness": {
         "state_file": "state/continue.json",
         "stamp_field": "fetched_at",
         "note": "Every lap writes its continuation decision here, so this dates the loop actually deciding rather than the trigger merely firing. Added 2026-08-09 because check-wiring found continue.json was written by laps and read by nothing — the exact failure this project is named after, sitting in the file that records whether the loop is still choosing. A lap that stops recording now shows up as overdue instead of as silence."
       },
       "scheduler_updated_at": "2026-08-09T10:58:21Z",
-      "next_run_at": "2026-08-10T09:50:00Z"
+      "next_run_at": "2026-08-10T09:50:00Z",
+      "observed_via": "list_triggers: trig_01HKmX99VZRkuBjMbjqdqHE3, enabled true, cron 50 * * * *, next_run_at 2026-08-10T12:50:00Z"
     },
     {
       "id": "revenue-loop",
@@ -136,16 +137,17 @@
       "last_seen": null,
       "trigger_id": "trig_011CUbWRXqjNKLcGX5BhDgk9",
       "cron": "55 * * * *",
-      "observed_at": "2026-08-10T09:35:00Z",
+      "observed_at": "2026-08-10T12:47:00Z",
       "observed_from": "list_triggers (the scheduler itself, not a repo file)",
-      "last_fired_at": "2026-08-10T08:56:07.957332Z",
+      "last_fired_at": "2026-08-10T11:56:26.673650Z",
       "note": "Named \"daily\" but the live cron is hourly (55 * * * *). The id is a key other files reference, so the name stays and the cadence follows the scheduler. 2026-08-10: a SECOND cookie trigger exists on the same cron, in the same environment, pushing to the same branch — cookie-daily-fresh below. Both are enabled. That looks like a migration whose old half was not switched off, and it is the owner's migration, not this loop's to finish; what belongs here is that the pool is being spent twice per hour and the reservation must say so.",
       "scheduler_updated_at": "2026-08-10T03:06:22Z",
       "next_run_at": "2026-08-10T09:55:00Z",
       "reported_overdue_falsely_at": "2026-08-10T06:18:00Z",
       "reported_overdue_falsely_note": "state/heartbeat.json said OVERDUE for this row at 06:15Z. It is not stopped: list_triggers shows enabled true, cron 55 * * * *, last fired 05:55:38Z — twenty minutes before the alarm — and next run 06:55Z. The alarm is an artifact of WHERE the detector looks. This row has no liveness block, so the only mark available is last_fired_at in this file, and this file is only refreshed by a lap that happens to hold MCP tools. Between such laps the mark ages while the automation keeps firing, and the detector cannot tell that apart from a stopped trigger. RUNBOOK 3 tells a lap to treat overdue as its TOP priority, so a false alarm here does not merely mislead — it redirects the scarce pool. The repair is a liveness mark the automation itself moves, the way codex-loop moves state/codex-lane.json; the cookie loop pushes to a different repository, so that mark has to be something this repo can see, and nobody has priced that.",
       "reported_overdue_falsely_2_at": "2026-08-10T09:15:00Z",
-      "reported_overdue_falsely_2_note": "SECOND false overdue on this row in one day, and it is what got the detector fixed rather than the row. The 09:15Z run of check-heartbeats said OVERDUE at 224 minutes; list_triggers at 09:35Z shows enabled true, cron 55 * * * *, fired 08:56:07Z — nineteen minutes before the alarm — and next 09:55Z. Its own prior note named the repair as a liveness mark the automation itself moves and priced it as unowned, because the cookie loop pushes to another repository. That repair is still unowned. What was buildable from here is the DETECTOR admitting the limit: scripts/check-heartbeats.mjs classify() now returns mark_stale instead of overdue when the only mark is a scheduler snapshot taken BEFORE the deadline it would have to prove, and reports it with its own count and instruction. The exemption is not blanket — a snapshot refreshed after the deadline that still shows the old fire reads overdue, and tests/run-tests.mjs goes red if either half is removed."
+      "reported_overdue_falsely_2_note": "SECOND false overdue on this row in one day, and it is what got the detector fixed rather than the row. The 09:15Z run of check-heartbeats said OVERDUE at 224 minutes; list_triggers at 09:35Z shows enabled true, cron 55 * * * *, fired 08:56:07Z — nineteen minutes before the alarm — and next 09:55Z. Its own prior note named the repair as a liveness mark the automation itself moves and priced it as unowned, because the cookie loop pushes to another repository. That repair is still unowned. What was buildable from here is the DETECTOR admitting the limit: scripts/check-heartbeats.mjs classify() now returns mark_stale instead of overdue when the only mark is a scheduler snapshot taken BEFORE the deadline it would have to prove, and reports it with its own count and instruction. The exemption is not blanket — a snapshot refreshed after the deadline that still shows the old fire reads overdue, and tests/run-tests.mjs goes red if either half is removed.",
+      "observed_via": "list_sessions, NOT list_triggers: session_01ECkWT25aLZ9rjqYj25VdSm 「クッキーストラテジャー 運転 2026-08-10 20:55 JST」, created_at 2026-08-10T11:56:26.673650Z, tags [cookie-strateger-run], SESSION_STATUS_RUNNING. A session this trigger creates is evidence the trigger fired, and it is stronger than the trigger's own last_fired_at because it shows the firing produced something."
     },
     {
       "id": "cookie-daily-fresh",
@@ -299,5 +301,6 @@
     }
   ],
   "reconciliation_note": "cadence/enabled for claude-trigger rows are reconciled against list_triggers, not asserted here. Actions cannot call that API, so a lap with MCP is the only thing that can refresh them — check observed_at before trusting these fields. 2026-08-10: the two readings 58 minutes apart were wrong in opposite directions, which is the measurement behind check-heartbeats.mjs unverifiedReservations() and the registry age pacing.mjs now prints. Note what that check cannot do — at 66 minutes old the registry was inside every reasonable staleness window and already wrong. Age bounds silent drift; it does not detect the world changing. Only list_triggers does, and only a lap can call it.",
-  "reconciliation_gap_nobody_has_closed": "The reservation that dominates pacing — youtube-loop and cookie-daily at a derived upper bound each, capped to 16.80% — rests on rows only an MCP lap can verify. Between MCP laps the scheduler can change and nothing here would know. Actions cannot see it. Nobody has priced a workaround, and this line exists so the next lap does not rediscover the gap as if it were new."
+  "reconciliation_gap_nobody_has_closed": "The reservation that dominates pacing — youtube-loop and cookie-daily at a derived upper bound each, capped to 16.80% — rests on rows only an MCP lap can verify. Between MCP laps the scheduler can change and nothing here would know. Actions cannot see it. Nobody has priced a workaround, and this line exists so the next lap does not rediscover the gap as if it were new.",
+  "how_to_reconcile_cheaply": "PREFER list_sessions OVER list_triggers. Measured 2026-08-10T12:46Z: list_triggers returns each Routine's ENTIRE prompt body, and one page of 25 rows returned roughly forty thousand characters of other loops' instructions, most of it a months-old ELDRIA backlog with nothing to do with this registry. It cost more context than the whole rest of the lap and answered one field. list_sessions returns titles, tags, created_at and status — and for any trigger whose job is to CREATE a session, the session it created is better evidence than the trigger's own last_fired_at, because it shows the firing produced something rather than merely occurring. Use list_triggers only for a trigger that creates no session, and prefer a targeted lookup over a page when you can."
 }
