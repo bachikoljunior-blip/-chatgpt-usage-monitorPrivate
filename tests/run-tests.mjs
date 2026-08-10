@@ -5719,10 +5719,20 @@ function assert(condition, message) {
     const register = JSON.parse(readFileSync(new URL("../state/product-loop.json", import.meta.url), "utf8"));
     const demo = register.offers.find((o) => o.id === "free_demo");
     assert(demo, "free_demo left the register — if it was retired, this assertion should be too");
-    const real = verdictStreak(demo.rounds ?? []);
+    // Rounds 4, 5 and 8 as they were actually recorded, before round 9 changed the
+    // approach. This is the history the check was blind to, and it stays true
+    // whatever later rounds do.
+    const beforeTheChange = (demo.rounds ?? []).filter((r) => (r.round ?? 0) <= 8);
+    const real = verdictStreak(beforeTheChange);
     assert(
       real.length >= VERDICT_STREAK_LIMIT && real.rung === "stranger_reaction" && real.engaged,
       `free_demo's real streak reads ${JSON.stringify(real)} — rule 4b is not seeing the three refusals`,
+    );
+    // And the described approach change on round 9 clears it, on the real file. A
+    // check whose two named answers both leave it red is a check nobody can clear.
+    assert(
+      verdictStreak(demo.rounds ?? []).length < VERDICT_STREAK_LIMIT,
+      "the recorded approach change did not clear the streak on the real register",
     );
 
     // A streak of reads alone cannot demand an approach change: RUNBOOK 5.4 fixes

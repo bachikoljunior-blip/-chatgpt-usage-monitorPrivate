@@ -146,7 +146,6 @@ export function roundVerdict(round) {
  * @returns {{length: number, verdict: string|null, rung: string|null, engaged: boolean}}
  */
 export function verdictStreak(rounds) {
-  let best = { length: 0, verdict: null, rung: null, engaged: false };
   const runs = new Map();
   for (const r of Array.isArray(rounds) ? rounds : []) {
     const rung = r?.rung ?? null;
@@ -166,9 +165,20 @@ export function verdictStreak(rounds) {
     if (prev && roundVerdict(prev) !== verdict) run.length = 0;
     run.push(r);
     runs.set(rung, run);
+  }
+
+  // The runs still OPEN at the end, not the longest one ever seen. The rule asks
+  // whether this offer is three refusals deep RIGHT NOW, and a check that reports
+  // a streak an approach change has already broken can never be satisfied — the
+  // problem would print forever and the two answers it names, change the approach
+  // or retire, would both leave it red. A check nobody can clear is a check
+  // everybody learns to read past.
+  let best = { length: 0, verdict: null, rung: null, engaged: false };
+  for (const [rung, run] of runs) {
+    if (!run.length) continue;
     const engaged = run.some((x) => roundEngaged(x) === true);
     if (run.length > best.length || (run.length === best.length && engaged && !best.engaged)) {
-      best = { length: run.length, verdict, rung, engaged };
+      best = { length: run.length, verdict: roundVerdict(run[run.length - 1]), rung, engaged };
     }
   }
   return best;

@@ -1194,6 +1194,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T16:00:11.651Z",
+      "candidate": "free_demo.stranger_reaction",
+      "kind": "route_change",
+      "mechanism": "This abandons a route rather than a parameter, and the abandonment is what the act consists of. free_demo has been improved three times — 15 taps to 4, a new opening, a reviewer who finally drove headless Chrome — and all three stranger_reaction rounds returned 払わない. Every reviewer was a lane model and every one answered that the problem is not theirs, so the rung was measured three times against people outside its audience and the route being abandoned is asking a reviewer at all. It produces a product-loop round, which is the evidence the refill rule demands and which the previous route change did not produce. What it stops is concrete: this session was one step from translating that demo into English for a venue row, having not read the three refusals underneath it.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
