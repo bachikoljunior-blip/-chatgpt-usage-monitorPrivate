@@ -53,6 +53,7 @@ import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-br
 import { classifyLifecycle } from "../scripts/probe-gumroad-lifecycle.mjs";
 import { recurrenceOf, classifyRecurrence, listingMeasurement } from "../scripts/probe-gumroad-recurring.mjs";
 import { promisesPresent, manifestOf } from "../scripts/fetch-product-source.mjs";
+import { artifactWasDriven } from "../scripts/play-artifact.mjs";
 import { checkGoal, GOAL, BEGIN as DIRECTIVE_BEGIN } from "../scripts/check-goal-intact.mjs";
 import { judge as judgeSpark, sparkModelCandidate, sparkWindow } from "../scripts/spark-model.mjs";
 import { judge as judgeProductLoop, MAX_ROUND_AGE_DAYS as PRODUCT_MAX_ROUND_AGE_DAYS, roundEngaged, playedEvidenceFor, roundHasReviewer } from "../scripts/product-loop.mjs";
@@ -5137,4 +5138,27 @@ function assert(condition, message) {
   ]);
   assert(m[0].path === "a" && m[1].path === "b", "the manifest is not ordered, so two identical recoveries compare unequal");
   assert(m.every((r) => r.sha256), "a manifest row lost its digest");
+}
+
+// --- A run that measured nothing is not a run -------------------------------
+// The recovered paid kit reported `played` with every field null and no page
+// errors: it loads brand.config.json over fetch and refuses file:// by design,
+// printing setup guidance instead of booting. The run completed, so the summary
+// said played — the same false pass this file exists to stop, one level up.
+// Mutations run red before this was kept: artifactWasDriven returning true on a
+// null counter, and the --check branch omitted so only the summary changed.
+{
+  assert(artifactWasDriven({ counter_at_start: 0 }) === true, "a rendered counter reading zero was not accepted as driven");
+  assert(
+    artifactWasDriven({ counter_at_start: null, page_errors: [] }) === false,
+    "a page that loaded without rendering its counter was reported as driven",
+  );
+  // Zero is a real reading and must not be confused with absence — an idle game
+  // starts at zero, so a falsy check here would call every clean run undriven.
+  assert(artifactWasDriven({ counter_at_start: 0, page_errors: [] }) === true, "a counter at zero was read as missing");
+
+  // Nothing attempted is not the same as attempted and blank. Both are non-passes
+  // and only one of them is about the artifact.
+  assert(artifactWasDriven({ browser_available: false }) === null, "an absent browser was reported as an artifact fault");
+  assert(artifactWasDriven({ run_failed: "timeout" }) === null, "a failed run was reported as an artifact fault");
 }

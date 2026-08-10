@@ -70,11 +70,23 @@ const STATE = join(ROOT, "state", "play-measurements.json");
 export const PROFILES = {
   free_demo: { counter: "#amount", tap: "#tap", rate: "#rate", buy: ".trade" },
   rebuild_v4: { counter: "#dust", tap: "#tapBtn", rate: "#perSec", buy: "#unitList .unit button", choose: ".choice-btn" },
+  // The paid kit. Its counter, tap target and rate happen to share the free
+  // demo's ids, which is why an ad-hoc run against the free_demo profile
+  // reported "played" with zero taps rather than failing: the tap element was
+  // found, and the BUY selector (.trade) matched nothing, so the run completed
+  // having measured nothing and printed a line that reads like a pass. The
+  // generators are buttons built in engine.js with className 'row', inside
+  // #generators.
+  idle_clicker_kit: { counter: "#amount", tap: "#tap", rate: "#rate", buy: "#generators button.row" },
 };
 
 /** Artifacts this repository ships and is therefore answerable for. */
 export const SHIPPED = [
   { id: "free_demo", path: "assets/free-demo/index.html", profile: "free_demo", live: true },
+  // Recovered 2026-08-10 from the product's own Gumroad attachment. live: true
+  // because buyers can pay for it today — which is what makes an unrun artifact
+  // a problem rather than a gap.
+  { id: "idle_clicker_kit", path: "product/brandable-idle-clicker/index.html", profile: "idle_clicker_kit", live: true },
 ];
 
 const CHROMIUM_CANDIDATES = [
@@ -133,6 +145,35 @@ export function artifactThrew(m) {
   if (m.browser_available === false) return null;
   if (!Array.isArray(m.page_errors)) return null;
   return m.page_errors.length > 0;
+}
+
+/**
+ * Was the artifact actually DRIVEN, or did the run merely complete?
+ *
+ * 2026-08-10: the recovered paid kit reported `played` with every field null and
+ * no page errors. Nothing had happened. The kit loads brand.config.json over
+ * fetch and refuses file:// by design — it prints setup guidance instead of
+ * booting, which is exactly what its README promises ("put it on a server") — so
+ * the counter selector matched nothing and every measurement came back null. The
+ * run completed, so the summary said `played`.
+ *
+ * That is the same false pass this file was written to stop, one level up. The
+ * earlier version of it was a tap count that could not distinguish an artifact
+ * from a careful read; this one is a run that cannot distinguish an artifact from
+ * a blank page. A measurement of nothing must not be reported in the same word as
+ * a measurement.
+ *
+ * The counter is the right witness because it is the one element every profile
+ * declares and every artifact of this class must render before anything else can
+ * be true of it.
+ *
+ * @param {object} m
+ * @returns {boolean|null} null when nothing could be attempted at all
+ */
+export function artifactWasDriven(m) {
+  if (!m || typeof m !== "object") return null;
+  if (m.browser_available === false || m.run_failed) return null;
+  return m.counter_at_start !== null && m.counter_at_start !== undefined;
 }
 
 // ---------------------------------------------------------------------------
@@ -322,6 +363,14 @@ async function main() {
         console.log(`PROBLEM ${id} is live and throws while being played: ${(m.distinct_page_errors ?? []).join("; ")}`);
         rc = 1;
       }
+      // A live artifact that loads but never renders is not a pass. It is the
+      // reading that used to print `played` beside five null timings.
+      if (m.live && artifactWasDriven(m) === false) {
+        console.log(
+          `PROBLEM ${id} is live and was never driven: the page loaded, no error was thrown, and the counter never appeared — so every number on record for it is null. A run that measures nothing must not be filed as a run.`,
+        );
+        rc = 1;
+      }
       if (m.live && artifactThrew(m) === null) {
         console.log(`PROBLEM ${id} is live and has never been run: ${m.why ?? m.run_failed ?? "no measurement on record"}`);
         rc = 1;
@@ -373,7 +422,15 @@ async function main() {
     const lat = Array.isArray(m.tap_latency_ms) ? m.tap_latency_ms.filter((n) => typeof n === "number") : [];
     const median = lat.length ? lat.slice().sort((a, b) => a - b)[Math.floor(lat.length / 2)] : null;
     console.log(
-      `  ${id}: ${m.browser_available === false ? "NOT PLAYED (no browser)" : m.run_failed ? `RUN FAILED: ${m.run_failed}` : "played"}` +
+      `  ${id}: ${
+        m.browser_available === false
+          ? "NOT PLAYED (no browser)"
+          : m.run_failed
+            ? `RUN FAILED: ${m.run_failed}`
+            : artifactWasDriven(m) === false
+              ? "NOT DRIVEN — the page loaded and the counter never appeared, so nothing was measured"
+              : "played"
+      }` +
       (median === null ? "" : ` · tap feedback ${median}ms`) +
       (m.taps_to_first_affordable_purchase == null ? "" : ` · ${m.taps_to_first_affordable_purchase} taps to first purchase`) +
       (artifactThrew(m) ? ` · THREW: ${m.distinct_page_errors.join("; ")}` : ""),

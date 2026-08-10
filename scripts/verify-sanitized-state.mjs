@@ -129,6 +129,25 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
   if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at)) {
     throw new Error("probe state has no valid fetched_at timestamp");
   }
+} else if (state.artifacts !== undefined) {
+  // The play register. Found unvalidated on 2026-08-10: it fell through to the
+  // usage-state branch and was rejected for having no recommended_mode, which
+  // means nothing had ever run the credential scan over it. Same defect the probe
+  // branch above records — a file under state/ exempt in practice while the rule
+  // said otherwise. The walk() above is the part that matters, since page_errors
+  // carries whatever the artifact printed.
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at)) {
+    throw new Error("play register has no valid fetched_at timestamp");
+  }
+  for (const [id, m] of Object.entries(state.artifacts)) {
+    if (typeof m?.source !== "string" || !m.source) {
+      throw new Error(`play register row ${id} does not say which file was played`);
+    }
+    // Without this a row can claim a measurement with no run behind it.
+    if (typeof m.measured_at !== "string" || !/^\d{4}-\d{2}-\d{2}T/.test(m.measured_at)) {
+      throw new Error(`play register row ${id} has no valid measured_at`);
+    }
+  }
 } else if (Array.isArray(state.manifest)) {
   // The recovered product source. The signed download URL that produced it carries
   // a verify token and an expiry, so the rule enforced here is that it never

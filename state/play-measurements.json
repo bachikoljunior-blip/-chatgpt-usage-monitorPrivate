@@ -1,18 +1,18 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T08:37:55.362Z",
+  "fetched_at": "2026-08-10T09:28:31.221Z",
   "chromium": "/opt/pw-browsers/chromium-1194/chrome-linux/chrome",
   "artifacts": {
     "free_demo": {
       "browser_available": true,
       "page_errors": [],
       "tap_latency_ms": [
+        51,
         5,
-        5,
-        4,
-        5,
-        5
+        9,
+        10,
+        7
       ],
       "counter_at_start": "0",
       "rate_at_start": "毎秒 0",
@@ -22,7 +22,26 @@
       "distinct_page_errors": [],
       "source": "assets/free-demo/index.html",
       "live": true,
-      "measured_at": "2026-08-10T08:37:55.362Z"
+      "measured_at": "2026-08-10T09:28:31.221Z"
+    },
+    "idle_clicker_kit": {
+      "browser_available": true,
+      "page_errors": [],
+      "tap_latency_ms": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "counter_at_start": null,
+      "rate_at_start": null,
+      "taps_to_first_affordable_purchase": null,
+      "rate_before_purchase": null,
+      "distinct_page_errors": [],
+      "source": "product/brandable-idle-clicker/index.html",
+      "live": true,
+      "measured_at": "2026-08-10T09:28:31.221Z"
     }
   },
   "what_this_is_not": "A stranger's opinion. These are timings and thrown errors from a run, which is the half of rung 2 the Codex lane cannot produce. The verdict half still needs a reviewer."
