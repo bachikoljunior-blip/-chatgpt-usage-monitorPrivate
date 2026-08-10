@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T06:08:10.275Z",
+  "fetched_at": "2026-08-10T06:12:41.875Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -32,21 +32,22 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.48
+      "days_unchanged": 0.49
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.48
+      "days_unchanged": 0.49
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
   "route_election": {
-    "elected": "route_5_lane_allocation_is_the_binding_term",
+    "elected": "route_6_an_independent_judge_is_the_binding_term",
     "aligned": [
-      "the_lane_builds_the_payload"
+      "pair_the_two_models_so_a_judge_is_never_the_author"
     ],
     "on_abandoned_route": [
       "recurring_offer_on_the_rail_we_can_list_ourselves",
+      "the_lane_builds_the_payload",
       "high_intent_tool_site",
       "findable_surface_at_scale",
       "honest_post_where_buyers_gather",
@@ -188,9 +189,9 @@
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_4_the_offer_form_is_the_binding_term",
-        "elected_route": "route_5_lane_allocation_is_the_binding_term",
+        "elected_route": "route_6_an_independent_judge_is_the_binding_term",
         "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T04:45:00Z",
+        "elected_at": "2026-08-10T06:00:00Z",
         "why": null,
         "prerequisite": null,
         "prerequisite_measured": null,
@@ -219,18 +220,50 @@
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_5_lane_allocation_is_the_binding_term",
-        "elected_route": "route_5_lane_allocation_is_the_binding_term",
+        "elected_route": "route_6_an_independent_judge_is_the_binding_term",
+        "status": "on_abandoned_route",
+        "elected_at": "2026-08-10T06:00:00Z",
+        "why": null,
+        "prerequisite": null,
+        "prerequisite_measured": null,
+        "language_mismatches": null,
+        "binding_venues_without_a_revenue_path": null,
+        "owner_requests_clearing_the_prerequisite": null,
+        "elected_but_refuted": false
+      }
+    },
+    {
+      "kind": "zero_base_option",
+      "id": "pair_the_two_models_so_a_judge_is_never_the_author",
+      "why": "Two rung-2 rounds have been run and both were void, for the same reason each time: the reviewer was the author. The .i control settled that this is authorship rather than engagement — shown a game nobody here wrote, the lane played 12 taps and answered 見覚え ない, so it can tell first sight from recognition. Until a non-author judges something, no payload can be priced, and every channel reads idle infinity for that reason rather than for want of things built.",
+      "serves_route": "route_6_an_independent_judge_is_the_binding_term",
+      "owner_actions": "0",
+      "days_to_first_yen_estimate": "unmeasured",
+      "estimate_not_measurement": true,
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "refuted": null,
+      "measured_surface": null,
+      "actionable_now": true,
+      "eta_effect_days": null,
+      "recurring_owner_actions_per_month": 1,
+      "estimate_reliability": "discredited_by_siblings",
+      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "eta_effect_basis": "no comparable estimate recorded",
+      "route_alignment": {
+        "serves_route": "route_6_an_independent_judge_is_the_binding_term",
+        "elected_route": "route_6_an_independent_judge_is_the_binding_term",
         "status": "elected",
-        "elected_at": "2026-08-10T04:45:00Z",
-        "why": "MEASURED, on our own record, and nobody had ever counted it: 22 completed Codex-lane tasks, of which ONE produced the thing being sold (2026-08-09.q, the free demo), two produced storefront copy, two were reviews of our own offer, and seventeen were research about the outside world. 4.5% payload. Set that beside route 4's own prerequisite — AN ARTIFACT SOMEONE WHO DID NOT MAKE IT WOULD PAY FOR — and the contradiction is exact: the route says the binding constraint is the artifact, and the only pool that has ever produced an artifact spends 95% of itself on research. The Claude pool is at 24% weekly and cannot build; the Codex pool is at 94% with Spark untouched and has built exactly once. Routes 1-4 argued about what to build while the thing that could build it read competitor pages.",
-        "prerequisite": "THE LANE PRODUCES A PAYLOAD ON DEMAND. Not a plan for one, not a specification of one: a task filed, and a usable artifact returned by it. Every prerequisite before this was something the outside world had to grant — a door, a venue, a stranger's verdict. This one is entirely inside our control and has never been tested twice.",
+        "elected_at": "2026-08-10T06:00:00Z",
+        "why": "Every channel reads idle ETA infinity, and the reason is not that too little has been built. It is that nothing built has ever been judged by someone who did not build it, so no payload can be priced and building faster produces more unpriceable payloads. Two rung-2 rounds have been run and both were void: the reviewer was the author. The .i control settled that this is authorship rather than engagement — the lane played a game nobody here wrote, 12 taps, and answered 見覚え ない, so it can tell first sight from recognition.",
+        "prerequisite": "ONE RUNG-2 ROUND THAT IS NOT VOID. A judge that did not author the artifact reads it cold and reports 見覚え ない together with a 払うか verdict. Two rounds have been run and both were void for the same reason — the reviewer was the author — so the count of usable stranger readings this project holds is zero, on an artifact that has been live since 2026-08-09.",
         "prerequisite_measured": {
-          "term": "payload_production",
+          "term": "stranger_reaction",
           "instrument": {
-            "script": "scripts/lane-allocation.mjs",
-            "how": "judge() counts payload-producing tasks in the trailing window and whether one is queued, from codex/outbox markers and the produces: field in codex/INBOX.md headers. pulse.yml runs it hourly and it exits 1 when the lane has drained back to research-only with nothing queued.",
-            "registered_in": "PREREQUISITE_INSTRUMENTS in scripts/venue-readiness.mjs, alongside the four LADDER rungs route 4 added.",
-            "the_first_test_is_already_filed": "2026-08-10.h, queued behind .g so it cannot disturb the blind review in flight. It asks for v2 of the free demo fixing exactly the two defects round 2 named — branching, and permanent accumulation — and nothing else."
+            "script": "scripts/product-loop.mjs",
+            "how": "judge() reports, per offer, which rung is next and how many rounds are recorded — and, since 2026-08-10, refuses to count a round whose 見覚え answer is anything but ない (roundRecognised/blindLeaks). pulse.yml runs it hourly. free_demo currently reads rounds=1, engaged=0, next=stranger_reaction.",
+            "registered_in": "PREREQUISITE_INSTRUMENTS in scripts/venue-readiness.mjs, as one of the four LADDER rungs route 4 added. Route 6 needs no new term: the rung it is blocked on was already nameable, and what was missing was never the vocabulary — it was a judge.",
+            "the_second_instrument_this_route_added": "scripts/lane-authorship.mjs, which is not a prerequisite term but the guard on it: it refuses a review task whose declared model equals the model that authored what it reviews, and it catches the dispatch falling back from a named model to the account default, which would swap the reviewer without saying so. Both are the void round, caught before dispatch instead of diagnosed after it returns.",
+            "the_first_tests_are_already_filed": "2026-08-10.k and 2026-08-10.l, on opposite pairings."
           },
           "counts": {
             "postable": 1,
@@ -251,8 +284,8 @@
           "owner_requests_clearing_the_term": [],
           "ok": true,
           "problem": null,
-          "measured_elsewhere": "scripts/lane-allocation.mjs",
-          "note": "the elected route's prerequisite is \"payload_production\", measured by scripts/lane-allocation.mjs. The venue revenue-path test below does not apply and was NOT run — it would have passed vacuously on zero rows. The venue rows are still derived and printed above, because a route change does not delete the evidence the previous route was elected on."
+          "measured_elsewhere": "scripts/product-loop.mjs",
+          "note": "the elected route's prerequisite is \"stranger_reaction\", measured by scripts/product-loop.mjs. The venue revenue-path test below does not apply and was NOT run — it would have passed vacuously on zero rows. The venue rows are still derived and printed above, because a route change does not delete the evidence the previous route was elected on."
         },
         "language_mismatches": [
           "r/gamedev"
@@ -342,9 +375,9 @@
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 60 days at the conservative end (estimate, not measured)",
       "route_alignment": {
         "serves_route": "route_2_unattended_findable_pages",
-        "elected_route": "route_5_lane_allocation_is_the_binding_term",
+        "elected_route": "route_6_an_independent_judge_is_the_binding_term",
         "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T04:45:00Z",
+        "elected_at": "2026-08-10T06:00:00Z",
         "why": null,
         "prerequisite": null,
         "prerequisite_measured": null,
@@ -377,7 +410,7 @@
         "published_count": 10,
         "pages_found_by_search": 0,
         "verdict": "published_but_not_findable",
-        "measured_at": "2026-08-10T05:34:43.099Z",
+        "measured_at": "2026-08-10T06:08:11.575Z",
         "what_it_settles": "Not a shortage of pages. Ten serve 200 and a search index returned none of them, so page COUNT is not the binding term — the missing step is an inbound path from a surface that is already crawled. Building more pages buys nothing until that step exists.",
         "inbound_surface": {
           "verdict": "no_crawled_surface_found",
@@ -396,9 +429,9 @@
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_2_unattended_findable_pages",
-        "elected_route": "route_5_lane_allocation_is_the_binding_term",
+        "elected_route": "route_6_an_independent_judge_is_the_binding_term",
         "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T04:45:00Z",
+        "elected_at": "2026-08-10T06:00:00Z",
         "why": null,
         "prerequisite": null,
         "prerequisite_measured": null,
@@ -440,9 +473,9 @@
       "repriced_because": "The candidate was carrying the route adopted at 3555e97 with no test of whether the act it names can be performed. It can not, today: 0 of 3 surveyed venues are postable from a standing start, and neither of the two hard refusals is about standing. Recorded on the candidate rather than in the constraint alone because the constraint is not what a lap picks from.",
       "route_alignment": {
         "serves_route": "route_1_post_where_buyers_gather",
-        "elected_route": "route_5_lane_allocation_is_the_binding_term",
+        "elected_route": "route_6_an_independent_judge_is_the_binding_term",
         "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T04:45:00Z",
+        "elected_at": "2026-08-10T06:00:00Z",
         "why": null,
         "prerequisite": null,
         "prerequisite_measured": null,
@@ -568,9 +601,9 @@
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_3_use_the_reach_already_owned",
-        "elected_route": "route_5_lane_allocation_is_the_binding_term",
+        "elected_route": "route_6_an_independent_judge_is_the_binding_term",
         "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T04:45:00Z",
+        "elected_at": "2026-08-10T06:00:00Z",
         "why": null,
         "prerequisite": null,
         "prerequisite_measured": null,
