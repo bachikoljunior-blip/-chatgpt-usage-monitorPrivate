@@ -1899,7 +1899,14 @@
       ],
       "what_would_refute_it": "(a) no pulse[bot] commit to state/eta.json by 2026-08-11T02:00Z. (b) a red pulse run whose log carries no ::error::state/ line — the naming did not work either, and the diagnosability half of this change bought nothing.",
       "judge_on": "2026-08-11",
-      "outcome": null
+      "outcome": null,
+      "interim_observation": {
+        "observed_at": "2026-08-10T13:27:00Z",
+        "half_a": "CONFIRMED, two minutes after the push and well inside its own deadline. pulse run 31392717094 (push, 4aa7477) produced commit 5fd13e0, author pulse[bot], 2026-08-10T13:24:40Z, touching state/eta.json, state/heartbeat.json, state/lap-cost-derived.json, state/public-host.json and state/findable-surface.json. state/eta.json on origin/main now reads fetched_at 2026-08-10T13:24:37.523Z, against 11:49:10Z before. This is the first pulse commit of the day; the seven runs before it committed nothing.",
+        "half_b": "UNTESTED and stays open until judge_on. No pulse run has gone red since the change, so the ::error:: naming has not had an occasion to fire. A half that has not been tried is not a half that passed.",
+        "what_this_settles_about_the_unknown": "The file that was failing is one of the two the commit does not stage — youtube-scan.json or external-metrics.json. Not because anyone read it, but because removing exactly those two from the guard was the only change to the verify step's SET, and the commit went through on the next run. Which of the two remains unknown and is now cheap to leave unknown: neither is staged by this workflow, and the reporting sweep after the commit still fails the run on either.",
+        "the_reading_that_would_have_been_wrong": "The commit step re-verifies all six staged files with || exit 1, so if the failing file had been one of those six, this run would have failed inside the loop and eta.json would still be frozen. It is not. That is the control, and it was available only because the fix left the six alone."
+      }
     }
   ]
 }
