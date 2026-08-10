@@ -65,7 +65,17 @@ import { FREE_ARTIFACT_PATH, artifactLanguage } from "./check-free-artifact.mjs"
 //                     that binding means an owner action is required, and this one is
 //                     cleared by waiting. Reading it as `postable` would spend the
 //                     route's single post attempt on a removal.
-export const BINDING_CAUSES = ["postable", "venue_rule", "venue_unsettled", "account", "account_too_new"];
+//   delivery_unmeasured — the venue is open, we can post, and nobody has counted how
+//                     many people a post here reaches. Added 2026-08-10, and placed
+//                     FIRST because every cause above it asks whether a venue allows
+//                     us and none asked whether it delivers anyone. That gap decided a
+//                     real election: the sibling YouTube channel permits the paid
+//                     product's link, was elected on 1,208 views/day, and puts 2 people
+//                     in front of a description per 28 days. Read for permission it was
+//                     the best route on the board; read for delivery it was never a
+//                     route. It sits above `postable` and not above `venue_rule`
+//                     because a venue that refuses us is refused whatever its traffic.
+export const BINDING_CAUSES = ["delivery_unmeasured", "postable", "venue_rule", "venue_unsettled", "account", "account_too_new"];
 
 // The vocabulary above is this instrument's, and for a while it was silently treated
 // as the vocabulary of EVERY possible route. prerequisiteCheck hard-failed any term
@@ -216,11 +226,42 @@ function blockerCleared(v, evidence, repoFiles) {
 // venue refusal outranks an unknown account, because knowing our username would not
 // move it, and an unsettleable venue outranks it for the same reason. `account` is
 // reached only when the venue is open and we are the missing term.
-function bindingCause(accountExists, blockerHolds, postable) {
+function bindingCause(accountExists, blockerHolds, postable, deliveryKnown) {
+  // DELIVERY OUTRANKS PERMISSION, and it is checked on the OPEN branch only.
+  //
+  // 2026-08-10. Every cause below this line asks whether a venue ALLOWS us. None
+  // asked whether it DELIVERS anyone, and that gap decided a real election: the
+  // sibling YouTube channel permits the paid product's link, was elected on
+  // 1,208 views/day, and puts 2 people in front of a description per 28 days.
+  // Read for permission it was the best route on the board. Read for delivery it
+  // was never a route at all.
+  //
+  // A venue that refuses us is refused whatever its traffic, so this does not
+  // displace venue_rule — an unmeasured audience is only worth reporting about a
+  // door that is actually open. Placing it above `postable` is the whole change:
+  // "open" stops being the top of the ranking.
+  if (postable === true && deliveryKnown !== true) return "delivery_unmeasured";
   if (postable === true) return "postable";
   if (blockerHolds === false) return "venue_rule";
   if (blockerHolds === UNKNOWN) return "venue_unsettled";
   return "account";
+}
+
+/**
+ * Has anyone counted how many people a post here reaches?
+ *
+ * Three-valued on purpose and defaulting to "no". `delivery` absent means nobody
+ * looked, which is the state all three surveyed venues are in, and the failure being
+ * fixed is precisely that absence printed as nothing. A row claiming delivery has to
+ * carry a number and a date, because a venue's traffic is the kind of fact that goes
+ * stale and the permission fields next to it already showed what an undated claim does.
+ */
+export function deliveryKnown(v) {
+  const d = v?.delivery;
+  if (!d || typeof d !== "object") return false;
+  if (!Number.isFinite(d.reached_per_post)) return false;
+  if (typeof d.measured_at !== "string" || !d.measured_at) return false;
+  return true;
 }
 
 // Does the elected route name its prerequisite in a vocabulary this instrument can
@@ -543,7 +584,7 @@ export function venueReadiness(
       // after the AND. Which half is shut is the whole question the election got
       // wrong; collapsing them into one boolean is what made it invisible.
       venue_blocker: blocker.holds,
-      binding: tooNewUntil ? "account_too_new" : bindingCause(exists, blocker.holds, computed),
+      binding: tooNewUntil ? "account_too_new" : bindingCause(exists, blocker.holds, computed, deliveryKnown(v)),
       eligible_from: eligibleFrom,
       // null once the date has passed, so "waiting" cannot linger as a stale string.
       too_new_until: tooNewUntil,

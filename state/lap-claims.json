@@ -826,6 +826,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T07:11:44.866Z",
+      "candidate": "elect_venues_on_measured_delivery_not_measured_permission",
+      "kind": "route_change",
+      "mechanism": "Abandon the criterion this project has elected every distribution route by. venue-readiness.mjs BINDING_CAUSES are postable, venue_rule, venue_unsettled, account, account_too_new — five ways of asking whether a venue ALLOWS us, and no way of asking whether it DELIVERS anyone. Today that gap decided an election: the sibling channel permits the paid link, was elected on 1208 views/day, and delivers 2 description views per 28 days. Read for permission it was the best route on the board; read for delivery it was never a route. All three surveyed venues carry permission fields and none carries a delivery figure, so the same election can be made again tomorrow on any of them. The number moves because the route that gets picked changes: delivery-first would have refused route 3 before five laps went into a door, and it refuses any venue whose traffic nobody has counted rather than ranking it first for being open.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

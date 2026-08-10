@@ -2573,6 +2573,49 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     "an unmeasured account did not say so as the blocker",
   );
 
+  // --- delivery outranks permission -------------------------------------------
+  //
+  // 2026-08-10. Every cause in this vocabulary asked whether a venue ALLOWS us and
+  // none asked whether it DELIVERS anyone, and the gap decided a real election: the
+  // sibling YouTube channel permits the paid product's link, was elected on 1,208
+  // views/day, and puts 2 people in front of a description per 28 days.
+  const { deliveryKnown, BINDING_CAUSES } = await import("../scripts/venue-readiness.mjs");
+  assert(
+    BINDING_CAUSES[0] === "delivery_unmeasured",
+    "delivery is not the first binding cause, so an open door with uncounted traffic still tops the ranking",
+  );
+  assert(deliveryKnown({}) === false, "a venue with no delivery field read as having a measured audience");
+  assert(
+    deliveryKnown({ delivery: { reached_per_post: 400 } }) === false,
+    "an undated delivery figure counted as measured; a venue's traffic is exactly the kind of fact that goes stale",
+  );
+  assert(
+    deliveryKnown({ delivery: { reached_per_post: 400, measured_at: "2026-08-10" } }) === true,
+    "a dated delivery figure was rejected",
+  );
+  // An open venue with no delivery reading must bind on delivery, not report postable.
+  const openEvidence = { 'state/itch.json': { status: 'ok', game_count: 1, profile: { username: 'someone' } } };
+  const openUncounted = venueReadiness([itch], openEvidence, repoFiles);
+  assert(
+    openUncounted.rows[0].binding === "delivery_unmeasured",
+    `an open venue with uncounted traffic reported binding=${openUncounted.rows[0].binding}`,
+  );
+  // And a venue that refuses us stays refused whatever its traffic — delivery is
+  // checked on the open branch only, or every shut door would be relabelled.
+  const shutDoor = venueReadiness([itch], evidence, repoFiles);
+  assert(
+    shutDoor.rows[0].binding !== "delivery_unmeasured",
+    "a venue whose own blocker is shut was relabelled as a delivery problem",
+  );
+  // The committed rows really carry the declaration, so this goes red if a later lap
+  // drops the field back to absent.
+  const survey = JSON.parse(await readFile(join(root, "state/constraints.json"), "utf8"))
+    .constraints.find((c) => c.id === "no_standing_where_buyers_gather").venue_survey.per_venue;
+  assert(
+    survey.every((v) => v.delivery && Object.prototype.hasOwnProperty.call(v.delivery, "measured_at")),
+    "a surveyed venue lost its delivery declaration, and an omitted field reads the same as an unmeasured one",
+  );
+
   // Undeclared is the failure this exists for: a missing field and an unmeasured
   // account are indistinguishable when the field is optional.
   const missing = venueReadiness([{ venue: "somewhere", paid_promotion_permitted: null }], evidence, repoFiles);
@@ -4385,7 +4428,16 @@ function assert(condition, message) {
   assert(!waiting.rows[0].problem, `a legitimate waiting row was flagged: ${waiting.rows[0].problem}`);
 
   // The other direction, which is what makes it a clock rather than a permanent no.
-  const ripe = venueReadiness([{ ...row, postable_today: true }], evidence, repoFiles, undefined, "2026-08-12");
+  // delivery is supplied here so the clock is what this asserts. Without it the row
+  // binds on delivery_unmeasured, which is correct and would make this test about the
+  // wrong term — isolating one cause is why the fixture carries the other.
+  const ripe = venueReadiness(
+    [{ ...row, postable_today: true, delivery: { reached_per_post: 400, measured_at: "2026-08-10" } }],
+    evidence,
+    repoFiles,
+    undefined,
+    "2026-08-12",
+  );
   assert(ripe.rows[0].binding === "postable", `the clock did not run out: ${ripe.rows[0].binding}`);
   assert(ripe.rows[0].too_new_until === null, "too_new_until lingered after the date passed");
 

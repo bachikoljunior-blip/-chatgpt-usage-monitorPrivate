@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T06:58:55.271Z",
+  "fetched_at": "2026-08-10T07:12:34.666Z",
   "note": "Everything here is what was true when it was measured, not a permanent property of the world. Each entry carries a recheck date because on 2026-08-08 two items declared impossible were solved the same day. A constraint falling away usually moves the ETA more than any ordinary improvement does, so rechecks are ETA candidates in their own right.",
   "constraints": [
     {
@@ -260,6 +260,12 @@
               "evidence_state_file": "state/itch.json",
               "measured_at": "2026-08-09",
               "note": "itch.io/api/1/KEY/me returns HTTP 200 with username bachikoljunior-blip. This is the ONLY venue across six surveys where our own ability to post is measured rather than assumed, and it is also the only one whose eligibility threshold is an explicit none. Both halves are settled here and nowhere else."
+            },
+            "delivery": {
+              "reached_per_post": null,
+              "measured_at": null,
+              "why_null": "Nobody has counted how many people a post here reaches. Declared rather than omitted, because an omitted field and an unmeasured one are indistinguishable — the same reason every row carries an `account` field with a nullable exists.",
+              "what_would_fill_it": "A number read from outside: views or impressions on a comparable recent post in this venue, with the post named so it can be checked. It is external-world work, so it belongs on the codex lane, not here."
             }
           },
           {
@@ -323,6 +329,12 @@
                 "the_general_form": "TWO INDEPENDENT OBSERVATIONS ARE INDEPENDENT OF EACH OTHER, NOT OF THE QUESTION. The rule that says 'if you claim something is absent, land two independent observations' was followed exactly and still produced a false absence, because both instruments were pointed at things the loop had already recorded rather than at the world. When the claim is that NO X exists, at least one observation has to be an enumeration of the space X lives in — here, the nine repositories — not a search of our own notes.",
                 "what_it_cost": "The route change at 17:35Z converged both surviving venues onto a pending owner request on the strength of this. The request is still worth making; it was simply not the binding blocker on r/gamedev, and one lap treated an owner action as unavoidable when it was not."
               }
+            },
+            "delivery": {
+              "reached_per_post": null,
+              "measured_at": null,
+              "why_null": "Nobody has counted how many people a post here reaches. Declared rather than omitted, because an omitted field and an unmeasured one are indistinguishable — the same reason every row carries an `account` field with a nullable exists.",
+              "what_would_fill_it": "A number read from outside: views or impressions on a comparable recent post in this venue, with the post named so it can be checked. It is external-world work, so it belongs on the codex lane, not here."
             }
           },
           {
@@ -346,6 +358,12 @@
               "evidence_state_file": null,
               "measured_at": null,
               "note": "Never asked, and unlike r/gamedev it would not help much if answered: this venue's blocker is that its own eligibility threshold is unpublished, so an account here could not be shown to qualify either way."
+            },
+            "delivery": {
+              "reached_per_post": null,
+              "measured_at": null,
+              "why_null": "Nobody has counted how many people a post here reaches. Declared rather than omitted, because an omitted field and an unmeasured one are indistinguishable — the same reason every row carries an `account` field with a nullable exists.",
+              "what_would_fill_it": "A number read from outside: views or impressions on a comparable recent post in this venue, with the post named so it can be checked. It is external-world work, so it belongs on the codex lane, not here."
             }
           }
         ],
@@ -375,6 +393,12 @@
           "what_stops": "Commissioning venue surveys. Two batches, six venues, zero postable, and the second batch failed three-for-three on a term no survey can settle. A third batch is the same parameter.",
           "what_starts": "Removing every remaining way the single pending owner action can fail. The first thing found by looking: the prepared post carried a link and a summary and no image, while the board rule quoted in .o requires all three and the line beside it locks and removes posts that are just links. Corrected in state/owner-requests.json the same lap.",
           "the_honest_deviation": "Prediction 2026-08-09.breadth-replaces-storefront-tuning asks for a request whose act is the MULTI-VENUE post, paste-ready per venue. That is now known to be unbuildable — there is one venue, not several. The request is prepared for that one venue with its rules quoted and its eligibility checked, which is the spirit of the metric; the letter of it cannot be met and should not be scored as if it were. Read this note when judging on 2026-08-12 rather than counting venues."
+        },
+        "the_field_that_was_missing_from_every_row": {
+          "added_at": "2026-08-10T07:20:00Z",
+          "what": "delivery. Every field above it describes whether the venue ALLOWS a post — rule_quoted, paid_promotion_permitted, eligibility_threshold, postable_today, account. Not one describes whether a post is SEEN.",
+          "why_it_was_added_today": "Because the gap decided a real election. The sibling YouTube channel permits the paid product's link and was elected on 1,208 views/day; its description is reached by 2 people per 28 days. Read for permission it was the best route on the board. scripts/venue-readiness.mjs now returns delivery_unmeasured ahead of postable, so an open door with uncounted traffic can no longer be the top of the ranking — which is what it was, for all three rows here, for the whole life of this register.",
+          "and_the_honest_limit": "This makes the gap visible; it does not close it. All three rows read delivery_unmeasured today and will keep reading it until somebody counts. That is the correct state — the previous state was the same ignorance printing as readiness."
         }
       },
       "reprices_candidates": [
