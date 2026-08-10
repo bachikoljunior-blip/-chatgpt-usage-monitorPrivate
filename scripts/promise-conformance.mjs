@@ -32,6 +32,7 @@ import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { openingCurve, openingIsTuned } from "./balance-curve.mjs";
+import { newerThan } from "./gumroad-delivery-reading.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const STATE = path.join(ROOT, "state", "promise-conformance.json");
@@ -195,7 +196,50 @@ function uploadRouteExists() {
   return uploadProbe()?.upload_route_exists === true;
 }
 
+/**
+ * The walk that answers what the presign probe said it could not answer.
+ *
+ * Returns null when it has not been run, so callers keep printing the older, weaker
+ * readings rather than silently upgrading to "measured" on a missing file. When it
+ * HAS been run it outranks every earlier reading here, because it is the only one
+ * that pushed real bytes and then read the product back — the earlier verdicts are
+ * refusals collected from paths the vendor source does not name, sent with a form
+ * encoding that cannot carry an array of objects.
+ */
+function fileWalkReading() {
+  const f = path.join(ROOT, "state", "gumroad-file-walk.json");
+  if (!existsSync(f)) return null;
+  let walk;
+  try {
+    walk = JSON.parse(readFileSync(f, "utf8"));
+  } catch {
+    return null;
+  }
+  if (typeof walk?.bytes_can_reach_a_buyer !== "boolean") return null;
+  if (!walk.bytes_can_reach_a_buyer) {
+    return (
+      ` MEASURED ${walk.fetched_at}: the upload route was walked end to end and stopped at` +
+      ` ${walk.stopped_at}. The wall is measured now rather than inferred, and every source fix to` +
+      " this product still needs one owner action to upload."
+    );
+  }
+  return (
+    ` DELIVERY IS OPEN AND NEEDS NO OWNER ACTION. MEASURED ${walk.fetched_at}: presign, real bytes to` +
+    " the presigned part url, complete, attach and read-back all cleared on a throwaway product" +
+    (walk.attachment_can_be_replaced
+      ? ", and a SECOND file then replaced the first in place — the replacement read back as served" +
+        " while the original was gone. So the stale archive on the live listing can be swapped over the" +
+        " API. What remains is not a route question: it is building the archive from the current source" +
+        " and putting it through these rungs against the live permalink."
+      : ", but replacing an existing attachment did not clear. A corrected kit reaches a buyer by being" +
+        " listed afresh rather than by swapping the file.") +
+    " (state/gumroad-file-walk.json)"
+  );
+}
+
 function uploadRouteReading() {
+  const walked = fileWalkReading();
+  if (walked !== null) return walked;
   const f = path.join(ROOT, "state", "gumroad-presign.json");
   if (!existsSync(f)) {
     return (
@@ -243,6 +287,37 @@ function deliveryChannel() {
   } catch {
     return unmeasured;
   }
+  // The walk outranks the older probe when it is NEWER and it actually swapped a
+  // file. Not "when it exists": two measurements of one question are ordered by
+  // time, or a stale success buries a fresh failure just as easily as the reverse.
+  // Without this the lead sentence stays "the attachment CANNOT be replaced" with
+  // the correction bolted on behind it, which is the shape this function's own
+  // comments already call out — a reader gets to pick which half to believe.
+  const wf = path.join(ROOT, "state", "gumroad-file-walk.json");
+  if (existsSync(wf)) {
+    let walk = null;
+    try {
+      walk = JSON.parse(readFileSync(wf, "utf8"));
+    } catch {
+      walk = null;
+    }
+    if (walk?.attachment_can_be_replaced === true && newerThan(walk.fetched_at, probe?.fetched_at)) {
+      return {
+        verdict: "replaceable",
+        route: "replace_in_place",
+        superseded: probe?.fetched_at ?? null,
+        sentence:
+          `MEASURED ${walk.fetched_at}: the attachment CAN be replaced over the API with no owner action. ` +
+          "A file was uploaded through presign, real bytes, complete and attach, then a SECOND file was " +
+          "PUT onto the same product and read back as the only one served. " +
+          `This supersedes the ${probe?.fetched_at ?? "earlier"} not_replaceable verdict, which was ` +
+          "collected on paths the vendor source does not name and with a form encoding that cannot carry " +
+          "an array of objects. The only thing between the fixed source and the buyer is a lap that " +
+          "builds the archive and pushes it.",
+      };
+    }
+  }
+
   const v = probe?.verdict;
   // Replacement and delivery are not the same question, and reading one off the
   // other is how "the attachment cannot be replaced" quietly became "nothing can

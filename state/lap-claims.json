@@ -1210,6 +1210,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T16:08:02.272Z",
+      "candidate": "idle_clicker_kit.promise_conformance",
+      "kind": "prerequisite",
+      "mechanism": "Walk presign to S3 to complete to attach on a throwaway product. Both live promise failures of the only priced product read FIXED IN SOURCE NOT YET DELIVERED, and the blocker is that no byte route to a buyer has ever been walked. If the walk succeeds the fix ships with zero owner actions; if it fails the owner-upload request becomes the measured only route instead of an assumption. Neither outcome moves a measured ETA today, so this is a prerequisite, not a direct claim.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

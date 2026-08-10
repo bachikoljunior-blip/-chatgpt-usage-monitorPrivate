@@ -25,6 +25,10 @@ on:
         description: "Probe whether the FILE A BUYER DOWNLOADS can be replaced over the API. Runs entirely against a throwaway product it creates and deletes; never writes to the live listing. Decides whether any source fix to the priced product is deliverable at all."
         type: boolean
         default: false
+      probe_file_walk:
+        description: "Walk the whole upload route on a throwaway: presign, real bytes to S3, complete, attach, read back, then REPLACE the attachment with a second file and read back again. This is the probe that answered the question probe_file_replacement got wrong — that one used paths the vendor source does not name and a form encoding that cannot carry an array of objects. Creates and deletes its own product; never touches the live listing."
+        type: boolean
+        default: false
       probe_rich_content:
         description: "Create a throwaway carrying a CONTENT document and read it back. Settles whether a TEXT offer can be delivered with no file upload — the cheap branch of the delivery route, and the one the pack whose source we hold actually needs. The hourly half only checks that the parameter is recognised and creates nothing."
         type: boolean
@@ -239,6 +243,24 @@ jobs:
           node scripts/verify-sanitized-state.mjs state/payload-listing.json
           cp state/payload-listing.json "$RUNNER_TEMP/payload-listing.json"
 
+      # The walk that supersedes the step above. It is a separate input rather than
+      # a replacement because the two answers disagree, and deleting the losing
+      # measurement would leave the correction with nothing to correct — a reader
+      # six weeks from now needs to see that the earlier verdict existed and why it
+      # was wrong. scripts/promise-conformance.mjs orders them by fetched_at.
+      - name: Walk the upload route end to end, including replacement
+        if: always() && inputs.probe_file_walk
+        env:
+          GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
+        run: |
+          node scripts/probe-gumroad-file-walk.mjs state/gumroad-file-walk.json
+          node scripts/verify-sanitized-state.mjs state/gumroad-file-walk.json
+          # The commit step resets to origin/main before staging; without this the
+          # answer is deleted seconds after it is written, which reads as "the
+          # probe found nothing". Two probes were silently losing their output
+          # this way before the restore list below was made explicit.
+          cp state/gumroad-file-walk.json "$RUNNER_TEMP/gumroad-file-walk.json"
+
       # always(), and deliberately AFTER the probe's own `set -e` can kill the
       # step above. The probe exits 1 when it cannot delete its throwaway, which
       # is correct reporting and is not cleanup — on 2026-08-10T10:38Z that is
@@ -246,7 +268,7 @@ jobs:
       # on a live storefront. A probe cannot be its own recovery, because the
       # case needing recovery is the probe failing.
       - name: Sweep any probe product left on the account
-        if: always() && inputs.probe_file_replacement
+        if: always() && (inputs.probe_file_replacement || inputs.probe_file_walk)
         env:
           GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
         run: node scripts/sweep-gumroad-probe-products.mjs
@@ -280,6 +302,7 @@ jobs:
               gumroad-capabilities \
               gumroad-recurring \
               gumroad-file-replacement \
+              gumroad-file-walk \
               gumroad-presign \
               gumroad-rich-content \
               payload-listing \

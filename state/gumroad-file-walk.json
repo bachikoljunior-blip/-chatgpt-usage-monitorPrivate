@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-10T16:34:52.544Z",
+  "question": "state/gumroad-presign.json proved the upload doors exist and said in its own words that it did not settle whether bytes can be delivered. Can they?",
+  "walk": [
+    {
+      "rung": "presign",
+      "reached": true,
+      "status": 200,
+      "body": "{\"success\":true,\"upload_id\":\"0THFYlhXNaTYjiHogmcZjG1BauBwTVVszs0Btq_yIcROcBXqIa2uIykxBlGGuBlGF7BU7n9WtxZ63_mj2spBaOgCLsguVvR56PniV5TomMtWD3ZguMnTl78k.8ZiDOMA\",\"key\":\"attachments/8614312572037/97de0027fce752bea8ac6d6a22484275/original/probe-filewalk.txt\",\"file_url\":\"https://s3.amazonaws.com/gumroad/attachments/8614312572037/97de0027fce752bea8ac6d6a22484275/original/probe-filewalk.txt\",\"parts\":[{\"part_number\":1,\"presigned_url\":\"https://gumroad.s3.amazonaws.com/attachments/8614312572037/97de0027fce752bea8ac6d6a22484275/original/probe-filewalk.txt?partNumber=1&uploadId=0THFYlhXNaTYjiHogmcZjG1BauBw",
+      "parts_returned": 1,
+      "file_url_returned": true,
+      "upload_id_returned": true,
+      "parameters_negotiated": [
+        {
+          "status": 400,
+          "asked_for": "file_size",
+          "sent": [
+            "filename"
+          ]
+        }
+      ],
+      "parameters_sent": [
+        "filename",
+        "file_size"
+      ],
+      "why": "1 part url(s) plus an attachable file_url"
+    },
+    {
+      "rung": "s3",
+      "reached": true,
+      "status": 200,
+      "parts_uploaded": 1,
+      "etag_returned": true,
+      "why": "bytes accepted at parts[1].presigned_url"
+    },
+    {
+      "rung": "complete",
+      "reached": true,
+      "status": 200,
+      "body": "{\"success\":true,\"file_url\":\"https://s3.amazonaws.com/gumroad/attachments/8614312572037/97de0027fce752bea8ac6d6a22484275/original/probe-filewalk.txt\"}",
+      "why": "the multipart upload was closed"
+    },
+    {
+      "rung": "attach",
+      "reached": true,
+      "status": 200,
+      "why": "throwaway product created",
+      "body": null
+    },
+    {
+      "rung": "readback",
+      "reached": true,
+      "status": 200,
+      "why": "the product reports an attached file",
+      "files": "{\"file_info\":{},\"files\":[{\"id\":\"KBCsI410xd7UOTjaamwfHg==\",\"name\":null,\"size\":null,\"url\":\"https://files.gumroad.com/attachments/8614312572037/97de0027fce752bea8ac6d6a22484275/original/probe-filewalk.txt?response-content-disposition=attachment&verify=1786380291-w1S%2BN25CYGYMVagzEV%2FhRY3Z0pjBmaJW%2FzCJUEipRSU%3D\",\"filetype\":\"txt\",\"filegroup\":\"document\"}]}",
+      "product_fields": null
+    },
+    {
+      "rung": "replace",
+      "reached": true,
+      "status": 200,
+      "why": "PUT with a new files[] answered 2xx",
+      "body": null
+    },
+    {
+      "rung": "replace_readback",
+      "reached": true,
+      "status": 200,
+      "file_count": 1,
+      "new_file_present": true,
+      "old_file_still_present": false,
+      "why": "the attachment was REPLACED: the new file is served and the old one is gone"
+    },
+    {
+      "rung": "cleanup",
+      "reached": true,
+      "status": 200,
+      "why": "throwaway deleted and confirmed absent from the product collection"
+    }
+  ],
+  "reached": [
+    "presign",
+    "s3",
+    "complete",
+    "attach",
+    "readback",
+    "replace",
+    "replace_readback",
+    "cleanup"
+  ],
+  "stopped_at": null,
+  "bytes_can_reach_a_buyer": true,
+  "attachment_can_be_replaced": true,
+  "owner_upload_required": false,
+  "what_this_settles": "Bytes reach a buyer AND an existing attachment can be replaced, both with zero owner actions. state/gumroad-file-replacement.json's none_over_api verdict is withdrawn: it was measured on paths the vendor source does not name, with a form encoding that cannot carry an array of objects. The two promise failures on the priced product are deliverable from here, and the owner request asking for a manual upload is no longer needed.",
+  "what_this_does_not_settle": "That the fix has been DELIVERED. This walk measures the route on a throwaway; idle_clicker_kit still serves the stale archive until a lap builds the archive from the current source and puts it through these same rungs against the live permalink. A route that works is not a shipped file.",
+  "the_two_reasons_the_earlier_verdict_was_wrong": [
+    "the probed paths were not the ones the vendor source names (settled in state/gumroad-presign.json)",
+    "the bodies were form-encoded, and a form body cannot carry an array of objects, so files[] never arrived (the same encoding fault state/payload-listing.json found for rich_content)"
+  ],
+  "probe_hygiene": "every product created here is named zzz-probe-filewalk-<timestamp> and deleted in a finally block; the live listing is never touched"
+}

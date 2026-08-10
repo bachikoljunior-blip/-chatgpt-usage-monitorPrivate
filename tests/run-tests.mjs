@@ -6744,3 +6744,87 @@ function assert(condition, message) {
     "the second-producer finding is missing again — it survives only in git history, which is the one place nothing reads",
   );
 }
+
+// The Gumroad upload walk. Two readers, both pure, both guarding a mistake that was
+// actually made on 2026-08-10 while measuring this route — the reason they are
+// functions at all is that each wrong reading looked like a wall in the world.
+{
+  const { readPresign, missingParam } = await import("../scripts/probe-gumroad-file-walk.mjs");
+
+  // The shape the deployed API actually returned, trimmed.
+  const real = {
+    success: true,
+    upload_id: "abc",
+    key: "attachments/1/2/original/f.txt",
+    file_url: "https://s3.amazonaws.com/gumroad/attachments/1/2/original/f.txt",
+    parts: [{ part_number: 1, presigned_url: "https://gumroad.s3.amazonaws.com/attachments/1/2/original/f.txt?partNumber=1&uploadId=abc" }],
+  };
+  const shape = readPresign(real);
+  assert(shape.understood, "the measured presign response no longer reads as understood");
+  assert(shape.uploadId === "abc" && shape.key === real.key, "upload_id/key stopped being read off the presign response");
+
+  // THE BUG: file_url and parts[].presigned_url have opposite jobs. Putting the
+  // bytes at file_url gets a 403 from S3, which reads as "the storage refuses us"
+  // — a wall that does not exist. The two must never be merged into one list.
+  assert(
+    shape.parts.length === 1 && shape.parts[0].url.includes("partNumber="),
+    "the part url is no longer the signed one — bytes sent at file_url get a 403 that looks like a closed door",
+  );
+  assert(
+    shape.fileUrl === real.file_url && !shape.parts.some((p) => p.url === real.file_url),
+    "file_url leaked into the upload targets; that is the exact confusion that produced the 403",
+  );
+
+  // A half-read response is not understood. Reporting "no url" and reporting
+  // "urls but nothing to attach" are different findings for the next lap.
+  assert(!readPresign({ ...real, parts: [] }).understood, "a response with no part url read as understood");
+  assert(!readPresign({ ...real, file_url: undefined }).understood, "a response with nothing to attach read as understood");
+  assert(!readPresign(null).understood, "a null response read as understood");
+
+  // The API names one missing parameter at a time; reading the name is how the
+  // parameter list gets measured instead of copied from a source tree that may not
+  // match this deployment. It answered "file_size is required" after "filename".
+  assert(missingParam({ status: 400, error: "file_size is required" }) === "file_size", "the missing-parameter reader stopped reading the API's own words");
+  assert(missingParam({ status: 400, error: "something else entirely" }) === null, "an unrelated error was mined for a parameter name");
+  assert(missingParam(null) === null, "a missing body produced a parameter name");
+}
+
+// The walk's own record has to carry the rungs, or a later reader inherits a verdict
+// with nothing behind it — the same failure the delivery probe's controls exist for.
+{
+  const { readFileSync: rfs } = await import("node:fs");
+  const walk = JSON.parse(rfs(new URL("../state/gumroad-file-walk.json", import.meta.url), "utf8"));
+  assert(Array.isArray(walk.walk) && walk.walk.length > 0, "the file walk stopped recording its rungs");
+  assert(
+    walk.walk.some((r) => r.rung === "cleanup"),
+    "the walk has no cleanup rung — a probe that creates products on a live storefront must record that it removed them",
+  );
+  // replace_readback is the rung that matters: a 2xx on the PUT is not a replacement.
+  const replaced = walk.walk.find((r) => r.rung === "replace_readback");
+  if (walk.attachment_can_be_replaced) {
+    assert(
+      replaced?.reached && replaced.new_file_present && !replaced.old_file_still_present,
+      "attachment_can_be_replaced is claimed while the readback rung does not show the swap; the claim must rest on the separate read, not on the PUT's own 2xx",
+    );
+  }
+  assert(
+    walk.owner_upload_required === !walk.attachment_can_be_replaced,
+    "the owner-upload question and the replacement measurement disagree on the same file",
+  );
+}
+
+// Two measurements of ONE question — can the attachment be replaced — now exist, and
+// promise-conformance has to order them by time rather than by which file it happens
+// to read first. Ordering by presence is how a stale success would bury a fresh
+// failure, which is the same mistake in the other direction.
+{
+  const { newerThan } = await import("../scripts/gumroad-delivery-reading.mjs");
+  assert(newerThan("2026-08-10T16:34:52Z", "2026-08-10T11:09:28Z"), "a later walk failed to outrank an earlier probe");
+  assert(!newerThan("2026-08-10T11:09:28Z", "2026-08-10T16:34:52Z"), "an earlier walk outranked a later probe");
+  assert(!newerThan("2026-08-10T16:34:52Z", "2026-08-10T16:34:52Z"), "an equal timestamp counted as newer");
+  // A missing or unparseable date must lose in BOTH directions. Defaulting either
+  // way lets a file with no fetched_at silently win an argument about evidence.
+  assert(!newerThan("2026-08-10T16:34:52Z", undefined), "a walk outranked a probe with no timestamp to compare against");
+  assert(!newerThan(undefined, "2026-08-10T16:34:52Z"), "a walk with no timestamp outranked a dated probe");
+  assert(!newerThan("not a date", "also not a date"), "two unparseable dates produced an ordering");
+}

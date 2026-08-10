@@ -100,3 +100,23 @@ export function sizeInBytes(fileInfo) {
   if (typeof raw === "string" && /^\d+$/.test(raw.trim())) return Number(raw.trim());
   return null;
 }
+
+/**
+ * Two measurements of ONE question now exist — can the live attachment be replaced.
+ * state/gumroad-file-replacement.json answered not_replaceable at 11:09Z on 2026-08-10;
+ * state/gumroad-file-walk.json answered yes at 16:34Z, having actually swapped a file
+ * on a throwaway. Which one a reader believes must be decided by TIME, not by which
+ * file the code happens to open first.
+ *
+ * Strictly newer, and only when BOTH timestamps parse. An unparseable or missing date
+ * loses in both directions: defaulting either way would let a file with no fetched_at
+ * silently win an argument about evidence.
+ *
+ * @returns true when `a` is a strictly later measurement than `b`
+ */
+export function newerThan(a, b) {
+  const ta = Date.parse(a ?? "");
+  const tb = Date.parse(b ?? "");
+  if (Number.isNaN(ta) || Number.isNaN(tb)) return false;
+  return ta > tb;
+}

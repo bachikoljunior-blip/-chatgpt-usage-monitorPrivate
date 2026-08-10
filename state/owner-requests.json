@@ -324,8 +324,17 @@
           "nothing_to_decide": "ファイル名も、説明文も、価格も、タグも、画像も変更しません。添付ファイル1つだけです。"
         }
       },
+      "superseded_by_measurement": {
+        "measured_at": "2026-08-10T16:34:52.544Z",
+        "state_file": "state/gumroad-file-walk.json",
+        "finding": "この依頼の前提（添付ファイルは API では差し替えられない）は誤りでした。使い捨ての商品で、presign → 実バイトを S3 へ → complete → 添付 → 読み直し → 2つ目のファイルで差し替え → 読み直し、の全段が通りました。差し替え後は新しいファイルだけが配信され、古い方は消えています。",
+        "why_the_earlier_measurement_said_otherwise": "2つあります。(1) 塞がっていると判定した12本の経路は、Gumroad 自身の公開ソースが名指ししている経路（POST /v2/files/presign, POST /v2/files/complete）を含んでいませんでした。(2) 本文をフォーム形式で送っていました。フォーム形式はオブジェクトの配列を運べないので、files[] は届いていませんでした。同じ誤りが rich_content でも起きていたことが state/payload-listing.json に記録されています。",
+        "what_the_owner_should_do": "何もしないでください。この依頼は取り下げます。周の側でアップロードします。",
+        "still_pending_until": "実際に差し替えて success_test_machine が真になるまで status は pending のままにします。「できると分かった」は「配った」ではありません。",
+        "do_not_delete_this_request": "取り下げた依頼を消すと、なぜオーナーに頼まずに済むようになったのかが残りません。誤った実測と、その訂正が並んでいることに意味があります。"
+      },
       "what_this_lap_could_not_do_and_why": {
-        "the_upload": "アップロードだけは、こちらからはできません。上の why_it_cannot_be_automated が実測の内容です。",
+        "the_upload": "【2026-08-10T16:34Z に反証。上の superseded_by_measurement を読んでください。】アップロードだけは、こちらからはできません。上の why_it_cannot_be_automated が実測の内容です。",
         "notifying_existing_buyers": "購入者への通知は不要です。売上は0件なので、通知すべき相手がまだいません。今回の差し替えは「これから買う人が受け取るもの」を直すためのものです。"
       },
       "success_test": "state/product-source.json のマニフェストで LICENSE.txt か brand.config.json の sha256 が新しい値になる。これは毎時ひとりでに更新されます。",
