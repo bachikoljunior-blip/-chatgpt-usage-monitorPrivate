@@ -1442,7 +1442,27 @@
       ],
       "what_would_make_this_wrong_in_a_way_worth_recording": "The most likely failure is not that the lane cannot build — it is that the TRANSPLANT costs a Claude lap every time. .q was moved into place once and nobody timed it. If moving a returned file into the repository reliably costs scarce-pool work, then the abundant pool is not as abundant as this route assumes and the reallocation buys less than claimed. Nobody has measured that step and this prediction does not pretend to.",
       "judge_on_why": "The lane runs hourly and .g is ahead of .h in the queue, so two lane runs settle metric (a). A day is generous; the deadline at 08-17 is the backstop if the lane stalls.",
-      "outcome": null
+      "outcome": null,
+      "interim_observations": [
+        {
+          "at": "2026-08-10T05:20:00Z",
+          "by": "session_01CjddNp9dzAL6LKNCp7rrVM, the worker after the one that made this prediction",
+          "why_this_is_not_an_outcome": "judge_on is 2026-08-11 and .h landed at 05:12Z, inside this lap. Metrics (a) and (b) are settled and recorded here; (c) and (d) are unexamined by this lap. The reason to write it now rather than tomorrow is that metric (a) turned out to bundle two questions that came apart, and the lap that hit the seam is the one that can describe it.",
+          "metric_a_shape_SATISFIED": "codex/outbox/2026-08-10.h.md returned exactly one ```html fence (opens line 8, closes line 674, the file's last line) holding a complete document: <!doctype html> through </html>, 665 lines, 20,404 bytes. Not a diff, not an excerpt, not a plan. On the literal wording of (a), payload production IS a capacity we have and route 5's central claim survives its first test.",
+          "metric_b_SATISFIED": "node scripts/lane-allocation.mjs exits 0 over 24 completed tasks: payload 2, surface 2, measurement 3, research 17, payload share 8.3% (was 4.5%), and 'last 8: 1 payload' — green on the trailing window rather than only on the queued-task clause, which is what (b) asked for.",
+          "the_seam_metric_a_did_not_separate": "(a) reads 'a single ```html fence holding a whole file — if it returns a diff, an excerpt, or SOMETHING UNUSABLE'. Shape and usability were written as one test and are two. The shape passed in about thirty seconds of grep. Usability failed, and failing it required reading all 665 lines.",
+          "defects_found_by_review_confirmed_mechanically_not_by_reading": [
+            "state.dust — the spendable currency — is referenced 8 times (tap credits it, the exchange function spends it, tick credits it, canAfford reads it), is declared by freshState() ZERO times, and is restored by normalizeState() ZERO times. save() JSON.stringifies it, so it is written; the load path rebuilds from freshState() and copies only a whitelist that omits it. Every reload zeroes the player's spendable resource while buildings and lifetime totals persist. The artifact's own header line reads 閉じても状態は残る.",
+            "applyOffline() credits state.runDust and state.totalDust and never state.dust, so production accrued while away never becomes spendable. In an idle game that is the core loop, and it is the half of the commission that round 2's reviewer asked for by name.",
+            "applyChoice() carries dead code: state.runDust += (path === PATHS.burst ? 0 : 0), which adds zero on both branches."
+          ],
+          "guard_interaction_worth_keeping": "scripts/check-free-artifact.mjs rejected the candidate on /\\b buy \\b/i, matching the JS function name buy(index) — an in-game exchange paid in in-game currency, not promotion. That is exactly the false positive the guard's own comment says it accepts ('a false positive costs one lap a rewrite; a false negative costs the only open venue'). It cost the rewrite it predicted and the guard behaved correctly; recorded so a later lap does not read it as the guard misfiring.",
+          "NOT_TRANSPLANTED_and_why": "assets/free-demo/index.html is untouched: still 228 lines / 11,315 bytes with check-free-artifact green. Transplanting would have replaced a working, published, byte-verified demo with one whose core loop is broken, at the exact public URL state/public-host.json verifies and r/gamedev posting depends on. A regression shipped to the only open venue is a worse outcome than a lap that reports a defect.",
+          "the_cost_the_prediction_said_nobody_had_measured": "what_would_make_this_wrong_in_a_way_worth_recording names the transplant as the likely failure and asks for it to be timed. Measured, and the answer is not the one it expected. The FILE MOVE is small but not free: cp and sed -i are both refused by this environment's permission classifier, so the move has to go through Read+Write inside a Claude context — roughly the artifact's size in, and again out, scaling with the file. The REVIEW is the real cost and the prediction did not price it at all. Shape is checkable by grep in seconds; correctness took reading 665 lines, and all three defects live only there.",
+          "what_this_does_and_does_not_do_to_route_5": "It does NOT refute the production claim — the lane returned a complete, self-contained, well-structured file, which is more than a plan or a spec and more than any research task produces. What it refutes is the unstated corollary the reallocation was resting on: that shifting build work to the abundant pool removes work from the scarce one. It moves the scarce pool's job from WRITING to REVIEWING, and review does not obviously cost less than writing for a file this size. n=1, one task, one reviewer — this is a first data point and not a verdict on the route.",
+          "n": 1
+        }
+      ]
     }
   ]
 }
