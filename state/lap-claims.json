@@ -633,6 +633,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T00:57:43.489Z",
+      "candidate": "itch_html5_kind_voids_the_minimum_price",
+      "kind": "route_change",
+      "mechanism": "Refutes the inherited route rather than tuning it. The handoff named 'free demo + paid kit on ONE itch page at zero owner actions' as the strongest move on the board. itch.io docs, fetched and quoted this lap: 'Currently all HTML5 games on itch.io are set up to only take payments as donations.' So making the kit page browser-playable converts its USD 25 minimum into a donation and the paid product becomes free to anyone who clicks past. The route dies; the survivor is a SEPARATE page, which itch_no_write_api already measures as impossible by machine, so the true cost is one owner action rather than zero. No ETA number moves this lap and none is claimed: both numbers stay inf. What moves is that an irreversible act on a live paid storefront is now blocked by a measured quote instead of by the next context happening to be careful.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

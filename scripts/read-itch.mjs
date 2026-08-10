@@ -129,6 +129,26 @@ if (source) {
     purchases_count: Number.isFinite(Number(g.purchases_count)) ? Number(g.purchases_count) : null,
     min_price_cents: Number.isFinite(Number(g.min_price)) ? Number(g.min_price) : null,
     published_at: g.published_at ?? null,
+    // Whether the page still CHARGES. min_price_cents alone does not answer that,
+    // and the difference is the whole paid product.
+    //
+    // itch.io docs, fetched 2026-08-10 from /docs/creators/html5:
+    //   "Currently all HTML5 games on itch.io are set up to only take payments as
+    //    donations."
+    // and, as the remedy: "it's possible to sell access to your game by setting its
+    // 'Kind of Game' to 'Downloadable'."
+    //
+    // So a project whose kind is browser-playable has a minimum price that is not
+    // enforced — the field keeps reporting 2500 while anyone may click past it. That
+    // state is indistinguishable from the paid one through the fields collected
+    // before today, which is exactly why it is collected now.
+    //
+    // Nulls, not defaults: "the API does not serve this" and "the project is not
+    // browser-playable" are different facts and only one of them is safe.
+    kind: typeof g.type === "string" ? g.type : null,
+    classification: typeof g.classification === "string" ? g.classification : null,
+    can_be_bought: typeof g.can_be_bought === "boolean" ? g.can_be_bought : null,
+    has_demo: typeof g.has_demo === "boolean" ? g.has_demo : null,
   }));
 
   payload = {
