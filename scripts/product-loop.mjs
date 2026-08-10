@@ -97,6 +97,15 @@ export function roundEngaged(round) {
   // was looked at. The distinction is the reviewer's own word, quoted rather
   // than inferred, for the same reason the venue rules are quoted.
   if (/遊ん|played|plaid/i.test(said)) return true;
+  // 実行した / ran / executed. The vocabulary here was game-shaped because every
+  // offer in the register was a game: 遊んだ or 読んだ, with nothing in between.
+  // prompt_pack is a document of prompts, and the analogue of playing it is
+  // RUNNING one and reporting what came back — which is exactly what round 3 did,
+  // control included. Without this branch that round read as engagement null and
+  // the check demanded engagement from a round that had supplied the strongest
+  // engagement on the offer. Placed before the 読ん branch on purpose: an
+  // execution write-up usually also says the reviewer read the thing.
+  if (/実行|走らせ|動かし|\bran\b|executed|executing/i.test(said)) return true;
   if (/読ん|read|looked/i.test(said)) return false;
   return null;
 }
@@ -766,6 +775,16 @@ export function judge(doc, { now, artifactSources = {}, playMeasurements = null,
     const artifactSource = artifactSources[offer.id] ?? null;
     const play = playedEvidenceFor(offer.id, playMeasurements);
     const loop = loopable(offer);
+    // RUNBOOK 5.4: 退場できること. The register has carried a `retire` field since
+    // it was written and NOTHING read it — so the first offer to actually exit
+    // (prompt_pack, 2026-08-10) kept being told to run its next rung, go stale,
+    // and change its approach, by a check that could not see it had left. That is
+    // the exact half-wiring RUNBOOK 8 names: a file without a machine. The rules
+    // that go quiet here are the FORWARD-LOOKING ones (what to measure next, how
+    // old the last round is, three-no-move). The rules about whether the rounds on
+    // record are honest keep firing, because a retired offer's history is what the
+    // retirement rests on and it does not stop having to be true.
+    const retired = !!(offer.retire && typeof offer.retire === "object");
     const rounds = Array.isArray(offer.rounds) ? offer.rounds : [];
     const newest = rounds.length ? rounds[rounds.length - 1] : null;
     // measured_at is this file's name for it; verified_at is what RUNBOOK 5.4
@@ -789,8 +808,20 @@ export function judge(doc, { now, artifactSources = {}, playMeasurements = null,
       );
     }
 
+    // 1b. Retired and still on sale. The one forward-looking demand a retirement
+    //     does NOT silence, because it is the retirement's own consequence: an
+    //     offer this project has concluded has no buyer must not still be taking
+    //     money from one.
+    if (retired && offer.live_to_buyers) {
+      problems.push(
+        `${offer.id} is retired (${offer.retire.retired_at ?? "no date"}) and still live_to_buyers. ` +
+          "Retiring an offer is a decision about what this project sells; it is not done until the " +
+          "listing is down. Take it down or unset retire.",
+      );
+    }
+
     // 2. Stale.
-    if (loop.ok && (ageDays === null || ageDays > MAX_ROUND_AGE_DAYS)) {
+    if (!retired && loop.ok && (ageDays === null || ageDays > MAX_ROUND_AGE_DAYS)) {
       problems.push(
         ageDays === null
           ? `${offer.id} is loopable and has never completed a round — the loop exists on paper only`
@@ -904,7 +935,7 @@ export function judge(doc, { now, artifactSources = {}, playMeasurements = null,
       else if (r.moved === false) noMove += 1;
       else if (r.moved === true) noMove = 0;
     }
-    if (noMove >= NO_MOVE_LIMIT) {
+    if (!retired && noMove >= NO_MOVE_LIMIT) {
       problems.push(
         `${offer.id} has ${noMove} consecutive rounds that moved nothing. The rule is change the ` +
           "approach, not the parameter — set approach_changed on the round that does it.",
@@ -916,7 +947,7 @@ export function judge(doc, { now, artifactSources = {}, playMeasurements = null,
     //     moved. They came apart on free_demo, where every round improved the
     //     instrument and all three reviewers said the same word.
     const streak = verdictStreak(rounds);
-    if (streak.length >= VERDICT_STREAK_LIMIT && streak.engaged) {
+    if (!retired && streak.length >= VERDICT_STREAK_LIMIT && streak.engaged) {
       problems.push(
         `${offer.id} has ${streak.length} consecutive ${streak.rung} rounds all returning ` +
           `${streak.verdict}, at least one of them engaged. The verdict has not moved, whatever ` +
@@ -957,7 +988,7 @@ export function judge(doc, { now, artifactSources = {}, playMeasurements = null,
     //    what any lap did, which is the "red-only check is a report" failure
     //    RUNBOOK 5.4 names. The bar is not dropped — it is pointed at the
     //    measurement the offer itself declares.
-    if (playMeasurements && loop.ok && play.played !== true) {
+    if (!retired && playMeasurements && loop.ok && play.played !== true) {
       const hasPlayTarget = SHIPPED.some((s) => s.id === offer.id);
       problems.push(
         hasPlayTarget
@@ -975,7 +1006,12 @@ export function judge(doc, { now, artifactSources = {}, playMeasurements = null,
       live_to_buyers: Boolean(offer.live_to_buyers),
       loopable: loop.ok,
       why_not: loop.ok ? null : loop.reasons,
-      next_rung: offer.measurement?.rung ?? null,
+      // A retired offer has no next rung. Leaving measurement.rung here would keep
+      // printing a rung the register has concluded nobody should run again, and
+      // candidatesFrom() below keys candidate ids off this field.
+      next_rung: retired ? null : offer.measurement?.rung ?? null,
+      retired: retired ? (offer.retire.retired_at ?? true) : false,
+      retire_finding: retired ? offer.retire.the_finding ?? null : null,
       rounds: rounds.length,
       // The count that means something for this rung. A rung whose only rounds
       // are unengaged has not been measured, however many rows it has. A claim of
@@ -1062,6 +1098,12 @@ export function productLoopCandidates(verdict) {
             ? "any zero result on this offer, which will otherwise be read as the wrong venue"
             : null,
       });
+    } else if (row.retired) {
+      // Deliberately no candidate. An offer that has exited must stop asking laps
+      // for work, and this is the half that makes the exit real: state/eta.json is
+      // where a lap actually picks, so a retirement nothing removes from that list
+      // is a retirement in name only. RUNBOOK 5.4: 退場できなければなりません.
+      continue;
     } else if (row.rounds === 0) {
       out.push({
         kind: "product_loop",
@@ -1123,7 +1165,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   for (const r of verdict.rows) {
     console.log(
       `  ${r.id}: ${r.loopable ? "loopable" : "NOT LOOPABLE"} · live=${r.live_to_buyers} · ` +
-        `rounds=${r.rounds} (engaged ${r.rounds_engaged}, played here ${r.rounds_played_here}) · next=${r.next_rung ?? "(none)"}`,
+        `rounds=${r.rounds} (engaged ${r.rounds_engaged}, played here ${r.rounds_played_here}) · ` +
+        (r.retired ? `RETIRED ${r.retired === true ? "" : r.retired}`.trim() : `next=${r.next_rung ?? "(none)"}`),
     );
     for (const why of r.why_not ?? []) console.log(`      ${why}`);
     // Printed for every offer, including the unplayed ones. An unplayed artifact and

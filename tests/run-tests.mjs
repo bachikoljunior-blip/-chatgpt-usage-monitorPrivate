@@ -5733,6 +5733,63 @@ function assert(condition, message) {
     roundEngaged({ engagement: { played_or_read: "" } }) === null,
     "an empty engagement value was resolved instead of left unknown",
   );
+  // 実行した. The vocabulary was game-shaped — 遊んだ or 読んだ — because every offer
+  // in the register was a game. prompt_pack is a document of prompts and the
+  // analogue of playing it is RUNNING one. Round 3 ran two, quoted the output in
+  // full and ran a control, and read as engagement null, so the check demanded
+  // engagement from the most engaged round on the offer.
+  assert(roundEngaged({ engagement: { played_or_read: "実行した" } }) === true, "実行した was not read as engaged");
+  assert(roundEngaged({ engagement: { played_or_read: "ran the prompts" } }) === true, "the English form of ran was not read");
+  // And the 読ん branch must not swallow it: an execution write-up usually also
+  // says the reviewer read the thing, and reading it as a read is the exact bug.
+  assert(
+    roundEngaged({ engagement: { played_or_read: "読んだ上で実行した" } }) === true,
+    "an execution that also mentions reading was demoted to a read",
+  );
+
+  // Retirement, wired. state/product-loop.json has carried `retire` since it was
+  // written and nothing read it, so the first offer to actually exit kept being
+  // told to run its next rung and go stale by a check that could not see it had
+  // left. Both halves are pinned: the forward-looking bars go quiet, and the offer
+  // stops producing candidates in the list a lap actually picks from.
+  {
+    const { judge: judgeRetire, productLoopCandidates: candidatesRetire } =
+      await import("../scripts/product-loop.mjs");
+    const retiredOffer = {
+      id: "gone",
+      live_to_buyers: false,
+      source: { repo: "r", path: "p" },
+      source_measured_at: "2026-01-01T00:00:00Z",
+      measurement: { rung: "stranger_reaction", how: "h" },
+      rounds: [
+        { round: 1, rung: "stranger_reaction", verified_at: "2026-01-01T00:00:00Z", verdict: "払わない", moved: false, engagement: { played_or_read: "読んだ" }, reviewer_pairing: { reviewer_model_key: "a", author_model_key: "b" } },
+      ],
+      retire: { retired_at: "2026-01-02T00:00:00Z", the_finding: "nobody would pay" },
+    };
+    const now = new Date("2026-06-01T00:00:00Z"); // months past MAX_ROUND_AGE_DAYS
+    const v = judgeRetire({ offers: [retiredOffer] }, { now });
+    const row = v.rows.find((r) => r.id === "gone");
+    assert(row, "the retired offer vanished from the rows instead of being reported as retired");
+    assert(row.retired === "2026-01-02T00:00:00Z", "the row does not carry the retirement date");
+    assert(row.next_rung === null, "a retired offer is still being given a next rung to run");
+    assert(
+      !v.problems.some((p) => p.includes("gone") && p.includes("days old")),
+      "a retired offer was still being told its newest round is stale",
+    );
+    assert(
+      !candidatesRetire(v).some((c) => c.id.startsWith("gone.")),
+      "a retired offer still emits a candidate — the exit is in the file and not in the list a lap reads",
+    );
+    // The one forward-looking demand retirement does NOT silence.
+    const stillSelling = judgeRetire(
+      { offers: [{ ...retiredOffer, live_to_buyers: true }] },
+      { now },
+    );
+    assert(
+      stillSelling.problems.some((p) => p.includes("gone") && p.includes("live_to_buyers")),
+      "an offer retired for having no buyer is still on sale and the check said nothing",
+    );
+  }
 
   // Rule 4b: three rounds in a row returning the same ANSWER.
   //
