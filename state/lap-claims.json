@@ -1258,6 +1258,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T18:58:04.374Z",
+      "candidate": "honest_post_where_buyers_gather",
+      "kind": "route_change",
+      "mechanism": "Abandon route_7_delivery_is_the_binding_term. Its election rested on 'nothing built here reaches a buyer', but the priced kit has been live and purchasable for eight months at zero sales, so the quality of what a buyer downloads cannot be the term that binds a product nobody arrives at. Three prerequisite laps in a row went into the file-replacement mechanism and the gate reports the ETA unchanged. Elect route_1_post_where_buyers_gather instead: it is the only route in the evidence set where a first buyer ever arrived, and it was discarded on the premise 'zero audience', which state/eta.json's no_standing_where_buyers_gather records as NEVER MEASURED. A refutation resting on an unmeasured premise is an assumption. The number moves only if a channel gets a nonzero revenue reading; every route since route_1 has been about supply, and supply is already sufficient to sell one copy. The first act under the new route is to measure the premise, on the free ChatGPT lane, so it costs no weekly quota.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

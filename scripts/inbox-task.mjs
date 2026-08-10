@@ -112,6 +112,29 @@ function headerFromBody(body) {
  * task fence — so the prompt can be built from one task rather than from the
  * whole queue. A model handed three tasks does three, or picks.
  */
+/**
+ * The house style writes a task's rationale as an HTML comment ABOVE its fence,
+ * and the file's own header says those comments are for this side and not for the
+ * model. Slicing to the next fence therefore hands task N the preamble of task
+ * N+1: the model reads why the NEXT task exists, and every reader that scans "the
+ * task" scans text belonging to a different one.
+ *
+ * That is not hypothetical. 2026-08-10: the preamble filed with
+ * 2026-08-11.payload-01-run-b names the owner's account and says 前回, and it sat
+ * inside 2026-08-10.standing's section, so the live blind-leak check in
+ * tests/run-tests.mjs went red naming a venue survey that leaks nothing. The
+ * cheap way out would have been to weaken the leak patterns — the exact move
+ * scripts/product-loop.mjs warns about two comments above blindLeaks().
+ *
+ * Only a comment that ENDS the section is trimmed, with an optional `---` rule in
+ * front of it. A comment in the middle is part of this task and stays.
+ */
+export function trimNextTaskPreamble(section) {
+  const s = String(section ?? "");
+  const m = /\n(?:\s*---\s*\n)?\s*<!--[\s\S]*?-->\s*$/.exec(s);
+  return m ? `${s.slice(0, m.index)}\n` : s;
+}
+
 export function parseInboxTasks(text) {
   const re = /```ya?ml\s*\n([\s\S]*?)```/g;
   const found = [];
@@ -123,7 +146,9 @@ export function parseInboxTasks(text) {
   const preamble = text.slice(0, found[0].start);
   const tasks = found.map((f, i) => ({
     ...headerFromBody(f.body),
-    section: text.slice(f.start, i + 1 < found.length ? found[i + 1].start : text.length),
+    section: trimNextTaskPreamble(
+      text.slice(f.start, i + 1 < found.length ? found[i + 1].start : text.length),
+    ),
   }));
   return { preamble, tasks };
 }

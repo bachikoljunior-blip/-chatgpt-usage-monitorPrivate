@@ -1301,6 +1301,38 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
 
   const two = parseInboxTasks(q(["t.a", "2026-08-17"], ["t.b", "2026-08-17"]));
   assert(two.tasks.length === 2, `a two-task INBOX parsed as ${two.tasks.length}`);
+
+  // A task's section stops before the NEXT task's preamble comment. The house
+  // style puts a rationale in an HTML comment above each fence and the INBOX's own
+  // header says those are for this side, so without the trim the model reads why
+  // the next task exists — and every scanner that reads "the task" reads text
+  // belonging to a different one. That is how the live blind-leak check went red
+  // naming a venue survey that leaks nothing.
+  {
+    const withPreamble =
+      "```yaml\ntask_id: t.a\nvalid_until: 2026-08-17\n" +
+      'done_marker: codex/outbox/t.a.md\ndone_signal: "## x"\n```\n' +
+      "body of t.a\n\n---\n\n<!--\n  前回 bachikoljunior-blip の話。t.b のための説明。\n-->\n\n" +
+      "```yaml\ntask_id: t.b\nvalid_until: 2026-08-17\n" +
+      'done_marker: codex/outbox/t.b.md\ndone_signal: "## x"\n```\n' +
+      "body of t.b\n";
+    const p = parseInboxTasks(withPreamble);
+    assert(p.tasks.length === 2, "the preamble fixture did not parse as two tasks");
+    assert(
+      !p.tasks[0].section.includes("t.b のための説明"),
+      "task a's section still carries task b's preamble comment",
+    );
+    assert(p.tasks[0].section.includes("body of t.a"), "the trim ate the task's own body");
+    assert(blindLeaks(p.tasks[0].section).length === 0, "a trimmed section still reports a leak");
+    // Only a comment that ENDS the section goes. One in the middle belongs to
+    // this task and a trim that took it would delete real instructions.
+    const midComment = parseInboxTasks(
+      "```yaml\ntask_id: t.c\nvalid_until: 2026-08-17\n" +
+        'done_marker: codex/outbox/t.c.md\ndone_signal: "## x"\n```\n' +
+        "before\n<!-- kept -->\nafter\n",
+    );
+    assert(midComment.tasks[0].section.includes("<!-- kept -->"), "a mid-section comment was trimmed");
+  }
   assert(
     selectTask(two, { today: "2026-08-10", markerExists: () => false }).task.task_id === "t.a",
     "the queue did not run in file order",
@@ -4654,12 +4686,19 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   // history nobody can edit.
   {
     const inbox = await readFile(join(root, "codex/INBOX.md"), "utf8");
-    const sections = inbox.split(/```yaml/).slice(1);
-    for (const sec of sections) {
-      const id = /task_id:\s*(\S+)/.exec(sec)?.[1];
-      if (!id) continue;
-      const marker = join(root, "codex/outbox", `${id}.md`);
-      if (existsSync(marker)) continue;
+    // The same sectioning and the same marker the TRANSPORT uses, rather than a
+    // second definition living here. Two defects came out of the private copy:
+    // splitting on the fence alone gave a task the NEXT task's preamble comment
+    // (see trimNextTaskPreamble), and `codex/outbox/<task_id>.md` is not where a
+    // task's marker goes — done_marker says where, and a recurring task's is
+    // dated. Both made this check red on a task that leaks nothing, and the cheap
+    // way out of that red is weakening blindLeaks, which is the one thing the
+    // patterns exist to prevent.
+    const today = new Date().toISOString().slice(0, 10);
+    for (const task of parseInboxTasks(inbox).tasks ?? []) {
+      const { task_id: id, done_marker: declared, section: sec } = task;
+      if (!id || !sec) continue;
+      if (declared && existsSync(join(root, resolveMarker(declared, today)))) continue;
       // Only stranger-round tasks: the blind applies to those, not to outside
       // research. The selector used to be /hoshikuzu|free-demo/ over the section
       // text, which reads the ARTIFACT'S NAME rather than the task's purpose, so

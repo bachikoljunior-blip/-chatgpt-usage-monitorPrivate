@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T18:04:34.160Z",
+  "fetched_at": "2026-08-10T19:06:09.209Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -40,33 +40,32 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.98
+      "days_unchanged": 1.02
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.98
+      "days_unchanged": 1.02
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
   "route_election": {
-    "elected": "route_7_delivery_is_the_binding_term",
+    "elected": "route_1_post_where_buyers_gather",
     "aligned": [
-      "walk_the_upload_and_content_routes_end_to_end"
+      "honest_post_where_buyers_gather"
     ],
     "on_abandoned_route": [
       "pair_the_two_models_so_a_judge_is_never_the_author",
       "high_intent_tool_site",
       "findable_surface_at_scale",
-      "honest_post_where_buyers_gather",
       "point_the_reach_we_own_at_the_thing_we_sell"
     ],
-    "elected_route_has_no_unrefuted_candidate": false,
-    "elected_route_status": null
+    "elected_route_has_no_unrefuted_candidate": true,
+    "elected_route_status": "every candidate serving the elected route (route_1_post_where_buyers_gather) is refuted. The route is still elected and there is nothing under it to take. This is a route decision owed to the next lap: either give the route an unrefuted candidate, or elect a different route. Do not read the surviving 'elected' label as an instruction to take the refuted candidate anyway."
   },
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-10T17:43:03.492Z",
+      "measured_at": "2026-08-10T18:28:58.968Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
       "revenue_window_days": 1.125,
@@ -83,7 +82,7 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-10T17:35:37.033Z",
+      "measured_at": "2026-08-10T18:33:13.367Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
       "revenue_window_days": 0.584,
@@ -107,7 +106,7 @@
       "idle_eta_reason": "measured, not unreadable: 1208.75/day views and 394.75/day engaged over 4 days (2026-08-04..2026-08-07), zero owner actions. Ad revenue is not the path — at this rate the YouTube Partner gate is 4000 days away on subscribers, and the sibling loop prices the far side of it in the ¥1,000s/month against a ¥200,000 target. What the ranking may use is the ADDRESSABLE reach and not this one: 2 of 4851 playbacks over 28d. No threshold is applied here — the two numbers are printed because a route was elected on the larger one while the smaller existed and had never been read. DELIVERY CEILING FIRST: 2 of 4851 playbacks over 28d reach a surface that renders the description (0.04%), so the ceiling on clicks to ANY url placed here is 2 per 28 days — independent of which url and of who the audience is. Everything below is about a link nobody arrives at. The surface PERMITS the paid product's link and FORBIDS the free demo's (github) — so route 1's entire payload cannot go here as hosted. That is the exact INVERSE of r/gamedev, which permits the free artifact and forbids being paid. A lap may NOT perform the edit; it is the sibling loop's act.",
       "owner_actions_required": 0,
       "stale": false,
-      "stale_days": 0.8,
+      "stale_days": 0.9,
       "reach": {
         "usable": true,
         "window_days": 4,
@@ -193,10 +192,10 @@
       "why": "the offer is loopable and its own measurement says it is failing — a round that clears a named failure is the one kind of work that is about the thing being sold",
       "owner_actions": 0,
       "measure_via": "here",
-      "note": "Next rung: promise_conformance. 2 finding(s): idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: FIXED IN SOURCE, NOT YET DELIVERED. The shipped tree now measures 6 taps to the first purchase, then 100s idle to a second kind of producer (browser run: 6 taps to the first purchase, opening rate \"毎秒 0円 ／ 1タップ 1円\"). Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so a buyer still downloads the config that needs 15 taps and then 600 seconds of nothing new. MEASURED 2026-08-10T17:43:01.962Z ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, both calls answered 2xx, and the served file list did not move (no_op). state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. The difference between the two products is unmeasured and is the next thing to measure; until then no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it. The promise stays failed until a re-fetch shows the delivered digest moved. | idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 MEASURED 2026-08-10T17:43:01.962Z ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, both calls answered 2xx, and the served file list did not move (no_op). state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. The difference between the two products is unmeasured and is the next thing to measure; until then no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it. The promise stays failed until a re-fetch shows the delivered digest moved.",
+      "note": "Next rung: promise_conformance. 2 finding(s): idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: FIXED IN SOURCE, NOT YET DELIVERED. The shipped tree now measures 6 taps to the first purchase, then 100s idle to a second kind of producer (browser run: 6 taps to the first purchase, opening rate \"毎秒 0円 ／ 1タップ 1円\"). Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so a buyer still downloads the config that needs 15 taps and then 600 seconds of nothing new. MEASURED 2026-08-10T17:43:01.962Z ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, both calls answered 2xx, and the served file list did not move (no_op). state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. MEASURED 2026-08-10T18:01:31.261Z: the FILE COUNT is not the term — a throwaway carrying two attachments had both replaced by a single-entry files[] PUT; the next term to test is rich_content: the live listing carries a rich_content page whose fileEmbed names ONE file, while product-level files[] carries more. If the buyer's download list comes from the embeds, then PUT files[] writes to an index nobody serves — which is exactly what a 2xx that changes nothing looks like.; and the listing names files in two places that disagree — files[] carries 2 (Brandable_Idle_Clicker_Kit_v1.0, brandable-idle-clicker) while its rich_content page embeds 1. Until it is closed no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it. The promise stays failed until a re-fetch shows the delivered digest moved. | idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 MEASURED 2026-08-10T17:43:01.962Z ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, both calls answered 2xx, and the served file list did not move (no_op). state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. MEASURED 2026-08-10T18:01:31.261Z: the FILE COUNT is not the term — a throwaway carrying two attachments had both replaced by a single-entry files[] PUT; the next term to test is rich_content: the live listing carries a rich_content page whose fileEmbed names ONE file, while product-level files[] carries more. If the buyer's download list comes from the embeds, then PUT files[] writes to an index nobody serves — which is exactly what a 2xx that changes nothing looks like.; and the listing names files in two places that disagree — files[] carries 2 (Brandable_Idle_Clicker_Kit_v1.0, brandable-idle-clicker) while its rich_content page embeds 1. Until it is closed no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it. The promise stays failed until a re-fetch shows the delivered digest moved.",
       "product_loop_problems": [
-        "idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: FIXED IN SOURCE, NOT YET DELIVERED. The shipped tree now measures 6 taps to the first purchase, then 100s idle to a second kind of producer (browser run: 6 taps to the first purchase, opening rate \"毎秒 0円 ／ 1タップ 1円\"). Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so a buyer still downloads the config that needs 15 taps and then 600 seconds of nothing new. MEASURED 2026-08-10T17:43:01.962Z ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, both calls answered 2xx, and the served file list did not move (no_op). state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. The difference between the two products is unmeasured and is the next thing to measure; until then no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it. The promise stays failed until a re-fetch shows the delivered digest moved.",
-        "idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 MEASURED 2026-08-10T17:43:01.962Z ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, both calls answered 2xx, and the served file list did not move (no_op). state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. The difference between the two products is unmeasured and is the next thing to measure; until then no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it. The promise stays failed until a re-fetch shows the delivered digest moved."
+        "idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: FIXED IN SOURCE, NOT YET DELIVERED. The shipped tree now measures 6 taps to the first purchase, then 100s idle to a second kind of producer (browser run: 6 taps to the first purchase, opening rate \"毎秒 0円 ／ 1タップ 1円\"). Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so a buyer still downloads the config that needs 15 taps and then 600 seconds of nothing new. MEASURED 2026-08-10T17:43:01.962Z ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, both calls answered 2xx, and the served file list did not move (no_op). state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. MEASURED 2026-08-10T18:01:31.261Z: the FILE COUNT is not the term — a throwaway carrying two attachments had both replaced by a single-entry files[] PUT; the next term to test is rich_content: the live listing carries a rich_content page whose fileEmbed names ONE file, while product-level files[] carries more. If the buyer's download list comes from the embeds, then PUT files[] writes to an index nobody serves — which is exactly what a 2xx that changes nothing looks like.; and the listing names files in two places that disagree — files[] carries 2 (Brandable_Idle_Clicker_Kit_v1.0, brandable-idle-clicker) while its rich_content page embeds 1. Until it is closed no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it. The promise stays failed until a re-fetch shows the delivered digest moved.",
+        "idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 MEASURED 2026-08-10T17:43:01.962Z ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, both calls answered 2xx, and the served file list did not move (no_op). state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. MEASURED 2026-08-10T18:01:31.261Z: the FILE COUNT is not the term — a throwaway carrying two attachments had both replaced by a single-entry files[] PUT; the next term to test is rich_content: the live listing carries a rich_content page whose fileEmbed names ONE file, while product-level files[] carries more. If the buyer's download list comes from the embeds, then PUT files[] writes to an index nobody serves — which is exactly what a 2xx that changes nothing looks like.; and the listing names files in two places that disagree — files[] carries 2 (Brandable_Idle_Clicker_Kit_v1.0, brandable-idle-clicker) while its rich_content page embeds 1. Until it is closed no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it. The promise stays failed until a re-fetch shows the delivered digest moved."
       ],
       "actionable_now": true,
       "eta_effect_days": null,
@@ -242,9 +241,9 @@
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_4_the_offer_form_is_the_binding_term",
-        "elected_route": "route_7_delivery_is_the_binding_term",
+        "elected_route": "route_1_post_where_buyers_gather",
         "status": "not_on_an_elected_route",
-        "elected_at": "2026-08-10T14:40:00Z",
+        "elected_at": "2026-08-10T19:05:00Z",
         "why": "the elected route does not cover this candidate; it is ranked on its own merits.",
         "prerequisite": null,
         "prerequisite_measured": null,
@@ -275,9 +274,9 @@
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_5_lane_allocation_is_the_binding_term",
-        "elected_route": "route_7_delivery_is_the_binding_term",
+        "elected_route": "route_1_post_where_buyers_gather",
         "status": "not_on_an_elected_route",
-        "elected_at": "2026-08-10T14:40:00Z",
+        "elected_at": "2026-08-10T19:05:00Z",
         "why": "the elected route does not cover this candidate; it is ranked on its own merits.",
         "prerequisite": null,
         "prerequisite_measured": null,
@@ -308,9 +307,9 @@
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_6_an_independent_judge_is_the_binding_term",
-        "elected_route": "route_7_delivery_is_the_binding_term",
+        "elected_route": "route_1_post_where_buyers_gather",
         "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T14:40:00Z",
+        "elected_at": "2026-08-10T19:05:00Z",
         "why": null,
         "prerequisite": null,
         "prerequisite_measured": null,
@@ -336,14 +335,14 @@
         "file_route": {
           "upload_route_exists": true,
           "verdict": "the earlier absence was measured on the wrong paths",
-          "measured_at": "2026-08-10T17:42:59.783Z",
+          "measured_at": "2026-08-10T18:28:58.117Z",
           "source": "state/gumroad-presign.json"
         },
         "text_route": {
           "parameter_recognised": true,
           "content_landed": false,
           "verdict": "recognised_passage_untried",
-          "measured_at": "2026-08-10T17:43:00.310Z",
+          "measured_at": "2026-08-10T18:28:58.378Z",
           "source": "state/gumroad-rich-content.json"
         },
         "payload_walk": {
@@ -364,44 +363,15 @@
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_7_delivery_is_the_binding_term",
-        "elected_route": "route_7_delivery_is_the_binding_term",
-        "status": "elected",
-        "elected_at": "2026-08-10T14:40:00Z",
-        "why": "With an inspectable artifact in hand, every remaining stop is the same one. state/gumroad-file-replacement.json: delivery_route none_over_api, creation-with-a-file refused by the same rule. state/product-loop.json: both promise failures on the priced product read FIXED IN SOURCE, NOT YET DELIVERED, so rung 1 cannot be cleared however well the source is fixed. prompt_pack: rungs 3 and 4 both need it purchasable, and its own exit clause fires if no delivery route is found by 2026-08-24. Nothing built here reaches a buyer, so no revenue reading exists, so every channel reads infinity — one term, not four.",
-        "prerequisite": "NONE. Both acts under this route are API calls against a throwaway product with a token this repository already holds: no venue, no stranger, no buyer, no owner action, and nothing that has to be published before it can be tried.",
-        "prerequisite_measured": {
-          "term": null,
-          "instrument": null,
-          "counts": {
-            "delivery_unmeasured": 0,
-            "postable": 1,
-            "venue_rule": 0,
-            "venue_unsettled": 2,
-            "account": 0,
-            "account_too_new": 1
-          },
-          "venues_on_the_named_term": null,
-          "language_mismatches": [
-            "r/gamedev",
-            "r/incremental_games"
-          ],
-          "venues_with_a_revenue_path": [
-            "itch.io — Release Announcements",
-            "GameDev.net — Your Announcements",
-            "r/incremental_games"
-          ],
-          "binding_venues_without_a_revenue_path": [],
-          "owner_requests_clearing_the_term": [],
-          "ok": true,
-          "problem": null,
-          "prerequisite_none": "This route waits on nothing outside this repository. The doors were measured open this lap (state/gumroad-presign.json) with the credential already in the repository's secrets, and the throwaway-product pattern the earlier probes used needs no human. The one thing that COULD turn out to be a prerequisite is a seller web session — app/controllers/s3_utility_controller.rb is Sellers::BaseController with authenticate_user! — and that is a finding the route's own first probe would produce, not a condition on starting it. A prerequisite you discover by acting is not a prerequisite."
-        },
-        "language_mismatches": [
-          "r/gamedev",
-          "r/incremental_games"
-        ],
-        "binding_venues_without_a_revenue_path": [],
-        "owner_requests_clearing_the_prerequisite": [],
+        "elected_route": "route_1_post_where_buyers_gather",
+        "status": "not_on_an_elected_route",
+        "elected_at": "2026-08-10T19:05:00Z",
+        "why": "the elected route does not cover this candidate; it is ranked on its own merits.",
+        "prerequisite": null,
+        "prerequisite_measured": null,
+        "language_mismatches": null,
+        "binding_venues_without_a_revenue_path": null,
+        "owner_requests_clearing_the_prerequisite": null,
         "elected_but_refuted": false
       }
     },
@@ -489,9 +459,9 @@
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 60 days at the conservative end (estimate, not measured)",
       "route_alignment": {
         "serves_route": "route_2_unattended_findable_pages",
-        "elected_route": "route_7_delivery_is_the_binding_term",
+        "elected_route": "route_1_post_where_buyers_gather",
         "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T14:40:00Z",
+        "elected_at": "2026-08-10T19:05:00Z",
         "why": null,
         "prerequisite": null,
         "prerequisite_measured": null,
@@ -545,9 +515,9 @@
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_2_unattended_findable_pages",
-        "elected_route": "route_7_delivery_is_the_binding_term",
+        "elected_route": "route_1_post_where_buyers_gather",
         "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T14:40:00Z",
+        "elected_at": "2026-08-10T19:05:00Z",
         "why": null,
         "prerequisite": null,
         "prerequisite_measured": null,
@@ -591,16 +561,49 @@
       "repriced_because": "The candidate was carrying the route adopted at 3555e97 with no test of whether the act it names can be performed. It can not, today: 0 of 3 surveyed venues are postable from a standing start, and neither of the two hard refusals is about standing. Recorded on the candidate rather than in the constraint alone because the constraint is not what a lap picks from.",
       "route_alignment": {
         "serves_route": "route_1_post_where_buyers_gather",
-        "elected_route": "route_7_delivery_is_the_binding_term",
-        "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T14:40:00Z",
-        "why": null,
-        "prerequisite": null,
-        "prerequisite_measured": null,
-        "language_mismatches": null,
-        "binding_venues_without_a_revenue_path": null,
-        "owner_requests_clearing_the_prerequisite": null,
-        "elected_but_refuted": false
+        "elected_route": "route_1_post_where_buyers_gather",
+        "status": "elected",
+        "elected_at": "2026-08-10T19:05:00Z",
+        "why": "Route 7 was elected on the sentence 'nothing built here reaches a buyer'. That sentence is false about the priced kit and always was: state/gumroad.json shows the listing live, published and purchasable, and state/eta.json's gumroad channel reports lifetime_sales 0 over eight months. A product that can be bought and is not bought is not blocked on the quality of its download. Three prerequisite laps went into the file-replacement mechanism (state/gumroad-file-walk.json, state/product-delivery.json, state/gumroad-two-file-replace.json) and each produced a real measurement about Gumroad's API and nothing about the number: eta-history is five rows of null/null and lap-claims is 79 claims with improves=false on every one. Relieving a term that is not binding cannot move an ETA, which is the definition of the wrong route.",
+        "prerequisite": "STANDING, MEASURED ON THIS ACCOUNT. Named as the route's prerequisite because the refutation named it, not because it is convenient: does the owner hold prior participation, karma, or a following in any community where buyers of a brandable idle-clicker kit gather, sufficient that a single honest post would be SHOWN rather than auto-removed?",
+        "prerequisite_measured": {
+          "term": "venue_unsettled",
+          "instrument": {
+            "script": "scripts/venue-readiness.mjs",
+            "field": "rows[].binding",
+            "note": "loadVenueRows reads the venue rows in state/constraints.json and reports one binding cause per venue. prerequisiteCheck fails in pulse.yml if this election names a term that instrument cannot report."
+          },
+          "counts": {
+            "delivery_unmeasured": 0,
+            "postable": 1,
+            "venue_rule": 0,
+            "venue_unsettled": 2,
+            "account": 0,
+            "account_too_new": 1
+          },
+          "venues_on_the_named_term": 2,
+          "language_mismatches": [
+            "r/gamedev",
+            "r/incremental_games"
+          ],
+          "venues_with_a_revenue_path": [
+            "itch.io — Release Announcements",
+            "GameDev.net — Your Announcements",
+            "r/incremental_games"
+          ],
+          "binding_venues_without_a_revenue_path": [],
+          "owner_requests_clearing_the_term": [],
+          "ok": true,
+          "problem": null,
+          "revenue_path_exception": null
+        },
+        "language_mismatches": [
+          "r/gamedev",
+          "r/incremental_games"
+        ],
+        "binding_venues_without_a_revenue_path": [],
+        "owner_requests_clearing_the_prerequisite": [],
+        "elected_but_refuted": true
       },
       "blocked_on_rechecked": {
         "at": "2026-08-09T11:28:00.123Z",
@@ -727,9 +730,9 @@
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_3_use_the_reach_already_owned",
-        "elected_route": "route_7_delivery_is_the_binding_term",
+        "elected_route": "route_1_post_where_buyers_gather",
         "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T14:40:00Z",
+        "elected_at": "2026-08-10T19:05:00Z",
         "why": null,
         "prerequisite": null,
         "prerequisite_measured": null,
