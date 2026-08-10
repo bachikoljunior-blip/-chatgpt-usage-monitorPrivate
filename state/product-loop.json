@@ -724,21 +724,79 @@
             "the_artifact": "NOTHING. codex/outbox/payload-01.md was not edited between round 1 and round 2, so this is a repeat measurement of an identical document. RUNBOOK 5.4 編集したことは改善ではありません cuts the other way here too: not editing is not a measurement either, and a second read of an unchanged artifact was always likely to return the first answer.",
             "why_it_is_still_recorded_as_a_round": "Because the reviewer is a different non-author and the reason is independently arrived at. Two readers refusing on the same axis is worth more than one, and it is what clause (1) counts."
           },
-          "the_exit_was_evaluated_and_did_not_fire": {
+          "the_exit_was_evaluated_twice_in_one_lap_and_the_second_reading_is_the_one_that_holds": {
             "clause": "how_it_exits (1): two non-author rung-2 払わない with a CONTENT reason, WITH NO APPROACH CHANGE AVAILABLE — retire it.",
             "first_two_terms": "MET. Rounds 1 and 2, both non-author, both content, both on the demonstrated-value axis.",
-            "third_term": "NOT MET, and this is the whole reason the offer is still here. An approach change is available, was named by round 1 itself (what_would_have_separated_them), has already been PAID FOR, and has never been applied: fold the executed-prompt evidence in payload-01-run-b.md into the offer and ask a fresh non-author. Every round so far has been a read of a document that contains no evidence of results, which is precisely what both reviewers refused on. Retiring now would be retiring an artifact whose named repair was bought and never installed.",
-            "what_this_costs_and_why_it_is_bounded": "An offer that can always invent one more approach never exits, which is the failure this whole register was written against. So the exit is now BOUND rather than left open: see retirement_is_bound_to_round_3. This lap is allowed exactly one approach change, not a supply of them."
+            "third_term_as_first_written": "NOT MET — this round was committed (187df42) saying an approach change was available and unapplied: fold the executed-prompt evidence into the offer and re-ask. THAT WAS WRONG, and it was wrong in the direction that keeps an offer alive.",
+            "what_the_correction_was": "While opening codex/outbox/payload-01-run.md to extract the evidence to fold in, this lap read past the transcripts to its last two sections. The file does not merely contain executions — it contains the CONTROL (素で訊いた場合との差) and its own verdict: 「その差は、この文書を買う理由になる大きさか: ならない」「払うとしたらいくらか: 0円」. payload-01-run-b.md, ledgered to spark, ends the same way: 「素で訊く以上の価値があるか: ある」「自分の金なら払うか: 払わない」. So the approach change round 1 named was not merely paid for — it was EXECUTED, twice, by reviewers who ran the prompts, and both returned a refusal.",
+            "third_term_as_it_actually_stands": "MET. There is no untried approach on the content axis. The named one ran and did not overturn the refusal, and it is the strongest instrument this rung has: rounds 1 and 2 were reads and could not reach whether the prompts work, while these two ran them and compared against a bare ask. What remains untried is packaging and price, which is a different axis and cannot answer a content objection.",
+            "why_the_first_reading_is_left_on_the_record": "RUNBOOK 4: 書いたら読み返す — 応答の success は結果ではありません. Deleting the wrong version would leave a register that looks like it reached the right answer first, and the useful fact here is that the default motion was to keep the offer and spend another round on it. The correction came from reading to the end of a file this project had already paid for and never finished."
           },
-          "why_approach_changed_is_not_set_on_this_round": "Setting it would reset both no-move counters, and the change has been queued, not measured. approach_changed belongs on the round that re-measures the CHANGED artifact — round 3. Marking it here would silence rule 4b with a promise, which is the shape of every check this file has had to repair."
+          "why_approach_changed_is_not_set_on_this_round": "Setting it would reset both no-move counters, and nothing was changed on this round. approach_changed belongs on a round that re-measures a CHANGED artifact. Marking it here would silence rule 4b with a promise, which is the shape of every check this file has had to repair."
+        },
+        {
+          "round": 3,
+          "rung": "stranger_reaction",
+          "ran_at": "2026-08-10T18:31:10.830Z",
+          "verified_at": "2026-08-10T21:05:00Z",
+          "task_id": "2026-08-11.payload-01-run-b",
+          "answer": "codex/outbox/payload-01-run-b.md",
+          "measured_by": "the Codex lane. The reviewer side, not this loop instrument.",
+          "recognised": null,
+          "why_recognised_is_null": "Not asked. This task was framed as an execution task rather than a blind stranger read, so recognition was never a question put to it. Recorded as unasked rather than assumed.",
+          "verdict": "払わない",
+          "price_named": 0,
+          "reason_quoted": "価値はあるが、実行前に必要な情報を提示してもらう前提が多く、追加の情報収集コストが先にかかるため。",
+          "the_answer_that_makes_this_round_different": "Question 1 came back ある — 素で訊く以上の価値がある. This is the ONLY round on this offer that concedes the document beats a bare ask, and it still refuses to pay. Rounds 1 and 2 refused because they could not see that the prompts do anything; this one saw that they do, and refused anyway, on cost-to-use. A refusal that survives its own concession is worth more than one that rests on missing evidence.",
+          "where_the_reason_points": "The CONTENT — what the prompts demand of the person using them. Not price, not presentation, not where it is sold. Under how_it_exits clause (1) this is a third content-based 払わない, and the first from a reviewer that exercised the artifact.",
+          "reviewer_pairing": {
+            "reviewer_model_key": "spark",
+            "reviewer_model": "gpt-5.3-codex-spark",
+            "author_model_key": "account_default",
+            "how_this_was_established": "state/codex-lane.json runs[] carries {task_id 2026-08-11.payload-01-run-b, model_key spark, model gpt-5.3-codex-spark, at 2026-08-10T18:31:10.830Z}. The artifact's authoring run 2026-08-10.payload-01 recorded model \"default\". Reviewer is provably not the author.",
+            "why_it_matters_here": "This is the round the retirement rests on, so the pairing was read out of the ledger before the verdict was."
+          },
+          "engagement": {
+            "played_or_read": "実行した",
+            "what_the_reviewer_did": "Filled the holes in two of the document's prompts, ran both, and quoted the returned output in full. Then ran a CONTROL — the same request asked plainly, without the document — and quoted that in full as well, before comparing them.",
+            "evidence": "codex/outbox/payload-01-run-b.md sections 1本目, 2本目 and 素で訊いた場合との差. The model outputs quoted there appear nowhere in codex/outbox/payload-01.md, so they cannot have come from reading the artifact — which is exactly the separation rule 8 asks for and which rounds 1 and 2 could not supply.",
+            "why_this_closes_the_gap_rounds_1_and_2_left": "Both earlier rounds refused on 検証済みの価値 / 実績ベースの検証 and both were reads, so neither could reach the question. This round reached it. The answer is that the difference is real (ある) and not purchasable (払わない)."
+          },
+          "moved": false,
+          "what_moved": {
+            "the_verdict": "払わない -> 払わない, now three deep at this rung.",
+            "what_did_change": "The GROUND of the refusal. Rounds 1 and 2: no evidence the prompts work. Round 3: they do work, and it still would not pay. That is not the same objection answered twice; it is the objection being answered and the refusal surviving.",
+            "the_artifact": "NOTHING. codex/outbox/payload-01.md was never edited across all three rounds."
+          },
+          "why_it_is_filed_now_rather_than_when_it_returned": "It returned at 18:31Z and sat in the outbox unread by any instrument for two and a half hours, through two laps, while the register said the measurement it contains had not been made. RUNBOOK 5: 返ってきた答えを何も読まない is a real failure and this was one. The round is dated by when the lane ran it, not by when this lap noticed."
         }
       ],
-      "retire": null,
-      "retirement_is_bound_to_round_3": {
-        "bound_at": "2026-08-10T20:59:00Z",
-        "the_condition": "Round 3 asks a non-author stranger for a pay-or-not verdict on a version of payload-01 that CARRIES the executed-prompt evidence. If it returns 払わない with a reason about the content, prompt_pack retires — no further approach change is admitted, and 'we could try another framing' is not one.",
-        "why_it_is_written_down_now_rather_than_judged_later": "Round 2 met two of clause (1)'s three terms and survived on the third. A third term that a future lap gets to re-argue is not a term. The approach change is being spent HERE, on the record, so the next lap inherits an exit that has already been decided rather than one it can talk its way past. RUNBOOK 5.4: 退場できなければなりません, and もう作ってあるから is not a reason to keep it.",
-        "what_would_overturn_it": "Round 3 returning 払う with a number. Nothing else. A 払わない whose reason is about PACKAGING (price, presentation, where it is sold) would also not retire it, because that is a different axis and clause (1) is about content — but it would have to say so in the reviewer's own words, not in ours."
+      "void_rounds_added_this_lap": [
+        {
+          "task_id": "2026-08-10.payload-01-run",
+          "answer": "codex/outbox/payload-01-run.md",
+          "rung": "stranger_reaction",
+          "what_it_says": "Ran two of the document's prompts with the holes filled, quoted both outputs in full, ran the same request WITHOUT the document as a control, quoted that too, and concluded: 差がある / その差は、この文書を買う理由になる大きさか: ならない / 払うとしたらいくらか: 0円.",
+          "why_it_is_void_rather_than_a_round": "state/codex-lane.json runs[] has NO row for this task_id. The ledger holds 13 runs and this is not among them, so which model produced it is unknown, so whether the reviewer is the artifact's author is unknown. Rule 7 is explicit that an unrecorded pairing is not the same silence as an unrecorded engagement: who was asked is a fact about a task WE wrote. It is void for authorship-unverifiable, not for content.",
+          "why_it_is_recorded_at_all": "It corroborates round 3 from a second execution with a control, and its verdict is stronger (0円 outright). A void round is a record of an attempt, not a measurement — but discarding it silently would hide that the retirement below has agreement it is not counting.",
+          "the_gap_it_is_evidence_of": "This is the TWO MOUTHS WRITE INTO codex/outbox/ AND ONE SKIPS THE LEDGER gap that handoffs have carried. Here it cost a real measurement its standing."
+        }
+      ],
+      "retire": {
+        "retired_at": "2026-08-10T21:05:00Z",
+        "retired_by": "eta-loop lap, session_01AUbmmD7DCcF3mPUFBb2ACs",
+        "clause": "how_it_exits (1)",
+        "the_finding": "Four pay-or-not verdicts on this document, from reviewers that did not write it. All four refuse. Two of them ran the prompts and compared the output against the same request asked plainly, which is the measurement round 1 named as the thing that would settle it. The refusal did not survive on missing evidence — it survived the evidence.",
+        "the_four": [
+          "round 1 (read, spark): 払わない — 独自性 と 検証済みの価値 が示されていない",
+          "round 2 (read, spark): 払わない — 実績ベースの検証がない; asked who would pay, answered いない; asked where it is free, answered 無い",
+          "round 3 (executed + control, spark): 素で訊く以上の価値: ある / 払わない — 実行前に必要な情報を提示してもらう前提が多く、追加の情報収集コストが先にかかる",
+          "void (executed + control, model unledgered): 差がある / 買う理由になる大きさか: ならない / 0円"
+        ],
+        "why_not_one_more_round": "The remaining ideas are packaging, price and placement. Every refusal on record is about the content and about what using it costs the reader, and a price change does not answer 追加の情報収集コストが先にかかる. RUNBOOK 5.4: 退場できなければなりません, and もう作ってあるから is not a reason to keep it. An offer that can always invent one more framing never exits, and this file exists because state/options.json decayed exactly that way.",
+        "what_is_kept": "The document stays in the repository at codex/outbox/payload-01.md — retiring an OFFER is not deleting a file. What ends is its standing as something this project is trying to sell, and the claim on future laps that comes with it.",
+        "what_this_costs_route_5": "Route 5 (lane allocation is the binding term) was elected on the claim that the idle pool could BUILD. It built this, and this is the register's answer: the lane can produce a conforming artifact, and a conforming artifact is not the same as a wanted one. That is a result for the route, not a refutation of it — but the route now owes a candidate whose output has a buyer, and 'ask the lane for another document' is the thing that just returned zero four times.",
+        "what_would_reopen_it": "A buyer. Not a reviewer saying it is good — a payment, or a named person outside this account asking for it. Round 2 was asked who such a person would be and answered いない."
       },
       "how_it_exits": "RUNBOOK 5.4: a registered offer must be able to leave, and もう作ってあるから is not a reason to keep it. Exit (1) stands: a rung-2 round by a non-author returns 払わない with a reason about the CONTENT rather than the packaging, twice, with no approach change available — retire it. Exit (2) — no delivery route by 2026-08-24 — CLOSED 2026-08-10T15:26:37Z, met rather than expired: see delivery_measured. Recording that here rather than deleting the clause, because an exit that quietly disappears is indistinguishable from an exit that was never written, and this offer now has exactly one way out instead of two.",
       "the_exit_that_closing_one_exit_costs": "An offer with one remaining exit is easier to keep than one with two, and this one now depends entirely on a rung-2 round that has not returned. If that round is void again for authorship — the risk named in the_live_risk_on_this_offer — this offer has NO live exit at all, and that is the state RUNBOOK 5.4 forbids: a register that cannot conclude an entry is wrong. A void round must be re-asked, not counted, and not treated as time passing."

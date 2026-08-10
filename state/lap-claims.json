@@ -1274,6 +1274,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T21:03:01.046Z",
+      "candidate": "prompt_pack.retire",
+      "kind": "prerequisite",
+      "mechanism": "It removes a dead branch rather than moving a channel. Four rung-2 verdicts on this offer all refuse to pay, and two of them RAN the prompts and compared against a bare ask — the exact measurement round 1 named as the approach change. With that returned and still 払わない, the offer's own exit clause fires, and every future lap stops spending on an artifact measured four ways to have no buyer.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
