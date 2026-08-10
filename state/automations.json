@@ -222,7 +222,7 @@
       "label": "ChatGPT レーン（毎時）",
       "kind": "github-actions",
       "pool": "codex_week",
-      "cadence_minutes": 60,
+      "cadence_minutes": 90,
       "enabled": true,
       "note": "Spends the Codex weekly pool, which is separate from the Claude window and was sitting at 100% unused on 2026-08-09 because nothing dispatched it. The mouth is codex/INBOX.md; scripts/inbox-task.mjs decides whether the task is live and unmarked before any model runs. Hourly since 2026-08-09: the daily cron had delivered zero runs in the workflow's entire history — all ten were workflow_dispatch — so an external answer arrived only when a lap happened to have MCP tools, and that is the lane the whole route depends on. 2026-08-10: the pool this row calls separate and unused is actually TWO weekly windows, and only one was reachable — codex exec with no --model runs the account default, so GPT-5.3-Codex-Spark stayed at 100% for this lane's entire history while being cited as spare capacity. The dispatch now names a model derived from the meter (scripts/spark-model.mjs) and falls back to the default if refused; scripts/spark-model.mjs --check runs in pulse.yml so it cannot quietly go back to unnamed.",
       "avg_cost_percent": 0,
@@ -234,7 +234,47 @@
         "state_file": "state/codex-lane.json",
         "note": "Moved off state/answers/latest.json when the cron went hourly. That file only moves when a question is actually put to the model, and a healthy hourly lane skips most of its runs because the task already carries its done marker — so keyed on the answer, an idle lane and a stopped lane look the same. scripts/record-lane-run.mjs stamps checked_at on every run including the skips, which is the mark that dates the SCHEDULE rather than the product.",
         "stamp_field": "checked_at"
-      }
+      },
+      "cadence_measured_at": "2026-08-10T06:25:00Z",
+      "cadence_measured_from": "GitHub Actions run history for codex-inbox.yml, 26 runs total, read through the API rather than inferred from state files",
+      "cadence_measurement": {
+        "scheduled_runs": 11,
+        "workflow_dispatch_runs": 15,
+        "window_hours": 13.1,
+        "window": "2026-08-09T09:21:26Z .. 2026-08-10T05:08:53Z",
+        "gaps_between_scheduled_runs_minutes": [
+          66,
+          55,
+          76,
+          43,
+          64,
+          56,
+          62,
+          59,
+          174,
+          132
+        ],
+        "mean_gap_minutes": 78.7,
+        "max_gap_minutes": 174,
+        "delay_past_the_cron_minute_minutes": [
+          21,
+          27,
+          22,
+          37,
+          20,
+          25,
+          21,
+          23,
+          21,
+          15,
+          27
+        ],
+        "what_it_says": "The cron reads 41 * * * * and GitHub delivers it 15 to 37 minutes late EVERY time — the minute in the cron is not a minute this workflow has ever started on. More important than the lateness is the SKIPPING: two gaps of 174 and 132 minutes, both in the most recent stretch, so the schedule drops runs rather than merely delaying them. 11 scheduled runs in 13.1 hours is 0.84 per hour against a cron asking for 1.",
+        "why_the_cadence_moved_to_90": "check-heartbeats calls a row overdue at twice its cadence, so cadence 60 meant an alarm at 120 minutes — and two of the ten observed gaps were longer than that. The detector would have reported the lane STOPPED twice today while it was merely late, which is the same false-alarm class cookie-daily produced this hour, except this one is predictable from the data. 90 puts the alarm at 180 minutes, six minutes above the largest gap observed.",
+        "the_margin_is_thin_and_that_is_deliberate": "Six minutes over an observed maximum drawn from ten gaps is not a safety margin, it is the smallest number the evidence supports. A larger cadence would silence real stops for longer. If a third gap over 180 minutes appears, the honest response is to raise this again WITH the new number, not to have pre-emptively padded it — and if the lane genuinely stops, the alarm should fire while the queue still matters.",
+        "what_this_does_not_fix": "The cadence is still a hand-written number compared against a hand-refreshed mark. Nothing derives it from the run history automatically; a lap with GitHub access had to read 26 runs to produce it. That is the same shape as the registry gap above, one level down."
+      },
+      "dispatch_is_the_repair_not_the_cron": "2026-08-10T06:23Z: with .j, .k and .l queued and the lane the only thing that can run them, a lap holding MCP dispatched codex-inbox.yml by hand rather than waiting for a schedule that had already skipped two slots. 15 of the 26 runs in this workflow history are workflow_dispatch, so this is what the lane has mostly always been. Recorded because the pattern keeps being rediscovered: the cron is a floor, and a lap that can dispatch should."
     }
   ],
   "reconciliation_note": "cadence/enabled for claude-trigger rows are reconciled against list_triggers, not asserted here. Actions cannot call that API, so a lap with MCP is the only thing that can refresh them — check observed_at before trusting these fields. 2026-08-10: the two readings 58 minutes apart were wrong in opposite directions, which is the measurement behind check-heartbeats.mjs unverifiedReservations() and the registry age pacing.mjs now prints. Note what that check cannot do — at 66 minutes old the registry was inside every reasonable staleness window and already wrong. Age bounds silent drift; it does not detect the world changing. Only list_triggers does, and only a lap can call it.",

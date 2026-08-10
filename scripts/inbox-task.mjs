@@ -227,6 +227,35 @@ export const ATTACHMENTS = [
 ];
 
 /**
+ * What actually rides along with THIS task.
+ *
+ * A review task gets its own attachments and NOTHING ELSE. Measured 2026-08-10
+ * on the first non-void rung-2 round: 2026-08-10.k asked for a cold reaction to
+ * the free demo, and its second recommendation referenced `description_html`
+ * — a field that appears nowhere in the artifact and only in
+ * assets/listing/gumroad.ja.json, which ATTACHMENTS puts in front of every task.
+ * So the judge was reading our paid storefront copy while being asked to react
+ * to a free game, and two of its three "what would make you pay" answers are
+ * about the free-versus-paid funnel rather than about the game.
+ *
+ * The always-on set exists because a SURVEY has to know what this account sells.
+ * A blind review has to know the opposite. Carrying eta.json into a blind round
+ * hands the judge the route names, the revenue figures and the fact that we are
+ * trying to sell it — that is not a blind at all, and it went unnoticed because
+ * the round came back 見覚え ない and therefore looked clean.
+ *
+ * Derived from `reviews_authored_by`, which a review task must already declare
+ * for scripts/lane-authorship.mjs, rather than from a new opt-in flag: a blind
+ * that has to be remembered is a blind that will be forgotten.
+ */
+export function effectiveAttachments(task) {
+  const own = task?.attach ?? [];
+  if (task?.reviews_authored_by) return [...own];
+  const all = [...ATTACHMENTS, ...own];
+  return all.filter((p, i) => all.indexOf(p) === i);
+}
+
+/**
  * `body` defaults to the whole INBOX, which is what a one-task file always was.
  * Pass the selected task's preamble+section to hand the model ONE task: the
  * queue is for the transport to sequence, not for the model to choose from.
@@ -275,10 +304,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const promptOut = argOf("prompt-out", null);
   if (promptOut) {
     const attachments = [];
-    // The always-on set first, then whatever this one task asked for. Deduped so
-    // a task naming an always-on path does not paste it twice.
-    const wanted = [...ATTACHMENTS, ...(selected.task?.attach ?? [])];
-    for (const rel of wanted.filter((p, i) => wanted.indexOf(p) === i)) {
+    // The always-on set plus this task's own — EXCEPT for a review task, which
+    // gets only its own. See effectiveAttachments.
+    for (const rel of effectiveAttachments(selected.task)) {
       attachments.push([rel, await readFile(resolve(REPO, rel), "utf8").catch(() => null)]);
     }
     const { writeFile } = await import("node:fs/promises");

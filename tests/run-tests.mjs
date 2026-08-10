@@ -20,7 +20,7 @@ import { buildLaneRecord, LANE_STATE_PATH } from "../scripts/record-lane-run.mjs
 import { judge as judgeAuthorship, keyOfLandedModel } from "../scripts/lane-authorship.mjs";
 import { applyRepricings, applyRouteElection } from "../scripts/repricing.mjs";
 import {
-  ATTACHMENTS, buildPrompt, decide, markerEarned, parseInboxHeader,
+  ATTACHMENTS, buildPrompt, decide, effectiveAttachments, markerEarned, parseInboxHeader,
   parseInboxTasks, selectTask,
 } from "../scripts/inbox-task.mjs";
 import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/revenue-rate.mjs";
@@ -827,6 +827,30 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     assert(
       reviewTask.attach.length >= 1,
       "a review task attaches nothing, so the reviewer is asked to judge an artifact it was never shown",
+    );
+    // A blind round must not carry the always-on set. 2026-08-10.k came back
+    // 見覚え ない and therefore looked clean, while two of its three "what would
+    // make you pay" answers referenced description_html — a field that appears
+    // only in assets/listing/gumroad.ja.json, which ATTACHMENTS puts in front of
+    // every task. A blind with state/eta.json attached is not a blind.
+    const blindSet = effectiveAttachments(reviewTask);
+    assert(
+      blindSet.length === reviewTask.attach.length,
+      `a review task carries ${blindSet.length} attachment(s) for ${reviewTask.attach.length} declared — ` +
+      "the always-on set is leaking into a blind round",
+    );
+    for (const always of ATTACHMENTS) {
+      assert(
+        !blindSet.includes(always),
+        `${always} rides along with a blind review; it names what this account sells and who sells it`,
+      );
+    }
+    // And the surveys must KEEP it, or the fix has traded one broken round for
+    // every other kind of task the lane runs.
+    const survey = parsedInbox.tasks.find((t) => !t.reviews_authored_by && !t.error);
+    assert(
+      survey && ATTACHMENTS.every((a) => effectiveAttachments(survey).includes(a)),
+      "a non-review task lost the always-on attachments, so surveys no longer know what this account sells",
     );
     // The dispatch has to actually branch on the key. Without this the header is
     // decoration and every run still takes Spark. Read with the comments stripped:
