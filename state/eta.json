@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T19:06:09.209Z",
+  "fetched_at": "2026-08-10T21:28:40.468Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -40,11 +40,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 1.02
+      "days_unchanged": 1.12
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 1.02
+      "days_unchanged": 1.12
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -65,11 +65,11 @@
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-10T18:28:58.968Z",
+      "measured_at": "2026-08-10T21:23:16.656Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
-      "revenue_window_days": 1.125,
-      "revenue_readings": 5,
+      "revenue_window_days": 1.386,
+      "revenue_readings": 6,
       "fx_usd_jpy_assumed": 150,
       "lifetime_sales": 0,
       "lifetime_usd_cents": 0,
@@ -82,16 +82,16 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-10T18:33:13.367Z",
+      "measured_at": "2026-08-10T21:25:24.961Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
-      "revenue_window_days": 0.584,
-      "revenue_readings": 3,
+      "revenue_window_days": 0.848,
+      "revenue_readings": 4,
       "revenue_is_a_lower_bound": true,
       "games": 1,
       "total_views": 2,
       "idle_eta_days": null,
-      "idle_eta_reason": "the window has no measurable growth yet: it cannot be split into two halves that each contain a rate, so only a level is known and a level does not reach a higher target",
+      "idle_eta_reason": "the measured rate is zero, so the trajectory is flat",
       "owner_actions_required": 0,
       "planned_unblock": null,
       "automatable": true,
@@ -106,7 +106,7 @@
       "idle_eta_reason": "measured, not unreadable: 1208.75/day views and 394.75/day engaged over 4 days (2026-08-04..2026-08-07), zero owner actions. Ad revenue is not the path — at this rate the YouTube Partner gate is 4000 days away on subscribers, and the sibling loop prices the far side of it in the ¥1,000s/month against a ¥200,000 target. What the ranking may use is the ADDRESSABLE reach and not this one: 2 of 4851 playbacks over 28d. No threshold is applied here — the two numbers are printed because a route was elected on the larger one while the smaller existed and had never been read. DELIVERY CEILING FIRST: 2 of 4851 playbacks over 28d reach a surface that renders the description (0.04%), so the ceiling on clicks to ANY url placed here is 2 per 28 days — independent of which url and of who the audience is. Everything below is about a link nobody arrives at. The surface PERMITS the paid product's link and FORBIDS the free demo's (github) — so route 1's entire payload cannot go here as hosted. That is the exact INVERSE of r/gamedev, which permits the free artifact and forbids being paid. A lap may NOT perform the edit; it is the sibling loop's act.",
       "owner_actions_required": 0,
       "stale": false,
-      "stale_days": 0.9,
+      "stale_days": 1,
       "reach": {
         "usable": true,
         "window_days": 4,
@@ -196,20 +196,6 @@
       "product_loop_problems": [
         "idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: FIXED IN SOURCE, NOT YET DELIVERED. The shipped tree now measures 6 taps to the first purchase, then 100s idle to a second kind of producer (browser run: 6 taps to the first purchase, opening rate \"毎秒 0円 ／ 1タップ 1円\"). Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so a buyer still downloads the config that needs 15 taps and then 600 seconds of nothing new. MEASURED 2026-08-10T17:43:01.962Z ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, both calls answered 2xx, and the served file list did not move (no_op). state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. MEASURED 2026-08-10T18:01:31.261Z: the FILE COUNT is not the term — a throwaway carrying two attachments had both replaced by a single-entry files[] PUT; the next term to test is rich_content: the live listing carries a rich_content page whose fileEmbed names ONE file, while product-level files[] carries more. If the buyer's download list comes from the embeds, then PUT files[] writes to an index nobody serves — which is exactly what a 2xx that changes nothing looks like.; and the listing names files in two places that disagree — files[] carries 2 (Brandable_Idle_Clicker_Kit_v1.0, brandable-idle-clicker) while its rich_content page embeds 1. Until it is closed no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it. The promise stays failed until a re-fetch shows the delivered digest moved.",
         "idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 MEASURED 2026-08-10T17:43:01.962Z ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, both calls answered 2xx, and the served file list did not move (no_op). state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. MEASURED 2026-08-10T18:01:31.261Z: the FILE COUNT is not the term — a throwaway carrying two attachments had both replaced by a single-entry files[] PUT; the next term to test is rich_content: the live listing carries a rich_content page whose fileEmbed names ONE file, while product-level files[] carries more. If the buyer's download list comes from the embeds, then PUT files[] writes to an index nobody serves — which is exactly what a 2xx that changes nothing looks like.; and the listing names files in two places that disagree — files[] carries 2 (Brandable_Idle_Clicker_Kit_v1.0, brandable-idle-clicker) while its rich_content page embeds 1. Until it is closed no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it. The promise stays failed until a re-fetch shows the delivered digest moved."
-      ],
-      "actionable_now": true,
-      "eta_effect_days": null,
-      "eta_effect_basis": "no comparable estimate recorded"
-    },
-    {
-      "kind": "product_loop",
-      "id": "prompt_pack.stranger_reaction",
-      "why": "the offer is loopable and its own measurement says it is failing — a round that clears a named failure is the one kind of work that is about the thing being sold",
-      "owner_actions": 0,
-      "measure_via": "here",
-      "note": "Next rung: stranger_reaction. 1 finding(s): prompt_pack has never been RUN — no run is on record. Every round on it is a read. node scripts/play-artifact.mjs --write is the measurement.",
-      "product_loop_problems": [
-        "prompt_pack has never been RUN — no run is on record. Every round on it is a read. node scripts/play-artifact.mjs --write is the measurement."
       ],
       "actionable_now": true,
       "eta_effect_days": null,
@@ -335,14 +321,14 @@
         "file_route": {
           "upload_route_exists": true,
           "verdict": "the earlier absence was measured on the wrong paths",
-          "measured_at": "2026-08-10T18:28:58.117Z",
+          "measured_at": "2026-08-10T21:23:15.656Z",
           "source": "state/gumroad-presign.json"
         },
         "text_route": {
           "parameter_recognised": true,
           "content_landed": false,
           "verdict": "recognised_passage_untried",
-          "measured_at": "2026-08-10T18:28:58.378Z",
+          "measured_at": "2026-08-10T21:23:15.892Z",
           "source": "state/gumroad-rich-content.json"
         },
         "payload_walk": {
