@@ -1425,7 +1425,20 @@
       "concurrent_changes": [
         "Same session as the owner-request success_test change and the gate treadmill fix. All three are separate machinery; this one touches only the product loop and the codex task text."
       ],
-      "outcome": null
+      "outcome": null,
+      "interim_observations": [
+        {
+          "at": "2026-08-10T05:30:00Z",
+          "by": "session_01CjddNp9dzAL6LKNCp7rrVM",
+          "why_this_is_not_an_outcome": "judge_on is 2026-08-12 and this prediction's own metrics are about .g, which already landed. What arrived inside this lap is the CONTROL, 2026-08-10.i, which the predecessor filed precisely to separate the two explanations that .g left tangled. It is recorded against this prediction because it is the same question — whether the lane can review blind — and there is nowhere else it belongs.",
+          "the_control_returned": "codex/outbox/2026-08-10.i.md: the lane played Kakapo Clicker (https://hagi42.itch.io/kakapo), an idle game it did NOT write, 12 taps, 払わない, and 見覚え: ない — reason given as no familiarity with the title, the author name, or the screen.",
+          "what_it_separates": "The predecessor's hypothesis was that recognition tracks ENGAGEMENT: round 1 never played and read ない; rounds 2 and 3 played to completion and both recognised the artifact. Two variables moved together every time, n=3. The control breaks them apart. The lane PLAYED and did NOT recognise. Under the engagement hypothesis this round should have read ある; under the authorship hypothesis it should have read ない, and it did.",
+          "verdict_stated_at_the_strength_the_evidence_supports": "The strong form of the engagement hypothesis — that playing an idle game is sufficient to produce recognition — is REFUTED. AUTHORSHIP is now the leading explanation for the two void rounds. This is the more expensive world, and it is the one the predecessor said should be recorded as such rather than retried.",
+          "the_confound_that_must_travel_with_it": "Engagement was NOT held constant. The control ran 12 taps; round 2 ran 25 taps with two items exchanged and the rate change observed. So a weaker engagement hypothesis survives — that recognition needs MORE play than the control did. n=1 on the control. It is not worth a fourth blind round to close, but any later lap citing this as settled is overstating it, and the honest line is 'authorship is the leading explanation', not 'engagement is dead'.",
+          "the_consequence_that_collides_with_the_elected_route": "Route 5 says BUILD on the abundant lane. product-loop rung 2 (stranger_reaction) says the reviewer MUST NOT be the author. If authorship drives recognition, those two cannot both be served by the Codex lane, and the lane is disqualified as a blind reviewer for anything the lane built. That is not a reason to abandon route 5 — .h showed the lane can produce — but the reviewer has to come from somewhere else. The predecessor named four candidates and measured NONE: a fresh Claude session, the owner, a real external human, or Spark named explicitly via scripts/ask-chatgpt.mjs --model. Picking one off that list without measuring it is the move to avoid.",
+          "n": 1
+        }
+      ]
     },
     {
       "id": "2026-08-10.lane-allocation-is-the-binding-term",
