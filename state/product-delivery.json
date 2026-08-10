@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "attempted_at": "2026-08-10T17:43:01.962Z",
+  "product_id_shape": "string",
+  "archive_sha256": "49712189b48dbf53def2116bb538cf36c2da255c1ae03c4bac2b7e4d9f1e271f",
+  "files_before": [
+    "5305b2db73074ca69baa56bb167b586a/original/Brandable_Idle_Clicker_Kit_v1.0.zip",
+    "6e1869b219ee4b35b9ed5454f9afc804/original/brandable-idle-clicker.zip"
+  ],
+  "files_after": [
+    "5305b2db73074ca69baa56bb167b586a/original/Brandable_Idle_Clicker_Kit_v1.0.zip",
+    "6e1869b219ee4b35b9ed5454f9afc804/original/brandable-idle-clicker.zip"
+  ],
+  "put_status": 200,
+  "delivered": false,
+  "verdict": "no_op",
+  "why": "2 files are still attached; a buyer still cannot tell which is the product",
+  "what_this_means_for_the_walk": "the route measured in state/gumroad-file-walk.json replaced an attachment on a product this code CREATED, and does not do the same thing here. A file upload and a PUT both answered 2xx and the served file list did not move at all. Whatever separates the two cases, 'the attachment can be replaced over the API' is not yet true of this product and must not be printed as if it were.",
+  "orphan_uploads": "every failed attempt uploads an archive to storage that is then attached to nothing. Two attempts on 2026-08-10. Harmless but not free; a lap that keeps retrying this blind is paying for litter."
+}
