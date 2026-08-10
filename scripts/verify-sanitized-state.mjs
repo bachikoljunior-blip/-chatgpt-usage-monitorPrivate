@@ -249,6 +249,32 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
   if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at ?? "")) {
     throw new Error("product-loop state has no valid fetched_at timestamp");
   }
+} else if (Array.isArray(state.legacy) && state.floor !== undefined) {
+  // The lane allocation register (route 5, 2026-08-10). Added with its own branch
+  // rather than left to fall through: the owner-requests comment below records that
+  // a shape with no branch reaches the usage-state check, fails outright, and is
+  // therefore exempt from the credential walk in practice while the rule claims
+  // everything under state/ is scanned. That has now happened twice, so the branch
+  // comes with the file.
+  const KINDS = ["payload", "surface", "measurement", "research"];
+  for (const row of state.legacy) {
+    if (!row?.task_id) throw new Error("a lane-allocation legacy row has no task_id");
+    if (!KINDS.includes(row.produces)) {
+      throw new Error(`lane-allocation row ${row.task_id} has kind ${row.produces}, which is not a kind`);
+    }
+    // The evidence line is what makes a hand classification checkable instead of
+    // believed. A row without one cannot be argued with, and the share this file
+    // exists to report is only as good as the rows under it.
+    if (typeof row.why !== "string" || !row.why) {
+      throw new Error(`lane-allocation row ${row.task_id} has no evidence line for its classification`);
+    }
+  }
+  if (!Number.isFinite(state.floor?.window) || !Number.isFinite(state.floor?.min_payload)) {
+    throw new Error("lane-allocation floor must state a numeric window and min_payload");
+  }
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at ?? "")) {
+    throw new Error("lane-allocation state has no valid fetched_at timestamp");
+  }
 } else if (Array.isArray(state.requests)) {
   // Owner requests. This shape was added by a lap and had no branch, so it fell
   // through to the usage-state check and failed outright — meaning a file under

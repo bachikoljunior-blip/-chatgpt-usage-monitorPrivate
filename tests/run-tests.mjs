@@ -24,7 +24,11 @@ import {
 } from "../scripts/inbox-task.mjs";
 import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/revenue-rate.mjs";
 import { decideVerdict, KINDS } from "../scripts/gate-verdict.mjs";
-import { roundRecognised, blindLeaks, judge } from "../scripts/product-loop.mjs";
+import { roundRecognised, blindLeaks, inBlindScope, judge } from "../scripts/product-loop.mjs";
+import {
+  KINDS as LANE_KINDS, classify as laneClassify, completedIds, producesOf,
+  share as laneShare, judge as laneJudge,
+} from "../scripts/lane-allocation.mjs";
 import { blockedByDirective, directiveBlockers } from "../scripts/directive-block.mjs";
 import { constraintDue } from "../scripts/constraint-due.mjs";
 import { evaluateUnlock } from "../scripts/unlock-condition.mjs";
@@ -3617,10 +3621,139 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       if (!id) continue;
       const marker = join(root, "codex/outbox", `${id}.md`);
       if (existsSync(marker)) continue;
-      // Only stranger-round tasks: the blind applies to those, not to outside research.
-      if (!/hoshikuzu|free-demo/.test(sec)) continue;
+      // Only stranger-round tasks: the blind applies to those, not to outside
+      // research. The selector used to be /hoshikuzu|free-demo/ over the section
+      // text, which reads the ARTIFACT'S NAME rather than the task's purpose, so
+      // it also caught the first task that BUILT the demo instead of reviewing it
+      // (2026-08-10.h, filed the same day — a builder has to be told what to open).
+      //
+      // Measured, not assumed: .h trips no pattern today, so nothing was actually
+      // red. The defect is that it was in scope at all. A build task has no blind
+      // to leak, and the natural way to write one is to quote the reviewer — "the
+      // reviewer stopped at the opening screen", "the previous version did X" —
+      // which is precisely what blindLeaks matches. The next build task would have
+      // gone red for describing the defect it was being asked to fix, and the cheap
+      // way out would have been to weaken the leak patterns that protect the real
+      // rounds. `produces:` says what a task IS, so the scope now reads that.
+      if (!inBlindScope(sec)) continue;
       assert(blindLeaks(sec).length === 0,
         `live stranger-round task ${id} leaks the blind: ${blindLeaks(sec).join("; ")}`);
+    }
+
+    // The scoping rule itself, pinned on synthetic sections. Without this the
+    // change above is invisible to the suite: .h trips no pattern today, so
+    // reverting the selector would go green and the scoping would rot back to
+    // matching the artifact's name.
+    const leaky = "前回この依頼を出したとき、返ってきたのは「初期画面を見て止めた」でした。";
+    const buildSection = `\ntask_id: 2026-08-10.zz\nproduces: payload\n\`\`\`\n${leaky}\nassets/free-demo/index.html を直してください。\n`;
+    const roundSection = `\ntask_id: 2026-08-10.zy\nproduces: measurement\n\`\`\`\n${leaky}\n`;
+    assert(blindLeaks(buildSection).length > 0,
+      "the synthetic build section must actually contain a leak phrase, or this pair proves nothing");
+    assert(!inBlindScope(buildSection),
+      "a produces: payload task must fall outside the blind scope — a build task has no blind to leak");
+    assert(inBlindScope(roundSection) && blindLeaks(roundSection).length > 0,
+      "a produces: measurement task carrying a leak phrase must stay in scope");
+    // The scope must read purpose, not the artifact's name: a build task mentioning
+    // the file it edits is the case the old selector got wrong.
+    assert(!inBlindScope("produces: payload\nassets/free-demo/index.html\nhoshikuzu"),
+      "the blind scope must not be decided by the artifact's name appearing in the task");
+    assert(!inBlindScope("task_id: x\nvalid_until: 2026-08-17\n"),
+      "a task declaring nothing is not in the blind scope; lane-allocation.mjs is what makes it declare");
+  }
+
+  // --- what the abundant pool is spent on -------------------------------------
+  // Route 5 says the binding term is lane allocation. That claim is only worth
+  // anything if the share is computed rather than remembered, so the arithmetic
+  // is pinned here and pulse.yml runs the check hourly.
+  {
+    assert(producesOf("task_id: x\nproduces: payload   # a comment\n") === "payload",
+      "producesOf must strip a trailing comment, as every header in the INBOX carries one");
+    assert(producesOf("task_id: x\nvalid_until: 2026-08-17\n") === null,
+      "a header with no produces: must read null, not a default");
+
+    // Chronological order is what makes a trailing window mean 'most recent'.
+    assert(completedIds(["2026-08-10.a.md", "2026-08-09.q.md", "2026-08-09.c.md"]).join(",") ===
+      "2026-08-09.c,2026-08-09.q,2026-08-10.a",
+      "completedIds must sort chronologically; a trailing window over an unsorted list reads the wrong tasks");
+
+    // A task nobody classified must not quietly become research. Failing towards
+    // 'not payload' would make the share improve every time someone forgot.
+    const rows = laneClassify(
+      ["2026-08-09.q", "2026-08-10.e", "2026-08-10.z"],
+      new Map([["2026-08-10.z", undefined]].filter(([, v]) => v)),
+      [{ task_id: "2026-08-09.q", produces: "payload" }, { task_id: "2026-08-10.e", produces: "research" }],
+    );
+    assert(rows[2].produces === "unclassified",
+      "a task in neither the INBOX nor the legacy block must read unclassified, never a default");
+    assert(laneShare(rows).payload_share === 1 / 3, "payload share must be payload / all rows");
+
+    const register = { floor: { window: 8, min_payload: 1, enforced_while_route_is: "route_5_lane_allocation_is_the_binding_term" } };
+    const ROUTE = "route_5_lane_allocation_is_the_binding_term";
+    const eightResearch = Array.from({ length: 8 }, (_, i) => ({ task_id: `t${i}`, produces: "research" }));
+
+    // The floor: research-only for a window, nothing queued.
+    const dry = laneJudge({ rows: eightResearch, liveTasks: [], register, electedRoute: ROUTE });
+    assert(dry.problems.some((p) => /no payload/.test(p)),
+      "the floor must fire when the lane has drained back to research-only with nothing queued");
+
+    // ...and a queued build is the loop doing the right thing, so it is green.
+    const queued = laneJudge({
+      rows: eightResearch,
+      liveTasks: [{ task_id: "2026-08-10.h", produces: "payload" }],
+      register, electedRoute: ROUTE,
+    });
+    assert(queued.problems.length === 0,
+      "a queued payload task must satisfy the floor, or the check is red during the very behaviour it wants");
+
+    // A payload inside the window is enough on its own.
+    const recent = laneJudge({
+      rows: [...eightResearch.slice(1), { task_id: "t8", produces: "payload" }],
+      liveTasks: [], register, electedRoute: ROUTE,
+    });
+    assert(recent.problems.length === 0, "a payload inside the window must satisfy the floor");
+
+    // The window must be trailing. A payload older than the window does not count,
+    // or 2026-08-09.q would satisfy this floor forever.
+    const stale = laneJudge({
+      rows: [{ task_id: "old", produces: "payload" }, ...eightResearch],
+      liveTasks: [], register, electedRoute: ROUTE,
+    });
+    assert(stale.problems.some((p) => /no payload/.test(p)),
+      "a payload outside the trailing window must not satisfy the floor");
+
+    // Undeclared and misspelled kinds, caught while the task can still be edited.
+    const undeclared = laneJudge({
+      rows: eightResearch, liveTasks: [{ task_id: "2026-08-10.x", produces: null }],
+      register, electedRoute: ROUTE,
+    });
+    assert(undeclared.problems.some((p) => /does not declare/.test(p)),
+      "a live task with no produces: must be red, so the hand-classification cannot grow");
+    const typo = laneJudge({
+      rows: eightResearch, liveTasks: [{ task_id: "2026-08-10.x", produces: "artifact" }],
+      register, electedRoute: ROUTE,
+    });
+    assert(typo.problems.some((p) => /not a kind/.test(p)),
+      "a kind outside KINDS must be red; a typo would otherwise become a silent fifth category");
+    assert(!LANE_KINDS.includes("artifact"),
+      "'artifact' is deliberately not a kind — payload and surface are separated so copy cannot be counted as goods");
+
+    // Route-scoped: if a later lap elects a route where research is the binding
+    // term, this floor must stop binding rather than be deleted.
+    const otherRoute = laneJudge({ rows: eightResearch, liveTasks: [], register, electedRoute: "route_9_something_else" });
+    assert(otherRoute.problems.length === 0 && otherRoute.route_binds === false,
+      "the floor must stop binding under a different elected route");
+
+    // The legacy block is closed. It covers the tasks that predate `produces:`
+    // and must never gain a row — a share you can append to is not a measurement.
+    const reg = JSON.parse(await readFile(join(root, "state/lane-allocation.json"), "utf8"));
+    assert(reg.legacy.length === 22,
+      `the legacy classification is closed at 22 rows; found ${reg.legacy.length}`);
+    assert(reg.legacy.filter((r) => r.produces === "payload").length === 1,
+      "exactly one legacy task produced a payload — the finding route 5 rests on");
+    for (const r of reg.legacy) {
+      assert(LANE_KINDS.includes(r.produces), `legacy ${r.task_id} has kind ${r.produces}, which is not a kind`);
+      assert(typeof r.why === "string" && r.why.length > 0,
+        `legacy ${r.task_id} has no evidence line, so its classification cannot be checked`);
     }
   }
 

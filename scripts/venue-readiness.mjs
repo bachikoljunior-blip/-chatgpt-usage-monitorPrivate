@@ -99,6 +99,17 @@ export const PREREQUISITE_INSTRUMENTS = {
   // allowed to name. The rungs are the LADDER ids in scripts/product-loop.mjs, which
   // judge() reports per offer and pulse.yml runs hourly.
   "scripts/product-loop.mjs": ["promise_conformance", "stranger_reaction", "sells_against", "behaviour"],
+  // Registered 2026-08-10 for route_5_lane_allocation_is_the_binding_term. Route 4
+  // extended this vocabulary from venues to the OFFER; route 5 extends it again, to
+  // what the productive pool is spent ON. The distinction is not academic: route 4's
+  // own prerequisite is an artifact a stranger would pay for, and across 22 completed
+  // lane tasks exactly one produced an artifact at all. A route can be right about
+  // what is needed and still never get it, and no term here could say so.
+  // `payload_production` is reported by judge() in scripts/lane-allocation.mjs —
+  // payload count in the trailing window, plus whether one is queued — and pulse.yml
+  // runs it hourly. It is falsified the same way the others are: the lane drains back
+  // to research-only and the check goes red.
+  "scripts/lane-allocation.mjs": ["payload_production"],
 };
 
 export const termsForInstrument = (script) => PREREQUISITE_INSTRUMENTS[script] ?? null;

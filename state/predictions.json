@@ -1414,6 +1414,23 @@
         "Same session as the owner-request success_test change and the gate treadmill fix. All three are separate machinery; this one touches only the product loop and the codex task text."
       ],
       "outcome": null
+    },
+    {
+      "id": "2026-08-10.lane-allocation-is-the-binding-term",
+      "made_at": "2026-08-10T04:50:00Z",
+      "claim": "Route 5 elected: the binding term is what the ABUNDANT pool is spent on, not what the offer's form is. The measurement behind it, never taken before: 22 completed Codex-lane tasks produced ONE thing a buyer would receive (2026-08-09.q, the free demo), two produced storefront copy, two were reviews, seventeen were research. 4.5% payload — while route 4's own prerequisite is 'an artifact someone who did not make it would pay for'. The route that named the artifact as the constraint left the only artifact-producing pool doing research. ROUTE 4'S DIAGNOSIS IS NOT WITHDRAWN (recurring is the right form; four sweeps agree) — its METHOD is: electing a fifth proposition about the offer would have been the twelfth such election, and eleven of them moved nothing. The first payload task is filed as 2026-08-10.h (v2 of the free demo fixing the two defects round 2 named: nothing branches, nothing permanent accumulates), queued behind .g so the blind review in flight is undisturbed. NOT CLAIMED: any ETA movement — the gate record carries after-idle inf deliberately, because subscriber rate is unmeasured and every estimate this board produced was refuted on its numbers. NOT CLAIMED: that what we build will sell; two readings on our one artifact both said 払わない. The claim is narrower and testable: the lane can produce a payload on demand, and n is currently 1.",
+      "metric": "Read from committed state on origin/main, none from a lap's account of itself. (a) codex/outbox/2026-08-10.h.md exists and contains a single ```html fence holding a whole file — if it returns a diff, an excerpt, or something unusable, payload production is NOT a capacity we have and route 5 is wrong in its central claim. (b) node scripts/lane-allocation.mjs exits 0 and reports a payload inside the trailing window of 8 once .h lands, rather than being green only on the queued-task clause. (c) node tests/run-tests.mjs fails when any of these five mutations is reapplied: unclassified defaulting to research; the window not trailing; a live task with no produces: being ignored; the floor binding under any elected route; and inBlindScope reverting to matching the artifact's name. (d) state/lane-allocation.json legacy stays at exactly 22 rows — a share you can append to has stopped measuring anything.",
+      "baseline": "At 2026-08-10T04:50Z: 22 completed lane tasks, payload share 4.5%, ZERO payload in the trailing window of 8 (2026-08-09.r through 2026-08-10.f), scripts/lane-allocation.mjs did not exist, state/lane-allocation.json did not exist, no `produces:` field existed on any INBOX task, the blind scope was decided by /hoshikuzu|free-demo/ over the section text, PREREQUISITE_INSTRUMENTS had no term for what a pool is spent on, and eta-gate reported 37 consecutive prerequisite laps and 11 route changes that moved nothing. All five channels idle_eta_days null.",
+      "judge_on": "2026-08-11",
+      "judge_deadline": "2026-08-17",
+      "concurrent_changes": [
+        "2026-08-10.h filed on the lane (the first payload task) — the prediction is ABOUT this, so it is the subject rather than a confound",
+        "2026-08-10.g still in flight (stranger round 3); its verdict lands in the same window and moves the same product-loop register, so any movement in stranger_reaction over this week is NOT attributable to route 5",
+        "produces: added to the .g header at the same time, which changes what the blind-scope check reads"
+      ],
+      "what_would_make_this_wrong_in_a_way_worth_recording": "The most likely failure is not that the lane cannot build — it is that the TRANSPLANT costs a Claude lap every time. .q was moved into place once and nobody timed it. If moving a returned file into the repository reliably costs scarce-pool work, then the abundant pool is not as abundant as this route assumes and the reallocation buys less than claimed. Nobody has measured that step and this prediction does not pretend to.",
+      "judge_on_why": "The lane runs hourly and .g is ahead of .h in the queue, so two lane runs settle metric (a). A day is generous; the deadline at 08-17 is the backstop if the lane stalls.",
+      "outcome": null
     }
   ]
 }

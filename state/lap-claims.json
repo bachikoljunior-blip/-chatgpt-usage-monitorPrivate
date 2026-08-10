@@ -778,6 +778,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T04:33:30.226Z",
+      "candidate": "lane_allocation_is_the_binding_term",
+      "kind": "route_change",
+      "mechanism": "Every route so far re-aimed WHERE the offer is sold; none changed what the ABUNDANT pool is spent on. Measured from codex/outbox: 22 lane tasks, 1 produced a sellable payload (.q, the free demo), 2 produced marketing copy, 17 research, 2 review — 4.5% production. Route 4 names its own prerequisite as an artifact a stranger would pay for, and the only pool that has ever produced an artifact is spending 95% of itself on research that has already converged (.a/.b/.d/.e agree on the shape). No channel can report a non-null idle_eta_days until an artifact exists to sell, so reallocating the lane from research to production is the only mechanism that reaches the number at all. The after is deliberately inf, not a fabricated finite: subscriber rate is unmeasured and every estimate this board has produced was refuted on its numbers.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

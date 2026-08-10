@@ -153,6 +153,27 @@ export function roundRecognised(round) {
  * @param {string} text
  * @returns {string[]} the offending phrases, empty when clean
  */
+/**
+ * Whether a task section is one the blind applies to.
+ *
+ * This used to be an inline `/hoshikuzu|free-demo/` in tests/run-tests.mjs, which
+ * scoped by the ARTIFACT'S NAME rather than by what the task is for — so the first
+ * task that BUILT the demo rather than reviewing it was in scope too. It tripped no
+ * pattern on the day, so nothing was red; the cost was latent. A build task is
+ * naturally written by quoting the reviewer ("the previous version did X"), which
+ * is exactly what blindLeaks matches, and the cheap way out of that red would have
+ * been to weaken the patterns protecting the real rounds.
+ *
+ * It lives here rather than in the test because a rule spelled out inline in the
+ * file that checks it cannot be mutation-tested: reverting it leaves the suite
+ * green. As a function, breaking it fails.
+ */
+export function inBlindScope(section) {
+  const m = String(section ?? "").match(/^\s*produces\s*:\s*(.*)$/m);
+  const produces = m ? m[1].replace(/\s*#.*$/, "").trim() : null;
+  return produces === "measurement";
+}
+
 export function blindLeaks(text) {
   const s = String(text ?? "");
   // The owner's account name is INSIDE the artifact's own URL

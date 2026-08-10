@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-10T04:40:00.000Z",
+  "why_this_exists": "Eleven route changes and 47 laps all re-aimed WHERE the offer is sold. Not one of them changed what the ABUNDANT pool is spent on, and nobody had ever counted. This file is that count, and scripts/lane-allocation.mjs is the reader — because a share written where nothing reads it is the exact defect this session has now hit five times.",
+  "the_measurement_that_elected_route_5": "22 completed lane tasks. ONE produced the thing being sold (2026-08-09.q, the free demo). Two produced storefront copy. Two were reviews of our own offer. Seventeen were research about the outside world. 4.5% payload. Meanwhile route 4 names its own prerequisite as 'an artifact someone who did not make it would pay for' — and the only pool that has ever produced an artifact was spending 95% of itself on research.",
+  "the_kinds_and_why_there_are_four": {
+    "payload": "The answer contains the thing a buyer would receive, whole and usable. This is the only kind that can satisfy route 4's prerequisite, and it is what the floor below counts.",
+    "surface": "Copy, cover text, listing prose. A real deliverable, but it wraps the offer rather than being it. Kept separate on purpose: folding it into payload would have made the share read 13.6% and hidden the finding.",
+    "measurement": "A reading about our own offer — a stranger round, a verdict. Returns knowledge about the thing, not the thing.",
+    "research": "A reading about the outside world — competitors, prices, venues, real sellers."
+  },
+  "how_a_task_is_classified": "From the `produces:` field in its codex/INBOX.md yaml header. Tasks completed before that field existed are classified once, by hand, in `legacy` below, with the evidence line each classification rests on. New tasks MUST declare it: scripts/lane-allocation.mjs goes red on a live task that does not, so the hand-classification can never grow.",
+  "floor": {
+    "window": 8,
+    "min_payload": 1,
+    "satisfied_by_a_queued_task": true,
+    "why_a_queued_task_counts": "The floor exists to catch the lane DRIFTING BACK to research-only, not to punish the gap while a build is in flight. A live task declaring produces: payload is the loop doing the right thing and must read as green, or the check would be red during exactly the behaviour it wants.",
+    "why_8": "The last 8 completed tasks (2026-08-09.r through 2026-08-10.f) contain ZERO payload. A window that did not already fire on the record that motivated it would be a floor set to whatever we happen to be doing.",
+    "enforced_while_route_is": "route_5_lane_allocation_is_the_binding_term",
+    "why_route_scoped": "If a later lap elects a route where research genuinely is the binding term, this floor should stop binding rather than be deleted. A check that outlives its reason is the kind nobody can safely turn off."
+  },
+  "what_this_file_must_not_become": "A list of everything the lane has ever done. It is a SHARE. If a future lap finds itself appending rows to make the number look better, the number has stopped measuring anything. The legacy block is closed: it covers the 22 tasks that predate the `produces:` field and it must never gain a 23rd row.",
+  "legacy_classified_at": "2026-08-10T04:40:00.000Z",
+  "legacy_classified_by": "the lap that elected route 5, reading the first four lines of each codex/outbox/*.md",
+  "legacy": [
+    { "task_id": "2026-08-09.c", "produces": "research", "why": "見つかった不満 — outside-world complaints" },
+    { "task_id": "2026-08-09.e", "produces": "research", "why": "見つかった不満 — outside-world complaints" },
+    { "task_id": "2026-08-09.f", "produces": "research", "why": "見つかった不満 — outside-world complaints" },
+    { "task_id": "2026-08-09.g", "produces": "research", "why": "実例調査: zero-to-first-sale cases" },
+    { "task_id": "2026-08-09.h", "produces": "research", "why": "調査結果" },
+    { "task_id": "2026-08-09.i", "produces": "research", "why": "venue requirements survey" },
+    { "task_id": "2026-08-09.j", "produces": "research", "why": "high_intent_tool_site survey" },
+    { "task_id": "2026-08-09.k", "produces": "research", "why": "who actually buys this survey" },
+    { "task_id": "2026-08-09.l", "produces": "research", "why": "does this audience pay survey" },
+    { "task_id": "2026-08-09.m", "produces": "surface", "why": "英語のコピーを書く — storefront copy, wraps the offer" },
+    { "task_id": "2026-08-09.n", "produces": "surface", "why": "店頭のコピーを英語にする — storefront copy" },
+    { "task_id": "2026-08-09.o", "produces": "research", "why": "GameDev.net venue survey" },
+    { "task_id": "2026-08-09.p", "produces": "research", "why": "Blender Artists venue survey" },
+    { "task_id": "2026-08-09.q", "produces": "payload", "why": "デモ本体 — returned assets/free-demo/index.html whole. THE ONLY ONE." },
+    { "task_id": "2026-08-09.r", "produces": "research", "why": "DEV Community sign-in survey" },
+    { "task_id": "2026-08-09.s", "produces": "research", "why": "DEV Community terms survey" },
+    { "task_id": "2026-08-10.a", "produces": "research", "why": "what this audience buys" },
+    { "task_id": "2026-08-10.b", "produces": "research", "why": "conversion at or below our reach" },
+    { "task_id": "2026-08-10.c", "produces": "measurement", "why": "free_demo stranger round 1" },
+    { "task_id": "2026-08-10.d", "produces": "research", "why": "monthly subscriptions at company scale" },
+    { "task_id": "2026-08-10.e", "produces": "research", "why": "monthly subscriptions run by solo sellers" },
+    { "task_id": "2026-08-10.f", "produces": "measurement", "why": "free_demo stranger round 2 (void as a round; still a measurement task)" }
+  ]
+}
