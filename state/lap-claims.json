@@ -1290,6 +1290,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T21:55:04.028Z",
+      "candidate": "no_standing_where_buyers_gather",
+      "kind": "prerequisite",
+      "mechanism": "Two returned lane answers (codex/outbox/incremental-eligibility.md, codex/outbox/account-standing.md) are unfiled, so venue-readiness derives the elected route prerequisite as venue_unsettled=2 and the route has nothing takeable under it. Filing them replaces r/incremental_games postable_not_evaluable with a machine predicate: eligibility is measured as none-published plus three dated paid dev posts still undeleted, and the real removal condition is the AI-disclosure section the venue added. That turns an unknown nobody can act on into a named missing repo file, which a lap can make. ETA days do not move this lap because no revenue reading exists; what moves is that the route stops owing a decision it cannot answer.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

@@ -174,8 +174,8 @@
       "id": "no_standing_where_buyers_gather",
       "claim": "UNMEASURED ON OUR SIDE, EVIDENCED FROM OUTSIDE: what blocks the only route on record that ever reached a first buyer is STANDING in the community the buyers are in — prior participation, an existing following, or several venues hit at once. Not recurring owner actions. Standing accrues before the post; it is a prerequisite, not a repeat action. Whether the owner has standing anywhere has never been checked, so this entry records a blocker whose size is unknown, not a blocker known to be present.",
       "evidence": "codex/outbox/2026-08-09.i.md, a survey commissioned to break honest_post_where_buyers_gather, plus codex/outbox/2026-08-09.h.md before it. Two counter-cases turn on standing rather than frequency: an r/Entrepreneur post removed 2026-02-19 under Rule 2 'No Promotion' (being honest that it is your own work is not an exemption when the post's purpose is promotion), and a post auto-removed 2026-03-20 because the author held under 10 comment karma in that community — the single post from a standing start was never shown to anyone. Against that, Invoker (published 2020-06-30, USD 90 the same day) records no audience at all and substituted breadth: Product Hunt, Reddit and Twitter at once. Three of the surveyed cases reached first revenue within 0-1 days of publishing. NOT MEASURED: our own standing in any named community, and whether any of the 28 published artifacts is worth posting. Nobody has looked at either.",
-      "measured_at": "2026-08-09T14:05:00Z",
-      "recheck_after": "2026-08-10",
+      "measured_at": "2026-08-10T22:05:00Z",
+      "recheck_after": "2026-08-13",
       "blocks": [
         "honest_post_where_buyers_gather",
         "first_buyer_from_zero_audience"
@@ -191,7 +191,7 @@
         "why_it_was_invisible": "Every field on a venue row described the VENUE — rule_quoted, eligibility_threshold, live_slot_evidence, postable_today. No field described us, so two rows looked equally researched when one rested on a measured account and the other on nothing. Six surveys asked whether they would permit us and none asked whether we could post at all.",
         "the_machine": "scripts/venue-readiness.mjs. Every per_venue row must declare account: { exists, evidence_state_file, note }. exists:null is a legitimate answer and means nobody has looked; OMITTING the field is not, because a missing field and an unmeasured account are indistinguishable when the field is optional. A row claiming exists:true must name a state file that reads and reports ok, so standing cannot be asserted. Run by tests/run-tests.mjs with its negative cases and hourly by pulse.yml.",
         "what_it_does_to_the_ranking": "It does not close the free-artifact route and does not reopen the itch one. It stops them being compared as if alike: the r/gamedev route needs an account nobody has established, and the cheapest way to establish it is one owner question — does a Reddit account exist, and what is the username — after which the codex lane can read the public profile for age and karma as ordinary outside research. That question has NOT been asked yet and is deliberately not being bundled into either pending request.",
-        "still_unmeasured": "Everything else the claim above says. Whether the owner holds standing anywhere in the sense of participation or following, and whether any of the 28 published artifacts is worth posting. Account existence is the floor beneath standing, not standing itself."
+        "still_unmeasured": "SUPERSEDED 2026-08-10 for the first half. 'Whether the owner holds standing anywhere in the sense of participation or following' is now measured — see our_standing_measured, and the answer is no. What remains unmeasured is the second half: whether any of the 28 published artifacts is worth posting. state/product-loop.json has begun answering that from the other end and its first verdict was a retirement."
       },
       "lift_mechanism_chosen": {
         "chosen_at": "2026-08-09T14:05:00Z",
@@ -389,12 +389,17 @@
             "artifact_note": "This venue's rule 4 requires the post to LINK something playable, so the artifact is the playable file and not an announcement — the opposite of the itch.io row, where what the readers see is the post. The free demo is the only playable thing this project can edit; state/public-host.json serves it at 200 byte-identical to the repository copy.",
             "paid_promotion_permitted": true,
             "paid_promotion_note": "From this row's own rule_quoted, rule 4, second sentence: the required playable link 'Does not have to be free.' That is a venue permitting a reader to be shown a thing that costs money, stated in its own rules rather than inferred from silence. THIS IS THE FIELD THAT MAKES THE ROW WORTH ADDING: r/gamedev forbids paid assets in the same sentence that permits the post, so the one Reddit venue on the survey could never be the revenue step. This one can, on the same account, in the same genre as the only product this account sells.",
-            "eligibility_threshold": "NOT ESTABLISHED. The survey quoted rules 3 to 6 and none of them states an account age, karma floor or post count. Absence from the quoted rules is not absence: r/gamedev's 48-hour minimum was observed in a 2026 auto-removal notice and appears in no rule either. Treated as unpublished, which is the same term three of the six earlier surveyed venues failed on.",
+            "eligibility_threshold": "MEASURED NONE, two ways, 2026-08-10 (codex/outbox/incremental-eligibility.md). Stated: the sidebar reads 'Public / Anyone can view, post, and comment to this community', and the rules page, the new-queue sidebar and the pinned moderator announcement together publish no account age, no karma floor, no post count and no email-verification requirement. Observed: three developer posts carrying paid Steam links are still standing days later (see eligibility_measured.paid_posts_still_standing), which is the same kind of observation that produced r/gamedev's unpublished 48-hour minimum — an auto-removal notice — read in the direction of survival rather than removal. Absence from the rules is still not absence; what upgrades this from silence to a measurement is that posts of the exact shape this route would make are visibly not being removed.",
             "live_slot_evidence": "2998 posts per week, published on the subreddit's own sidebar, and two of the five thread titles the survey read are developers posting their own games ('I thought my game was done growing, then this happened', 'Hole Is Mine is OUT NOW!!!'). A fifth title — 'Can we stop allowing dev posts outside of specific days?' — is a live complaint that developer posts are frequent, which is stronger evidence that the slot is used than a slot count would be.",
-            "postable_today": null,
-            "postable_not_evaluable": "the venue publishes no eligibility threshold, so no predicate over anything readable here can settle whether this account may post. The account itself is settled — the same Reddit account as the r/gamedev row, reported created 2026-08-10 — so unlike GameDev.net the unknown is one venue fact rather than two.",
-            "blocked_on": "unverified eligibility. Counted as not-postable on purpose, on the same rule as GameDev.net: the measured failure mode in this evidence set is a standing-start account being auto-removed, and an unpublished threshold is exactly the condition that produced it.",
-            "blocked_on_is_one_lane_question": "Unlike GameDev.net, this row's unknown is cheap and outward-facing: reddit.com answers 403 from this container, and the lane reaches it — the survey that produced this row read the subreddit in a browser. Queued as codex/INBOX.md task 2026-08-10.incremental-eligibility. It costs no Claude budget, which is why it was queued in the same lap rather than ranked behind anything.",
+            "postable_today": false,
+            "blocked_on": "the post body does not exist. assets/announce/reddit-incremental-post.en.md must carry the required 'AI Disclosure' section and a link to something playable. This replaces 'unverified eligibility', which was measured away on 2026-08-10: the venue publishes no threshold and paid developer posts are visibly surviving there.",
+            "blocked_on_is_one_lane_question": {
+              "was": "Unlike GameDev.net, this row's unknown is cheap and outward-facing: reddit.com answers 403 from this container, and the lane reaches it — the survey that produced this row read the subreddit in a browser. Queued as codex/INBOX.md task 2026-08-10.incremental-eligibility. It costs no Claude budget, which is why it was queued in the same lap rather than ranked behind anything.",
+              "answered_at": "2026-08-10T22:05:00Z",
+              "answer_file": "codex/outbox/incremental-eligibility.md",
+              "what_came_back": "No threshold published anywhere the survey could read; three paid developer posts still standing; the AI-disclosure section required or the post is removed; one own-content post per 30 days; and zero examples of a Japanese-language link in the subreddit's history under four separate searches.",
+              "note_for_the_ledger": "This is the shape the row itself named as the failure worth avoiding — a lane answer that returns and that nothing in the ranking reads. It returned, and it sat unfiled across three laps before this one."
+            },
             "account": {
               "exists": true,
               "measured_at": "2026-08-10",
@@ -415,7 +420,80 @@
               "what_it_means_for_the_route": "It cannot yet be compared with GameDev.net's 447 views per post, which is a measured median. What can be compared is genre: this is the only surveyed venue whose readers gather for the exact category of the only product this account sells, and the only one that permits showing them a paid thing AND already has its required artifact serving at 200."
             },
             "what_this_row_adds_that_the_other_three_did_not": "The three earlier rows each fail on a different term and none of them fails on genre. This one is the first where audience, permission and artifact line up at once, and its single open term is a fact somebody outside can read in one page. It also arrived from a lane answer that had returned and that nothing in the ranking read — RUNBOOK 5 names that exact shape as the failure where a decision is recorded and the loop does not change.",
-            "the_qualifier_that_must_not_be_dropped": "Rule 4 requires the playable link, and the only playable artifact this project serves declares lang=\"ja\" against a venue that reads English. So the term that makes this venue postable at all is satisfied by a file its readers cannot read. That is not a rule breach and it does not shut the row — it is the same LANGUAGE MISMATCH scripts/venue-readiness.mjs already prints for r/gamedev, and it is now true of the one venue where being seen could be paid for."
+            "the_qualifier_that_must_not_be_dropped": "Rule 4 requires the playable link, and the only playable artifact this project serves declares lang=\"ja\" against a venue that reads English. So the term that makes this venue postable at all is satisfied by a file its readers cannot read. That is not a rule breach and it does not shut the row — it is the same LANGUAGE MISMATCH scripts/venue-readiness.mjs already prints for r/gamedev, and it is now true of the one venue where being seen could be paid for. MEASURED 2026-08-10: the same survey searched four ways for a Japanese-language game or a link to a Japanese page anywhere in this subreddit and found NONE. The nearest hit was an English post about a Japanese-learning game, which is not the same thing and was not counted. So there is no precedent here either way — not a record of Japanese links doing badly, and not one of them doing fine. The post body postable_when now names is English; what it links is not.",
+            "eligibility_measured": {
+              "measured_at": "2026-08-10T22:05:00Z",
+              "source": "codex/outbox/incremental-eligibility.md (task 2026-08-10.incremental-eligibility)",
+              "stated_threshold": "none published — no account age, no karma, no email verification, in rules, sidebar or the pinned announcement",
+              "sidebar_quote": "Public / Anyone can view, post, and comment to this community",
+              "paid_posts_still_standing": [
+                {
+                  "title": "Two months ago, I showed you my game, World's Greatest Author. I just released it and included all your ideas! Except the hats.",
+                  "url": "https://www.reddit.com/r/incremental_games/comments/1vfyye8/two_months_ago_i_showed_you_my_game_worlds/",
+                  "posted": "2026-08-05",
+                  "upvotes": 104,
+                  "paid_evidence": "body reads 'The game is 15% off now' and links the Steam product page",
+                  "removed": false
+                },
+                {
+                  "title": "Slot Grind is out now! Thanks everyone to making this happen!",
+                  "url": "https://www.reddit.com/r/incremental_games/comments/1vfhlog/slot_grind_is_out_now_thanks_everyone_to_making/",
+                  "posted": "2026-08-04",
+                  "upvotes": 51,
+                  "paid_evidence": "links a Steam full release; a comment reads 'these $5 for 5 hours games'",
+                  "removed": false
+                },
+                {
+                  "title": "Ore & Odds is out on Steam! Mine ore, gamble it to upgrade faster (and 10 keys for the community!)",
+                  "url": "https://www.reddit.com/r/incremental_games/comments/1verez8/ore_odds_is_out_on_steam_mine_ore_gamble_it_to/",
+                  "posted": "2026-08-03",
+                  "upvotes": 6,
+                  "paid_evidence": "links a Steam full release and a soundtrack bundle",
+                  "removed": false
+                }
+              ],
+              "what_it_does_not_settle": "Whether an unpublished threshold exists that these three accounts happened to clear. All three are shipping developers with Steam pages, so none of them is a standing-start account — which is the condition our own post would be made under (see our_standing_measured). What the three DO settle is that the venue does not remove paid developer posts as a class, which is the term paid_promotion_permitted rested on from rule text alone until now.",
+              "lane_run": {
+                "task_id": "2026-08-10.incremental-eligibility",
+                "ran_at": "2026-08-10T16:31:58.713Z",
+                "model": "default",
+                "ledger": "state/codex-lane.json",
+                "why_recorded": "A lane answer with no ledger row cannot be paired with the model that produced it, and state/product-loop.json voided a whole round on that ground alone this same day. Both answers filed here DO have rows, checked before filing rather than assumed."
+              }
+            },
+            "required_post_sections": {
+              "measured_at": "2026-08-10T22:05:00Z",
+              "source": "codex/outbox/incremental-eligibility.md, quoting the pinned announcement 'Generative AI disclosure is now required for all game posts' (https://www.reddit.com/r/incremental_games/comments/1tublm5/generative_ai_disclosure_is_now_required_for_all/)",
+              "ai_disclosure": {
+                "required": true,
+                "rule_quoted": "Posts made by publishers or developers will need to explicitly include a section labelled \"AI Disclosure\" somewhere in the post, otherwise the post will be removed",
+                "where": "in the body text of the post; the moderator comment on the same announcement states the rule 'does not impact flairs and only requires users add a disclosure in text in the body of their post'",
+                "why_this_row_changed_shape": "This is the removal condition the row was missing. eligibility was the unknown everybody was waiting on and it came back NONE; the thing that would actually get this post removed is a missing section in the body. An unknown nobody could act on became a named artifact a lap can write, which is why postable_not_evaluable is gone and postable_when now has two members."
+              },
+              "one_per_30_days": {
+                "rule_quoted": "You can only post about your own content one time per 30 days.",
+                "why_it_matters_before_the_post_and_not_after": "One shot per month. A post made without the AI disclosure is removed AND spends the slot, so the artifact has to be right the first time rather than iterated in place."
+              },
+              "paid_is_explicitly_fine": {
+                "rule_quoted": "A full paid Steam release is as valid as a free itch demo.",
+                "source": "moderator, same announcement thread"
+              }
+            },
+            "postable_not_evaluable_was": "the venue publishes no eligibility threshold, so no predicate over anything readable here can settle whether this account may post. The account itself is settled — the same Reddit account as the r/gamedev row, reported created 2026-08-10 — so unlike GameDev.net the unknown is one venue fact rather than two.",
+            "postable_not_evaluable_was_retired_at": "2026-08-10T22:05:00Z",
+            "postable_not_evaluable_was_retired_because": "It said 'the venue publishes no eligibility threshold, so no predicate over anything readable here can settle whether this account may post'. That was true of what could be read FROM HERE and false of what could be read from a browser: reddit.com answers 403 to this container, the lane reached it, and the answer is that there is no threshold to clear. The escape hatch was correct about the instrument and wrong about the world — which is why the row also recorded blocked_on_is_one_lane_question and got it asked.",
+            "postable_when": [
+              {
+                "repo_file": "assets/free-demo/index.html"
+              },
+              {
+                "repo_file": "assets/announce/reddit-incremental-post.en.md"
+              }
+            ],
+            "postable_when_note": "Two members, both AND-ed, both repo files, matching the itch.io row's shape (the playable thing plus the text that goes in front of readers). The first exists and is what rule 4 requires a link to. The second does NOT exist yet and is the post body carrying the mandatory 'AI Disclosure' section — without it the post is removed by the venue's own announcement, and the 30-day rule means the slot is spent when that happens. Writing it is lap work: no owner action, no venue permission, no external reachability. Deliberately NOT written in the same lap as this filing so that the register change and the artifact are separable — RUNBOOK 4, one change per lap.",
+            "blocked_on_changed_at": "2026-08-10T22:05:00Z",
+            "blocked_on_was": "unverified eligibility. Counted as not-postable on purpose, on the same rule as GameDev.net: the measured failure mode in this evidence set is a standing-start account being auto-removed, and an unpublished threshold is exactly the condition that produced it.",
+            "blocked_on_changed_meaning": "The row did not get better by argument. It moved from a blocker of the kind 'nobody can find out' to a blocker of the kind 'nobody has written the file yet'. venue-readiness prints the first as venue_unsettled and the second as venue_rule, and only the second is something a lap can clear."
           }
         ],
         "what_this_does_to_the_lift_mechanism": "The route adopted at 3555e97 was substitute breadth for standing. Breadth is now measured rather than assumed, and it did not substitute: 0 of 3. But the reason is NOT that standing turned out to be required after all — no venue refused us for lack of standing. Two refused for reasons that have nothing to do with reputation: one wants a page on its own platform, one forbids the product form. Standing remains unmeasured on our side, as the claim above says. What has changed is that the next blocker is no longer reputational and is no longer unknown.",
@@ -464,6 +542,13 @@
           "venue": "r/incremental_games",
           "why_a_fourth_after_the_survey_was_stopped": "route_after_two_batches stopped COMMISSIONING surveys, on the finding that a third batch would fail on the same unpublished-eligibility term. That decision stands and this row does not reopen it: nothing was commissioned. codex/outbox/standing-2026-08-10.md was already back, it names in its own text that state/constraints.json did not contain r/incremental_games, and folding a returned answer into the file the ranking reads is not the same act as ordering another batch. The prediction that a third batch adds nothing is in fact PARTLY BORNE OUT — this row too is unsettled on eligibility. What it is not is redundant, because it is the first row where the genre, the permission and the artifact all line up.",
           "admitted_as": "route_change through scripts/eta-gate.mjs at 3/3 prerequisite with the ETA unmoved, recorded in state/lap-claims.json. The route being abandoned is route_7_delivery_is_the_binding_term: its text half was solved at 15:26Z at zero owner actions and the very next measurement on the offer it unblocked came back 払わない."
+        },
+        "the_unsettled_term_was_answered": {
+          "at": "2026-08-10T22:05:00Z",
+          "which_row": "r/incremental_games",
+          "from": "codex/outbox/incremental-eligibility.md and codex/outbox/account-standing.md, both returned before 2026-08-10T21:00Z and both unfiled until now",
+          "effect_on_the_derived_term": "venue_unsettled drops from 2 to 1 (GameDev.net remains, and its unknown is a venue that publishes nothing rather than a question nobody asked). The elected route's prerequisite term is derived by scripts/venue-readiness.mjs from these rows, so this is where the change is visible to the ranking rather than only to a reader.",
+          "why_it_took_three_laps": "Nothing watches codex/outbox/ for answers that have returned and not been filed. Each lap read state/continue.json, saw the note, and spent its one lane elsewhere. The cost is not that the answers were lost — it is that the route printed ROUTE OWES A DECISION for three laps while the material to decide it was already in the repository."
         }
       },
       "reprices_candidates": [
@@ -475,7 +560,44 @@
           "not_success": "A paste-ready venue pack sitting in state/owner-requests.json. That is preparation, and this candidate has been blocked on execution rather than preparation since it was written. Also not success: a post into GameDev.net, whose eligibility could not be established — posting there tests nothing, because a removal would be indistinguishable from the auto-removals already on record."
         }
       ],
-      "owner_request_prepared_note": "True as of 2026-08-09T15:20:00Z, for ONE venue rather than several — see venue_survey.route_after_two_batches.the_honest_deviation before reading this as the multi-venue pack. state/owner-requests.json 2026-08-09.itch-page-for-the-kit holds both steps paste-ready: the page, and the Release Announcements post with the board's own three required elements now present. Owner characters to type: 0. Owner judgement calls: 0."
+      "owner_request_prepared_note": "True as of 2026-08-09T15:20:00Z, for ONE venue rather than several — see venue_survey.route_after_two_batches.the_honest_deviation before reading this as the multi-venue pack. state/owner-requests.json 2026-08-09.itch-page-for-the-kit holds both steps paste-ready: the page, and the Release Announcements post with the board's own three required elements now present. Owner characters to type: 0. Owner judgement calls: 0.",
+      "our_standing_measured": {
+        "measured_at": "2026-08-10T22:05:00Z",
+        "source": "codex/outbox/account-standing.md (task 2026-08-10.standing family), public pages only",
+        "found": {
+          "github": {
+            "url": "https://github.com/bachikoljunior-blip",
+            "followers": 1,
+            "public_repos": 10,
+            "joined": "2026-06-29",
+            "contributions_last_year": 467
+          },
+          "itch_io": {
+            "url": "https://bachikoljunior-blip.itch.io",
+            "works": 1,
+            "followers": "not shown on the page",
+            "member_since": "2026-08-08T11:58Z"
+          },
+          "nothing_found_at": [
+            "reddit.com/user/bachikoljunior-blip — 403 Blocked",
+            "news.ycombinator.com/user?id=bachikoljunior-blip — 429",
+            "x.com/bachikoljunior-blip — JS-rendered, no figure readable",
+            "discord.com/users/bachikoljunior-blip — generic page",
+            "qiita.com/bachikoljunior-blip — 404",
+            "note.com/bachikoljunior-blip — 404"
+          ]
+        },
+        "verdict": "STANDING IS ZERO IN EVERY COMMUNITY WHERE BUYERS GATHER. The two places with a visible history are the two places that are not communities: a code host and a storefront, both joined within the last six weeks. Reddit returned 403 to the survey rather than an empty profile, so the Reddit handle is unread rather than proven absent — but the account was created 2026-08-10 by the owner's own report, so its history cannot exceed a day either way.",
+        "what_it_does_to_the_route": "It CONFIRMS this constraint's claim instead of lifting it, and that is the useful outcome. Paired with the r/incremental_games eligibility answer it produces one sentence the route can act on: standing is zero, and at that one venue zero standing is not disqualifying, because the venue publishes no threshold and the evidence of removal in this constraint (r/Entrepreneur Rule 2, the under-10-karma auto-removal) comes from venues that do. The blocker at the one payable venue is not who we are; it is a file we have not written.",
+        "what_it_does_not_settle": "Whether a post from a one-day-old zero-karma account is SHOWN as well as permitted — Reddit's own spam filtering is not a published rule and none of the three surviving paid posts was made from a standing start. That is measurable only by posting, which makes it a property of the first attempt rather than something more surveying can buy.",
+        "lane_run": {
+          "task_id": "2026-08-11.account-standing",
+          "ran_at": "2026-08-10T19:43:14.928Z",
+          "model": "gpt-5.3-codex-spark",
+          "ledger": "state/codex-lane.json",
+          "note": "Ran on the Spark window, which is the pool that stayed at 100% for this lane's entire history until it was named. The measurement that answers the elected route's prerequisite was paid for out of the pool the account was not reaching."
+        }
+      }
     },
     {
       "id": "simple_main_frozen",
