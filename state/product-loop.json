@@ -58,44 +58,106 @@
       },
       "rounds": [
         {
-          "round": 1,
+          "round": 4,
           "rung": "stranger_reaction",
-          "ran_at": "2026-08-10T02:57:13Z",
-          "verified_at": "2026-08-10T03:12:00Z",
-          "task_id": "2026-08-10.c",
-          "answer": "codex/outbox/2026-08-10.c.md",
-          "answer_commit": "901debadcd7771b5bd7a0460b3b980c53411e293",
+          "ran_at": "2026-08-10T05:57:00Z",
+          "verified_at": "2026-08-10T06:35:00Z",
+          "task_id": "2026-08-10.k",
+          "answer": "codex/outbox/2026-08-10.k.md",
+          "answer_commit": "15d5c19",
+          "reviewer_pairing": {
+            "reviewer_model_key": "spark",
+            "author_model_key": "account_default",
+            "reviewer_model": "gpt-5.3-codex-spark",
+            "how_this_was_established": "codex/INBOX.md task 2026-08-10.k carries model: spark and reviews_authored_by: account_default; state/codex-lane.json runs[] records model gpt-5.3-codex-spark for that task id, so the transport did not silently fall back; node scripts/lane-authorship.mjs --check exits 0 on the pair. Three independent places, one of them written by the workflow rather than by a lap.",
+            "and_the_pool_moved": "state/usage.json quota_windows: codex_bengalfox used_percent 1 while codex sat at 7. The named window is the one that moved, which is what state/codex-lane.json which_pool_a_named_run_actually_spends settled at 06:05Z. A reviewer on a different pool costs the scarce pool nothing."
+          },
           "blind_held": {
             "recognised": "ない",
-            "so": "VALID. The round is kept. Had it read ある or たぶんある the round would have been void and discarded, because the Codex lane wrote assets/free-demo/index.html and an author's opinion cannot answer this rung.",
-            "what_was_disclosed": "the public URL and nothing else — no repository, no authorship, no reason for asking."
+            "recognised_verbatim": "特定の既知の公開作品として即座に一致する記憶はありません。",
+            "so": "VALID and kept. This is the first round in this file's history where the reviewer was not the author, and it is therefore the first one whose ない means anything.",
+            "what_was_disclosed": "MORE than round 1, and it still came back ない. The task attached the file by its repository-relative path (assets/free-demo/index.html), which tells the reviewer the requester owns the file — a stronger leak than round 1's bare public URL, and one blindLeaks() does not match. Recorded as a limitation rather than smoothed over. It cuts toward the finding rather than against it: a leakier prompt makes recognition MORE likely, not less, so ない under it is the stronger reading.",
+            "a_gap_this_exposed": "scripts/product-loop.mjs inBlindScope() only scans sections whose produces: is measurement. .k and .l are produces: review, so the live blind-leak scanner never looked at either task. Not fixed this lap — one lap changes one thing — and named here so the next lap does not read the green check as coverage."
           },
           "verdict": "would_not_pay",
           "verdict_verbatim": "払わない",
           "ceiling_offered": null,
-          "strongest_objection_verbatim": "タップして増えるUIは見えたが、購入価値（何を買って何が得られるか）に直接つながる要素が体験内で確認できず、今の状態では有料化判断に必要な納得点が取れなかった。",
-          "strongest_objection_in_english": "The tap-to-increment UI was visible, but nothing inside the experience connected to what would actually be bought, so there was no basis on which to judge paying for it.",
+          "strongest_objection_verbatim": "普通の利用者は、最初の15回が終わるまで明確な報酬がない（「毎秒0」のまま）ので、10〜20秒くらいで離脱しやすい",
+          "strongest_objection_in_english": "The first fifteen taps produce no reward at all — the per-second rate stays at 0 — so an ordinary visitor leaves after ten to twenty seconds. And buying the first producer only adds 0.2/sec, so the payoff does not arrive even then.",
+          "what_it_named_that_no_earlier_round_did": "A number. baseCost 15 with tap value 1 means the first reward event is gated behind fifteen inputs, and the reward when it lands is 0.2/sec. That is a specific, checkable property of assets/free-demo/index.html rather than a feeling about it, and it is changeable in one edit.",
           "engagement": {
             "played_or_read": "読んだ",
-            "depth_verbatim": "ページを開いて初期画面を確認し、そこで止めた",
-            "depth": "Opened the page, looked at the opening screen, stopped there. Did not play.",
-            "minutes": null
+            "depth_verbatim": "コードを読んで、画面に最初に出るもの・最初にできる操作・最初の10回の操作で何が起きるかを具体的に書いてください（task の指示）",
+            "depth": "Read the source and reasoned the first thirty seconds out of it, naming #tap, format(), nextCost(base=15, owned=0)=15, tick()'s Math.min(1, (now-previous)/1000) clamp, saveKey hoshikuzu-kobo-v1 and the pointerdown-only input path. Deeper than any played round in this file — and it is still 読んだ, because the task ASKED for a code read and nobody watched a browser.",
+            "minutes": null,
+            "why_this_still_counts_as_unengaged": "roundEngaged() returns false and rounds_engaged stays 0, which is the honest reading even though this reviewer went further into the artifact than the two players did. The rung asks whether someone would keep playing; a code reader is answering a different question well. Do not let a later lap upgrade this to a played round because the analysis was good."
           },
           "changed": null,
           "moved": null,
-          "moved_note": "Nothing was changed before this round, so there is no prior figure for it to move from. This is the baseline, and the first completed round in this file's history. Rule 4's no-move counter deliberately does not start here: a round that attempted nothing cannot be evidence that a parameter stopped working.",
+          "moved_note": "Nothing was changed before this round. It is the first blind baseline, replacing round 1, which the pairing rule voided.",
           "how_much_this_carries": {
             "n": 1,
-            "the_default_was_the_answer": "The task states the default verdict is 払わない and that only a number overturns it. A reviewer who stopped at the opening screen therefore returned the default, and a returned default is weaker evidence than a refusal after real play. Do NOT let a later lap upgrade this to 'measured: strangers will not pay for it'.",
-            "what_it_does_establish": "The entrance did not hold one blind reader past the first screen. That is a statement about the opening, which is the part the route depends on most: this artifact is the free door the whole route walks people through.",
-            "what_it_does_not_establish": "Anything about the paid kit, whose source does not exist anywhere and which nobody has ever opened. The two are routinely named in one breath and the relationship does not exist.",
-            "grade": "one blind reviewer, self-reported engagement, no instrumentation — the same grade as the lane's other sweeps, and weaker than a behavioural reading would be."
-          },
-          "what_this_does_to_the_elected_route": "route_4_the_offer_form_is_the_binding_term names its prerequisite as AN ARTIFACT SOMEONE WHO DID NOT MAKE IT WOULD PAY FOR. Round 1 returns the opposite on the only artifact we own outright. The prerequisite is NOT satisfied and the route is not thereby refuted — one round is not a verdict on the route, and this lap deliberately does not re-elect. Three elections in three days would say the elections are noise."
+            "the_default_was_NOT_simply_returned": "Unlike round 1. The task states 払わない as the default, and this reviewer reached it via a specific mechanism it had to read the code to find. That is a refusal with a stated cause, which is what the rung was for.",
+            "what_it_establishes": "One non-author reviewer, reading the source cold, would not pay, and names the fifteen-tap dead opening as the reason. The reason is actionable in a way no earlier round's was.",
+            "what_it_does_not_establish": "Anything behavioural, and anything about the paid kit. Also nothing about play: no one has yet PLAYED this artifact without having written it.",
+            "grade": "one blind reviewer, code read rather than play, no instrumentation. Better than every earlier round on blindness, worse than rounds 2 and 3 on engagement — and those two are void."
+          }
         }
       ],
       "why_it_is_here_at_all": "It is the only thing this account offers that can enter a loop. If the owner's rule is right — and nothing here contradicts it — then this is where demand can actually be built, and the priced product's un-loopability is the reason the two have to be ranked against each other rather than assumed complementary.",
       "void_rounds": [
+        {
+          "round": 1,
+          "attempted_at": "2026-08-10T02:57:13Z",
+          "task_id": "2026-08-10.c",
+          "source": "codex/outbox/2026-08-10.c.md",
+          "answer_commit": "901debadcd7771b5bd7a0460b3b980c53411e293",
+          "verdict_DISCARDED": "払わない",
+          "recognised_verbatim": "ない",
+          "reviewer_pairing": {
+            "reviewer_model_key": "account_default",
+            "author_model_key": "account_default",
+            "how_this_was_established": "codex/INBOX.md task 2026-08-10.c carries no model: field, so scripts/inbox-task.mjs ran it on the account default; state/product-loop.json measurement.who_must_not_do_it has said since the rung was declared that the Codex lane WROTE assets/free-demo/index.html. Both halves were already written down. Nothing put them together."
+          },
+          "why_void": "THE AUTHOR REVIEWED ITS OWN ARTIFACT. Not discovered — recomputed. Rounds 2 and 3 were voided on the ANSWER (見覚え ある / たぶんある) and this one was kept because the answer was ない. Once 2026-08-10.i, .k and .l separated authorship from engagement, ない from an author stopped being evidence of a blind: it says the author did not recognise its own work from the opening screen it never got past. roundSelfReviewed() in scripts/product-loop.mjs now fires on WHO WAS ASKED, and it fires here.",
+          "what_it_cost_to_void_it": "The register drops from rounds=1 to rounds=1 — round 4 replaces it — but it drops from \"the first completed round in this file's history\" to nothing, and every earlier lap that cited round 1 as the baseline was citing an author. The three void rounds are now 1, 2 and 3: every round run before the pairing existed.",
+          "kept_in_full_below": {
+            "round": 1,
+            "rung": "stranger_reaction",
+            "ran_at": "2026-08-10T02:57:13Z",
+            "verified_at": "2026-08-10T03:12:00Z",
+            "task_id": "2026-08-10.c",
+            "answer": "codex/outbox/2026-08-10.c.md",
+            "answer_commit": "901debadcd7771b5bd7a0460b3b980c53411e293",
+            "blind_held": {
+              "recognised": "ない",
+              "so": "VALID. The round is kept. Had it read ある or たぶんある the round would have been void and discarded, because the Codex lane wrote assets/free-demo/index.html and an author's opinion cannot answer this rung.",
+              "what_was_disclosed": "the public URL and nothing else — no repository, no authorship, no reason for asking."
+            },
+            "verdict": "would_not_pay",
+            "verdict_verbatim": "払わない",
+            "ceiling_offered": null,
+            "strongest_objection_verbatim": "タップして増えるUIは見えたが、購入価値（何を買って何が得られるか）に直接つながる要素が体験内で確認できず、今の状態では有料化判断に必要な納得点が取れなかった。",
+            "strongest_objection_in_english": "The tap-to-increment UI was visible, but nothing inside the experience connected to what would actually be bought, so there was no basis on which to judge paying for it.",
+            "engagement": {
+              "played_or_read": "読んだ",
+              "depth_verbatim": "ページを開いて初期画面を確認し、そこで止めた",
+              "depth": "Opened the page, looked at the opening screen, stopped there. Did not play.",
+              "minutes": null
+            },
+            "changed": null,
+            "moved": null,
+            "moved_note": "Nothing was changed before this round, so there is no prior figure for it to move from. This is the baseline, and the first completed round in this file's history. Rule 4's no-move counter deliberately does not start here: a round that attempted nothing cannot be evidence that a parameter stopped working.",
+            "how_much_this_carries": {
+              "n": 1,
+              "the_default_was_the_answer": "The task states the default verdict is 払わない and that only a number overturns it. A reviewer who stopped at the opening screen therefore returned the default, and a returned default is weaker evidence than a refusal after real play. Do NOT let a later lap upgrade this to 'measured: strangers will not pay for it'.",
+              "what_it_does_establish": "The entrance did not hold one blind reader past the first screen. That is a statement about the opening, which is the part the route depends on most: this artifact is the free door the whole route walks people through.",
+              "what_it_does_not_establish": "Anything about the paid kit, whose source does not exist anywhere and which nobody has ever opened. The two are routinely named in one breath and the relationship does not exist.",
+              "grade": "one blind reviewer, self-reported engagement, no instrumentation — the same grade as the lane's other sweeps, and weaker than a behavioural reading would be."
+            },
+            "what_this_does_to_the_elected_route": "route_4_the_offer_form_is_the_binding_term names its prerequisite as AN ARTIFACT SOMEONE WHO DID NOT MAKE IT WOULD PAY FOR. Round 1 returns the opposite on the only artifact we own outright. The prerequisite is NOT satisfied and the route is not thereby refuted — one round is not a verdict on the route, and this lap deliberately does not re-elect. Three elections in three days would say the elections are noise."
+          }
+        },
         {
           "round": 2,
           "attempted_at": "2026-08-10T04:05:00Z",
@@ -141,10 +203,28 @@
         }
       ],
       "blind_reviewer_finding": {
-        "measured_at": "2026-08-10T05:05:00Z",
-        "claim": "The Codex lane has returned recognised on both rounds where the reviewer actually played, and unrecognised only on the round where the reviewer did not. Until that is broken, treat the lane as UNAVAILABLE as a blind reviewer for artifacts the lane wrote, at review depths worth having.",
-        "status": "hypothesis with n=3, engagement and authorship not separated",
-        "next_measurement_that_would_settle_it": "One lane task reviewing a third-party artifact of the same kind with the same played-to-completion instructions. Cheap, on the free pool, and it separates the two variables."
+        "measured_at": "2026-08-10T06:35:00Z",
+        "supersedes": "the 2026-08-10T05:05:00Z reading, which said to treat the lane as UNAVAILABLE as a blind reviewer for artifacts the lane wrote",
+        "claim": "RECOGNITION TRACKS AUTHORSHIP, NOT ENGAGEMENT. The lane is usable as a blind reviewer whenever the reviewing model is not the model that wrote the artifact. Three readings close the 2x2: author+played returned ある and たぶんある (rounds 2 and 3); non-author+played returned ない (2026-08-10.i, a third-party idle game the lane had never written); non-author+code-read returned ない twice, on opposite pairings (2026-08-10.k with spark reviewing account_default's artifact, 2026-08-10.l with account_default reviewing spark's).",
+        "status": "settled for the purpose it is used for, n=5 rounds across two models and three artifacts. The cell nobody has filled is non-author + PLAYED on an artifact of ours — .i played, but the artifact was a stranger's.",
+        "what_it_unlocks": "The route-critical unknown named in three consecutive handoffs — a reviewer that is not the author, four candidates and zero measured — is measured. It is the fourth candidate, Spark named explicitly, and it is the cheap one: a different weekly pool, at 99% remaining, that costs the Claude week nothing. The other three (a fresh Claude session, the owner, a real external human) do not need to be priced to proceed.",
+        "what_it_does_not_say": "That the lane is a good judge. It says the lane is a BLIND one. .l's magnitude error is the standing evidence that a non-author judge finds real things and sizes them wrong, and every round in this file is still one reviewer with no instrumentation.",
+        "now_mechanical": "scripts/product-loop.mjs roundSelfReviewed() plus rule 7 in judge(), which voids a self-reviewed round and refuses a round that will not say who reviewed it. scripts/lane-authorship.mjs enforces the same pairing on the outgoing task."
+      },
+      "replacement_candidate": {
+        "what": "codex/outbox/2026-08-10.j.md — the lane-built v3 proposed to replace assets/free-demo/index.html. NOT live, NOT transplanted, and this block is not a round on the offer: a verdict about a file that is not the offer must not be counted as one.",
+        "authored_by": "spark",
+        "reviewed_by": "account_default",
+        "review": "codex/outbox/2026-08-10.l.md",
+        "review_task_id": "2026-08-10.l",
+        "recognised": "ない",
+        "verdict_verbatim": "払わない",
+        "the_reason_it_matters_more_than_the_verdict": "THE NON-AUTHOR JUDGE FOUND A CORRECTNESS DEFECT, AND IT IS REAL. .l reported that tick() double-credits the same elapsed span: applyOffline(now) adds productionPerSecond() * delta to dust, runDust and totalDust and never advances state.lastTick, then tick() recomputes elapsed from that same unchanged lastTick and adds it again before setting state.lastTick = now. Verified mechanically this lap against the extracted HTML: applyOffline at lines 433-445 has no assignment to state.lastTick; tick() calls it at line 606 and credits again at lines 610-614.",
+        "and_the_judge_overstated_the_size": "This is the part a lap that trusted the review would have got wrong. .l says 実際の増加量は概ねその2倍 — roughly double. It is not, in steady play: setInterval drives tick every 250ms and applyOffline returns early when delta < 1, so the double credit cannot fire while the tab is foregrounded. It fires exactly where offline credit is the whole point — the startup call at line 649 followed immediately by the rAF tick at line 653, the saveInfo click handler at line 636, and any span where a backgrounded tab throttled the interval past one second. So: real defect, wrong magnitude, and the correct summary is that offline earnings are credited twice on every load rather than that production runs at 2x.",
+        "the_three_defects_it_was_commissioned_to_fix_ARE_fixed": "Checked before reading .l, so the check could not be steered by it. state.dust is declared in freshState() (line 344) and restored in normalizeState() (line 380); applyOffline() credits state.dust (line 441) and not only the totals; the zero-valued ternary branch in applyChoice() is gone. All three of the predecessor's named defects are closed.",
+        "so_the_defect_rate_did_not_go_to_zero_it_moved": "v2 (.h) had three defects in the persistence and offline-credit path. v3 (.j) closes all three and leaves a fourth in the same function. One rebuild is not a trend, but the shape to watch is that the defects stay in the offline-credit path across authors — that path is where an idle game keeps its promise, and it is the part no reviewer exercises by playing for thirty seconds.",
+        "what_this_does_to_the_review_cost_route_5_priced_at_zero": "The predecessor measured that reviewing .h cost a full Claude-context read of 665 lines and concluded the scarce pool reviews rather than moves files. Half of that is now cheaper: a non-author on the abundant pool FOUND the defect for one lane slot and zero Claude budget. The half that did not get cheaper is the one this block just demonstrated — the judge's magnitude claim was wrong, and separating \"real defect\" from \"roughly 2x\" took reading the code anyway. Finding is delegable; sizing is not, at n=1.",
+        "not_transplanted": "assets/free-demo/index.html is untouched. A candidate carrying a verified double-credit defect does not replace a byte-verified published file, and state/public-host.json mirrors that file to a second repository this session has never had."
       }
     }
   ],

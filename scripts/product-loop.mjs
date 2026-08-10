@@ -135,6 +135,50 @@ export function roundRecognised(round) {
 }
 
 /**
+ * Did the artifact's author review it?
+ *
+ * roundRecognised() catches the reviewer who SAYS it recognises the artifact.
+ * This catches the case that produced those answers in the first place, and it
+ * catches it before the answer comes back rather than after.
+ *
+ * 2026-08-10 settled which of the two competing explanations was right. Three
+ * readings, and they only make one shape together:
+ *
+ *   author + played        → ある / たぶんある   (rounds 2 and 3, both void)
+ *   non-author + played    → ない               (2026-08-10.i, a third-party game)
+ *   non-author + code-read → ない               (2026-08-10.k and .l, opposite pairings)
+ *
+ * Engagement was the hypothesis on the table — that a reviewer who actually
+ * exercises the mechanics recognises them, whoever wrote it. The control refutes
+ * it: the lane played a game it had not written, in the same depth, and did not
+ * recognise it. What survives is AUTHORSHIP, and authorship is a property of the
+ * task rather than of the answer, so it can be enforced at the point the round is
+ * recorded instead of discovered after a slot has been spent.
+ *
+ * That is the whole reason this exists as a separate rule. Recognition-after-the-
+ * fact costs a lane slot per void round; this costs nothing and refuses the round
+ * that was never going to be usable. scripts/lane-authorship.mjs enforces the
+ * same rule on the OUTGOING task; this one enforces it on the round that comes
+ * back, because a task can be paired correctly and still be filed under an offer
+ * whose artifact a different model wrote.
+ *
+ * Tri-state, but absence is NOT a pass here — see rule 7 in judge(). Round 1
+ * predates the field and was in fact self-reviewed; grandfathering it would have
+ * kept the register's one counted round the one round the finding disqualifies.
+ *
+ * @param {object} round
+ * @returns {boolean|null}
+ */
+export function roundSelfReviewed(round) {
+  const p = round?.reviewer_pairing;
+  if (!p || typeof p !== "object") return null;
+  const reviewer = String(p.reviewer_model_key ?? "").trim();
+  const author = String(p.author_model_key ?? "").trim();
+  if (!reviewer || !author) return null;
+  return reviewer === author;
+}
+
+/**
  * Does a stranger-round task text leak?
  *
  * The blind rule in state/product-loop.json is specific: "The task carries the
@@ -331,6 +375,37 @@ export function judge(doc, { now }) {
           `${offer.id} round ${r.round ?? "?"} came back recognised (見覚え ある) and is still counted ` +
             "as a round. A reviewer who recognises the artifact is not a stranger — move it to " +
             "void_rounds. Keeping it because the content was good is the exact trade this rule exists to refuse",
+        );
+      }
+    }
+
+    // 7. The author judging its own artifact. Rule 6 fires on the ANSWER; this
+    //    fires on WHO WAS ASKED, which is the cause rule 6 kept catching one
+    //    round too late. A self-reviewed round is void for the same reason a
+    //    recognised one is — the rung's entire content is that the critic is not
+    //    the maker — and it is void even when the answer comes back ない, because
+    //    an author who fails to recognise its own work has told us about its
+    //    memory rather than about the product.
+    //
+    //    Absence is a problem rather than a pass, unlike roundEngaged's null. The
+    //    difference is that engagement is a fact about a reviewer we may not have
+    //    asked, while the pairing is a fact about a task WE wrote: if a round
+    //    cannot say who reviewed it and who wrote the artifact, the answer is
+    //    knowable and was not recorded.
+    for (const r of rounds) {
+      if (!r.verdict) continue;
+      const self = roundSelfReviewed(r);
+      if (self === true) {
+        problems.push(
+          `${offer.id} round ${r.round ?? "?"} was reviewed by the model that wrote the artifact ` +
+            `(${r.reviewer_pairing?.reviewer_model_key}) and is still counted as a round. Move it to ` +
+            "void_rounds: an author's verdict on its own work is not a stranger reaction, whatever it says",
+        );
+      } else if (self === null) {
+        problems.push(
+          `${offer.id} round ${r.round ?? "?"} records verdict "${r.verdict}" but no reviewer_pairing — ` +
+            "name reviewer_model_key and author_model_key. Who was asked is a fact about our own task, " +
+            "so leaving it out is not the same kind of silence as an unrecorded engagement",
         );
       }
     }

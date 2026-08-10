@@ -25,7 +25,7 @@ import {
 } from "../scripts/inbox-task.mjs";
 import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/revenue-rate.mjs";
 import { decideVerdict, KINDS } from "../scripts/gate-verdict.mjs";
-import { roundRecognised, blindLeaks, inBlindScope, judge } from "../scripts/product-loop.mjs";
+import { roundRecognised, roundSelfReviewed, blindLeaks, inBlindScope, judge } from "../scripts/product-loop.mjs";
 import {
   KINDS as LANE_KINDS, classify as laneClassify, completedIds, producesOf,
   share as laneShare, judge as laneJudge,
@@ -3978,6 +3978,80 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     const demo = (pl.offers ?? []).find((o) => o.id === "free_demo");
     assert((demo?.void_rounds ?? []).some((v) => v.task_id === "2026-08-10.f"),
       "round 2 was discarded without being recorded — a thrown-away measurement still has to leave a trace");
+  }
+
+  // The pairing rule: who was ASKED, which is the cause the recognition rule kept
+  // catching one round too late.
+  {
+    const pl = JSON.parse(await readFile(join(root, "state/product-loop.json"), "utf8"));
+    const demo = (pl.offers ?? []).find((o) => o.id === "free_demo");
+    assert(roundSelfReviewed({
+      reviewer_pairing: { reviewer_model_key: "spark", author_model_key: "spark" },
+    }) === true, "a model reviewing its own artifact did not read as self-reviewed");
+    assert(roundSelfReviewed({
+      reviewer_pairing: { reviewer_model_key: "spark", author_model_key: "account_default" },
+    }) === false, "an opposite pairing read as self-reviewed");
+    // Absent is null HERE and a problem in judge(), which is the split that
+    // matters: the function does not invent a verdict, and the rule does not let
+    // the round through on the strength of its silence.
+    assert(roundSelfReviewed({ round: 1 }) === null,
+      "a round with no pairing block was given a verdict about it");
+    assert(roundSelfReviewed({ reviewer_pairing: { reviewer_model_key: "spark" } }) === null,
+      "a half-filled pairing read as a decision");
+
+    const selfReviewed = {
+      offers: [{
+        id: "x", live_to_buyers: false,
+        source: { repo: "r", path: "p" },
+        measurement: { rung: "stranger_reaction" },
+        rounds: [{
+          round: 1, verified_at: "2026-08-10T03:00:00Z", verdict: "would_not_pay",
+          recognised: "ない",
+          engagement: { played_or_read: "遊んだ" },
+          reviewer_pairing: { reviewer_model_key: "spark", author_model_key: "spark" },
+        }],
+      }],
+    };
+    const selfProblems = judge(selfReviewed, { now: new Date("2026-08-10T04:00:00Z") }).problems ?? [];
+    assert(selfProblems.some((x) => /wrote the artifact/i.test(x)),
+      "a self-reviewed round kept in rounds did not raise a problem — and note it answered ない, " +
+      "which is exactly the case the recognition rule lets through");
+
+    // The same round with the pairing block removed entirely. This is the
+    // grandfathering test: round 1 of the live register was self-reviewed and
+    // said nothing about it, and a rule that passes on silence would have kept it.
+    const unstated = structuredClone(selfReviewed);
+    delete unstated.offers[0].rounds[0].reviewer_pairing;
+    const unstatedProblems = judge(unstated, { now: new Date("2026-08-10T04:00:00Z") }).problems ?? [];
+    assert(unstatedProblems.some((x) => /no reviewer_pairing/i.test(x)),
+      "a round with a verdict and no pairing passed — silence about our own task is not the same " +
+      "kind of silence as an unrecorded engagement");
+
+    // A round with no verdict is not yet a judgement, so it is not held to the rule.
+    const noVerdict = structuredClone(unstated);
+    delete noVerdict.offers[0].rounds[0].verdict;
+    const noVerdictProblems = judge(noVerdict, { now: new Date("2026-08-10T04:00:00Z") }).problems ?? [];
+    assert(!noVerdictProblems.some((x) => /reviewer_pairing/i.test(x)),
+      "a round that has not returned a verdict was held to the pairing rule");
+
+    // The live register, which is the half that can rot without anyone noticing.
+    for (const offer of pl.offers ?? []) {
+      for (const r of offer.rounds ?? []) {
+        assert(roundSelfReviewed(r) !== true,
+          `${offer.id} keeps a self-reviewed round in rounds; it belongs in void_rounds`);
+        if (r.verdict) {
+          assert(roundSelfReviewed(r) === false,
+            `${offer.id} round ${r.round} carries a verdict without a stated pairing`);
+        }
+      }
+    }
+    // Round 1 was voided by this rule rather than deleted, and the reason has to
+    // survive: a lap that reads only `rounds` would otherwise re-derive it.
+    const voided = (demo?.void_rounds ?? []).find((v) => v.task_id === "2026-08-10.c");
+    assert(voided && roundSelfReviewed(voided) === true,
+      "round 1 was removed from rounds without being recorded as self-reviewed in void_rounds");
+    assert((demo?.rounds ?? []).some((r) => r.task_id === "2026-08-10.k"),
+      "the first non-author round is not in the register");
   }
 
   // And the live board: every pending request must carry a machine-readable test.
