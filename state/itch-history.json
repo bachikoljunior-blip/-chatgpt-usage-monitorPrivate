@@ -1,16 +1,22 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T00:04:11.549Z",
+  "fetched_at": "2026-08-10T06:56:36.367Z",
   "revenue_is_a_lower_bound": true,
   "revenue_derivation": "purchases_count x min_price_cents, summed over games. itch.io serves no earnings field on this endpoint and permits paying above the minimum, so this under-reports whenever a buyer pays more. Never present it as measured revenue.",
-  "seeded_from": "state/itch.json on origin/main at 2026-08-10T00:04:11.549Z — the collector reading that first reported game_count 1. Copied rather than invented: the same run's totals, transcribed by eta-loop so the series begins at the page's clean zero instead of at whatever level the first sale happens to find. Every later row is appended by scripts/read-itch.mjs.",
   "readings": [
     {
       "at": "2026-08-10T00:04:11.549Z",
       "total_sales_count": 0,
       "total_sales_usd_cents": 0,
       "views": 0,
+      "downloads": 0
+    },
+    {
+      "at": "2026-08-10T06:56:36.367Z",
+      "total_sales_count": 0,
+      "total_sales_usd_cents": 0,
+      "views": 2,
       "downloads": 0
     }
   ]
