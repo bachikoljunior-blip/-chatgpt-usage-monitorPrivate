@@ -1967,6 +1967,22 @@
       "what_would_refute_it": "(a) is refuted by a later hourly run reporting upload_route_exists false with the same control shape — that would mean the 400s were a transient surface. (b) is refuted by presign-with-a-filename returning 401/403 or a message naming a session, which restores the owner-upload ceiling as measured rather than assumed. (c) is refuted by rich_content being rejected over OAuth on PUT /v2/products/:id while a file upload completes, which would invert the cost ordering this lap wrote into the election.",
       "judge_on": "2026-08-17",
       "outcome": null
+    },
+    {
+      "id": "2026-08-10.delivery-was-the-cited-term-not-the-binding-one",
+      "made_at": "2026-08-10T15:30:00Z",
+      "claim": "Route 7 was elected on the claim that DELIVERY is why every channel reads infinity — nothing built here reaches a buyer, so no revenue reading exists. For prompt_pack that term is now met: the real document went out and came back identical, 3741 characters, headings and fenced code blocks intact, at zero owner actions. PREDICTION. (a) THE ROUTE DOES NOT DELIVER WHAT IT WAS ELECTED FOR: with delivery met for this offer, portfolio idle ETA is still infinity on 2026-08-24, because the next term is demand and nobody has measured any. (b) THE PULL TO SKIP RUNG 2 IS REAL AND WILL SHOW: some lap between now and then lists prompt_pack for sale, or argues for listing it, before a non-author verdict is on record — RUNBOOK 5.4 names starting at the buying rung as the shape of eight months at zero, and it has never before been this cheap to do. (c) THE SINGLE-EXIT PROBLEM BITES: prompt_pack now has one live exit instead of two, and if the rung-2 round comes back void for authorship it has none, so the register carries an entry it cannot conclude is wrong.",
+      "metric": "Read from committed state on origin/main. (a) state/eta.json idle_eta_days across channels on the judge date, and measured_current_monthly_yen. (b) state/product-loop.json prompt_pack live_to_buyers and rounds[], plus state/lap-claims.json mechanisms mentioning listing prompt_pack — the claim is refuted if a listing happens only AFTER a non-author round is recorded, and confirmed if one happens before or is argued for in a recorded mechanism. (c) state/codex-lane.json runs[] for 2026-08-10.payload-01-review: model key on the landed run, and whether product-loop.json prompt_pack rounds[] gained a round that lane-authorship accepts.",
+      "baseline": "2026-08-10T15:26:37Z. state/payload-listing.json verdict payload_survives_the_round_trip, identical true, 3741/3741. state/eta.json: all three channels idle_eta_days null with rate zero, measured_current_monthly_yen 0. state/product-loop.json prompt_pack live_to_buyers false, rounds [], next rung stranger_reaction, never RUN. The rung-2 task is live and unmarked on codex/INBOX.md with done_marker codex/outbox/payload-01-review.md.",
+      "what_i_could_not_establish": "Whether anyone would pay for the document. That is rung 2 and it is on the lane, not here. Also unestablished: file delivery. The presign/complete walk is untried, so nothing in this prediction speaks to idle_clicker_kit, whose buyer downloads a file and whose two failing promises still wait on one owner upload.",
+      "concurrent_changes": [
+        "scripts/probe-gumroad-rich-content.mjs changed encoding in the same session (form to JSON), which is what made the route measurable at all — the delivery result and the encoding fix are one act, not two.",
+        "compute-eta.mjs what_it_settles was rewritten for this candidate in the same session, so what later laps CHOOSE is attributable to the new guidance as much as to the measurement.",
+        "The rung-2 review was queued by an earlier session and is not this lap act; its verdict arriving inside the window is evidence about the offer, not about this prediction clause (b)."
+      ],
+      "what_would_refute_it": "(a) is refuted by any channel reporting a finite idle_eta_days by the judge date — that would mean delivery WAS the binding term and meeting it produced a rate. (b) is refuted by the judge date arriving with prompt_pack still unlisted and no recorded mechanism arguing to list it, i.e. the loop held the rung order without being told again. (c) is refuted by a rung-2 round landing with a non-author model key and being recorded, which restores a second live exit.",
+      "judge_on": "2026-08-24",
+      "outcome": null
     }
   ]
 }
