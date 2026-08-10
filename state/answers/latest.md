@@ -1,189 +1,56 @@
-## presigned upload の口
-
-管理画面が使う口は次の2つです。
-
-- 署名: `GET https://gumroad.com/s3_utility/generate_multipart_signature?to_sign=...`
-- サーバー時刻: `GET https://gumroad.com/s3_utility/current_utc_time_string`
-
-ただし、これは通常の「ファイル名を送ると presigned URL が返る」APIではありません。管理画面は Evaporate.js を使い、AWS S3 multipart upload の各リクエストについて `to_sign` を署名させます。公開ソースに、単独の curl だけで完結するパラメータ列や応答スキーマはありません。
-
-実際の手順は次の通りです。
-
-1. Gumroad管理画面へログインし、編集対象商品の Content 画面を開く。
-
-2. ページから渡される次の値を取得する。
-
-   - `aws_access_key_id`
-   - `s3_url`
-   - `user_id`
-
-   これらを外部から取得する公開APIは見つかりませんでした。
-
-3. Evaporate.js を次の設定で初期化する。
-
-   ```js
-   new Evaporate({
-     signerUrl: "/s3_utility/generate_multipart_signature",
-     aws_key: aws_access_key_id,
-     bucket: s3_url.split("/").at(-1),
-     fetchCurrentServerTimeUrl: "/s3_utility/current_utc_time_string",
-     maxFileSize: 20 * 1024 * 1024 * 1024,
-     s3Endpoint: s3_url.substring(0, s3_url.lastIndexOf("/")),
-   })
-   ```
-
-4. S3キーを管理画面と同じ規則で作る。公開ソースで確認できる範囲は次の形です。
-
-   ```text
-   attachments/<guid>/<seller_external_id>/<URLエンコードしたファイル名>
-   ```
-
-   正確な `FileUtils.getS3Key()` の変換規則を説明する公式文書は見つかりませんでした。署名側は、S3パスが現在の販売者に属することを検査します。
-
-5. Evaporate.js にファイルを渡す。
-
-   ```js
-   evaporate.add({
-     name: filename,
-     file,
-     url: s3_url,
-     mimeType,
-     xAmzHeadersAtInitiate: { "x-amz-acl": "private" }
-   })
-   ```
-
-   Evaporate.js はmultipart uploadの開始・各partのPUT・完了処理を行い、その都度次を呼びます。
-
-   ```http
-   GET /s3_utility/generate_multipart_signature?to_sign=<AWS署名対象文字列>
-   Cookie: <ログイン済みGumroadセッション>
-   ```
-
-   応答はJSONではなく、`Utilities.sign_with_aws_secret_key(to_sign)` が返す署名文字列です。
-
-6. 完了後のファイルURLは次の形になります。
-
-   ```js
-   fileUrl = `${s3_url}/${decodeURIComponent(s3key)}`
-   ```
-
-7. 商品へ紐づけるには、そのURLを既存の更新APIへ渡す。
-
-   ```bash
-   curl -X PUT \
-     "https://api.gumroad.com/v2/products/PRODUCT_ID" \
-     -H "Authorization: Bearer ACCESS_TOKEN" \
-     --data-urlencode "files[][url]=UPLOADED_FILE_URL"
-   ```
-
-   既存ファイルを残す場合は、残すファイルも含めて `files` 全体を送る必要があります。公開実装は「省略されたフィールドは変更しない」「既存コンテンツ内で参照中のファイルを削除する更新は拒否する」としています。
-
-結論として、この管理画面経路は、ログイン済みブラウザセッションを自動操作できる場合に限って実行可能です。アクセストークンだけで再現できる手順は見つかりませんでした。
-
-## 認証
-
-`/v2/` と同じOAuthアクセストークンでは叩けません。
-
-Gumroad自身の実装説明は、管理画面について次のように明記しています。
-
-> “The web frontend does this via Evaporate and a session-authenticated signing endpoint, neither of which is accessible to OAuth clients.”
-
-必要なのは以下です。
-
-- Gumroad管理画面へのログイン
-- そのログインセッションcookie
-- 管理画面から渡される `aws_access_key_id`、`s3_url`、`user_id`
-- その販売者の商品編集権限
-
-署名コントローラは `Sellers::BaseController` を継承し、販売者権限を検査します。公開ポリシー上、許可されるのは販売者に対して admin または marketing role を持つログインユーザーです。
-
-したがって、現在の `/v2/` アクセストークンしかCIに置けないなら、この非v2経路は自動化できません。セッションcookieをCIへ持ち込めるなら技術上は可能ですが、cookieの取得・更新方法を定めた公開APIは見つかりませんでした。
-
-## 制約
-
-- 有料商品での単一ファイル上限: **20 GB**。
-- 無料または最低価格0の商品: **全ファイル合計250 MB**。
-- ファイル数: 公式ヘルプは「商品ごとに好きなだけ追加できる」としています。
-- 対応形式: **網羅的な許可形式一覧は見つかりませんでした**。公式ヘルプはPDF、動画、音声、コード等を扱えると説明していますが、形式別の完全な制限表は見つかりませんでした。
-- 置換方法: 専用の「replace」操作は見つかりませんでした。新ファイルをアップロードし、商品更新時の `files` 一覧から旧ファイルを外す、つまり「追加して古いものを削除する」形です。
-- リッチコンテンツ内で旧ファイルが参照されている場合: その参照も同じ更新で除去しない限り、旧ファイルの削除は拒否されます。
-- 購入済みユーザーへの反映: 購入者のLibraryには「up-to-date files」が表示されるため、更新後の現在のファイルへアクセスします。
-- 自動通知: ファイル差し替えだけで購入者へ自動メールが送られるかは**不明**です。公式ヘルプは、変更を知らせる場合はEmails機能を使えるとしています。
-- 旧ファイルURLがいつ無効になるか: **不明**。
-- session cookieの有効期間・更新方法: **不明**。
-- 管理画面経路の安定性・後方互換性: **不明**。公開APIではなく内部UI経路です。
-
-## 出典
-
-公式の公開ソースコードおよび公式ヘルプを使用しました。第三者資料だけに依存した主張はありません。
-
-1. Gumroad公式リポジトリ、presigned upload実装PR  
-   https://github.com/antiwork/gumroad/pull/4069
-
-   > “The web frontend does this via Evaporate and a session-authenticated signing endpoint, neither of which is accessible to OAuth clients.”
-
-   > “The web uploader supports up to 20 GB”
-
-2. Gumroad公式リポジトリ、管理画面のEvaporate設定  
-   https://github.com/antiwork/gumroad/blob/main/app/javascript/components/useConfigureEvaporate.ts
-
-   > `signerUrl: Routes.s3_utility_generate_multipart_signature_path()`
-
-   > `fetchCurrentServerTimeUrl: Routes.s3_utility_current_utc_time_string_path()`
-
-   > `maxFileSize: MAX_FILE_SIZE`
-
-   > `xAmzHeadersAtInitiate: { "x-amz-acl": "private" }`
-
-3. Gumroad公式リポジトリ、署名エンドポイント  
-   https://github.com/antiwork/gumroad/blob/main/app/controllers/s3_utility_controller.rb
-
-   > `to_sign = params["to_sign"]`
-
-   > `render inline: Utilities.sign_with_aws_secret_key(to_sign)`
-
-   > `return render(json: { success: false, error: "Unauthorized" }, status: :forbidden)`
-
-4. Gumroad公式リポジトリ、ルーティング  
-   https://github.com/antiwork/gumroad/blob/main/config/routes.rb
-
-   > `get "/s3_utility/current_utc_time_string", to: "s3_utility#current_utc_time_string"`
-
-   > `get "/s3_utility/generate_multipart_signature", to: "s3_utility#generate_multipart_signature"`
-
-5. Gumroad公式リポジトリ、管理画面権限  
-   https://github.com/antiwork/gumroad/blob/main/app/policies/s3_utility_policy.rb
-
-   > `user.role_admin_for?(seller) || user.role_marketing_for?(seller)`
-
-6. Gumroad公式リポジトリ、商品更新時のファイル挙動  
-   https://github.com/antiwork/gumroad/pull/4069
-
-   > “Once complete, the `file_url` from either response can be passed in the `files` param of a product create or update request.”
-
-   同じ公式リポジトリの商品更新実装説明:
-
-   > “Supports partial updates. Omitted fields are not touched.”
-
-   > “Removing a file that's still embedded in rich content is rejected, unless the rich content update in the same request also removes the embed”
-
-7. Gumroad公式ヘルプ、ファイルサイズ  
-   https://gumroad.com/help/article/289-file-size-limits-on-gumroad.html
-
-   > “If you price your product at any number greater than $0.99, the largest single file that you can upload to a product is 20 GB in size.”
-
-   > “If you're using our Pay What You Want feature, and setting the lowest possible price to be $0, then the max cumulative size of all your files can be 250 MB.”
-
-   > “you can add as many files as you want to each product.”
-
-8. Gumroad公式ヘルプ、購入済みユーザーへの現在ファイルの提供  
-   https://gumroad.com/help/article/211-im-not-receiving-updates
-
-   > “In your Library, you can quickly access all of your purchases and any updates associated with them. Just click on the product's card and you'll see the product's up-to-date files and posts.”
-
-9. Gumroad公式ヘルプ、変更通知  
-   https://gumroad.com/help/article/82-membership-products
-
-   > “You can use our Emails feature to update customers about new files being added or any changes to the membership in general.”
-
-対応形式の完全な一覧、旧URLの失効時期、cookieの有効期間、差し替え時の自動通知仕様は見つかりませんでした。
+## 最初の30秒
+ロード直後に表示されるのは、暗い宇宙風背景 + 次の要素です。  
+上段はタイトル「星くず工房」、副題「月をタップして、小さな宇宙を育てよう」。  
+数値パネルは `0`、単位は「星くず」、右上では「毎秒 0」。  
+中央の大きな月ボタン（🌕）と「タップするたび +1」。  
+目標パネルは「次に交換できるもの 小さな衛星まで 4」、バーは 0%。  
+ショップは3種類（小さな衛星/月面観測所/星間工房）で、全ボタンは所持0、交換コストはそれぞれ 4・100・800。  
+自動保存 note が下部にあります。  
+保存された状態があれば復元、なければ初期状態（全て0）から開始。  
+タップをすると `showPop()` で「+1」がタップ位置付近に短時間表示。
+
+最初の10回を「タップだけ」で行うと、表示は次のように変化します（小数はまだ出ません）:
+
+1回目: 1  
+2回目: 2  
+3回目: 3  
+4回目: 4（この時点で「小さな衛星と交換できます」に切替、バー100%）  
+5回目: 5  
+6回目: 6  
+7回目: 7  
+8回目: 8  
+9回目: 9  
+10回目: 10  
+各回 `amount` が1増えるだけで、`rate` は購入なしならずっと `毎秒 0`。
+
+初回の4回目で交換可能になり、次に「小さな衛星」ボタン（コスト4）を押すと、  
+- `amount` が 4 引かれ `0`  
+- `所持 1` に更新  
+- `rate` が `毎秒 0.2` に変わり、以降 `tick()` で1秒あたり0.2ずつ増える（フレーム単位で加算）
+
+## やめる理由
+普通の人なら、おおむね `20〜30秒` 程度で離脱しやすいです。理由は、最初の「4回で交換」以降の感覚がすぐ単調になり、  
+- その後の主要アクションは「何度も同じタップ」か  
+- 1秒0.2の増加と100コストの壁の差が大きく、実感が追いつかない  
+からです。  
+ただし、タップと購入を1〜2回経験した直後に「自分で進めている」感はあるため、即時離脱というよりは「飽きるまで時間がかかる」は避けやすいです。
+
+## 払うか
+払わない。  
+同じゲームが有料だったとして払う気になる条件（具体）:
+
+- 0.2 / 1.5 / 12 の3段階だけでなく、段階的に目標が読める拡張（ミッション・自動化目標・イベント）が入ること（現在は `producerTypes` が3件固定）。  
+- タップしなくても進む体験価値があること。今は生産値が低く、オフラインでも `tick()` の上限 `Math.min(1, (now-previous)/1000)` によって長時間の放置進行が抑えられ、`save`/復元以外の「育成連続性」が弱い。  
+- 長期的に進めるほど価値があるコンテンツ（成長曲線の段階差、視覚イベント、達成時演出、目標の意味）が増えること。現状は `nextCost` が上がる一方でゲーム内報酬が薄い。
+
+## 一番弱いところ
+- `tick()` の `Math.min(1, (now - previous) / 1000)`  
+  - これでタブ復帰後の進行分は理論上最大1秒分しか計上されません。放置ゲームとしては失速が大きく、継続価値を下げます。  
+- `save()` が `localStorage.setItem` を例外処理していない  
+  - `load()` は try/catch しているのに対し保存側が生き残りなく、保存不可環境（Safari制限、プライベートモード、容量上限）で毎回例外を起こしやすいです。  
+- 自動進行の成長設計（`producerTypes` の最初コスト `4`, 次 `100`, 次 `800` と `perSecond` が `0.2, 1.5, 12`）  
+  - たった3種類で、ボトルネックが早く単調化します。特に1個目を取るまでの導線は短い一方、次に100に到達して2個目に行くまでの実利感が乏しい。
+
+## 見覚え
+ない  
+理由は、このHTMLの構成（CSP制約、`小さな衛星/月面観測所/星間工房` の3段構成、`nextCost(base * 1.15^owned)` の組み合わせ、`tick` + `showPop` の作り）を、今回読んだ本文以外の場所で使った記憶がないためです。
