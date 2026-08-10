@@ -61,7 +61,17 @@ export const LEDGER_LIMIT = 40;
 // demands; it is written by a lap and rewritten by this workflow, so leaving it out
 // would mean the check goes green for one hour and red again on the next run — a
 // check that flaps on a schedule teaches laps to ignore it.
-export const DURABLE_KEYS = ["which_pool_a_named_run_actually_spends", "answers_with_no_ledger_run"];
+// `derived_artifacts` joined this list on 2026-08-10, and it had to: it is the ONLY
+// place lane-authorship.mjs can learn who authored the difference when an attached
+// artifact is mostly inherited text, and without it every review task on such an
+// artifact is a standing problem. A row erased by the next lane run would make the
+// problem come back on a schedule, which is the failure
+// which_pool_a_named_run_actually_spends already recorded from the other side.
+export const DURABLE_KEYS = [
+  "which_pool_a_named_run_actually_spends",
+  "answers_with_no_ledger_run",
+  "derived_artifacts",
+];
 
 /**
  * Build the record. Pure so the invariant below can be tested without a runner:

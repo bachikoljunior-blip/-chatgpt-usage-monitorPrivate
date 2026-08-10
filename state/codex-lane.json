@@ -83,5 +83,18 @@
       "at": "2026-08-10T06:15:49.487Z"
     }
   ],
-  "note": "Written by every run of .github/workflows/codex-inbox.yml, including the runs that skip because the task already carries its done marker. state/automations.json points codex-loop's liveness here for that reason."
+  "note": "Written by every run of .github/workflows/codex-inbox.yml, including the runs that skip because the task already carries its done marker. state/automations.json points codex-loop's liveness here for that reason.",
+  "derived_artifacts": [
+    {
+      "path": "assets/free-demo/index.html",
+      "derived_from": "codex/outbox/2026-08-09.q.md",
+      "inherited_fraction_measured_by": "scripts/lane-authorship.mjs pickAncestor, which reported 93% verbatim",
+      "effective_author": "eta_loop_laps",
+      "why": "The rule this answers says it outright: whoever ran the rebuild authored the difference, not the file. The 93% that is verbatim was written by account_default in task 2026-08-09.q, before Spark was reachable at all — that is already recorded in which_pool_a_named_run_actually_spends.authorship_as_of_this_settlement and is not withdrawn. The remaining 7% is edits made by laps in this repository, the largest being the first producer's price going 15 -> 4 at commit 1953f2f. Neither lane model wrote that diff, so naming either one here would be false in the direction that matters: it would be asserting a reviewer is reading its own code when it is not.",
+      "what_this_permits_and_what_it_does_not": "It permits spark to review this artifact, because neither the 93% (account_default) nor the 7% (laps here) is spark. It does NOT permit account_default to review it — that pairing would be the self-review rule 2 exists for, and lane-authorship will still say so.",
+      "recorded_at": "2026-08-10T09:50:00Z",
+      "recorded_because": "Tasks .r and .s both attach this file and both were reported BAD for exactly one missing field. .r is already queued and in flight, so the field was owed whether or not .s existed.",
+      "durability": "scripts/record-lane-run.mjs DURABLE_KEYS carries this forward, and tests/run-tests.mjs goes red if it is dropped. Without that, the hourly lane run regenerates this file wholesale and the finding survives until the next run — which is what happened to which_pool_a_named_run_actually_spends on 2026-08-10 at 06:15:49Z."
+    }
+  ]
 }

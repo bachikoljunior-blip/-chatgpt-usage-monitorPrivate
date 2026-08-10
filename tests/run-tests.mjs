@@ -843,6 +843,12 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       // one hour after every lap that acknowledges an unledgered answer — and a
       // check that goes red on a schedule teaches laps to stop reading it.
       answers_with_no_ledger_run: [{ task_id: "2026-08-10.n", author: null }],
+      // Same shape, rule 2 rather than rule 3. It is the only place the effective
+      // author of a mostly-inherited artifact is recorded, so losing it turns
+      // every review task on that artifact back into a problem — on the hour.
+      derived_artifacts: [
+        { path: "assets/free-demo/index.html", effective_author: "eta_loop_laps" },
+      ],
     };
     const after = buildLaneRecord({
       now: new Date("2026-08-10T07:00:00Z"),
@@ -859,6 +865,11 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       after.answers_with_no_ledger_run?.[0]?.task_id === "2026-08-10.n",
       "the acknowledgement of an answer with no ledger run was erased by the next run; the check that " +
       "reads it would then go red every hour on a fact that was already recorded",
+    );
+    assert(
+      after.derived_artifacts?.[0]?.effective_author === "eta_loop_laps",
+      "the effective author of an inherited artifact was erased by the next run; lane-authorship rule 2 " +
+      "would then report every review task on that artifact as unrecorded, once an hour, forever",
     );
     assert(
       after.runs.some((r) => r.task_id === "2026-08-10.k"),
