@@ -1188,6 +1188,47 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     pulse.indexOf("derive-lap-cost.mjs --write") < pulse.indexOf("compute-eta.mjs --write"),
     "pulse.yml derives the lap cost after compute-eta reads it",
   );
+
+  // --- The pre-commit gate may only guard what the commit actually stages -----
+  // 2026-08-10. The "Verify no credentials entered committed state" step listed
+  // seven files; the commit stages six, and two of the seven — youtube-scan.json
+  // and external-metrics.json — are staged by nothing in this workflow. A verdict
+  // on those two could not keep an unverified file off main, because nothing here
+  // puts them there. It could only skip the commit. It did: every pulse run on
+  // 2026-08-10 ended verify=failure, commit=skipped, and state/eta.json on main
+  // stayed frozen at 11:51Z while every gate in this repository divided it.
+  //
+  // The rule this pins is not "verify less". It is that a FAIL-CLOSED check must
+  // be closed against the thing it guards. The reporting step after the commit
+  // still sweeps every state/*.json, so nothing stopped being checked.
+  //
+  // Mutation run red before this was kept: adding state/youtube-scan.json back to
+  // the verify list.
+  {
+    const verifyStep = pulse.slice(
+      pulse.indexOf("- name: Verify no credentials entered committed state"),
+      pulse.indexOf("- name: Commit current state"),
+    );
+    assert(verifyStep.length > 0, "pulse.yml no longer has a verify step before the commit");
+    const verified = [...verifyStep.matchAll(/state\/[a-z-]+\.json/g)].map((m) => m[0]);
+    const staged = [...pulse.matchAll(/git add ([^\n]*)/g)]
+      .flatMap((m) => m[1].split(/\s+/))
+      .filter((s) => s.startsWith("state/"));
+    assert(verified.length > 0, "the pre-commit verify step checks nothing");
+    for (const f of verified) {
+      assert(
+        staged.includes(f),
+        `pulse.yml refuses to commit when ${f} fails, but never stages ${f} — the failure can only cost the ETA refresh, it cannot keep anything off main`,
+      );
+    }
+    // And the step must NAME what failed. Seven consecutive red runs did not say
+    // which file was wrong, because a straight line of commands aborts on the
+    // first one and prints nothing identifying it.
+    assert(
+      /::error::/.test(verifyStep),
+      "the pre-commit verify step fails without naming the file, so a red run says only that something is wrong",
+    );
+  }
   // And the gate has to say how old the number is. The whole failure was that it
   // did not: 17.9 hours of staleness printed as nothing at all.
   const pacingSrc = await readFile(join(root, "scripts/pacing.mjs"), "utf8");

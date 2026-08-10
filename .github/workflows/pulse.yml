@@ -75,16 +75,45 @@ jobs:
 
       # fail closed, same as the collectors: a state file that failed its check
       # must never reach main.
+      #
+      # EXACTLY THE FILES THE COMMIT STEP STAGES, and that list is pinned by
+      # tests/run-tests.mjs so the two cannot drift apart again.
+      #
+      # 2026-08-10: this step named seven files, two of which — youtube-scan.json
+      # and external-metrics.json — the commit below never stages. So their
+      # verdict could not keep an unverified file off main (nothing puts them
+      # there from here) and could only skip the commit, which is what happened:
+      # every pulse run on 2026-08-10 (07:00, 09:02, 09:15, 09:42, 10:13, 10:52,
+      # 12:36) ended with verify=failure and "Commit current state"=skipped, and
+      # state/eta.json on main stayed frozen at 11:51Z — written by a lap, not by
+      # the schedule. Every gate decision in this repository divides that file.
+      # The surrounding steps say it outright, three times, about lesser things:
+      # a red side-check must not cost the ETA refresh. This step was the one
+      # place where it did.
+      #
+      # Nothing stops being checked. The reporting step below runs `for f in
+      # state/*.json` after the commit, deliberately, and turns the run red on
+      # any file in the directory — a wider net than this step ever cast.
+      #
+      # Loop rather than a straight line, and echo the path: this step aborted on
+      # the first failure and printed nothing naming it, so seven consecutive red
+      # runs did not say which file was wrong. A check that reports "something is
+      # wrong" is the failure mode this repository is named after.
       - name: Verify no credentials entered committed state
         id: verify
         run: |
-          node scripts/verify-sanitized-state.mjs state/eta.json
-          node scripts/verify-sanitized-state.mjs state/heartbeat.json
-          node scripts/verify-sanitized-state.mjs state/eta-history.json
-          node scripts/verify-sanitized-state.mjs state/public-host.json
-          node scripts/verify-sanitized-state.mjs state/findable-surface.json
-          node scripts/verify-sanitized-state.mjs state/youtube-scan.json
-          node scripts/verify-sanitized-state.mjs state/external-metrics.json
+          rc=0
+          for f in \
+            state/eta.json \
+            state/heartbeat.json \
+            state/eta-history.json \
+            state/public-host.json \
+            state/findable-surface.json \
+            state/lap-cost-derived.json
+          do
+            node scripts/verify-sanitized-state.mjs "$f" || { echo "::error::$f fails the sanitizer, so the ETA refresh is being skipped"; rc=1; }
+          done
+          exit $rc
 
       - name: Commit current state
         if: steps.compute.outcome == 'success' && steps.verify.outcome == 'success'
