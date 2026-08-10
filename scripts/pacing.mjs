@@ -167,6 +167,62 @@ for (const a of automations) {
   });
 }
 
+/**
+ * Whether the lap that just passed this gate may hand straight off to a successor.
+ *
+ * This gate bounds COST PER LAP and nothing else, and speed is cost-per-lap times
+ * laps-per-hour. The chain re-spawns itself the moment a lap ends, so the second term
+ * has never had a bound at all: on 2026-08-10 seventeen eta-loop workers ran between
+ * 07:55 and 16:03Z, back to back, while this same gate printed
+ * "ahead_of_pace_throttle" and returned continue every time. Throttling the allowance
+ * of a lap that starts again immediately changes nothing about the rate.
+ *
+ * The weekly pool is per ACCOUNT and three loops share it, so whichever loop spends
+ * fastest takes the other two down with it — A10 is violated for all of them by one.
+ *
+ * Pure, and it takes the burn rate as a number rather than reading it, so the rule can
+ * be checked without the fact file and the fact file can be replaced without touching
+ * the rule.
+ *
+ * @returns spawn_successor | wait_for_next_firing | unknown, with the arithmetic
+ */
+export function handoffDirective({ remainingPercent, hoursToReset, burnPercentPerHour }) {
+  const burn = Number(burnPercentPerHour);
+  const left = Number(remainingPercent);
+  const toReset = Number(hoursToReset);
+  if (!Number.isFinite(burn) || burn <= 0 || !Number.isFinite(left) || !Number.isFinite(toReset)) {
+    return {
+      directive: "unknown",
+      dry_in_hours: null,
+      // Not "spawn": an unmeasured rate is the state that produced the burn, and
+      // defaulting to the fast answer when the number is missing rebuilds it.
+      why: "no usable account-wide burn rate, so the second term is unbounded and unmeasured — the same position as before this was wired. Prefer the next scheduled firing over an immediate successor until a rate exists.",
+    };
+  }
+  const dryIn = left / burn;
+  if (dryIn >= toReset) {
+    return {
+      directive: "spawn_successor",
+      dry_in_hours: Number(dryIn.toFixed(1)),
+      why: `at ${burn}%/h the ${left}% left outlasts the ${toReset.toFixed(1)}h to reset, so the chain costs nobody their window`,
+    };
+  }
+  return {
+    directive: "wait_for_next_firing",
+    dry_in_hours: Number(dryIn.toFixed(1)),
+    why:
+      `at ${burn}%/h the ${left}% left runs out in ${dryIn.toFixed(1)}h, ${(toReset - dryIn).toFixed(1)}h before the window resets. ` +
+      "Every loop on this account is dark for that gap, not just this one. Finish this lap, push, and let the scheduled firing start the next one.",
+  };
+}
+
+const { value: accountBurn } = await readStateJson("state/account-burn-observed.json");
+const handoff = handoffDirective({
+  remainingPercent: remaining,
+  hoursToReset: minutesToReset / 60,
+  burnPercentPerHour: accountBurn?.observed_account_burn?.rate_percent_per_hour,
+});
+
 const reservedRaw = reserved;
 const reservedCap = remaining * MAX_RESERVED_FRACTION;
 const reservedCapped = reservedRaw > reservedCap;
@@ -240,6 +296,7 @@ const report = {
   derived_from: derivedCost?.best ? { from: derivedCost.best.from, to: derivedCost.best.to, laps: derivedCost.best.laps_inside, drop_percent: derivedCost.best.drop_percent } : null,
   derived_cost_age_hours: derivedCostAgeHours,
   derived_cost_is_stale: derivedCostStale,
+  handoff,
 };
 
 if (asJson) {
@@ -276,6 +333,11 @@ if (asJson) {
     `  pace: observed ${observedPerDay?.toFixed(2) ?? "n/a"}%/day vs flat ${flatPerDay?.toFixed(2) ?? "n/a"}%/day`,
   );
   console.log(`  this lap may spend: ${budgetPercent.toFixed(2)}%`);
+  console.log(
+    `  handoff: ${handoff.directive}` +
+      (handoff.dry_in_hours === null ? "" : ` · account dry in ${handoff.dry_in_hours}h`),
+  );
+  console.log(`    ${handoff.why}`);
   if (report.unmeasured_automations.length) {
     console.log(
       `  NOTE: unmeasured cost for ${report.unmeasured_automations.join(", ")} — ` +

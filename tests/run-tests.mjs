@@ -6930,3 +6930,37 @@ function assert(condition, message) {
     "with no parseable run dates the boundary stopped falling back to the id sort",
   );
 }
+
+// The gate bounds cost per lap and speed is cost-per-lap times laps-per-hour. The
+// second term had no bound at all: on 2026-08-10 seventeen eta-loop workers ran
+// between 07:55 and 16:03Z, back to back, while pacing printed
+// "ahead_of_pace_throttle" and returned continue every time.
+{
+  const { handoffDirective } = await import("../scripts/pacing.mjs");
+
+  // The measured position on 2026-08-10: 12% left, 1.02%/h across the whole account,
+  // 102h to reset. Dry in under twelve hours and dark for ninety.
+  const tight = handoffDirective({ remainingPercent: 12, hoursToReset: 102, burnPercentPerHour: 1.02 });
+  assert(tight.directive === "wait_for_next_firing", "a chain that empties the shared pool 90h before reset was told to spawn a successor");
+  assert(tight.dry_in_hours > 11 && tight.dry_in_hours < 12, `dry-out arithmetic drifted: ${tight.dry_in_hours}h`);
+
+  // And it must not become a permanent brake. Slow enough to outlast the window, and
+  // the chain is exactly what this loop wants — A10 is "never stop", not "go slowly".
+  assert(
+    handoffDirective({ remainingPercent: 60, hoursToReset: 24, burnPercentPerHour: 1.02 }).directive === "spawn_successor",
+    "a rate that comfortably outlasts the window still stopped the chain; the rule became a brake rather than a bound",
+  );
+  // Exactly reaching the reset is not running out before it.
+  assert(
+    handoffDirective({ remainingPercent: 10, hoursToReset: 10, burnPercentPerHour: 1 }).directive === "spawn_successor",
+    "a chain lasting exactly to the reset was treated as running dry",
+  );
+
+  // No rate is NOT permission. An unmeasured second term is the state that produced
+  // the burn, so defaulting to the fast answer when the number is missing rebuilds it.
+  for (const missing of [undefined, null, 0, -1, "n/a"]) {
+    const v = handoffDirective({ remainingPercent: 12, hoursToReset: 102, burnPercentPerHour: missing });
+    assert(v.directive === "unknown", `an unusable burn rate (${String(missing)}) produced a confident directive`);
+    assert(v.directive !== "spawn_successor", "a missing measurement was read as permission to keep spawning");
+  }
+}

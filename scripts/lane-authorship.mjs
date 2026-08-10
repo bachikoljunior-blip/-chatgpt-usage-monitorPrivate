@@ -126,11 +126,18 @@ export function unledgeredAnswers({ answers = [], runs = [], acknowledged = [], 
   // as a heuristic rather than guessed at, because an answer file carries no
   // timestamp this function can read — the honest fix is a dated answer, not a
   // cleverer string comparison.
-  const ack = new Set(
-    (Array.isArray(acknowledged) ? acknowledged : [])
-      .map((a) => (typeof a === "string" ? a : a?.task_id))
-      .filter(Boolean),
-  );
+  const ackRows = Array.isArray(acknowledged) ? acknowledged : [];
+  const ack = new Set(ackRows.map((a) => (typeof a === "string" ? a : a?.task_id)).filter(Boolean));
+  // A STANDING task mints a new id every day (standing-2026-08-10, standing-2026-08-11,
+  // ...), and each of its answers arrives by the same unattributed route as the last.
+  // Acknowledging them one row at a time is a tax that comes due daily and turns this
+  // check red every morning until someone writes the same paragraph again. A row may
+  // instead declare task_id_prefix and cover the family, which is honest precisely
+  // because the reason does not vary between days: it is a property of the task's
+  // transport, not of any one answer.
+  const ackPrefixes = ackRows
+    .map((a) => (typeof a === "string" ? null : a?.task_id_prefix))
+    .filter((p) => typeof p === "string" && p.length > 0);
   // An answer's filename is not its task id, and assuming it is made this check
   // accuse a task that HAD run. Every task up to 2026-08-10.w wrote its marker to
   // codex/outbox/<task_id>.md, so stem and id were the same string and nothing
@@ -156,6 +163,7 @@ export function unledgeredAnswers({ answers = [], runs = [], acknowledged = [], 
   return answers
     .filter((stem) => {
       const id = idForStem.get(stem) ?? stem;
+      if (ackPrefixes.some((p) => id.startsWith(p) || stem.startsWith(p))) return false;
       return id >= earliest && !ledgered.has(id) && !ack.has(id) && !ack.has(stem);
     })
     .sort();

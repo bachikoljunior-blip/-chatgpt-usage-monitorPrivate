@@ -139,7 +139,14 @@ const main = async () => {
   }
   console.log(`product: ${before.json?.product?.name ?? "(unnamed)"}`);
   console.log(`currently attached: ${beforeFiles.length} file(s)`);
-  for (const f of beforeFiles) console.log(`  ${String(f.url ?? "").split("?")[0].split("/").pop()}`);
+  // The key segment, not just the basename. Two attachments can share a filename and
+  // differ entirely — the storefront carried brandable-idle-clicker.zip twice over,
+  // once from the dashboard and once from this route, and printing basenames alone
+  // made a replacement that had happened look like one that had not.
+  for (const f of beforeFiles) {
+    const parts = String(f.url ?? "").split("?")[0].split("/");
+    console.log(`  ${parts.slice(-3).join("/")}`);
+  }
 
   const built = await buildArchive({ quiet: true });
   const bytes = await readFile(resolve(REPO, built.archive));

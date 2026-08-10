@@ -102,6 +102,16 @@
       "the_model_key_that_did_not_land": "Worth reading next to this: the payload-01 ledger row carries model_key spark and model \"default\". The named Spark slug was requested and the transport fell back to the account default, so the Spark window was not spent on it either. state/usage.json settles which window moved; the claim is not settled from this file."
     },
     {
+      "task_id_prefix": "standing-",
+      "author": null,
+      "acknowledged_at": "2026-08-10T17:20:00Z",
+      "covers": "every answer the daily standing floor task produces: standing-2026-08-10, standing-2026-08-11, and each day after.",
+      "why_a_prefix_and_not_a_row_per_day": "The standing task mints a new task_id every day by construction, and every one of its answers so far has arrived by the same unattributed route. A row per day is the same paragraph rewritten each morning to clear the same red, and a check that needs re-silencing daily is a check people stop reading. The reason does not vary between days because it is a property of the transport, not of any one answer.",
+      "what_this_does_not_do": "It does not establish an author for any of them, and it does not permit a product-loop round or any state/ measurement off them. Everything the standing-2026-08-10 row says about usability still holds for every later day: unestablished authorship, lead rather than measurement.",
+      "what_would_retire_this_row": "The standing task's answers arriving through .github/workflows/codex-inbox.yml with ledger entries. At that point they are attributed, this prefix stops matching anything that needs it, and it should be deleted rather than left as cover.",
+      "the_row_it_does_not_replace": "standing-2026-08-10 stays as its own row. It carries the first observation of prediction 2026-08-10.the-second-producer-is-not-this-repository, and that is a record of a specific day rather than a standing exemption."
+    },
+    {
       "task_id": "2026-08-10.payload-01-run",
       "acknowledged_at": "2026-08-10T17:05:00Z",
       "author": null,
