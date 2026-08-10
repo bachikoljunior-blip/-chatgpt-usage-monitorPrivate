@@ -12,19 +12,19 @@
 // only when a lap remembered it, which is the defect check-wiring.mjs exists to
 // catch, occurring inside the document that defines the rule.
 //
-// AND IT IS CURRENTLY CLOSED AGAINST EVERY POSSIBLE REQUEST. Gate 3 asks
-// state/eta.json to show an ETA reduction. Every channel reports infinity with
-// idle_eta_days null, so no ask can satisfy it — while an owner action is the only
-// way to create the surface that could produce the first revenue that would make a
-// channel finite. That is the same shape as the direct/prerequisite deadlock
-// RUNBOOK 3.9 records: a gate written to forbid doing nothing, forbidding
-// everything.
+// The first version of this file read gate 3 as "some channel reports a finite
+// ETA" and nothing else, which closed it against every possible request — every
+// channel has been infinite for the whole recorded history. That version said the
+// closure was a design decision for a later lap to argue in the open, and made it
+// DATA rather than prose so the argument would start from a measured fact.
 //
-// This file does NOT open a lane. Inventing an escape hatch is a design decision
-// and belongs to a lap that argues for it in the open. What it does is make the
-// closure DATA — structurally_closed true, with the reason and the reading it came
-// from — so the next context finds a measured fact instead of rediscovering a
-// sentence in a file that is rewritten every lap.
+// 2026-08-10 is that lap, and the fact turned out to falsify the reading: the same
+// closure would have refused an owner request that was made, performed, and
+// verified. The argument and the evidence are at gateThree() below, next to the
+// code they justify rather than in a comment at the top that no caller reads.
+//
+// Gate 3 now has two lanes. Lane 1 is unchanged. Lane 2 borrows RUNBOOK 3.9's
+// already-capped admission record. Neither lane admits a request on nothing.
 //
 //   node scripts/owner-request-gate.mjs [--local]
 
@@ -74,8 +74,98 @@ export function gateThreeState(channels) {
   };
 }
 
-export function ownerRequestGate(request, channels) {
+// ---------------------------------------------------------------------------
+// The second lane through gate 3, and why it is not a softening.
+//
+// 2026-08-10. gateThreeState above is CORRECT as a fact about channels and WRONG
+// as the whole of gate 3, and the difference is measurable rather than arguable:
+//
+//   Every row in state/eta-history.json — the entire recorded history — carries
+//   idle_eta_days null and planned_eta_days null. So gate 3 as the sole test was
+//   closed at every moment that has ever been recorded, and would have refused
+//   all four owner requests in state/owner-requests.json. One of those four,
+//   2026-08-09.gumroad-cover-upload, WAS PERFORMED, and its effect is measured:
+//   state/gumroad.json reports cover_count 1.
+//
+// A gate that refuses a request that was made, performed, and verified useful is
+// not implementing RUNBOOK 6 gate 3. It is implementing a stricter rule that
+// nobody wrote, and the stricter rule's fixed point is that the owner is never
+// asked for the one action that could produce the revenue that would make a
+// channel finite. That is the deadlock RUNBOOK 3.9 already names, in the same
+// shape, one gate over: "a gate written to forbid doing nothing, forbidding
+// everything."
+//
+// The runbook's words are 「ETA削減の根拠を state/eta.json が示しているか」—
+// whether the GROUNDS are shown, not whether a finite number exists. So the
+// second lane asks for the grounds in the form this repo already keeps them:
+// the request must name a candidate that the WORK gate actually admitted, as
+// recorded in state/lap-claims.json by scripts/eta-gate.mjs --record.
+//
+// This is deliberately not a new escape hatch. It borrows one that is already
+// capped and counted — a lap cannot manufacture an admission, because
+// scripts/gate-verdict.mjs refuses prerequisites after MAX_CONSECUTIVE_PREREQUISITES
+// without ETA movement, and route_change opens only while that cap is firing.
+// The tests below pin the boundary that matters: a request naming a candidate
+// with NO admitted claim is still refused, and so is one naming no candidate at
+// all. Softening would have been dropping the requirement; this replaces it with
+// a different measured one, and says so out loud where the next lap will read it.
+
+// Pure. The admitted work claim behind a candidate, or null.
+export function admittedClaimFor(candidateId, claims) {
+  if (typeof candidateId !== "string" || candidateId.length === 0) return null;
+  const list = Array.isArray(claims) ? claims : [];
+  // Latest wins: a candidate re-admitted after being reworked should carry the
+  // reasoning that was current when the ask went out, not the first one ever filed.
+  for (let i = list.length - 1; i >= 0; i -= 1) {
+    if (list[i]?.candidate === candidateId) return list[i];
+  }
+  return null;
+}
+
+// Pure. Gate 3 for one REQUEST, over both lanes.
+export function gateThree(request, channels, claims) {
   const three = gateThreeState(channels);
+  if (!three.structurally_closed) {
+    return { passes: true, via: "finite_channel_eta", detail: three.reason, claim: null, board: three };
+  }
+  const id = request?.candidate_id ?? null;
+  if (id === null) {
+    return {
+      passes: false,
+      via: null,
+      detail:
+        "no channel reports a finite ETA and the request names no candidate_id, so there is " +
+        "nothing to attach the ask to — neither a reduction nor admitted work",
+      claim: null,
+      board: three,
+    };
+  }
+  const claim = admittedClaimFor(id, claims);
+  if (claim === null) {
+    return {
+      passes: false,
+      via: null,
+      detail:
+        `no channel reports a finite ETA, and no admitted work claim in state/lap-claims.json ` +
+        `names candidate "${id}". Put the work through scripts/eta-gate.mjs --record first: an ` +
+        `ask the work gate never admitted has no grounds to show.`,
+      claim: null,
+      board: three,
+    };
+  }
+  return {
+    passes: true,
+    via: "admitted_work_claim",
+    detail:
+      `every channel is infinite, but scripts/eta-gate.mjs admitted "${id}" as ${claim.kind} at ` +
+      `${claim.at}, so the grounds gate 3 asks for exist in the form this repo keeps them`,
+    claim,
+    board: three,
+  };
+}
+
+export function ownerRequestGate(request, channels, claims = []) {
+  const three = gateThree(request, channels, claims);
   const missing = DECLARED_GATES.filter(([key]) => typeof request?.[key] !== "boolean").map(
     ([, label]) => label,
   );
@@ -84,7 +174,7 @@ export function ownerRequestGate(request, channels) {
   return {
     id: request?.id ?? "(unnamed request)",
     status: request?.status ?? null,
-    gate_three_passes: !three.structurally_closed,
+    gate_three_passes: three.passes,
     gate_three: three,
     undeclared: missing,
     declared_failing: failed,
@@ -93,7 +183,7 @@ export function ownerRequestGate(request, channels) {
     admissible:
       request?.status === "done"
         ? null
-        : !three.structurally_closed && failed.length === 0 && missing.length === 0,
+        : three.passes && failed.length === 0 && missing.length === 0,
   };
 }
 
@@ -228,10 +318,25 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const local = process.argv.includes("--local");
   const eta = JSON.parse(await readState("state/eta.json", local));
   const owner = JSON.parse(await readState("state/owner-requests.json", local));
+  // The second lane's evidence. Unreadable is not empty: an unreadable claims file
+  // would silently close the lane again, so it is reported rather than defaulted.
+  let claims = null;
+  try {
+    claims = JSON.parse(await readState("state/lap-claims.json", local)).claims ?? [];
+  } catch {
+    claims = null;
+  }
 
   const three = gateThreeState(eta.channels);
-  console.log(`gate 3 (ETA reduction shown by state/eta.json): ${three.structurally_closed ? "CLOSED TO EVERY REQUEST" : "open"}`);
+  console.log(`gate 3, lane 1 (a channel shows a finite ETA): ${three.structurally_closed ? "closed" : "open"}`);
   console.log(`  ${three.reason}`);
+  console.log(
+    `gate 3, lane 2 (the ask names work the ETA gate admitted): ${
+      claims === null
+        ? "UNREADABLE — state/lap-claims.json could not be read, so this lane is closed for the wrong reason"
+        : `open — ${claims.length} admitted claim(s) across ${new Set(claims.map((c) => c?.candidate)).size} candidate(s)`
+    }`,
+  );
 
   const pending = (owner.requests ?? []).filter((r) => r.status !== "done");
 
@@ -252,8 +357,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   let unevaluable = 0;
   for (const r of pending) {
-    const v = ownerRequestGate(r, eta.channels);
+    const v = ownerRequestGate(r, eta.channels, claims ?? []);
     console.log(`${v.id}: admissible=${v.admissible}`);
+    console.log(`  gate 3: ${v.gate_three.passes ? `PASSES via ${v.gate_three.via}` : "refused"} — ${v.gate_three.detail}`);
     if (v.undeclared.length > 0) console.log(`  undeclared: ${v.undeclared.join("; ")}`);
     if (v.declared_failing.length > 0) console.log(`  failing: ${v.declared_failing.join("; ")}`);
 
@@ -285,11 +391,13 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     process.exit(1);
   }
 
-  // Deliberately exit 0 while the closure is structural. Red here would mean "the
-  // world has not produced revenue yet", which no lap can fix by working harder and
-  // which would drown the checks that ARE actionable. The closure is reported, not
-  // alarmed. It becomes worth alarming on only once a channel goes finite and a
-  // request still cannot pass — and that is a different check, written on the day
-  // there is something to write it against.
+  // Deliberately exit 0 when lane 1 is closed. Red there would mean "the world has
+  // not produced revenue yet", which no lap can fix by working harder and which
+  // would drown the checks that ARE actionable. Lane 2 changes what a refusal
+  // MEANS, though: with lane 1 closed, a refused request is now a request whose
+  // work never went through scripts/eta-gate.mjs, and that IS the loop's fault and
+  // is fixable in the same lap. It is printed per request rather than alarmed,
+  // because a refusal here should send a lap back to the work gate, not stop a
+  // pulse that is also reporting eleven other things.
   process.exit(0);
 }

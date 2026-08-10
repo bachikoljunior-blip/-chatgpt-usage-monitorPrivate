@@ -46,6 +46,8 @@ import { itchPaywallCheck } from "../scripts/check-itch-paywall.mjs";
 import {
   gateThreeState,
   ownerRequestGate,
+  gateThree,
+  admittedClaimFor,
   evaluateSuccessTest,
   resolvePath,
 } from "../scripts/owner-request-gate.mjs";
@@ -4115,6 +4117,71 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(
     ownerRequestGate(full, infinite).admissible === false,
     "gate 3 did not bind a fully declared request on an infinite board",
+  );
+
+  // --- gate 3 lane 2: admitted work, not a softening -------------------------
+  //
+  // 2026-08-10. Lane 1 alone was closed at every moment in state/eta-history.json,
+  // so it would have refused all four requests in state/owner-requests.json —
+  // including 2026-08-09.gumroad-cover-upload, which the owner PERFORMED and whose
+  // effect is measured as state/gumroad.json cover_count 1. A rule that refuses a
+  // request that was made, performed and verified is not the rule the runbook
+  // states; it is a stricter one whose fixed point is that the owner is never
+  // asked for the action that could make a channel finite in the first place.
+  //
+  // The direction these assertions pin is not "gate 3 is strict" — that was the
+  // reading that broke. It is that NEITHER LANE ADMITS A REQUEST ON NOTHING. The
+  // failure to guard against is a later lap widening lane 2 until naming any
+  // string passes, which is the softening the block above warns about, one level
+  // down.
+  const CLAIMS = [
+    { at: "2026-08-10T11:26:29.540Z", candidate: "kit_balance", kind: "route_change", mechanism: "m" },
+    { at: "2026-08-10T11:46:04.277Z", candidate: "kit_balance", kind: "prerequisite", mechanism: "m2" },
+  ];
+  assert(
+    ownerRequestGate({ ...full, candidate_id: "kit_balance" }, infinite, CLAIMS).admissible === true,
+    "an infinite board refused a request whose candidate the WORK gate had already admitted",
+  );
+  assert(
+    ownerRequestGate({ ...full, candidate_id: "kit_balance" }, infinite, CLAIMS).gate_three.via ===
+      "admitted_work_claim",
+    "the request passed gate 3 without naming which lane it came through",
+  );
+  // The boundary. A candidate nobody put through the work gate is still refused —
+  // otherwise lane 2 is just "write any candidate_id and the ask ships".
+  assert(
+    ownerRequestGate({ ...full, candidate_id: "never_admitted" }, infinite, CLAIMS).admissible === false,
+    "lane 2 admitted a candidate with no work claim behind it, which makes gate 3 a formality",
+  );
+  assert(
+    ownerRequestGate({ ...full, candidate_id: "kit_balance" }, infinite, []).admissible === false,
+    "lane 2 admitted a request with an empty claims register",
+  );
+  assert(
+    ownerRequestGate(full, infinite, CLAIMS).admissible === false,
+    "lane 2 admitted a request that names no candidate at all",
+  );
+  // Latest admission wins, so an ask carries the reasoning current when it shipped
+  // rather than the first claim ever filed for that candidate.
+  assert(
+    admittedClaimFor("kit_balance", CLAIMS).kind === "prerequisite",
+    "admittedClaimFor returned a superseded claim",
+  );
+  assert(admittedClaimFor("kit_balance", null) === null, "a non-list claims register was not handled");
+  assert(admittedClaimFor(null, CLAIMS) === null, "a null candidate_id matched a claim");
+  assert(admittedClaimFor("", CLAIMS) === null, "an empty candidate_id matched a claim");
+  // Lane 1 still wins outright when it is open, without needing any claim.
+  assert(
+    gateThree({ ...full }, [{ id: "x", idle_eta_days: 5 }], []).via === "finite_channel_eta",
+    "a finite board did not pass gate 3 through lane 1",
+  );
+  // And the live board really does have the claims lane populated — measured, not
+  // asserted. If this goes to zero, every future request is refused for a reason
+  // that reads like the old structural closure and is not one.
+  const liveClaims = JSON.parse(await readFile(join(root, "state/lap-claims.json"), "utf8")).claims;
+  assert(
+    Array.isArray(liveClaims) && liveClaims.length > 0 && liveClaims.every((c) => typeof c.candidate === "string"),
+    "state/lap-claims.json carries no usable admitted claims, so gate 3 lane 2 is closed in practice",
   );
   assert(
     ownerRequestGate({ ...full, paste_ready: false }, [{ id: "x", idle_eta_days: 5 }]).admissible === false,
