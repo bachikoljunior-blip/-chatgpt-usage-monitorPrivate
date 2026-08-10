@@ -39,6 +39,7 @@ import { itchPaywallCheck } from "../scripts/check-itch-paywall.mjs";
 import { gateThreeState, ownerRequestGate } from "../scripts/owner-request-gate.mjs";
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import { judge as judgeSpark, sparkModelCandidate, sparkWindow } from "../scripts/spark-model.mjs";
+import { judge as judgeProductLoop, MAX_ROUND_AGE_DAYS as PRODUCT_MAX_ROUND_AGE_DAYS } from "../scripts/product-loop.mjs";
 import {
   checkAddressee, checkRequestsAddressee, copyChanged, diffListing, pasteableStrings,
   readCoverSource, readOwnerRequests, readRepoListing,
@@ -3245,4 +3246,97 @@ function assert(condition, message) {
     "2026-08-10",
   );
   assert(bad.rows[0].problem, "prose in eligible_from passed as though there were no clock");
+}
+
+// --- The loop whose subject is the thing being sold --------------------------
+// Owner, 2026-08-10: 提供するものは測定分析改善ループまわさないと需要のあるものに
+// なっていかない. Every loop here measured the ROUTE — ETA, venues, findable
+// surface, reach, usage, heartbeats — and none took the offer itself as its
+// subject. The first thing the new loop found was that its subject does not
+// exist: the four artifacts the live listing promises are in no repository this
+// account owns.
+//
+// Each of the four failures is held in both directions, because a check that
+// cannot be shown to fire is not a check — the lesson from the watchdogs that
+// reported null for weeks.
+{
+  const now = new Date("2026-08-10T00:00:00Z");
+  const sourced = { repo: "x/y", path: "a.html" };
+
+  // 1. Live to buyers with nothing to measure. This is the repository's actual
+  //    state, and it must be loud rather than a note in a file.
+  const unmeasurable = judgeProductLoop(
+    { offers: [{ id: "kit", live_to_buyers: true, source: null, rounds: [] }] },
+    { now },
+  );
+  assert(!unmeasurable.ok, "an unmeasurable offer that is live to buyers passed");
+  assert(unmeasurable.rows[0].loopable === false, "loopability was not derived from the missing source");
+
+  // A free artifact with a source and a declared rung is loopable — otherwise the
+  // check would just say no to everything, which is the same as saying nothing.
+  const healthy = {
+    id: "demo",
+    live_to_buyers: false,
+    source: sourced,
+    measurement: { rung: "stranger_reaction" },
+    rounds: [{ round: 1, measured_at: "2026-08-09T00:00:00Z" }],
+  };
+  assert(judgeProductLoop({ offers: [healthy] }, { now }).ok, "a loopable, freshly measured offer was flagged");
+
+  // 2. Stale, and never-measured. Never-measured must not read as fresh.
+  assert(
+    !judgeProductLoop({ offers: [{ ...healthy, rounds: [] }] }, { now }).ok,
+    "an offer that has never completed a round passed as healthy",
+  );
+  assert(
+    !judgeProductLoop(
+      { offers: [{ ...healthy, rounds: [{ round: 1, measured_at: "2026-07-01T00:00:00Z" }] }] },
+      { now },
+    ).ok,
+    `a round older than ${PRODUCT_MAX_ROUND_AGE_DAYS} days passed`,
+  );
+
+  // 3. Changed something, never re-measured. The failure that feels like progress.
+  assert(
+    !judgeProductLoop(
+      { offers: [{ ...healthy, rounds: [{ round: 1, measured_at: "2026-08-09T00:00:00Z", changed: "rewrote the opening" }] }] },
+      { now },
+    ).ok,
+    "a change with no re-measurement was accepted as a round",
+  );
+  // Re-measured but silent about the result is the same defect one step later.
+  assert(
+    !judgeProductLoop(
+      {
+        offers: [{
+          ...healthy,
+          rounds: [{ round: 1, measured_at: "2026-08-09T00:00:00Z", changed: "x", verified_at: "2026-08-09T06:00:00Z" }],
+        }],
+      },
+      { now },
+    ).ok,
+    "a re-measured round that never says whether it moved was accepted",
+  );
+
+  // 4. Three no-move rounds without an approach change.
+  const flat = (n, extra = {}) =>
+    Array.from({ length: n }, (_, i) => ({
+      round: i + 1,
+      measured_at: "2026-08-09T00:00:00Z",
+      changed: "a parameter",
+      verified_at: "2026-08-09T06:00:00Z",
+      moved: false,
+      ...(i === n - 1 ? extra : {}),
+    }));
+  assert(!judgeProductLoop({ offers: [{ ...healthy, rounds: flat(3) }] }, { now }).ok, "three no-move rounds passed");
+  assert(
+    judgeProductLoop({ offers: [{ ...healthy, rounds: flat(2) }] }, { now }).ok,
+    "two no-move rounds were treated as the failure; the limit is three",
+  );
+  // Changing the approach is what clears it — not another parameter, which is the
+  // whole content of the rule.
+  assert(
+    judgeProductLoop({ offers: [{ ...healthy, rounds: flat(3, { approach_changed: "stopped tuning copy; changed who it is for" }) }] }, { now }).ok,
+    "an approach change did not reset the no-move counter",
+  );
 }

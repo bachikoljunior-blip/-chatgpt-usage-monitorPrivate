@@ -150,6 +150,11 @@ jobs:
           # the Spark window still has capacity — i.e. when a whole quota silently
           # goes back to being counted as "spare" while nothing can spend it.
           node scripts/spark-model.mjs --check || rc=1
+          # The loop whose subject is the thing being sold, which did not exist until
+          # 2026-08-10. Every other check here measures the ROUTE. This one goes red
+          # when something is live to buyers that cannot be measured at all, and when
+          # an offer that CAN be measured has gone a fortnight without a round.
+          node scripts/product-loop.mjs --check || rc=1
           # The venue is handed a URL, and the rule above is enforced on a file in
           # this repository. If those two ever differ, the guard guards the copy
           # nobody can reach. No --write here: the writing copy runs before the

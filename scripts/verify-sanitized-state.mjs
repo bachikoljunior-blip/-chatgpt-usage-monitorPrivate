@@ -225,6 +225,30 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
   if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at ?? "")) {
     throw new Error("portfolio state has no valid fetched_at timestamp");
   }
+} else if (Array.isArray(state.offers)) {
+  // The product loop's register. Every offer must say whether money can be
+  // exchanged for it and where its source is — `null` is a legitimate and, right
+  // now, the true answer for the priced product. Optional would be fatal: an offer
+  // with no source key and an offer whose source is known-absent are the same file
+  // to a reader, and the second is the finding this loop exists to surface.
+  for (const offer of state.offers) {
+    if (!offer?.id) throw new Error("product-loop offer has no id");
+    if (typeof offer.live_to_buyers !== "boolean") {
+      throw new Error(`product-loop offer ${offer.id} does not say whether it is live_to_buyers`);
+    }
+    if (!Object.prototype.hasOwnProperty.call(offer, "source")) {
+      throw new Error(
+        `product-loop offer ${offer.id} omits source. Say null and why — an omitted source and ` +
+          "an absent one read identically, and the absent one is the finding.",
+      );
+    }
+    if (!Array.isArray(offer.rounds)) {
+      throw new Error(`product-loop offer ${offer.id} has no rounds array`);
+    }
+  }
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at ?? "")) {
+    throw new Error("product-loop state has no valid fetched_at timestamp");
+  }
 } else if (Array.isArray(state.requests)) {
   // Owner requests. This shape was added by a lap and had no branch, so it fell
   // through to the usage-state check and failed outright — meaning a file under

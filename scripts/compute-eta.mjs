@@ -29,6 +29,7 @@ import { externalEta } from "./measure-reach.mjs";
 import { constraintDue } from "./constraint-due.mjs";
 import { evaluateUnlock } from "./unlock-condition.mjs";
 import { blockedByDirective, directiveBlockers } from "./directive-block.mjs";
+import { judge as judgeProductLoop } from "./product-loop.mjs";
 
 const write = process.argv.includes("--write");
 // Reads come from origin/main so a stale checkout cannot drive the ranking. That
@@ -51,6 +52,7 @@ const [
   { value: history },
   { value: portfolio },
   { value: ownerRequests },
+  { value: productLoop },
 ] = await Promise.all([
   readStateJson("state/gumroad.json", { preferLocal }),
   readStateJson("state/gumroad-history.json", { preferLocal }),
@@ -63,6 +65,7 @@ const [
   readStateJson("state/eta-history.json", { preferLocal }),
   readStateJson("state/portfolio.json", { preferLocal }),
   readStateJson("state/owner-requests.json", { preferLocal }),
+  readStateJson("state/product-loop.json", { preferLocal }),
 ]);
 
 // Measured separately because it is the only first-party evidence about the
@@ -289,6 +292,54 @@ for (const ch of channels) {
     });
   }
 }
+// The product loop, as candidates rather than as a report.
+//
+// Owner, 2026-08-10: 提供するものは測定分析改善ループまわさないと需要のあるものに
+// ならない. The register and its check landed the same day — and a check that only
+// turns a workflow red is a report, which this repository has already established
+// is worth nothing on its own. The distribution class had exactly this defect:
+// the reranking existed and laps kept picking build candidates, because the
+// ranking they read never carried the new class.
+//
+// Ranked ahead of the incumbents for the same reason zero-base options are: every
+// measured channel is at infinity, and an offer nobody can measure is a worse
+// place to spend the next lap than finding out whether it can be measured at all.
+{
+  const verdict = judgeProductLoop(productLoop ?? {}, { now });
+  for (const row of verdict.rows) {
+    if (!row.loopable) {
+      candidates.push({
+        kind: "product_loop",
+        id: `${row.id}.make_it_loopable`,
+        why:
+          "an offer nothing can measure cannot be improved toward demand, and every surface " +
+          "change already made to it is unjudgeable",
+        owner_actions: 0,
+        measure_via: "here",
+        note:
+          `${row.id}: ${(row.why_not ?? []).join("; ")}. Two ways out and neither is free — ` +
+          "rebuild the source, or retire the offer. state/product-loop.json carries both. " +
+          "Sunk listing work is not evidence for either.",
+        blocks_interpretation_of:
+          row.live_to_buyers
+            ? "any zero result on this offer, which will otherwise be read as the wrong venue"
+            : null,
+      });
+    } else if (row.rounds === 0) {
+      candidates.push({
+        kind: "product_loop",
+        id: `${row.id}.round_1`,
+        why: "the one thing on offer that CAN be measured has never been measured once",
+        owner_actions: 0,
+        measure_via: "codex_lane",
+        note:
+          `Next rung: ${row.next_rung ?? "(undeclared)"}. See state/product-loop.json for how, ` +
+          "and for which rung is deliberately NOT next and why.",
+      });
+    }
+  }
+}
+
 // Options from the zero-base round. Without this the round is a ritual: it runs,
 // it writes a verdict, and the loop that chooses work never sees it. A measurement
 // written where the actor does not read it is the same as not measuring.

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-10T01:45:00Z",
+  "why_this_exists": "Owner, 2026-08-10: 提供するものは測定分析改善ループまわさないと需要のあるものになっていかない. Every loop in this repository measures the ROUTE — ETA, venues, findable surface, reach, usage, heartbeats. None took the offer itself as its subject, and state/portfolio.json has carried a field named not_examined since it was written. This file is the register the product loop runs on. scripts/product-loop.mjs derives loopability from it and pulse.yml runs the check hourly.",
+  "the_ladder_is_in_the_script": "scripts/product-loop.mjs LADDER. Cheapest and fastest signal first: promise_conformance, stranger_reaction, sells_against, behaviour. The order is the design content — measuring conversion on an artifact that does not deliver what its page promises tells you about the promise, not the product.",
+  "offers": [
+    {
+      "id": "idle_clicker_kit",
+      "what": "The priced product. USD 25, sold on Gumroad and listed on itch.io.",
+      "live_to_buyers": true,
+      "sold_at": ["https://bachikoljunior-blip.itch.io/idle-clicker-kit", "gumroad (see state/gumroad.json)"],
+      "source": null,
+      "source_measured_at": "2026-08-10T01:15:00Z",
+      "source_finding": "NO SOURCE TREE EXISTS IN ANY REPOSITORY THIS ACCOUNT OWNS. The four artifacts the live listing promises — brand.config.json, generator.html, validate_config.py, test_engine.py — return zero hits across four GitHub code searches, against a positive control (filename:KIT_VERSION) that returns hits inside a PRIVATE repository and therefore proves the index reaches them. A built ZIP plausibly exists as a Gumroad attachment; no source does. Full record: state/constraints.json the_product_itself_has_never_been_opened.the_attempt_to_open_it.",
+      "measurement": {
+        "rung": null,
+        "why_null": "Every rung above `behaviour` needs the artifact. There is no artifact to open. This is not 'the round has not been run yet' — the round cannot be run, and that is the finding."
+      },
+      "rounds": [],
+      "what_this_costs_right_now": "It cannot be inspected, tested, corrected, rebuilt or re-delivered. If a buyer reports it broken there is nothing to fix it in. Every surface change already made to it — copy, addressee, tags, cover, category, announcement — is unjudgeable, because the thing under the surface was never read. And the 2026-08-23 judgement was going to attribute a zero result to the venue.",
+      "the_two_ways_out_and_neither_is_free": {
+        "rebuild_the_source": "Write the four promised artifacts, in a repository we own, matching the live listing. Then the offer becomes loopable and every rung opens. Cost: real build work, on the binding resource.",
+        "retire_the_offer": "Stop routing effort to it and put the loop behind something that already has a source. Cost: the listing work already done stops compounding — but it is not lost, because it was never judged in the first place.",
+        "do_not_choose_by_sunk_cost": "The listing, cover, tags and announcement are already paid for and they are not evidence for either option. A14: 'it was already built' is not a reason."
+      },
+      "explicitly_not_claimed": "That the product is bad. The owner's 中身見てないんだけどこれ絶対売れないと思うよ and any defence of it are equally unbacked. Nobody has opened it. That symmetry is the point — this is a statement about what can be measured, not a verdict on quality."
+    },
+    {
+      "id": "free_demo",
+      "what": "The free, sign-up-free, single-file browser idle game. The entrance the route depends on.",
+      "live_to_buyers": false,
+      "published_at": "https://bachikoljunior-blip.github.io/O/hoshikuzu/",
+      "source": {
+        "repo": "bachikoljunior-blip/-chatgpt-usage-monitorPrivate",
+        "path": "assets/free-demo/index.html"
+      },
+      "source_note": "In this repository, checked by scripts/check-free-artifact.mjs on every pulse, and state/public-host.json verifies the published copy matches it. It is an ORIGINAL artifact the Codex lane wrote, not a cut-down of the kit — the two are routinely named in one breath and the relationship does not exist.",
+      "measurement": {
+        "rung": "stranger_reaction",
+        "why_this_rung": "promise_conformance is nearly vacuous here — a free demo promises almost nothing, so conformance would pass without telling us anything. The unanswered question is whether anyone who did not write it would play it twice, and that is answerable this week on the Codex pool for the cost of one INBOX task.",
+        "how": "Hand the file to a reviewer who did not write it, blind to authorship, default verdict negative. Ask for a decision (would you keep playing / would you pay for more) plus the single strongest reason against. Not a rewrite, not a feature list — a verdict and a reason.",
+        "not_this_rung_yet": "behaviour. state/findable-surface.json establishes the page is served noindex,nofollow and nothing links it, so a view count today measures our distribution, not the artifact. Reading a zero as 'nobody wants it' would be the same mistake as reading it as 'wrong venue'."
+      },
+      "rounds": [],
+      "why_it_is_here_at_all": "It is the only thing this account offers that can enter a loop. If the owner's rule is right — and nothing here contradicts it — then this is where demand can actually be built, and the priced product's un-loopability is the reason the two have to be ranked against each other rather than assumed complementary."
+    }
+  ],
+  "what_this_file_must_not_become": "A list of what is already being offered. state/options.json decayed exactly that way on 2026-08-08 — every registry enumerated existing assets, so no amount of turning them could ever conclude 'this portfolio is wrong'. An offer that fails its loop is supposed to be able to leave."
+}
