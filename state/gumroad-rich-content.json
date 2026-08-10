@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-10T15:04:20.179Z",
+  "probe": "POST /v2/products with a malformed rich_content to see whether the validator exists, then — only if it does — a throwaway created WITH a one-page ProseMirror document, read back, and deleted",
+  "question": "Can a TEXT offer be delivered over the API with no file upload? prompt_pack is a document and its source is in this repository; the file walk may still need a seller web session and this branch cannot.",
+  "steps": [
+    {
+      "step": "malformed_rich_content",
+      "http_status": 200,
+      "created_anything": false,
+      "message": "rich_content must be an array of content page objects.",
+      "recognised": true
+    }
+  ],
+  "parameter_recognised": true,
+  "content_landed": false,
+  "verdict": "recognised_passage_untried",
+  "verdict_reason": "The deployment answers with its OWN rich_content validator, word for word from the vendor source, and created nothing doing it — so the parameter is live here and not merely present upstream. Passage was not attempted in this run: creating a real product spends the ten-a-day cap and belongs on the workflow. Recognition is not delivery.",
+  "what_this_does_not_settle": "File delivery. Bytes still have to go through presign/complete (state/gumroad-presign.json shows those doors answer) and that walk is untried. A text route landing does not fix the priced kit, whose buyer downloads a file."
+}

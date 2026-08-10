@@ -25,6 +25,10 @@ on:
         description: "Probe whether the FILE A BUYER DOWNLOADS can be replaced over the API. Runs entirely against a throwaway product it creates and deletes; never writes to the live listing. Decides whether any source fix to the priced product is deliverable at all."
         type: boolean
         default: false
+      probe_rich_content:
+        description: "Create a throwaway carrying a CONTENT document and read it back. Settles whether a TEXT offer can be delivered with no file upload — the cheap branch of the delivery route, and the one the pack whose source we hold actually needs. The hourly half only checks that the parameter is recognised and creates nothing."
+        type: boolean
+        default: false
   push:
     branches: [main]
     paths:
@@ -192,6 +196,32 @@ jobs:
           # written, which reads as "the probe found nothing".
           cp state/gumroad-presign.json "$RUNNER_TEMP/gumroad-presign.json"
 
+      # Split across two steps on purpose, and the split is the same distinction the
+      # whole route turns on: a door is not a walk.
+      #
+      # The recognition half sends a deliberately malformed rich_content, so the
+      # validator must answer and NOTHING is created — safe hourly, spends no part of
+      # the ten-creates-a-day cap. The passage half creates a real throwaway with a
+      # content document and reads it back, so it sits behind a dispatch input beside
+      # every other creating probe here.
+      - name: Probe whether product CONTENT is recognised over REST
+        if: always()
+        env:
+          GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
+        run: |
+          node scripts/probe-gumroad-rich-content.mjs --recognise-only state/gumroad-rich-content.json
+          node scripts/verify-sanitized-state.mjs state/gumroad-rich-content.json
+          cp state/gumroad-rich-content.json "$RUNNER_TEMP/gumroad-rich-content.json"
+
+      - name: Probe whether product CONTENT can be delivered over REST
+        if: always() && inputs.probe_rich_content
+        env:
+          GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
+        run: |
+          node scripts/probe-gumroad-rich-content.mjs state/gumroad-rich-content.json
+          node scripts/verify-sanitized-state.mjs state/gumroad-rich-content.json
+          cp state/gumroad-rich-content.json "$RUNNER_TEMP/gumroad-rich-content.json"
+
       # always(), and deliberately AFTER the probe's own `set -e` can kill the
       # step above. The probe exits 1 when it cannot delete its throwaway, which
       # is correct reporting and is not cleanup — on 2026-08-10T10:38Z that is
@@ -234,6 +264,7 @@ jobs:
               gumroad-recurring \
               gumroad-file-replacement \
               gumroad-presign \
+              gumroad-rich-content \
               product-source
             do
               if [ -f "$RUNNER_TEMP/$probe_state.json" ]; then

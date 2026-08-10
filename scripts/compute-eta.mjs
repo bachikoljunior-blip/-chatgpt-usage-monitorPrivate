@@ -78,6 +78,15 @@ const { value: findableSurface } = await readStateJson("state/findable-surface.j
   preferLocal,
 });
 
+// The two probes under route_7_delivery_is_the_binding_term. Read here rather than
+// left in state/ for the same reason as findableSurface: the picker reads this file,
+// and a measurement the picker cannot see has not reached the deciding end. Both are
+// optional — a missing probe is reported as unmeasured, never as a negative answer.
+const { value: uploadProbe } = await readStateJson("state/gumroad-presign.json", { preferLocal });
+const { value: richContentProbe } = await readStateJson("state/gumroad-rich-content.json", {
+  preferLocal,
+});
+
 // The elected route rests on one number nobody had measured: whether a RECURRING
 // offer can be listed without a person. "0 owner actions to list" was inherited
 // from a probe that only ever created a one-time product — a different kind of
@@ -442,6 +451,46 @@ if (zerobase?.verdict === "adopt_for_next_test") {
                   }
                 : null,
               source: "state/findable-surface.json",
+            }
+          : null,
+      // Same reason as measured_surface above, for the route elected 2026-08-10:
+      // the two probes behind this candidate wrote state files, and the state file
+      // is not what the picker reads. Both readings travel together on purpose —
+      // "the doors answer" and "nothing has walked through them" are one fact, and
+      // this repository's most-recorded defect is the first half arriving alone.
+      measured_delivery:
+        o.id === "walk_the_upload_and_content_routes_end_to_end"
+          ? {
+              file_route: uploadProbe
+                ? {
+                    upload_route_exists: uploadProbe.upload_route_exists ?? null,
+                    verdict: uploadProbe.verdict ?? null,
+                    measured_at: uploadProbe.fetched_at ?? null,
+                    source: "state/gumroad-presign.json",
+                  }
+                : null,
+              text_route: richContentProbe
+                ? {
+                    parameter_recognised: richContentProbe.parameter_recognised ?? null,
+                    content_landed: richContentProbe.content_landed ?? null,
+                    verdict: richContentProbe.verdict ?? null,
+                    measured_at: richContentProbe.fetched_at ?? null,
+                    source: "state/gumroad-rich-content.json",
+                  }
+                : null,
+              what_it_settles:
+                richContentProbe?.verdict === "text_is_deliverable_over_the_api"
+                  ? "A TEXT offer is deliverable at zero owner actions. prompt_pack can be listed, " +
+                    "which makes something here buyable for the first time. Says nothing about the " +
+                    "priced kit, whose buyer downloads a file."
+                  : richContentProbe?.parameter_recognised === true
+                    ? "RECOGNITION ONLY, ON BOTH ROUTES. The upload endpoints answer their own " +
+                      "validation errors and the content parameter answers its own validator, so " +
+                      "neither is absent — and neither has been walked. Nothing here says a byte " +
+                      "or a paragraph has reached a buyer. The next act is passage, not more doors: " +
+                      "dispatch gumroad-monitor.yml with probe_rich_content, which is the cheap one."
+                    : "The text route is unmeasured. Run scripts/probe-gumroad-rich-content.mjs " +
+                      "--recognise-only, which creates nothing, before pricing this candidate.",
             }
           : null,
     });

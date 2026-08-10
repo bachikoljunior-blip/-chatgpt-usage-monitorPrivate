@@ -1130,6 +1130,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T15:01:29.759Z",
+      "candidate": "walk_the_upload_and_content_routes_end_to_end",
+      "kind": "prerequisite",
+      "mechanism": "First act under the elected route, cheapest branch first: send a rich_content array on a THROWAWAY product over the API and read whether it lands. The vendor source accepts rich_content on both create and update, it carries no bytes at all, and prompt_pack is text — so if it lands, the one offer whose source this repository holds becomes listable at zero owner actions, and something here becomes buyable for the first time.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

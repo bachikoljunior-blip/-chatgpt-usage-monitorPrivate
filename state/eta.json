@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T14:48:56.151Z",
+  "fetched_at": "2026-08-10T15:06:01.168Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -40,18 +40,18 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.84
+      "days_unchanged": 0.86
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.84
+      "days_unchanged": 0.86
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
   "route_election": {
-    "elected": "route_5_lane_allocation_is_the_binding_term",
+    "elected": "route_7_delivery_is_the_binding_term",
     "aligned": [
-      "the_lane_builds_the_payload"
+      "walk_the_upload_and_content_routes_end_to_end"
     ],
     "on_abandoned_route": [
       "pair_the_two_models_so_a_judge_is_never_the_author",
@@ -66,7 +66,7 @@
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-10T14:24:22.772Z",
+      "measured_at": "2026-08-10T14:51:57.439Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
       "revenue_window_days": 0.87,
@@ -193,10 +193,10 @@
       "why": "the offer is loopable and its own measurement says it is failing — a round that clears a named failure is the one kind of work that is about the thing being sold",
       "owner_actions": 0,
       "measure_via": "here",
-      "note": "Next rung: promise_conformance. 2 finding(s): idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: FIXED IN SOURCE, NOT YET DELIVERED. The shipped tree now measures 6 taps to the first purchase, then 100s idle to a second kind of producer (browser run: 6 taps to the first purchase, opening rate \"毎秒 0円 ／ 1タップ 1円\"). Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so a buyer still downloads the config that needs 15 taps and then 600 seconds of nothing new. MEASURED 2026-08-10T11:09:28.750Z: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable in place. AND NEITHER DOES CREATION: a create sent with a file was refused by the same rule, so no route in this API puts bytes in front of a buyer. Every source fix to this product needs one owner action to upload, and that is a measured ceiling rather than an unexplored one. no candidate route answers differently from a path that was never defined; a real multipart upload with bytes was refused; the throwaway's file shape did not move; the presigned upload endpoint the API's own refusal names is absent from this surface (12 path/method pairs, all byte-identical to a path that was never defined); and files[][url] returns the IDENTICAL refusal for a URL we own that answers 200 as for a URL that cannot resolve, so it rejects external URLs as such rather than rejecting a bad value. The file a buyer downloads cannot be replaced over this API surface. Nor can creation carry one: a create sent WITH files[][url] was refused by the identical file-ownership rule and produced no product at all, so the listing rail delivers a price and a description and no download. Attaching bytes is outside this API entirely — a measured ceiling rather than a gap in the probing, and the strongest owner-request candidate on the board. The promise stays failed until a re-fetch shows the delivered digest moved. | idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 MEASURED 2026-08-10T11:09:28.750Z: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable in place. AND NEITHER DOES CREATION: a create sent with a file was refused by the same rule, so no route in this API puts bytes in front of a buyer. Every source fix to this product needs one owner action to upload, and that is a measured ceiling rather than an unexplored one. no candidate route answers differently from a path that was never defined; a real multipart upload with bytes was refused; the throwaway's file shape did not move; the presigned upload endpoint the API's own refusal names is absent from this surface (12 path/method pairs, all byte-identical to a path that was never defined); and files[][url] returns the IDENTICAL refusal for a URL we own that answers 200 as for a URL that cannot resolve, so it rejects external URLs as such rather than rejecting a bad value. The file a buyer downloads cannot be replaced over this API surface. Nor can creation carry one: a create sent WITH files[][url] was refused by the identical file-ownership rule and produced no product at all, so the listing rail delivers a price and a description and no download. Attaching bytes is outside this API entirely — a measured ceiling rather than a gap in the probing, and the strongest owner-request candidate on the board. The promise stays failed until a re-fetch shows the delivered digest moved.",
+      "note": "Next rung: promise_conformance. 2 finding(s): idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: FIXED IN SOURCE, NOT YET DELIVERED. The shipped tree now measures 6 taps to the first purchase, then 100s idle to a second kind of producer (browser run: 6 taps to the first purchase, opening rate \"毎秒 0円 ／ 1タップ 1円\"). Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so a buyer still downloads the config that needs 15 taps and then 600 seconds of nothing new. MEASURED 2026-08-10T11:09:28.750Z: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable in place. AND NEITHER DOES CREATION: a create sent with a file was refused by the same rule. BUT THE UPLOAD ROUTE IS NOT ABSENT. MEASURED 2026-08-10T14:51:56.929Z: POST /v2/files/presign, POST /v2/files/complete answer with their own validation errors, not with the 404 a never-defined path returns. The earlier ceiling was measured on paths the vendor's source does not name, so 'every fix needs an owner upload' is withdrawn as a conclusion. What is still unmeasured is the walk through: presign, real parts to S3, complete, attach — on a throwaway product, never the live listing. The promise stays failed until a re-fetch shows the delivered digest moved. | idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 MEASURED 2026-08-10T11:09:28.750Z: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable in place. AND NEITHER DOES CREATION: a create sent with a file was refused by the same rule. BUT THE UPLOAD ROUTE IS NOT ABSENT. MEASURED 2026-08-10T14:51:56.929Z: POST /v2/files/presign, POST /v2/files/complete answer with their own validation errors, not with the 404 a never-defined path returns. The earlier ceiling was measured on paths the vendor's source does not name, so 'every fix needs an owner upload' is withdrawn as a conclusion. What is still unmeasured is the walk through: presign, real parts to S3, complete, attach — on a throwaway product, never the live listing. The promise stays failed until a re-fetch shows the delivered digest moved.",
       "product_loop_problems": [
-        "idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: FIXED IN SOURCE, NOT YET DELIVERED. The shipped tree now measures 6 taps to the first purchase, then 100s idle to a second kind of producer (browser run: 6 taps to the first purchase, opening rate \"毎秒 0円 ／ 1タップ 1円\"). Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so a buyer still downloads the config that needs 15 taps and then 600 seconds of nothing new. MEASURED 2026-08-10T11:09:28.750Z: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable in place. AND NEITHER DOES CREATION: a create sent with a file was refused by the same rule, so no route in this API puts bytes in front of a buyer. Every source fix to this product needs one owner action to upload, and that is a measured ceiling rather than an unexplored one. no candidate route answers differently from a path that was never defined; a real multipart upload with bytes was refused; the throwaway's file shape did not move; the presigned upload endpoint the API's own refusal names is absent from this surface (12 path/method pairs, all byte-identical to a path that was never defined); and files[][url] returns the IDENTICAL refusal for a URL we own that answers 200 as for a URL that cannot resolve, so it rejects external URLs as such rather than rejecting a bad value. The file a buyer downloads cannot be replaced over this API surface. Nor can creation carry one: a create sent WITH files[][url] was refused by the identical file-ownership rule and produced no product at all, so the listing rail delivers a price and a description and no download. Attaching bytes is outside this API entirely — a measured ceiling rather than a gap in the probing, and the strongest owner-request candidate on the board. The promise stays failed until a re-fetch shows the delivered digest moved.",
-        "idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 MEASURED 2026-08-10T11:09:28.750Z: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable in place. AND NEITHER DOES CREATION: a create sent with a file was refused by the same rule, so no route in this API puts bytes in front of a buyer. Every source fix to this product needs one owner action to upload, and that is a measured ceiling rather than an unexplored one. no candidate route answers differently from a path that was never defined; a real multipart upload with bytes was refused; the throwaway's file shape did not move; the presigned upload endpoint the API's own refusal names is absent from this surface (12 path/method pairs, all byte-identical to a path that was never defined); and files[][url] returns the IDENTICAL refusal for a URL we own that answers 200 as for a URL that cannot resolve, so it rejects external URLs as such rather than rejecting a bad value. The file a buyer downloads cannot be replaced over this API surface. Nor can creation carry one: a create sent WITH files[][url] was refused by the identical file-ownership rule and produced no product at all, so the listing rail delivers a price and a description and no download. Attaching bytes is outside this API entirely — a measured ceiling rather than a gap in the probing, and the strongest owner-request candidate on the board. The promise stays failed until a re-fetch shows the delivered digest moved."
+        "idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: FIXED IN SOURCE, NOT YET DELIVERED. The shipped tree now measures 6 taps to the first purchase, then 100s idle to a second kind of producer (browser run: 6 taps to the first purchase, opening rate \"毎秒 0円 ／ 1タップ 1円\"). Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so a buyer still downloads the config that needs 15 taps and then 600 seconds of nothing new. MEASURED 2026-08-10T11:09:28.750Z: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable in place. AND NEITHER DOES CREATION: a create sent with a file was refused by the same rule. BUT THE UPLOAD ROUTE IS NOT ABSENT. MEASURED 2026-08-10T14:51:56.929Z: POST /v2/files/presign, POST /v2/files/complete answer with their own validation errors, not with the 404 a never-defined path returns. The earlier ceiling was measured on paths the vendor's source does not name, so 'every fix needs an owner upload' is withdrawn as a conclusion. What is still unmeasured is the walk through: presign, real parts to S3, complete, attach — on a throwaway product, never the live listing. The promise stays failed until a re-fetch shows the delivered digest moved.",
+        "idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 MEASURED 2026-08-10T11:09:28.750Z: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable in place. AND NEITHER DOES CREATION: a create sent with a file was refused by the same rule. BUT THE UPLOAD ROUTE IS NOT ABSENT. MEASURED 2026-08-10T14:51:56.929Z: POST /v2/files/presign, POST /v2/files/complete answer with their own validation errors, not with the 404 a never-defined path returns. The earlier ceiling was measured on paths the vendor's source does not name, so 'every fix needs an owner upload' is withdrawn as a conclusion. What is still unmeasured is the walk through: presign, real parts to S3, complete, attach — on a throwaway product, never the live listing. The promise stays failed until a re-fetch shows the delivered digest moved."
       ],
       "actionable_now": true,
       "eta_effect_days": null,
@@ -230,6 +230,7 @@
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
       "refuted": null,
       "measured_surface": null,
+      "measured_delivery": null,
       "actionable_now": true,
       "eta_effect_days": null,
       "recurring_owner_actions_per_month": 1,
@@ -238,9 +239,9 @@
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_4_the_offer_form_is_the_binding_term",
-        "elected_route": "route_5_lane_allocation_is_the_binding_term",
+        "elected_route": "route_7_delivery_is_the_binding_term",
         "status": "not_on_an_elected_route",
-        "elected_at": "2026-08-10T13:45:00Z",
+        "elected_at": "2026-08-10T14:40:00Z",
         "why": "the elected route does not cover this candidate; it is ranked on its own merits.",
         "prerequisite": null,
         "prerequisite_measured": null,
@@ -262,6 +263,7 @@
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
       "refuted": null,
       "measured_surface": null,
+      "measured_delivery": null,
       "actionable_now": true,
       "eta_effect_days": null,
       "recurring_owner_actions_per_month": 1,
@@ -270,17 +272,95 @@
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_5_lane_allocation_is_the_binding_term",
-        "elected_route": "route_5_lane_allocation_is_the_binding_term",
+        "elected_route": "route_7_delivery_is_the_binding_term",
+        "status": "not_on_an_elected_route",
+        "elected_at": "2026-08-10T14:40:00Z",
+        "why": "the elected route does not cover this candidate; it is ranked on its own merits.",
+        "prerequisite": null,
+        "prerequisite_measured": null,
+        "language_mismatches": null,
+        "binding_venues_without_a_revenue_path": null,
+        "owner_requests_clearing_the_prerequisite": null,
+        "elected_but_refuted": false
+      }
+    },
+    {
+      "kind": "zero_base_option",
+      "id": "pair_the_two_models_so_a_judge_is_never_the_author",
+      "why": "Two rung-2 rounds have been run and both were void, for the same reason each time: the reviewer was the author. The .i control settled that this is authorship rather than engagement — shown a game nobody here wrote, the lane played 12 taps and answered 見覚え ない, so it can tell first sight from recognition. Until a non-author judges something, no payload can be priced, and every channel reads idle infinity for that reason rather than for want of things built.",
+      "serves_route": "route_6_an_independent_judge_is_the_binding_term",
+      "owner_actions": "0",
+      "days_to_first_yen_estimate": "unmeasured",
+      "estimate_not_measurement": true,
+      "owner_actions_to_list_measured": null,
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "refuted": null,
+      "measured_surface": null,
+      "measured_delivery": null,
+      "actionable_now": true,
+      "eta_effect_days": null,
+      "recurring_owner_actions_per_month": 1,
+      "estimate_reliability": "discredited_by_siblings",
+      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "eta_effect_basis": "no comparable estimate recorded",
+      "route_alignment": {
+        "serves_route": "route_6_an_independent_judge_is_the_binding_term",
+        "elected_route": "route_7_delivery_is_the_binding_term",
+        "status": "on_abandoned_route",
+        "elected_at": "2026-08-10T14:40:00Z",
+        "why": null,
+        "prerequisite": null,
+        "prerequisite_measured": null,
+        "language_mismatches": null,
+        "binding_venues_without_a_revenue_path": null,
+        "owner_requests_clearing_the_prerequisite": null,
+        "elected_but_refuted": false
+      }
+    },
+    {
+      "kind": "zero_base_option",
+      "id": "walk_the_upload_and_content_routes_end_to_end",
+      "why": "Every offer in state/product-loop.json is stopped at delivery and nothing else, so no revenue reading exists and every channel reads infinity for one reason rather than four. This lap measured that the doors are there — state/gumroad-presign.json, both named paths answering their own 400s against a never-defined control that answers a 900-byte HTML 404. Existence is not passage, and passage is the whole question.",
+      "serves_route": "route_7_delivery_is_the_binding_term",
+      "owner_actions": "0",
+      "days_to_first_yen_estimate": "unmeasured",
+      "estimate_not_measurement": true,
+      "owner_actions_to_list_measured": null,
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "refuted": null,
+      "measured_surface": null,
+      "measured_delivery": {
+        "file_route": {
+          "upload_route_exists": true,
+          "verdict": "the earlier absence was measured on the wrong paths",
+          "measured_at": "2026-08-10T14:51:56.929Z",
+          "source": "state/gumroad-presign.json"
+        },
+        "text_route": {
+          "parameter_recognised": true,
+          "content_landed": false,
+          "verdict": "recognised_passage_untried",
+          "measured_at": "2026-08-10T15:04:20.179Z",
+          "source": "state/gumroad-rich-content.json"
+        },
+        "what_it_settles": "RECOGNITION ONLY, ON BOTH ROUTES. The upload endpoints answer their own validation errors and the content parameter answers its own validator, so neither is absent — and neither has been walked. Nothing here says a byte or a paragraph has reached a buyer. The next act is passage, not more doors: dispatch gumroad-monitor.yml with probe_rich_content, which is the cheap one."
+      },
+      "actionable_now": true,
+      "eta_effect_days": null,
+      "recurring_owner_actions_per_month": 1,
+      "estimate_reliability": "discredited_by_siblings",
+      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "eta_effect_basis": "no comparable estimate recorded",
+      "route_alignment": {
+        "serves_route": "route_7_delivery_is_the_binding_term",
+        "elected_route": "route_7_delivery_is_the_binding_term",
         "status": "elected",
-        "elected_at": "2026-08-10T13:45:00Z",
-        "why": "Every channel in state/eta.json reports idle_eta_days null for the same reason rather than four different ones: there is nothing here that can be inspected, so rung 1 of the product ladder (promise conformance) has never been measurable for anything we could also fix. The pool that can build sat idle while the pool that decides ran out — codex at 94% and Spark untouched at 100% against Claude at 14%. Route 5 spends the idle pool on making an artifact instead of spending the scarce pool on preparing a form for an artifact that does not exist.",
-        "prerequisite": "NONE. This is the only candidate on the board that waits on nothing outside this repository — no venue, no stranger, no buyer, no owner action.",
+        "elected_at": "2026-08-10T14:40:00Z",
+        "why": "With an inspectable artifact in hand, every remaining stop is the same one. state/gumroad-file-replacement.json: delivery_route none_over_api, creation-with-a-file refused by the same rule. state/product-loop.json: both promise failures on the priced product read FIXED IN SOURCE, NOT YET DELIVERED, so rung 1 cannot be cleared however well the source is fixed. prompt_pack: rungs 3 and 4 both need it purchasable, and its own exit clause fires if no delivery route is found by 2026-08-24. Nothing built here reaches a buyer, so no revenue reading exists, so every channel reads infinity — one term, not four.",
+        "prerequisite": "NONE. Both acts under this route are API calls against a throwaway product with a token this repository already holds: no venue, no stranger, no buyer, no owner action, and nothing that has to be published before it can be tried.",
         "prerequisite_measured": {
           "term": null,
-          "instrument": {
-            "script": "scripts/check-payload.mjs",
-            "how": "counts the six contract terms of codex/INBOX.md task 2026-08-10.payload-01 against the artifact, independently of the artifact's own self-check, and prints both. Silent while the artifact is absent; red when one arrives that breaks a term. pulse.yml runs it hourly."
-          },
+          "instrument": null,
           "counts": {
             "delivery_unmeasured": 0,
             "postable": 1,
@@ -301,45 +381,13 @@
           "owner_requests_clearing_the_term": [],
           "ok": true,
           "problem": null,
-          "prerequisite_none": "This route waits on nothing outside this repository: no venue, no stranger, no buyer, no owner action. The pool that builds is idle and the instruction that starts it is a file in this repository. That is the whole reason it was elected while every venue-shaped route was blocked on something we do not control."
+          "prerequisite_none": "This route waits on nothing outside this repository. The doors were measured open this lap (state/gumroad-presign.json) with the credential already in the repository's secrets, and the throwaway-product pattern the earlier probes used needs no human. The one thing that COULD turn out to be a prerequisite is a seller web session — app/controllers/s3_utility_controller.rb is Sellers::BaseController with authenticate_user! — and that is a finding the route's own first probe would produce, not a condition on starting it. A prerequisite you discover by acting is not a prerequisite."
         },
         "language_mismatches": [
           "r/gamedev"
         ],
         "binding_venues_without_a_revenue_path": [],
         "owner_requests_clearing_the_prerequisite": [],
-        "elected_but_refuted": false
-      }
-    },
-    {
-      "kind": "zero_base_option",
-      "id": "pair_the_two_models_so_a_judge_is_never_the_author",
-      "why": "Two rung-2 rounds have been run and both were void, for the same reason each time: the reviewer was the author. The .i control settled that this is authorship rather than engagement — shown a game nobody here wrote, the lane played 12 taps and answered 見覚え ない, so it can tell first sight from recognition. Until a non-author judges something, no payload can be priced, and every channel reads idle infinity for that reason rather than for want of things built.",
-      "serves_route": "route_6_an_independent_judge_is_the_binding_term",
-      "owner_actions": "0",
-      "days_to_first_yen_estimate": "unmeasured",
-      "estimate_not_measurement": true,
-      "owner_actions_to_list_measured": null,
-      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
-      "refuted": null,
-      "measured_surface": null,
-      "actionable_now": true,
-      "eta_effect_days": null,
-      "recurring_owner_actions_per_month": 1,
-      "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
-      "eta_effect_basis": "no comparable estimate recorded",
-      "route_alignment": {
-        "serves_route": "route_6_an_independent_judge_is_the_binding_term",
-        "elected_route": "route_5_lane_allocation_is_the_binding_term",
-        "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T13:45:00Z",
-        "why": null,
-        "prerequisite": null,
-        "prerequisite_measured": null,
-        "language_mismatches": null,
-        "binding_venues_without_a_revenue_path": null,
-        "owner_requests_clearing_the_prerequisite": null,
         "elected_but_refuted": false
       }
     },
@@ -389,6 +437,7 @@
         "not_refuted": "that maintained data feeds can be sold. Only this candidate's speed from a standing start with no audience — and note nobody has yet shown paid demand for this particular feed at all, which is weaker than the other two, where monetisation was confirmed."
       },
       "measured_surface": null,
+      "measured_delivery": null,
       "actionable_now": true,
       "eta_effect_days": 21,
       "recurring_owner_actions_per_month": 0,
@@ -417,6 +466,7 @@
         "not_refuted": "that free tools can funnel to a paid version, or that search can carry revenue over years. Only this candidate speed from a standing start on a new domain with no links. The survey also notes it could not judge occupancy per query, because the candidate never named which validator or converter it would build — an unspecified candidate cannot be checked for competition."
       },
       "measured_surface": null,
+      "measured_delivery": null,
       "actionable_now": true,
       "eta_effect_days": 60,
       "recurring_owner_actions_per_month": 0,
@@ -425,9 +475,9 @@
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 60 days at the conservative end (estimate, not measured)",
       "route_alignment": {
         "serves_route": "route_2_unattended_findable_pages",
-        "elected_route": "route_5_lane_allocation_is_the_binding_term",
+        "elected_route": "route_7_delivery_is_the_binding_term",
         "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T13:45:00Z",
+        "elected_at": "2026-08-10T14:40:00Z",
         "why": null,
         "prerequisite": null,
         "prerequisite_measured": null,
@@ -472,6 +522,7 @@
         },
         "source": "state/findable-surface.json"
       },
+      "measured_delivery": null,
       "actionable_now": true,
       "eta_effect_days": null,
       "recurring_owner_actions_per_month": 0,
@@ -480,9 +531,9 @@
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_2_unattended_findable_pages",
-        "elected_route": "route_5_lane_allocation_is_the_binding_term",
+        "elected_route": "route_7_delivery_is_the_binding_term",
         "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T13:45:00Z",
+        "elected_at": "2026-08-10T14:40:00Z",
         "why": null,
         "prerequisite": null,
         "prerequisite_measured": null,
@@ -513,6 +564,7 @@
         "what_it_leaves": "Five of the seven checked options are now refuted, and the term that keeps failing has moved. It is no longer 'unattended discovery does not work' (that was 2026-08-09.h) but 'a standing start does not work'. The blocker the evidence actually names is STANDING, not recurring posting: prior participation in the community, or several venues hit at once, or an existing following. That distinction matters because the constraint this loop excluded route 1 on was 'recurring owner actions', and standing is not a recurring action — it is a prerequisite that accrues before the post. Invoker is the one case with zero audience, both dates, and a first sale on day zero, and it substituted breadth (three venues at once) for standing. Recording this is not a proposal: per 2026-08-09.h, a lap should take this deliberately rather than fill the gap with an eighth candidate."
       },
       "measured_surface": null,
+      "measured_delivery": null,
       "actionable_now": true,
       "eta_effect_days": null,
       "recurring_owner_actions_per_month": 0,
@@ -525,9 +577,9 @@
       "repriced_because": "The candidate was carrying the route adopted at 3555e97 with no test of whether the act it names can be performed. It can not, today: 0 of 3 surveyed venues are postable from a standing start, and neither of the two hard refusals is about standing. Recorded on the candidate rather than in the constraint alone because the constraint is not what a lap picks from.",
       "route_alignment": {
         "serves_route": "route_1_post_where_buyers_gather",
-        "elected_route": "route_5_lane_allocation_is_the_binding_term",
+        "elected_route": "route_7_delivery_is_the_binding_term",
         "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T13:45:00Z",
+        "elected_at": "2026-08-10T14:40:00Z",
         "why": null,
         "prerequisite": null,
         "prerequisite_measured": null,
@@ -565,6 +617,7 @@
         "not_refuted": "that WordPress plugins can be sold, or that this complaint exists. Only this candidate's speed from a standing start with no list."
       },
       "measured_surface": null,
+      "measured_delivery": null,
       "actionable_now": true,
       "eta_effect_days": 21,
       "recurring_owner_actions_per_month": 1,
@@ -592,6 +645,7 @@
         "not_refuted": "that VS Code extensions can be sold at all. Only this candidate's speed."
       },
       "measured_surface": null,
+      "measured_delivery": null,
       "actionable_now": true,
       "eta_effect_days": 14,
       "recurring_owner_actions_per_month": 1,
@@ -620,6 +674,7 @@
         "not_refuted": "that a free CLI can convert to a paid licence. What is missing is any recorded instance of it happening from npm/PyPI discovery at all, which is weaker ground than the candidates whose monetisation was at least confirmed elsewhere."
       },
       "measured_surface": null,
+      "measured_delivery": null,
       "actionable_now": true,
       "eta_effect_days": 30,
       "recurring_owner_actions_per_month": 1,
@@ -649,6 +704,7 @@
         "what_it_saved": "This option was ELECTED and one config edit from shipping, with the edit waiting only on coordination with the sibling loop. The objection it fell to was written in its own text from the start, under the_honest_objection_to_it, with the note that a candidate whose weakest point lives only in the successor's notes gets picked on its strongest point forever. It was picked on its strongest point for three laps. The measurement is what stopped it."
       },
       "measured_surface": null,
+      "measured_delivery": null,
       "actionable_now": true,
       "eta_effect_days": null,
       "recurring_owner_actions_per_month": 1,
@@ -657,9 +713,9 @@
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_3_use_the_reach_already_owned",
-        "elected_route": "route_5_lane_allocation_is_the_binding_term",
+        "elected_route": "route_7_delivery_is_the_binding_term",
         "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T13:45:00Z",
+        "elected_at": "2026-08-10T14:40:00Z",
         "why": null,
         "prerequisite": null,
         "prerequisite_measured": null,
