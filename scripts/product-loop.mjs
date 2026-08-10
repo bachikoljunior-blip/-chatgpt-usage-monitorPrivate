@@ -115,8 +115,16 @@ export function judge(doc, { now }) {
     const loop = loopable(offer);
     const rounds = Array.isArray(offer.rounds) ? offer.rounds : [];
     const newest = rounds.length ? rounds[rounds.length - 1] : null;
-    const ageDays = newest?.measured_at
-      ? Math.floor((now.getTime() - Date.parse(newest.measured_at)) / DAY)
+    // measured_at is this file's name for it; verified_at is what RUNBOOK 5.4
+    // and every handoff tell a lap to write. Both were live at once, so the
+    // first round ever completed (free_demo round 1, 2026-08-10) was written
+    // with the documented name, carried a real verdict, and still reported
+    // "has never completed a round" — the round was there and the reader was
+    // looking at a different key. Accepting both is the cheap half; the reason
+    // it is not just a rename is that older rounds may already carry either.
+    const measuredAt = newest?.measured_at ?? newest?.verified_at ?? null;
+    const ageDays = measuredAt
+      ? Math.floor((now.getTime() - Date.parse(measuredAt)) / DAY)
       : null;
 
     // 1. Live to buyers and unmeasurable.

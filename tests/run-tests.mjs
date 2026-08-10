@@ -3576,6 +3576,25 @@ function assert(condition, message) {
   };
   assert(judgeProductLoop({ offers: [healthy] }, { now }).ok, "a loopable, freshly measured offer was flagged");
 
+  // The two names for the same stamp. This file called it measured_at; RUNBOOK
+  // 5.4 and every handoff tell a lap to write verified_at. free_demo round 1 —
+  // the first round ever completed here — was written with the documented name
+  // and still reported "has never completed a round", because the round existed
+  // and the reader was looking at a different key. A round is dated if either
+  // says so.
+  assert(
+    judgeProductLoop(
+      { offers: [{ ...healthy, rounds: [{ round: 1, verified_at: "2026-08-09T00:00:00Z" }] }] },
+      { now },
+    ).ok,
+    "a round dated with verified_at, the name RUNBOOK 5.4 uses, read as never measured",
+  );
+  // And a round with neither is still undated — the fallback must not invent one.
+  assert(
+    !judgeProductLoop({ offers: [{ ...healthy, rounds: [{ round: 1 }] }] }, { now }).ok,
+    "a round carrying no date at all passed as measured",
+  );
+
   // 2. Stale, and never-measured. Never-measured must not read as fresh.
   assert(
     !judgeProductLoop({ offers: [{ ...healthy, rounds: [] }] }, { now }).ok,
