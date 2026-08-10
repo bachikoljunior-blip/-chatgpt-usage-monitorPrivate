@@ -1018,6 +1018,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T11:26:29.540Z",
+      "candidate": "idle_clicker_kit.balance_through_the_second_rung",
+      "kind": "route_change",
+      "mechanism": "The last rung-1 failure on the priced kit. Delivery is measured as one owner action, so the cheapest shipment waits until both fixes are ready and this is the second. Retune the shipped defaults, and measure the SECOND producer type as well as the first, because two reviewers converged on the gap after the first purchase and a check that only counts opening taps would go green while the defect moves.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

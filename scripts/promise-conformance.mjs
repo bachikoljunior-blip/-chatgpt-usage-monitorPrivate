@@ -31,6 +31,7 @@ import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { openingCurve, openingIsTuned } from "./balance-curve.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const STATE = path.join(ROOT, "state", "promise-conformance.json");
@@ -397,13 +398,47 @@ const PROMISES = [
       if (taps === null) return { verdict: BLOCKED, observation: "no play measurement records the opening" };
       const rate = play.rate_at_start ?? "";
       const dead = /0円|毎秒 0/.test(rate);
-      return taps >= 10 && dead
-        ? {
-            verdict: FAILS,
-            observation:
-              `measured on the shipped config: ${taps} taps before the first affordable purchase, with the rate reading "${rate}" for every one of them. Two independent reviewers on the FREE demo named exactly this opening as their reason for 払わない (codex/outbox/2026-08-10.k.md, .l.md). "調整済み" is a claim about the shipped defaults, and the shipped defaults are what was measured.`,
-          }
-        : { verdict: CONFORMS, observation: `first affordable purchase at ${taps} taps, opening rate "${rate}"` };
+      // The browser run can only see the FIRST purchase, and a check that looks
+      // no further goes green the moment the opening is cheapened — while the
+      // dead stretch moves one rung down, which is exactly what two reviewers on
+      // the free demo named after its opening was fixed. openingCurve reads the
+      // shipped numbers for the gap between the first purchase and a second KIND
+      // of producer, so both halves of 調整済み are checked.
+      const curve = openingCurve(a.config ?? null);
+      const tuned = openingIsTuned(curve);
+      if (taps >= 10 && dead) {
+        return {
+          verdict: FAILS,
+          observation:
+            `measured on the shipped config: ${taps} taps before the first affordable purchase, with the rate reading "${rate}" for every one of them. Two independent reviewers on the FREE demo named exactly this opening as their reason for 払わない (codex/outbox/2026-08-10.k.md, .l.md). "調整済み" is a claim about the shipped defaults, and the shipped defaults are what was measured.`,
+        };
+      }
+      if (!tuned.ok) {
+        return {
+          verdict: FAILS,
+          observation:
+            `the opening runs (${taps} taps to the first purchase, rate "${rate}") and then stops: ${tuned.reason}. Round 8 played the free demo and named the locked second and third producers; round 9 read its source and named the jump between the first and second producer type in the same breath as 最初の成功が次の発見につながりません. Both are recorded in state/product-loop.json. A first purchase a player can reach is not a balanced curve if nothing new follows it.`,
+        };
+      }
+      // Tuned in the tree is not tuned for a buyer. The same trap the licence row
+      // was built for, and the balance fix walks into it the same way: a lap
+      // edits brand.config.json, this row turns green, and the archive Gumroad
+      // serves still opens with the old numbers. The green would be produced BY
+      // the fix.
+      if (deliveredMatches("brand.config.json") === "diverged") {
+        return {
+          verdict: FAILS,
+          observation:
+            `FIXED IN SOURCE, NOT YET DELIVERED. The shipped tree now measures ${tuned.reason} (browser run: ${taps} taps to the first purchase, opening rate "${rate}"). Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so a buyer still downloads the config that needs 15 taps and then 600 seconds of nothing new. ` +
+            deliveryChannel().sentence +
+            " The promise stays failed until a re-fetch shows the delivered digest moved.",
+        };
+      }
+      return {
+        verdict: CONFORMS,
+        observation:
+          `first affordable purchase at ${taps} taps, opening rate "${rate}"; and past it, ${tuned.reason}.`,
+      };
     },
   },
   {

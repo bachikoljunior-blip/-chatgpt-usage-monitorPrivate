@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T09:54:57.440Z",
+  "fetched_at": "2026-08-10T11:30:11.907Z",
   "chromium": "/opt/pw-browsers/chromium-1194/chrome-linux/chrome",
   "artifacts": {
     "free_demo": {
@@ -9,11 +9,11 @@
       "transport": "file",
       "page_errors": [],
       "tap_latency_ms": [
-        10,
-        6,
-        5,
-        8,
-        5
+        15,
+        11,
+        12,
+        11,
+        10
       ],
       "counter_at_start": "0",
       "rate_at_start": "毎秒 0",
@@ -23,28 +23,28 @@
       "distinct_page_errors": [],
       "source": "assets/free-demo/index.html",
       "live": true,
-      "measured_at": "2026-08-10T09:54:57.440Z"
+      "measured_at": "2026-08-10T11:30:11.907Z"
     },
     "idle_clicker_kit": {
       "browser_available": true,
       "transport": "http",
       "page_errors": [],
       "tap_latency_ms": [
-        8,
-        4,
-        5,
+        10,
         6,
-        5
+        22,
+        8,
+        10
       ],
       "counter_at_start": "💰 0円",
       "rate_at_start": "毎秒 0円 ／ 1タップ 1円",
-      "taps_to_first_affordable_purchase": 15,
+      "taps_to_first_affordable_purchase": 6,
       "rate_before_purchase": "毎秒 0円 ／ 1タップ 1円",
-      "rate_after_purchase": "毎秒 0.2円 ／ 1タップ 1円",
+      "rate_after_purchase": "毎秒 1.2円 ／ 1タップ 1円",
       "distinct_page_errors": [],
       "source": "product/brandable-idle-clicker/index.html",
       "live": true,
-      "measured_at": "2026-08-10T09:54:57.440Z"
+      "measured_at": "2026-08-10T11:30:11.907Z"
     }
   },
   "what_this_is_not": "A stranger's opinion. These are timings and thrown errors from a run, which is the half of rung 2 the Codex lane cannot produce. The verdict half still needs a reviewer."

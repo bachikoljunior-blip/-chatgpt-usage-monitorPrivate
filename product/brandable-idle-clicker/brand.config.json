@@ -31,7 +31,7 @@
     "hint": "タップすると売上が増えます"
   },
   "generators": [
-    { "id": "flyer",   "emoji": "📄", "name": "チラシ",       "desc": "近所に配る",             "baseCost": 15,      "baseRate": 0.2 },
+    { "id": "flyer",   "emoji": "📄", "name": "チラシ",       "desc": "近所に配る",             "baseCost": 6,       "baseRate": 1.2 },
     { "id": "staff",   "emoji": "🧑‍🍳", "name": "スタッフ",     "desc": "手が増える",             "baseCost": 120,     "baseRate": 1.6 },
     { "id": "shelf",   "emoji": "🗄️", "name": "陳列棚",       "desc": "並べれば売れる",         "baseCost": 1100,    "baseRate": 14 },
     { "id": "van",     "emoji": "🚚", "name": "配送車",       "desc": "遠くまで届く",           "baseCost": 12000,   "baseRate": 110 },

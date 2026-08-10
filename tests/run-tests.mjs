@@ -5670,3 +5670,86 @@ function assert(condition, message) {
   );
   assert(p({}) === true, "a task with no id was treated as unattributable");
 }
+
+// --- the opening is two rungs, and only one of them was ever checked ---------
+//
+// balance_is_pre_tuned used to read taps to the FIRST affordable purchase and
+// nothing else. Cheapen the first producer and the row goes green while the dead
+// stretch moves one rung down — which is precisely what happened to the free
+// demo. Its opening was fixed (15 -> 4) and the next two reviewers named the gap
+// AFTER the first purchase instead: round 8 played it and said the second and
+// third producers stay locked, round 9 read the source and named the jump from 4
+// to 100 in the same breath as 最初の成功が次の発見につながりません.
+//
+// Mutations run red before this was kept: seconds_to_second_type measured from
+// the second producer's rate instead of the first's, openingIsTuned passing an
+// unreadable curve, and the seconds bar dropped from the check.
+{
+  const { openingCurve, openingIsTuned, nthCost, MAX_TAPS_TO_FIRST_PURCHASE, MAX_SECONDS_TO_SECOND_TYPE } =
+    await import("../scripts/balance-curve.mjs");
+
+  // The config as SHIPPED before this lap: 15 taps, then 120/0.2 = 600 seconds
+  // in which nothing new can happen.
+  const before = {
+    tapTarget: { baseValue: 1 },
+    generators: [
+      { baseCost: 15, baseRate: 0.2 },
+      { baseCost: 120, baseRate: 1.6 },
+    ],
+  };
+  const beforeCurve = openingCurve(before);
+  assert(beforeCurve.taps_to_first_purchase === 15, "the opening tap count was not read off the config");
+  assert(
+    beforeCurve.seconds_to_second_type === 600,
+    `the wait to a second kind of producer read ${beforeCurve.seconds_to_second_type}s, not the 600s the shipped numbers describe`,
+  );
+  assert(!openingIsTuned(beforeCurve).ok, "the config two reviewers complained about passed as tuned");
+
+  // A cheap first purchase alone must NOT pass. This is the whole point: it is
+  // the shape a lap would produce by fixing only what the old check measured.
+  const onlyTheEntryFixed = {
+    tapTarget: { baseValue: 1 },
+    generators: [
+      { baseCost: 4, baseRate: 0.2 },
+      { baseCost: 120, baseRate: 1.6 },
+    ],
+  };
+  const half = openingIsTuned(openingCurve(onlyTheEntryFixed));
+  assert(
+    !half.ok && /idle waiting/.test(half.reason),
+    "cheapening the first purchase alone passed the balance check, which is how the defect moves one rung down and the row still goes green",
+  );
+
+  const after = {
+    tapTarget: { baseValue: 1 },
+    generators: [
+      { baseCost: 6, baseRate: 1.2 },
+      { baseCost: 120, baseRate: 1.6 },
+    ],
+  };
+  const tuned = openingIsTuned(openingCurve(after));
+  assert(tuned.ok, `the retuned opening did not pass its own check: ${tuned.reason}`);
+
+  // Unreadable is not tuned. A malformed generator list must never read as a
+  // fast opening — the direction that ships a broken economy quietly.
+  for (const broken of [
+    {},
+    { tapTarget: { baseValue: 1 }, generators: [{ baseCost: 6, baseRate: 1.2 }] },
+    { tapTarget: { baseValue: 0 }, generators: [{ baseCost: 6, baseRate: 1.2 }, { baseCost: 60 }] },
+    { tapTarget: { baseValue: 1 }, generators: [{ baseCost: 6, baseRate: 0 }, { baseCost: 60 }] },
+  ]) {
+    const c = openingCurve(broken);
+    assert(c.readable === false, "a config that cannot answer the question answered it");
+    assert(!openingIsTuned(c).ok, "an unreadable curve passed as tuned");
+  }
+
+  // The engine ceils at every step, so a closed-form pow would drift.
+  assert(nthCost(6, 0) === 6, "the first copy did not cost its base");
+  assert(nthCost(4, 1) === 5, "the second copy did not match the engine's ceil(cost * 1.15)");
+  assert(nthCost(100, 2) === 133, "compounding did not ceil at each step");
+
+  assert(
+    MAX_TAPS_TO_FIRST_PURCHASE < 15 && MAX_SECONDS_TO_SECOND_TYPE < 600,
+    "the bars were moved above the numbers two reviewers complained about, which would make the check vacuous",
+  );
+}
