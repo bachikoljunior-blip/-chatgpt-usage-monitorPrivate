@@ -6357,3 +6357,116 @@ function assert(condition, message) {
     );
   }
 }
+
+// ---------------------------------------------------------------------------
+// Rung 1 has to be RE-DERIVED on a schedule, not replayed on one.
+//
+// `promise-conformance.mjs --check` reads the recorded verdicts back out and
+// re-derives exactly one thing: the listing digest. That catches the sales copy
+// changing under a verdict, and nothing else. So while pulse.yml was the only
+// scheduled caller, a fix to the PRODUCT could never turn a row green — the
+// record moved only when a lap remembered to run --write by hand.
+//
+// Observed 2026-08-10: brand.config.json was retuned and re-measured at 11:52Z
+// (product-loop round 3, taps to the first purchase 15 -> 6, idle stretch 600s
+// -> 100s) and at 14:15Z state/promise-conformance.json still read "15 taps
+// before the first affordable purchase". The hourly check, the candidate board
+// and every lap reading either were told about a defect that had been fixed and
+// measured two and a half hours earlier.
+//
+// The token is the reason it belongs to gumroad-monitor.yml. promise-conformance
+// derives its verdicts against the LIVE listing when GUMROAD_TOKEN is present and
+// against a snapshot otherwise, and it writes the digest it used. pulse.yml has no
+// env block, so the same command there would write a snapshot digest and make every
+// later live --check report the listing as changed.
+{
+  const { readFile } = await import("node:fs/promises");
+  const { join } = await import("node:path");
+  const wf = join(process.cwd(), ".github/workflows");
+  const gum = await readFile(join(wf, "gumroad-monitor.yml"), "utf8");
+  const pulseYml = await readFile(join(wf, "pulse.yml"), "utf8");
+
+  assert(
+    /promise-conformance\.mjs --write/.test(gum),
+    "nothing on a schedule re-derives rung 1 any more — a product fix can be made, measured, and never reach the record that the board and the hourly check read",
+  );
+  assert(
+    /git add[^\n]*state\/promise-conformance\.json/.test(gum),
+    "gumroad-monitor.yml re-derives rung 1 but never stages it, so the reset --hard at the top of the retry loop throws the re-derivation away",
+  );
+  // Order: the FIXED IN SOURCE / NOT YET DELIVERED rows compare the source tree
+  // against state/product-source.json, so the manifest has to be restored first.
+  assert(
+    gum.indexOf("product-source") < gum.indexOf("promise-conformance.mjs --write"),
+    "rung 1 is re-derived before the delivered-file manifest is restored, so the delivery rows judge against whatever the reset left behind",
+  );
+  // The half that keeps it honest. A --write in a workflow with no token derives
+  // against the snapshot and records a snapshot digest as though it were live.
+  if (/promise-conformance\.mjs --write/.test(pulseYml)) {
+    assert(
+      /GUMROAD_TOKEN/.test(pulseYml),
+      "pulse.yml re-derives rung 1 without GUMROAD_TOKEN, so it records verdicts and a listing digest taken from the snapshot — after which every live --check reports the listing as changed",
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// A conclusion written into a machine-regenerated file, three times running.
+//
+// codex-inbox.yml rewrites state/codex-lane.json wholesale every run, so
+// buildLaneRecord carries a whitelist of keys a lap writes that the rewrite must
+// preserve. The comment above DURABLE_KEYS explains the trap at length. It has
+// now been sprung three times, each time by a lap that had just read it:
+//
+//   which_pool_a_named_run_actually_spends  written, erased 14 minutes later
+//   derived_artifacts                       same shape, same day
+//   where_the_unledgered_answers_come_from  written 13:50Z, erased 14:05Z
+//
+// The third is why this exists. Care is not a mechanism, and a whitelist you
+// have to remember to extend fails in exactly the lap that had the new idea.
+//
+// So: every key on the committed file must be either one buildLaneRecord
+// generates or one DURABLE_KEYS preserves. A lap that adds a conclusion and
+// forgets the list now fails the suite BEFORE pushing, instead of watching the
+// finding survive one hour.
+{
+  const { DURABLE_KEYS, buildLaneRecord } = await import("../scripts/record-lane-run.mjs");
+  const { readFile } = await import("node:fs/promises");
+  const { join } = await import("node:path");
+
+  const generated = new Set(
+    Object.keys(
+      buildLaneRecord({ now: new Date("2026-08-10T00:00:00Z"), ran: false, previous: null }),
+    ),
+  );
+  const durable = new Set(DURABLE_KEYS);
+  const live = JSON.parse(await readFile(join(process.cwd(), "state/codex-lane.json"), "utf8"));
+
+  const orphans = Object.keys(live).filter((k) => !generated.has(k) && !durable.has(k));
+  assert(
+    orphans.length === 0,
+    `state/codex-lane.json carries key(s) the hourly rewrite will erase: ${orphans.join(", ")}. ` +
+      "Add them to DURABLE_KEYS in scripts/record-lane-run.mjs, or move the conclusion to a file no workflow regenerates.",
+  );
+
+  // Not vacuous: the durable keys must actually survive a rewrite, which is the
+  // property the whitelist exists for and the one that was broken in fact.
+  const rewritten = buildLaneRecord({
+    now: new Date("2026-08-10T00:00:00Z"),
+    ran: true,
+    taskId: "t",
+    previous: live,
+  });
+  for (const k of DURABLE_KEYS) {
+    if (live[k] === undefined) continue;
+    assert(
+      rewritten[k] !== undefined,
+      `${k} is on the durable list and a rewrite still dropped it`,
+    );
+  }
+  // And the finding this lap rescued is on the file, not only in git history.
+  assert(
+    live.where_the_unledgered_answers_come_from?.finding,
+    "the second-producer finding is missing again — it survives only in git history, which is the one place nothing reads",
+  );
+}

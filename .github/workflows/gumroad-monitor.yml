@@ -218,6 +218,45 @@ jobs:
               fi
               git add "state/$probe_state.json" 2>/dev/null || true
             done
+            # Rung 1 of the product loop, RE-DERIVED rather than replayed.
+            #
+            # pulse.yml runs `promise-conformance.mjs --check`, and --check reads
+            # the recorded verdicts back out. It re-derives exactly one thing, the
+            # listing digest, so it catches the sales copy changing under a verdict
+            # and catches nothing else. Nothing on any schedule ran --write. So a
+            # fix to the PRODUCT could never turn a row green on its own: the
+            # record only moved when a lap remembered to re-run it by hand.
+            #
+            # It had already happened. brand.config.json was retuned and
+            # re-measured at 11:52Z on 2026-08-10 (product-loop round 3, taps to
+            # the first purchase 15 -> 6, idle stretch 600s -> 100s), and at 14:15Z
+            # state/promise-conformance.json still carried the 10:46Z verdict
+            # reading "15 taps before the first affordable purchase". Two and a
+            # half hours in which every reader — the hourly check, the candidate
+            # board, and any lap trusting either — was told the product had a
+            # defect that had been fixed and measured. Same shape as the ETA
+            # refresh that froze for seven hours and the upload detector that
+            # needed a human: the measuring half was on a schedule, the RECORDING
+            # half was not.
+            #
+            # It lives here rather than in pulse.yml for a reason that is checked
+            # rather than assumed: this workflow holds GUMROAD_TOKEN, so the
+            # listing reads `live`. pulse.yml has no env block at all, so the same
+            # command there would derive its verdicts against the SNAPSHOT, write
+            # a snapshot digest into listing_sha256, and make every later live
+            # --check report the listing as changed. A re-derivation that runs
+            # against a weaker input than the check that reads it is worse than
+            # none. It also runs after the product-source restore above, because
+            # the FIXED IN SOURCE / NOT YET DELIVERED rows compare the source tree
+            # against that manifest.
+            #
+            # Non-fatal: a listing fetch that fails must not take the sales
+            # collection down with it. The file is simply left as it was and
+            # stages unchanged. The sanitizer stays fatal — a file that fails it
+            # is never committed, whatever produced it.
+            node scripts/promise-conformance.mjs --write || echo "promise conformance could not be re-derived; leaving the recorded verdicts alone"
+            node scripts/verify-sanitized-state.mjs state/promise-conformance.json || exit 1
+            git add state/promise-conformance.json
             git add state/gumroad.json
             # The dated series. state/gumroad.json is regenerated whole every run and
             # carries only the latest snapshot, which is why the ETA could never see a
