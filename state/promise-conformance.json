@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T10:09:59.958Z",
+  "fetched_at": "2026-08-10T10:25:31.328Z",
   "rung": "promise_conformance",
   "offer_id": "idle_clicker_kit",
   "listing": {
@@ -121,7 +121,7 @@
       "quote": "あなたの作品・自社サイトなど、公開先1つで使えます。商用可・改変自由 / クライアントの案件へ納品する場合は、別途ご相談ください",
       "still_on_page": true,
       "verdict": "fails",
-      "observation": "LICENSE.txt opens 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 and the live listing sells ONE option with no variants (GET /v2/products variants: []). There is nothing to choose at purchase, so the document a buyer receives does not determine which of its two mutually exclusive tiers governs them. The listing resolves it one way (client work: 別途ご相談) and README §7 resolves it the other (拡張ライセンス: 件数の上限なし), and neither is the file that says it is the licence."
+      "observation": "FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 Uploading a replacement attachment is not in the v2 API surface this lane holds. The promise stays failed until a re-fetch shows the delivered digest moved."
     },
     {
       "id": "japanese_readme_and_license",

@@ -113,6 +113,39 @@ function loadArtifact() {
   };
 }
 
+/**
+ * What the BUYER actually downloads.
+ *
+ * Every check below reads product/brandable-idle-clicker, which is the source
+ * tree. That tree is a copy of the Gumroad attachment, recovered on 2026-08-10
+ * with a per-file sha256 manifest in state/product-source.json. The moment a lap
+ * edits the tree to fix a failing promise, the two diverge — and the promise is
+ * still broken for every buyer, because the attachment is what they get.
+ *
+ * Without this, fixing a file in the repository turns the row green and the
+ * defect ships unchanged. That is the same shape as the mistake that cost five
+ * handoffs (an instrument reporting within its own reach as if it were the
+ * world) and it would be a worse one, because here the green would be produced
+ * BY the fix.
+ *
+ * @returns {"same"|"diverged"|"unknown"} whether the delivered file still matches
+ */
+function deliveredMatches(relPath) {
+  const f = path.join(ROOT, "state", "product-source.json");
+  if (!existsSync(f)) return "unknown";
+  let manifest;
+  try {
+    manifest = JSON.parse(readFileSync(f, "utf8"))?.manifest;
+  } catch {
+    return "unknown";
+  }
+  if (!Array.isArray(manifest)) return "unknown";
+  const row = manifest.find((m) => String(m.path || "").endsWith(relPath));
+  const local = path.join(PRODUCT_DIR, relPath);
+  if (!row?.sha256 || !existsSync(local)) return "unknown";
+  return sha(readFileSync(local, "utf8")) === row.sha256 ? "same" : "diverged";
+}
+
 /** The play register is a measurement someone else took; read, never assumed. */
 function loadPlay() {
   const f = path.join(ROOT, "state", "play-measurements.json");
@@ -309,9 +342,38 @@ const PROMISES = [
     quote: "あなたの作品・自社サイトなど、公開先1つで使えます。商用可・改変自由 / クライアントの案件へ納品する場合は、別途ご相談ください",
     verify: (a, play, listing) => {
       const lic = a.license || "";
-      const twoTiers = /ライセンスは2種類あります/.test(lic);
-      const chooseAtPurchase = /購入時に選んだ種別が適用されます/.test(lic);
+      // The OPERATIVE opening, not the whole file. A licence that fixes itself
+      // should be free to record what it used to say, and the corrected version
+      // quotes its own old first line in a closing note — which made the naive
+      // whole-file match report the fix as unfixed. A check that punishes a
+      // document for describing its own history teaches the next lap to delete
+      // history to get a green.
+      const opening = lic.split("\n").slice(0, 8).join("\n");
+      const twoTiers = /ライセンスは2種類あります/.test(opening);
+      const chooseAtPurchase = /購入時に選んだ種別が適用されます/.test(opening);
+      // And determinacy has to be asserted, not merely inferred from the absence
+      // of the old wording: a licence that says nothing about which tier applies
+      // is exactly as indeterminate as one that offers a choice nobody has.
+      const saysItIsTheOnlyOne = /選ぶものはありません|種別は1つ/.test(lic);
+      if (!twoTiers && !chooseAtPurchase && !saysItIsTheOnlyOne) {
+        return {
+          verdict: FAILS,
+          observation:
+            "LICENSE.txt no longer offers two tiers, but it never states that this one applies without a choice. Silence is not determinacy — a buyer still cannot tell from the document what governs them.",
+        };
+      }
       const variants = listing?.variants?.length ?? 0;
+      const delivered = deliveredMatches("LICENSE.txt");
+      if (!twoTiers && !chooseAtPurchase && delivered === "diverged") {
+        // The source is fixed and the attachment is not. Still FAILS, and the
+        // observation has to say which half moved, or the next lap reads a green
+        // row and believes buyers are getting the corrected licence.
+        return {
+          verdict: FAILS,
+          observation:
+            "FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 Uploading a replacement attachment is not in the v2 API surface this lane holds. The promise stays failed until a re-fetch shows the delivered digest moved.",
+        };
+      }
       if (twoTiers && chooseAtPurchase && variants === 0) {
         return {
           verdict: FAILS,
