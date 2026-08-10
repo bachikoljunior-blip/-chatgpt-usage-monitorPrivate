@@ -67,6 +67,16 @@
       "reopen": true,
       "reopen_reason": "FOURTH of these, and the first where the cost is visible in the mechanism rather than only in the register. The marker this commit wrote closes 2026-08-10.t for our own transport permanently, so the attributable run can never happen and the round can never be counted — the attribution rule makes the answer worthless and the marker rule then guarantees no other answer arrives. scripts/inbox-task.mjs now reads this flag: a review task whose marker exists with no ledger run is live again, and waits BEHIND every task nobody has answered at all. Opt-in per row on purpose: the ledger is capped, so absence from it is not evidence for an old task id, and .n/.o are research where attribution buys nothing while .r carries the pre-fix blind question and would only void again.",
       "what_closes_it": "A run of codex-inbox.yml whose ledger entry names 2026-08-10.t. At that point attributionPredicate returns true for it whatever this row says, so the reopen cannot loop."
+    },
+    {
+      "task_id": "2026-08-10.v",
+      "acknowledged_at": "2026-08-10T12:30:00Z",
+      "author": null,
+      "why_no_run": "codex/outbox/2026-08-10.v.md arrived at 2026-08-10T12:14:19Z as a commit authored by bachikoljunior-blip rather than chatgpt-usage-monitor[bot], touching only the outbox file. state/codex-lane.json runs[] has no entry for it, and .github/workflows/codex-inbox.yml writes one on every run that produces an answer. The fifth answer of this shape (.n .o .r .t .v).",
+      "what_is_therefore_unknown": "Which model wrote it, and therefore whether the sources were fetched by a run with network access or reproduced from the model's own memory. For a research answer that is the whole question: the answer is nine note.com URLs with prices, and a URL recalled rather than read is the failure mode that looks identical to a citation.",
+      "what_must_not_be_done_because_of_it": "Do not copy its prices or URLs into state/ as measured external evidence. It may be used as a LEAD — a list of pages worth fetching — and the fetch is what would make any of it a measurement.",
+      "how_to_establish_it_if_it_matters": "Unlike the review tasks, re-asking does not settle it: two unattributed answers agreeing proves nothing about either. What settles it is fetching one of the nine URLs and comparing. This environment reaches *.github.io and not much else, so that check itself belongs in the lane, under a fresh task_id that asks for the HTTP status and first bytes of each URL rather than for a summary.",
+      "why_this_one_is_not_reopened": "The reopen flag added 2026-08-10 applies to produces:review tasks, where an unattributed answer both fails the author-not-judge rule AND closes the task. This is a research task: its done_marker legitimately closes it, because a second answer of the same kind would carry the same unresolved question. The defect here is in what the answer can be USED for, not in whether the task ran."
     }
   ],
   "derived_artifacts": [

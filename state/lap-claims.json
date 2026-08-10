@@ -1050,6 +1050,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T12:31:59.646Z",
+      "candidate": "idle_clicker_kit.deliver_both_rung_one_fixes",
+      "kind": "prerequisite",
+      "mechanism": "Both rung-1 promise failures on the priced kit are fixed in source and neither reaches a buyer: delivery over the API is measured as impossible in all three directions (replace, create-with-file, external URL), and codex/outbox/2026-08-10.u.md closes the last open direction by quoting Gumroad's own repo that the non-v2 upload path is session-authenticated and not reachable by OAuth clients. One owner upload is the only route. This ask converts two already-admitted source fixes into a product a buyer actually receives, which is the precondition for any stranger_reaction round on the PAID kit meaning anything, and rung 2 on that kit has never been attempted.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

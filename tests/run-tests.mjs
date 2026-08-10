@@ -55,6 +55,11 @@ import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-br
 import { classifyLifecycle } from "../scripts/probe-gumroad-lifecycle.mjs";
 import { recurrenceOf, classifyRecurrence, listingMeasurement } from "../scripts/probe-gumroad-recurring.mjs";
 import { promisesPresent, manifestOf } from "../scripts/fetch-product-source.mjs";
+import {
+  diffAgainstDelivered,
+  shipmentIsWorthAsking,
+  isExcluded,
+} from "../scripts/build-product-archive.mjs";
 import { artifactWasDriven } from "../scripts/play-artifact.mjs";
 import { checkGoal, GOAL, BEGIN as DIRECTIVE_BEGIN } from "../scripts/check-goal-intact.mjs";
 import { judge as judgeSpark, sparkModelCandidate, sparkWindow } from "../scripts/spark-model.mjs";
@@ -4183,6 +4188,40 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     Array.isArray(liveClaims) && liveClaims.length > 0 && liveClaims.every((c) => typeof c.candidate === "string"),
     "state/lap-claims.json carries no usable admitted claims, so gate 3 lane 2 is closed in practice",
   );
+
+  // --- the archive the owner uploads ----------------------------------------
+  //
+  // Delivery to a buyer costs exactly one owner action and no API route exists,
+  // so the archive has to be right the one time it ships. These pin the two ways
+  // it could be wrong quietly: shipping build litter, and asking for an upload
+  // that changes nothing. They sit in this block because gate 4 (paste-ready) is
+  // the gate they serve — a request is only paste-ready if the thing to paste is
+  // built and known to differ from what is live.
+  assert(isExcluded("brandable-idle-clicker/__pycache__/validate_config.cpython-311.pyc"), "__pycache__ would have shipped");
+  assert(isExcluded("brandable-idle-clicker/.DS_Store"), ".DS_Store would have shipped");
+  assert(!isExcluded("brandable-idle-clicker/assets/engine.js"), "a real kit file was excluded from the archive");
+  assert(!isExcluded("brandable-idle-clicker/examples/cafe.json"), "a real example was excluded from the archive");
+
+  const delivered = { "a.txt": "sha_a", "b.txt": "sha_b", "gone.txt": "sha_g" };
+  const local = { "a.txt": "sha_a", "b.txt": "SHA_B_NEW", "new.txt": "sha_n" };
+  const d = diffAgainstDelivered(local, delivered);
+  assert(d.changed.join() === "b.txt", "a changed file was not reported as changed");
+  assert(d.added.join() === "new.txt", "an added file was not reported as added");
+  assert(d.removed.join() === "gone.txt", "a file dropped from the kit was not reported as removed");
+  assert(shipmentIsWorthAsking(d), "a real shipment was reported as not worth asking for");
+
+  // The assertion that protects the owner's attention rather than the buyer's
+  // download: an archive identical to what is already live must NOT produce a
+  // request. Gate 5 (cannot decompose further) is about size; this is about
+  // whether the ask exists at all.
+  const same = diffAgainstDelivered({ "a.txt": "sha_a" }, { "a.txt": "sha_a" });
+  assert(!shipmentIsWorthAsking(same), "an upload that changes nothing was judged worth an owner action");
+
+  // And the live tree really does differ from what a buyer downloads. If this goes
+  // false, either the manifest was re-fetched after a shipment (good, and the
+  // pending request should be marked done) or a lap reverted the fixes (not good).
+  const src = JSON.parse(await readFile(join(root, "state/product-source.json"), "utf8"));
+  assert(Array.isArray(src.manifest) && src.manifest.length > 0, "state/product-source.json carries no manifest to compare against");
   assert(
     ownerRequestGate({ ...full, paste_ready: false }, [{ id: "x", idle_eta_days: 5 }]).admissible === false,
     "a request declaring paste_ready false was admissible",
