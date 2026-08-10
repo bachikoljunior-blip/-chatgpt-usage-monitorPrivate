@@ -17,6 +17,7 @@ import {
 } from "../scripts/derive-lap-cost.mjs";
 import { classify, resolveLastSeen, unverifiedReservations } from "../scripts/check-heartbeats.mjs";
 import { buildLaneRecord, LANE_STATE_PATH } from "../scripts/record-lane-run.mjs";
+import { judge as judgeAuthorship, keyOfLandedModel } from "../scripts/lane-authorship.mjs";
 import { applyRepricings, applyRouteElection } from "../scripts/repricing.mjs";
 import {
   ATTACHMENTS, buildPrompt, decide, markerEarned, parseInboxHeader,
@@ -750,6 +751,96 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       .last_seen === skipped.checked_at,
     "the heartbeat cannot see the lane through the mark a skipped run leaves",
   );
+
+  // A reviewer must not be the author — the one condition rung 2 cannot survive,
+  // and the one this project has broken twice without noticing until afterwards.
+  // Added 2026-08-10, when it stopped being a worry and became reachable: the
+  // dispatch had started naming Spark UNCONDITIONALLY, so the lane built and
+  // reviewed as one model and the account default became unreachable.
+  {
+    const pair = (model, authored) => ({
+      task_id: "t", valid_until: "2026-12-31", done_marker: "m", done_signal: "s",
+      model, reviews_authored_by: authored, attach: [],
+    });
+    assert(
+      judgeAuthorship({ tasks: [pair("spark", "account_default")], runs: [], sparkSlug: "gpt-5.3-codex-spark" }).ok,
+      "a review by the model that did NOT author the artifact was refused",
+    );
+    // The mutation that matters: point a review at its own author.
+    assert(
+      !judgeAuthorship({ tasks: [pair("spark", "spark")], runs: [], sparkSlug: "gpt-5.3-codex-spark" }).ok,
+      "a task whose reviewer IS its author passed — this is round 2 and the void .i measured, filed again",
+    );
+    assert(
+      !judgeAuthorship({ tasks: [pair("account_default", "account_default")], runs: [], sparkSlug: null }).ok,
+      "the same self-review passed on the other pool",
+    );
+    // Rule 2: the dispatch retries on the account default when a named slug is
+    // refused. Right for a survey, fatal for a review — it swaps the reviewer in
+    // silence. The ledger records both halves so the swap is detectable at all.
+    assert(
+      !judgeAuthorship({
+        tasks: [],
+        runs: [{ task_id: "2026-08-10.k", model_key: "spark", model: "gpt-5.1-codex" }],
+        sparkSlug: "gpt-5.3-codex-spark",
+      }).ok,
+      "a run that asked for Spark and landed on the account default was reported as clean",
+    );
+    assert(
+      judgeAuthorship({
+        tasks: [],
+        runs: [{ task_id: "2026-08-10.k", model_key: "spark", model: "gpt-5.3-codex-spark" }],
+        sparkSlug: "gpt-5.3-codex-spark",
+      }).ok,
+      "a run that landed on the model it asked for was reported as a fallback",
+    );
+    // Silence is not evidence. Every run before the ledger existed recorded
+    // neither half, and calling those a fallback would invent a measurement out
+    // of an absence.
+    assert(
+      judgeAuthorship({ tasks: [], runs: [{ task_id: "old", model_key: null, model: null }], sparkSlug: "x" }).ok,
+      "a pre-ledger run with nothing recorded was scored as a fallback",
+    );
+  }
+
+  // The header field the rule above reads has to survive the parser, or the check
+  // is judging defaults it invented. Absent means spark, because that is what the
+  // dispatch did unconditionally and what every task already in the queue assumed.
+  {
+    const inboxText = await readFile(join(root, "codex/INBOX.md"), "utf8");
+    const parsedInbox = parseInboxTasks(inboxText);
+    const withChoice = parsedInbox.tasks.filter((t) => t.reviews_authored_by);
+    assert(
+      withChoice.length >= 1,
+      "no task in the INBOX declares reviews_authored_by, so the pairing rule has nothing to check " +
+      "and would pass by being empty — the same vacuous green this suite has shipped before",
+    );
+    assert(
+      withChoice.some((t) => t.model === "account_default"),
+      "every review task runs on spark, so the account default is still unreachable and nothing changed",
+    );
+    assert(
+      parsedInbox.tasks.every((t) => t.model === "spark" || t.model === "account_default"),
+      "a task carries a model key the dispatch cannot map to a pool",
+    );
+    const reviewTask = withChoice[0];
+    assert(
+      reviewTask.attach.length >= 1,
+      "a review task attaches nothing, so the reviewer is asked to judge an artifact it was never shown",
+    );
+    // The dispatch has to actually branch on the key. Without this the header is
+    // decoration and every run still takes Spark. Read with the comments stripped:
+    // this file explains its own fix in prose, and a check whose subject is a file
+    // that documents itself will otherwise match the explanation instead of the
+    // command — which is exactly how the --autostash check passed vacuously on
+    // 2026-08-10.
+    const dispatchText = (await readFile(join(root, ".github/workflows/codex-inbox.yml"), "utf8"))
+      .split("\n").filter((line) => !/^\s*#/.test(line)).join("\n");
+    assert(
+      dispatchText.includes("MODEL_KEY") && /account_default/.test(dispatchText),
+      "codex-inbox.yml ignores the task's model key, so declaring account_default changes nothing",
+    );
+  }
 
   // And the cron the registry claims has to be the cron the workflow runs, or the
   // cadence the heartbeat compares against is fiction. This row said "41 2 * * *"

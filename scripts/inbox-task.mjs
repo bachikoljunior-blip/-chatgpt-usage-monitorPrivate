@@ -45,6 +45,13 @@ function fieldReader(body) {
   };
 }
 
+// Which of the account's two weekly Codex pools a task runs on. Logical keys,
+// never slugs: the slug for Spark is derived from the live meter every run
+// (scripts/spark-model.mjs), and a slug written into a task header is exactly
+// the fact that goes stale silently when the window is renamed.
+export const MODEL_KEYS = ["spark", "account_default"];
+export const DEFAULT_MODEL_KEY = "spark";
+
 function headerFromBody(body) {
   const field = fieldReader(body);
   const task_id = field("task_id");
@@ -53,11 +60,31 @@ function headerFromBody(body) {
   // A string the answer must contain before the run counts as done. Declared by
   // the task, checked by the transport — see markerEarned.
   const done_signal = field("done_signal");
+  // Optional. Absent means Spark, which is what the dispatch has done
+  // unconditionally since 2026-08-10 — and that unconditional --model is what
+  // made the account default unreachable, which mattered because the default is
+  // the only model in this account that did NOT write the lane's Spark-built
+  // artifacts. A rung-2 review needs a reviewer that is not the author, so the
+  // task has to be able to say which pool it wants.
+  const model = field("model") ?? DEFAULT_MODEL_KEY;
+  // Optional. The model key that produced the thing this task judges. Present
+  // only on review tasks; scripts/lane-authorship.mjs refuses the pair when it
+  // equals `model`, so "the author reviewed itself" cannot be filed by accident.
+  const reviews_authored_by = field("reviews_authored_by");
+  // Optional, comma-separated repo paths whose live contents ride along with the
+  // prompt for this task only. ATTACHMENTS below is the always-on set; a review
+  // task needs the artifact itself, which is not in it and must not be, because
+  // every task would then carry it.
+  const attachRaw = field("attach");
+  const attach = attachRaw ? attachRaw.split(",").map((s) => s.trim()).filter(Boolean) : [];
   const missing = Object.entries({ task_id, valid_until, done_marker, done_signal })
     .filter(([, v]) => !v)
     .map(([k]) => k);
   if (missing.length) return { error: `INBOX header is missing: ${missing.join(", ")}` };
-  return { task_id, valid_until, done_marker, done_signal };
+  if (!MODEL_KEYS.includes(model)) {
+    return { error: `INBOX task ${task_id}: model must be one of ${MODEL_KEYS.join(", ")}, got ${model}` };
+  }
+  return { task_id, valid_until, done_marker, done_signal, model, reviews_authored_by, attach };
 }
 
 /**
@@ -248,7 +275,10 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const promptOut = argOf("prompt-out", null);
   if (promptOut) {
     const attachments = [];
-    for (const rel of ATTACHMENTS) {
+    // The always-on set first, then whatever this one task asked for. Deduped so
+    // a task naming an always-on path does not paste it twice.
+    const wanted = [...ATTACHMENTS, ...(selected.task?.attach ?? [])];
+    for (const rel of wanted.filter((p, i) => wanted.indexOf(p) === i)) {
       attachments.push([rel, await readFile(resolve(REPO, rel), "utf8").catch(() => null)]);
     }
     const { writeFile } = await import("node:fs/promises");
@@ -272,5 +302,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   console.log(`reason=${selected.reason}`);
   console.log(`task_id=${header?.task_id ?? ""}`);
   console.log(`done_marker=${header?.done_marker ?? ""}`);
+  // The dispatch reads this to decide whether to pass --model at all. Empty only
+  // when no task could be parsed, in which case the workflow's force path runs
+  // the head on the historical behaviour.
+  console.log(`model=${header?.model ?? DEFAULT_MODEL_KEY}`);
   console.log(`queue_depth=${parsed.tasks?.length ?? 0}`);
 }

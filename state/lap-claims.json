@@ -794,6 +794,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T06:00:28.540Z",
+      "candidate": "an_independent_judge_is_the_binding_term",
+      "kind": "route_change",
+      "mechanism": "Abandons route 5. Route 5 said the binding term was WHICH POOL BUILDS, and the last two laps measured both halves of that claim false: the lane returns correctly-shaped and functionally broken payloads (.h, three defects including the commissioned feature), so the scarce pool's job is reviewing rather than moving files; and this lap measured that the lane now executes as gpt-5.3-codex-spark (codex_bengalfox used_percent 0 to 1 while codex held at 7, across usage readings 04:51:54Z and 05:06:57Z), so builder and reviewer are one model and rung 2 of the product ladder cannot be run inside the lane at all. The new binding term is WHO JUDGES. It moves the number by a different mechanism from route 5: every channel reads idle infinity because no payload has ever been judged worth paying for by a non-author, so no payload can be priced, and building faster produces more unpriceable payloads. An independent judgment is the first input from which any finite day count can be derived; the cheapest instance reachable at 0 owner actions and 0 Claude quota is the account default model, which authored none of the lane's Spark-built artifacts and is unreachable today only because the dispatch passes --model unconditionally.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

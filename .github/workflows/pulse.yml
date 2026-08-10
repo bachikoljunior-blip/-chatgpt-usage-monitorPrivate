@@ -163,6 +163,14 @@ jobs:
           # the Spark window still has capacity — i.e. when a whole quota silently
           # goes back to being counted as "spare" while nothing can spend it.
           node scripts/spark-model.mjs --check || rc=1
+          # The other half of the same fix, and the half that bites. Naming Spark
+          # made the second pool spendable and made the account default — the only
+          # model here that authored none of the Spark-built artifacts — unreachable.
+          # Goes red when a review task would be judged by its own author, and when a
+          # run asked for one pool and silently landed on the other. Both are void
+          # rounds, and this project has already spent two of them finding that out
+          # after the fact rather than before the dispatch.
+          node scripts/lane-authorship.mjs --check || rc=1
           # The loop whose subject is the thing being sold, which did not exist until
           # 2026-08-10. Every other check here measures the ROUTE. This one goes red
           # when something is live to buyers that cannot be measured at all, and when

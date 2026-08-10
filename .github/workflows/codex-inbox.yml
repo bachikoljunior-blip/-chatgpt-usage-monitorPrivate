@@ -107,10 +107,12 @@ jobs:
         run: node scripts/spark-model.mjs >> "$GITHUB_OUTPUT"
 
       - name: Hand the inbox to ChatGPT
+        id: ask
         if: steps.task.outputs.run == 'true' || inputs.force
         env:
           CODEX_AUTH_JSON: ${{ secrets.CODEX_AUTH_JSON }}
           SPARK_MODEL: ${{ steps.spark.outputs.spark_model }}
+          MODEL_KEY: ${{ steps.task.outputs.model }}
         run: |
           mkdir -p state/answers
           # The prompt carries the INBOX and the state files it references,
@@ -139,17 +141,37 @@ jobs:
           # behaviour plus one wasted second. Which pool a named run actually
           # spends is then settled by which window moves in the next usage
           # reading — measured, not argued.
-          if [ -n "$SPARK_MODEL" ]; then
+          # Which pool the TASK asked for. Naming Spark unconditionally is what
+          # made the account default unreachable, and the default is the only
+          # model here that authored none of the Spark-built artifacts — so a
+          # review task has to be able to opt out. Absent means spark, which is
+          # the behaviour every existing task was written under.
+          if [ "$MODEL_KEY" = "account_default" ]; then
+            echo "task asked for the account default; no --model passed" >> "$GITHUB_STEP_SUMMARY"
+            ask
+            LANDED=""
+          elif [ -n "$SPARK_MODEL" ]; then
             if ask --model "$SPARK_MODEL"; then
               echo "asked with --model $SPARK_MODEL" >> "$GITHUB_STEP_SUMMARY"
+              LANDED="$SPARK_MODEL"
             else
               echo "--model $SPARK_MODEL was refused; retrying on the account default" >> "$GITHUB_STEP_SUMMARY"
               ask
+              LANDED=""
             fi
           else
             echo "no Spark window in the current usage reading; asked on the account default" >> "$GITHUB_STEP_SUMMARY"
             ask
+            LANDED=""
           fi
+          # Read back rather than assumed: ask-chatgpt.mjs records the slug it
+          # actually sent, and a fallback is exactly the case where what we
+          # intended and what ran differ. scripts/lane-authorship.mjs compares
+          # the pair and fails when a review silently changed reviewer.
+          if [ -f state/answers/latest.json ]; then
+            LANDED=$(node -e 'process.stdout.write(String(require("./state/answers/latest.json").model||""))')
+          fi
+          echo "landed_model=$LANDED" >> "$GITHUB_OUTPUT"
 
       - name: Leave the done marker
         if: steps.task.outputs.run == 'true' || inputs.force
@@ -184,10 +206,16 @@ jobs:
           RAN: ${{ (steps.task.outputs.run == 'true' || inputs.force) && 'true' || 'false' }}
           TASK_ID: ${{ steps.task.outputs.task_id }}
           REASON: ${{ steps.task.outputs.reason }}
+          MODEL_KEY: ${{ steps.task.outputs.model }}
+          LANDED_MODEL: ${{ steps.ask.outputs.landed_model }}
         run: |
           node scripts/record-lane-run.mjs \
-            --ran="$RAN" --task="$TASK_ID" --reason="$REASON"
+            --ran="$RAN" --task="$TASK_ID" --reason="$REASON" \
+            --model-key="$MODEL_KEY" --model="$LANDED_MODEL"
           node scripts/verify-sanitized-state.mjs state/codex-lane.json
+          # Loud rather than diagnosed three laps later: if the run that just
+          # happened swapped the reviewer, say so in this run's own summary.
+          node scripts/lane-authorship.mjs --check >> "$GITHUB_STEP_SUMMARY" || true
 
       - name: Publish the answer to the run summary
         if: always() && (steps.task.outputs.run == 'true' || inputs.force)

@@ -1476,6 +1476,29 @@
           "n": 1
         }
       ]
+    },
+    {
+      "id": "2026-08-10.an-independent-judge-is-the-binding-term",
+      "made_at": "2026-08-10T06:10:00Z",
+      "claim": "Route 6 elected: the binding term is WHO JUDGES, not who builds. The measurement behind it, taken this lap and never taken before: state/usage.json codex_bengalfox went 0% used to 1% while codex held at 7%, across readings 04:51:54Z and 05:06:57Z, an interval containing exactly one lane run (2026-08-10.h) whose transport-recorded model was gpt-5.3-codex-spark. That settles the hypothesis RUNBOOK 5.5 and spark-model.mjs both filed — the derived slug reaches Spark — and it draws a consequence nobody had: the dispatch names that model UNCONDITIONALLY, so the lane now builds AND reviews as one model, and the account default became unreachable. The account default is the only model here that authored none of the Spark-built artifacts. So the fix that made the second pool spendable removed the second reviewer. The narrow, testable claim: the account holds two models with authorship disjoint at a datable hour (Spark was 0% used until 2026-08-10T05:00Z, so everything before it, including the live assets/free-demo/index.html from task 2026-08-09.q, is account_default work), and pairing each against the other artifact yields the first rung-2 round that is not void. NOT CLAIMED: that either judge says 払う. Two readings on our one artifact already said 払わない, and the default answer is written into both tasks. NOT CLAIMED: any ETA movement — the gate record carries after-idle inf deliberately, and the gate admitted this route WITHOUT refilling the groundwork budget.",
+      "metric": "Read from committed state on origin/main, never from a lap account of itself. (a) codex/outbox/2026-08-10.k.md exists and its \"## 見覚え\" section begins ない — a non-author judge that reports no recognition is the first usable rung-2 round this project has had. If it reports ある, model identity is NOT a usable proxy for authorship and the route is refuted on its central mechanism. (b) The same for codex/outbox/2026-08-10.l.md, on the opposite pairing, which is the independent replication rather than a second sample of the same direction. (c) state/codex-lane.json runs[] carries model_key and model for .k and .l, and node scripts/lane-authorship.mjs --check exits 0 — i.e. neither run silently fell back and swapped the reviewer. (d) node tests/run-tests.mjs fails when any of these five mutations is reapplied: the self-review rule disabled; the silent-fallback rule disabled; the model header field ignored; the attach field dropped; the dispatch branch on MODEL_KEY removed. All five were run red this lap before the checks were kept.",
+      "baseline": "At 2026-08-10T06:10Z: two rung-2 rounds run, ZERO usable — round 1 the reviewer opened without playing, round 2 played 25 taps and answered 見覚えある. state/product-loop.json free_demo rounds=1, engaged 0, next=stranger_reaction. Four reviewer candidates named in the prior handoff, zero measured. No task header could select a model; every dispatch since 2026-08-10T05:00Z took Spark unconditionally. state/codex-lane.json had no runs ledger, so which model authored which artifact was an argument rather than a lookup. scripts/lane-authorship.mjs did not exist. eta-gate: 37 consecutive prerequisite laps, 12 route changes that moved nothing, all channels idle_eta_days null, revenue ¥0 across 8 months.",
+      "judge_on": "2026-08-11",
+      "judge_deadline": "2026-08-13",
+      "judge_on_why": "The lane runs hourly and the queue is ordered .j then .k then .l, so three lane runs settle (a) and (b) — about three hours if none stalls. A day is generous; the deadline is the backstop if .j needs a retry.",
+      "min_observations": {
+        "source": "file",
+        "path": "codex/outbox/2026-08-10.k.md",
+        "min": 1,
+        "usable_only": false
+      },
+      "concurrent_changes": [
+        "2026-08-10.j is still in flight ahead of both review tasks; it rebuilds the free demo and its verdict moves the same product-loop register, so any movement in stranger_reaction this week is NOT attributable to the judge mechanism alone",
+        "the route election itself moved from route_5 to route_6 in the same commit, which changes which candidates compute-eta marks on_abandoned_route",
+        "the runs ledger and the model_key/model fields were added to state/codex-lane.json in the same commit, so the first ledger rows and the first paired reviews arrive together"
+      ],
+      "what_would_make_this_wrong_in_a_way_worth_recording": "The likely failure is that MODEL IDENTITY IS THE WRONG PROXY. These two models share a provider, an account, and probably most of their training; \"did not generate this text\" is not the same as \"has no familiarity with it\", and the .i control only established that the lane can report ない for a game written by a stranger on itch — not that it would report ない for a sibling model output in the same house style. If .k comes back ある, that is the finding, and it forces the judge outside the account entirely, which costs either the scarce Claude pool, an owner action, or a venue this project has already measured as unpostable. The second failure mode is subtler and this prediction cannot detect it: a judge that reports ない honestly and still reviews charitably because the artifact reads like its own output.",
+      "outcome": null
     }
   ]
 }
