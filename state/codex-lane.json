@@ -162,5 +162,15 @@
       "at": "2026-08-10T06:15:49.487Z"
     }
   ],
-  "note": "Written by every run of .github/workflows/codex-inbox.yml, including the runs that skip because the task already carries its done marker. state/automations.json points codex-loop's liveness here for that reason."
+  "note": "Written by every run of .github/workflows/codex-inbox.yml, including the runs that skip because the task already carries its done marker. state/automations.json points codex-loop's liveness here for that reason.",
+  "where_the_unledgered_answers_come_from": {
+    "measured_at": "2026-08-10T13:50:00Z",
+    "question": "Six of the last answers (.n .o .r .t .v .w) landed with no ledger row, all authored bachikoljunior-blip. The register said this could not separate 'the owner relays answers by hand' from 'a second automated path exists'. Both readings were still open because nobody had looked at what CAN commit here.",
+    "what_was_read": "`git config user.name` across every file in .github/workflows, and the add-commit of each outbox answer (author, committer, timezone, file count).",
+    "finding": "NO WORKFLOW IN THIS REPOSITORY COMMITS UNDER THAT IDENTITY. All ten workflows that commit declare a bot name — chatgpt-usage-monitor[bot], claude-usage-monitor[bot], gumroad-monitor[bot], itch-monitor[bot], listing-sync[bot], pulse[bot] — and laps commit as Claude <noreply@anthropic.com>. So the six answers were not produced by anything this repository runs.",
+    "the_signature_that_separates_them": "Every bot and lap commit is stamped +00:00. All six unledgered answers are stamped +09:00 (JST), author equal to committer, one file changed, and an English sentence-case message ('Add Codex verification result for 2026-08-10.w'). That is a consistent second producer, not an occasional hand relay: a person pasting six files over seven hours would not hold that shape while every other commit in the repository holds the other one.",
+    "what_this_changes": "Two things that were resting on the ledger. (1) 'Re-run the task under a fresh task_id so the workflow writes a ledger entry' — the standing repair in the .n entry — CANNOT establish who wrote the original: it would establish who wrote the RE-RUN. The two producers are different, so the answers are not comparable by re-running. (2) Which weekly ChatGPT window a given answer spent is confounded, because state/usage.json meters an account and the ledger only sees one of the two paths that spend it. scripts/spark-model.mjs settles 'did naming Spark work' by reading which window moved; that reading is only sound for answers the ledger actually saw.",
+    "what_is_still_unknown": "Which product the second path is (ChatGPT agent mode, Codex cloud, or the owner acting through either), and whether it reads codex/INBOX.md on a schedule or on demand. Nothing readable from inside this repository distinguishes those, and none of them changes the two consequences above.",
+    "how_this_stays_true": "tests/run-tests.mjs scans .github/workflows for declared committer identities and fails if any workflow starts committing under a non-bot name. If that happens, this finding is wrong and the register must be re-derived rather than trusted."
+  }
 }

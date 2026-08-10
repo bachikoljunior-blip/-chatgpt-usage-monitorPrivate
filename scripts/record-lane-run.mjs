@@ -67,10 +67,23 @@ export const LEDGER_LIMIT = 40;
 // artifact is a standing problem. A row erased by the next lane run would make the
 // problem come back on a schedule, which is the failure
 // which_pool_a_named_run_actually_spends already recorded from the other side.
+// `where_the_unledgered_answers_come_from` joined on 2026-08-10 the same way the
+// other two did — by being erased. A lap established it at 13:50Z (nothing this
+// repository runs commits under bachikoljunior-blip; all ten committing workflows
+// declare a [bot] name; the six unledgered answers are +09:00, author=committer,
+// one file) and the 14:05Z payload-01 run erased it thirteen minutes later. That
+// is the THIRD conclusion this list has had to rescue, and each time it was
+// written by a lap that had just read the comment above explaining the trap.
+//
+// So the list stopped depending on remembering. tests/run-tests.mjs now compares
+// the live file's keys against the ones buildLaneRecord generates, and any key
+// that is in neither set fails the suite — in the lap that adds it, rather than
+// in the hour that erases it. Whitelist-plus-a-check, not whitelist-plus-care.
 export const DURABLE_KEYS = [
   "which_pool_a_named_run_actually_spends",
   "answers_with_no_ledger_run",
   "derived_artifacts",
+  "where_the_unledgered_answers_come_from",
 ];
 
 /**
