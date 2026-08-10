@@ -289,8 +289,19 @@ export function toChannelRow(snapshot, reach) {
       `Ad revenue is not the path — at this rate the YouTube Partner gate is ` +
       `${reach.days_to_ypp_gate} days away on ${reach.ypp_gate_binding_half}, and the sibling ` +
       `loop prices the far side of it in the ¥1,000s/month against a ¥200,000 target. ` +
-      `What is worth the ranking's attention is the REACH, which the elected route was ` +
-      `blocked on and which nothing here had counted. ` +
+      // This clause used to read "what is worth the ranking's attention is the REACH".
+      // It is now conditional on the reach being reachable, because that sentence was
+      // written before anyone had asked whether the surface is arrived at, and a route
+      // was elected on it while it was false.
+      (base.addressability?.delivery?.known
+        ? `What the ranking may use is the ADDRESSABLE reach and not this one: ` +
+          `${base.addressability.delivery.addressable_playbacks} of ` +
+          `${base.addressability.delivery.playbacks} playbacks over ` +
+          `${base.addressability.delivery.window_days}d. No threshold is applied here — the two ` +
+          `numbers are printed because a route was elected on the larger one while the smaller ` +
+          `existed and had never been read. `
+        : `What is worth the ranking's attention is the REACH, which the elected route was ` +
+          `blocked on and which nothing here had counted. `) +
       addressabilitySentence(base.addressability),
     reach,
   };

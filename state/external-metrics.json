@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T23:39:13.136Z",
+  "fetched_at": "2026-08-10T07:06:51.533Z",
   "note": "Derived by scripts/measure-reach.mjs from state/youtube-scan.json. Do not hand-edit: the numbers here are a division of the snapshot, and editing them detaches the claim from the commit that can contradict it.",
   "source_snapshot": {
-    "fetched_at": "2026-08-09T22:50:00.000Z",
-    "age_days": 0.03,
+    "fetched_at": "2026-08-10T06:59:25.940Z",
+    "age_days": 0.01,
     "stale": false,
     "provenance": {
       "repo": "bachikoljunior-blip/youtube",
@@ -33,11 +33,19 @@
         "free_link_forbidden_by": [
           "github"
         ],
-        "lap_may_perform_the_edit": null,
-        "note": "Whether this loop should perform the edit itself. list_repos reports can_push true for the sibling repo and the owner's standing directive A14 puts every repository except simple's main in scope, so PERMISSION is not the open question. Coordination is: that repository is driven by its own resident Claude session which committed 60 minutes before this measurement, and an unannounced config edit lands in another running loop's working set. The two automations are chasing the same ¥200,000/month target and have never exchanged a message in either direction."
+        "lap_may_perform_the_edit": false,
+        "note": "Whether this loop should perform the edit itself. list_repos reports can_push true for the sibling repo and the owner's standing directive A14 puts every repository except simple's main in scope, so PERMISSION is not the open question. Coordination is: that repository is driven by its own resident Claude session which committed 60 minutes before this measurement, and an unannounced config edit lands in another running loop's working set. The two automations are chasing the same ¥200,000/month target and have never exchanged a message in either direction.",
+        "delivery": {
+          "known": true,
+          "window_days": 28,
+          "playbacks": 4851,
+          "addressable_playbacks": 2,
+          "addressable_fraction": 0.00041228612657184083,
+          "clicks_ceiling_per_window": 2
+        }
       },
       "idle_eta_days": null,
-      "reason": "measured, not unreadable: 1208.75/day views and 394.75/day engaged over 4 days (2026-08-04..2026-08-07), zero owner actions. Ad revenue is not the path — at this rate the YouTube Partner gate is 4000 days away on subscribers, and the sibling loop prices the far side of it in the ¥1,000s/month against a ¥200,000 target. What is worth the ranking's attention is the REACH, which the elected route was blocked on and which nothing here had counted. The surface PERMITS the paid product's link and FORBIDS the free demo's (github) — so route 1's entire payload cannot go here as hosted. That is the exact INVERSE of r/gamedev, which permits the free artifact and forbids being paid. Whether a lap may perform the edit is NOT established — permission is not the question (A14), coordination with the sibling loop is.",
+      "reason": "measured, not unreadable: 1208.75/day views and 394.75/day engaged over 4 days (2026-08-04..2026-08-07), zero owner actions. Ad revenue is not the path — at this rate the YouTube Partner gate is 4000 days away on subscribers, and the sibling loop prices the far side of it in the ¥1,000s/month against a ¥200,000 target. What the ranking may use is the ADDRESSABLE reach and not this one: 2 of 4851 playbacks over 28d. No threshold is applied here — the two numbers are printed because a route was elected on the larger one while the smaller existed and had never been read. DELIVERY CEILING FIRST: 2 of 4851 playbacks over 28d reach a surface that renders the description (0.04%), so the ceiling on clicks to ANY url placed here is 2 per 28 days — independent of which url and of who the audience is. Everything below is about a link nobody arrives at. The surface PERMITS the paid product's link and FORBIDS the free demo's (github) — so route 1's entire payload cannot go here as hosted. That is the exact INVERSE of r/gamedev, which permits the free artifact and forbids being paid. A lap may NOT perform the edit; it is the sibling loop's act.",
       "reach": {
         "usable": true,
         "window_days": 4,
