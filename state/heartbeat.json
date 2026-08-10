@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T10:13:57.225Z",
+  "fetched_at": "2026-08-10T10:53:12.917Z",
   "overdue_factor": 2,
   "overdue_count": 0,
   "mark_stale_count": 0,
@@ -11,7 +11,7 @@
   "repair": null,
   "reconcile_before_judging": [],
   "registry_reconciled_at": "2026-08-10T09:35:00Z",
-  "registry_reconcile_age_minutes": 39,
+  "registry_reconcile_age_minutes": 78,
   "registry_stale": false,
   "reservations_resting_on_unverified_rows": [],
   "reconcile_instruction": null,
@@ -20,9 +20,9 @@
       "id": "eta-loop",
       "kind": "claude-trigger",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-10T10:05:00Z",
+      "last_seen": "2026-08-10T11:05:00Z",
       "last_seen_source": "state_file:state/continue.json",
-      "age_minutes": 9,
+      "age_minutes": -12,
       "status": "ok"
     },
     {
@@ -31,7 +31,7 @@
       "cadence_minutes": 360,
       "last_seen": "2026-08-10T06:16:41.408707Z",
       "last_seen_source": "registry:last_fired_at",
-      "age_minutes": 237,
+      "age_minutes": 277,
       "status": "ok"
     },
     {
@@ -49,43 +49,43 @@
       "cadence_minutes": 60,
       "last_seen": "2026-08-10T08:56:07.957332Z",
       "last_seen_source": "registry:last_fired_at",
-      "age_minutes": 78,
+      "age_minutes": 117,
       "status": "ok"
     },
     {
       "id": "usage-monitor",
       "kind": "github-actions",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-10T10:03:04.625Z",
+      "last_seen": "2026-08-10T10:48:46.304Z",
       "last_seen_source": "state_file:state/usage.json",
-      "age_minutes": 11,
+      "age_minutes": 4,
       "status": "ok"
     },
     {
       "id": "claude-usage-monitor",
       "kind": "github-actions",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-10T10:03:00.413Z",
+      "last_seen": "2026-08-10T10:48:40.055Z",
       "last_seen_source": "state_file:state/claude-usage.json",
-      "age_minutes": 11,
+      "age_minutes": 5,
       "status": "ok"
     },
     {
       "id": "gumroad-monitor",
       "kind": "github-actions",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-10T09:24:17.479Z",
+      "last_seen": "2026-08-10T10:46:01.329Z",
       "last_seen_source": "state_file:state/gumroad.json",
-      "age_minutes": 50,
+      "age_minutes": 7,
       "status": "ok"
     },
     {
       "id": "codex-loop",
       "kind": "github-actions",
       "cadence_minutes": 90,
-      "last_seen": "2026-08-10T09:02:43.288Z",
+      "last_seen": "2026-08-10T10:47:35.918Z",
       "last_seen_source": "state_file:state/codex-lane.json",
-      "age_minutes": 71,
+      "age_minutes": 6,
       "status": "ok"
     }
   ]
