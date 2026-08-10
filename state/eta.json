@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T04:52:01.698Z",
+  "fetched_at": "2026-08-10T05:12:30.251Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -32,11 +32,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.43
+      "days_unchanged": 0.44
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.43
+      "days_unchanged": 0.44
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -58,7 +58,7 @@
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-10T03:56:36.824Z",
+      "measured_at": "2026-08-10T05:08:44.614Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
       "revenue_window_days": 0.617,
@@ -75,14 +75,14 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-10T02:58:42.807Z",
+      "measured_at": "2026-08-10T05:10:02.856Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": false,
       "revenue_window_days": null,
       "revenue_readings": 1,
       "revenue_is_a_lower_bound": true,
       "games": 1,
-      "total_views": 0,
+      "total_views": 2,
       "idle_eta_days": null,
       "idle_eta_reason": "fewer than two dated readings, so there is no window to measure a rate over",
       "owner_actions_required": 0,
@@ -377,7 +377,7 @@
         "published_count": 10,
         "pages_found_by_search": 0,
         "verdict": "published_but_not_findable",
-        "measured_at": "2026-08-10T03:27:16.524Z",
+        "measured_at": "2026-08-10T04:52:03.255Z",
         "what_it_settles": "Not a shortage of pages. Ten serve 200 and a search index returned none of them, so page COUNT is not the binding term — the missing step is an inbound path from a surface that is already crawled. Building more pages buys nothing until that step exists.",
         "inbound_surface": {
           "verdict": "no_crawled_surface_found",
