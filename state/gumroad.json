@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T01:15:37.649Z",
+  "fetched_at": "2026-08-10T01:17:13.293Z",
   "total_sales_count": 0,
   "total_sales_usd_cents": 0,
   "product_count": 1,
@@ -17,7 +17,7 @@
       "sales_count": 0,
       "sales_usd_cents": 0,
       "file_info_shape": "object",
-      "file_count": 1,
+      "file_count": null,
       "file_info_keys": [
         "Size"
       ]
