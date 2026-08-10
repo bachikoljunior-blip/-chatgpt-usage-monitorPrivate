@@ -32,7 +32,15 @@
         "The seeded baseline row was transcribed by hand from state/itch.json rather than produced by a collector run, because ITCH_API_KEY is not available to a lap. If reading 2 never appears, that hand-seeded row is indistinguishable from a working series of length 1 — which is exactly why (a) demands strictly more than one."
       ],
       "falsified_if": "state/itch-history.json still holds exactly the seeded reading at the judge date — then the append-and-commit path is broken and the channel still cannot represent revenue, whatever the code says. OR channels[itch].idle_eta_days is a number while the series is flat — then a level was read as a trajectory and the goal will misreport, which is worse than ∞. What this does NOT claim: that anything sells. It claims only that if something sells there, the number can move.",
-      "outcome": null
+      "outcome": null,
+      "judging_note": {
+        "added_at": "2026-08-10T01:07:00Z",
+        "added_by": "a later lap, without touching claim, metric, baseline or dates",
+        "why": "This row's (a) reads a row count and names ONE cause for it staying at 1: itch-monitor.yml discarding an unstaged append, the recorded gumroad-history near-miss. Observed at 01:06Z: the collector has run twice since the seed (00:30:37Z and 01:01:19Z, both committed to main, state/itch.json updated both times) and state/itch-history.json is still at 1 row. On the metric as written that already looks like the discard, and it is not.",
+        "the_actual_mechanism": "scripts/revenue-rate.mjs appendReading dedupes: a reading whose total_sales_count and total_sales_usd_cents both equal the previous row is dropped unless HEARTBEAT_MS (6h) has elapsed. The page has 0 purchases, so every reading is identical to the seed, and the series is CORRECTLY expected to stay at 1 row until 2026-08-10T06:04Z or the first sale, whichever comes first.",
+        "how_to_tell_the_two_apart_on_the_judge_date": "If rows > 1, both the staging and the dedupe are fine and (a) passes. If rows == 1 AND the newest row is older than 6h before the latest state/itch.json fetched_at, THEN the append is being discarded and the original diagnosis stands. If rows == 1 and no 6h boundary has been crossed with a successful collection, the row count is evidence of nothing yet and the judge is not due — say so rather than passing or failing it.",
+        "what_this_does_not_do": "It does not weaken the row-count test. Strictly-more-than-one is still required and the hand-seeded row still cannot satisfy it. It only stops a true observation being read as the wrong cause, which is the failure mode this file exists to prevent rather than commit."
+      }
     },
     {
       "id": "2026-08-09.a-rule-with-three-requirements-was-checked-for-one",
@@ -67,8 +75,12 @@
         "measured_at": "2026-08-09T21:57:00Z",
         "venues_surveyed": 3,
         "venues_with_a_revenue_path": 2,
-        "open_but_no_revenue_path": ["r/gamedev"],
-        "binding_venues_without_a_revenue_path": ["r/gamedev"],
+        "open_but_no_revenue_path": [
+          "r/gamedev"
+        ],
+        "binding_venues_without_a_revenue_path": [
+          "r/gamedev"
+        ],
         "laps_on_this_route_before_anyone_asked_whether_the_venue_could_pay": 5,
         "owner_requests_pending_both_ways": [
           "2026-08-09.reddit-account-create",
@@ -93,8 +105,13 @@
       "baseline": {
         "measured_at": "2026-08-09T21:09:00Z",
         "elected": "route_1_post_where_buyers_gather",
-        "aligned": ["honest_post_where_buyers_gather"],
-        "on_abandoned_route": ["high_intent_tool_site", "findable_surface_at_scale"],
+        "aligned": [
+          "honest_post_where_buyers_gather"
+        ],
+        "on_abandoned_route": [
+          "high_intent_tool_site",
+          "findable_surface_at_scale"
+        ],
         "laps_spent_on_route_2_work_before_this": "the last three laps: a custom-domain distribution surface, the findability instrument's control, and the inbound-surface premise. All three are route 2.",
         "prerequisite_streak_at_election": "3 of 3, which is why this lane was open at all"
       },
@@ -173,9 +190,12 @@
         "judged_by": "eta-loop",
         "measured": {
           "source": "scripts/pacing.mjs --id=eta-loop, run at the head of this lap; usage fetched 2026-08-09T23:48:44Z from origin/main",
-          "reserved_for_others_percent": 21.0,
+          "reserved_for_others_percent": 21,
           "reserved_derived_before_cap_percent": 67.43,
-          "automations_named_in_the_reservation": ["youtube-loop", "cookie-daily"],
+          "automations_named_in_the_reservation": [
+            "youtube-loop",
+            "cookie-daily"
+          ],
           "revenue_loop_present_in_the_reservation": false
         },
         "verdict": "CORRECT ON ITS OWN TERM, AND THE METRIC MOVED THE OTHER WAY",
@@ -861,7 +881,12 @@
         "measured_at": "2026-08-09T21:24:00Z",
         "prerequisite_term_before": "STANDING (prose only; prerequisite_term absent)",
         "prerequisite_term_after": "account",
-        "binding_causes_derived": { "postable": 0, "venue_rule": 1, "venue_unsettled": 1, "account": 1 },
+        "binding_causes_derived": {
+          "postable": 0,
+          "venue_rule": 1,
+          "venue_unsettled": 1,
+          "account": 1
+        },
         "venues_surveyed": 3,
         "lap_claims_rows_at_baseline": 4,
         "laps_that_had_named_standing_as_the_next_fork": 1
@@ -933,7 +958,9 @@
       "baseline": {
         "measured_at": "2026-08-09T22:30:00Z",
         "prerequisite_term_before": "account",
-        "binding_venues_without_a_revenue_path_before": ["r/gamedev"],
+        "binding_venues_without_a_revenue_path_before": [
+          "r/gamedev"
+        ],
         "venue_readiness_exit_code_before_the_check_was_added": 0,
         "venue_readiness_exit_code_with_the_check_and_the_old_term": 1,
         "laps_the_correction_sat_in_the_file_with_no_reader": 2,
@@ -1004,6 +1031,31 @@
         "One lap earlier: the addressability measurement that established the surface permits the paid link and forbids the demo. This request rests on it entirely."
       ],
       "falsified_if": "No trace of the file on their side by the judge date — no reply, no reference, no deletion, no footer change. That is the specific way a file written where no reader is PROVEN fails, and it is the failure this repository is named after, so it must be judged as a real miss rather than explained away as 'they were busy'. If it is falsified, the honest conclusion is that a file in a resident session's repository is not a channel, and the next attempt should use a mechanism whose read is observable — not another document. WHAT THIS DOES NOT CLAIM: that the sibling should say yes. A refusal is a good outcome and the request says so in writing: their audience is 25-49 Japanese office workers and the product is a USD 25 English-market developer kit, so zero clicks is a live possibility and was stated to them up front rather than discovered later.",
+      "outcome": null
+    },
+    {
+      "id": "2026-08-10.the-refutation-reaches-the-chooser",
+      "made_at": "2026-08-10T01:05:00Z",
+      "claim": "The handoff rated an HTML build on the kit's live itch page THE BIG ONE — strongest move on the board, zero owner actions — on the premise that itch permits the free demo and the paid kit on ONE page. itch's own docs refute it: browser play and an enforced minimum are mutually exclusive on a single project, so that act would have made the USD 25 kit a free download with no way to un-give it. The prediction is not that the finding is right; it is quoted and the check is green on live state. It is that this repository's most-repeated failure — a correction that reaches only the surface that already has a reader — is beaten HERE, where the refuted claim lives in the one file that is rewritten every lap (state/continue.json) while the refutation lives in two files that are not. Four consecutive laps have found a finding written next to the thing it did not reach. A fifth would mean the pattern is structural rather than a run of accidents.",
+      "metric": "Read from origin/main, not from any lap's account of itself. (a) Whether any lap after 2026-08-10T01:05Z proposes, gates, or performs putting a browser-playable build on a PRICED itch project — check state/lap-claims.json mechanisms and state/continue.json for the ride-along framing reappearing. (b) Whether state/constraints.json itch_browser_play_voids_the_minimum_price is cited by anything that chooses work — an eta-gate mechanism, a candidate, or a zerobase option — as opposed to sitting unread. (c) node scripts/check-itch-paywall.mjs exit status on origin/main, and whether state/itch.json still carries a string `kind` on every game. (d) Whether the surviving route named in what_survives (a SECOND, free, browser-playable itch page, costing one owner action) is ever ranked — adopted or rejected on its merits both count; never appearing does not.",
+      "baseline": {
+        "measured_at": "2026-08-10T01:05:00Z",
+        "itch_projects": 1,
+        "itch_kind": "default",
+        "itch_min_price_cents": 2500,
+        "paywall_check_exit": 0,
+        "laps_that_have_cited_the_new_constraint": 0,
+        "consecutive_laps_finding_an_unreached_correction": 4,
+        "the_ride_along_was_still_the_top_recommendation_at": "state/continue.json what_the_next_lap_should_probably_do.THE_BIG_ONE_AND_ITS_TRAP"
+      },
+      "judge_on": "2026-08-13",
+      "judge_deadline": "2026-08-20",
+      "concurrent_changes": [
+        "Same lap: read-itch.mjs gained kind/classification/can_be_bought/has_demo, and scripts/check-itch-paywall.mjs was added and wired into pulse.yml and the suite. These are the machine half of the same single change and are not separable from it — nor should they be.",
+        "Same lap, deliberately NOT done: codex/INBOX.md was left carrying task 2026-08-10.a. The open question about demo uploads on a paid downloadable project is unanswered and was not commissioned, because .a is the decisive route question and the lane holds one task.",
+        "Not this lap and still in flight: the route change onto measured reach, and the request to the sibling loop. If the itch page ever converts, none of these can be separated."
+      ],
+      "falsified_if": "A later lap re-derives the ride-along as a fresh idea, or performs it. Also falsified, more quietly, if (b) and (d) both stay empty through the judge date: a constraint nothing cites and a surviving route nothing ranks is a note, and this repository already knows what notes are worth. WHAT THIS DOES NOT CLAIM: that the demo should get its own page. That costs an owner action and RUNBOOK 6 gate 3 fails today — every channel reports ∞, so no ETA reduction stands behind the ask. The claim is only that the option must be visible to whoever chooses, and that the option that would have destroyed the product must not be.",
       "outcome": null
     }
   ]
