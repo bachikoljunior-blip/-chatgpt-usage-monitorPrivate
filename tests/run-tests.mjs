@@ -37,7 +37,12 @@ import {
 } from "../scripts/venue-readiness.mjs";
 import { funnelCheck } from "../scripts/funnel-check.mjs";
 import { itchPaywallCheck } from "../scripts/check-itch-paywall.mjs";
-import { gateThreeState, ownerRequestGate } from "../scripts/owner-request-gate.mjs";
+import {
+  gateThreeState,
+  ownerRequestGate,
+  evaluateSuccessTest,
+  resolvePath,
+} from "../scripts/owner-request-gate.mjs";
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import { classifyLifecycle } from "../scripts/probe-gumroad-lifecycle.mjs";
 import { judge as judgeSpark, sparkModelCandidate, sparkWindow } from "../scripts/spark-model.mjs";
@@ -3468,6 +3473,88 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     typeof live.structurally_closed === "boolean" && Array.isArray(live.channels_with_finite_eta),
     "the live board could not be evaluated against gate 3 at all",
   );
+
+  // --- success tests: an owner action that happened must not read as pending ----
+  //
+  // 2026-08-09.gumroad-cover-upload was performed and recorded as outstanding for
+  // a day, because its success_test named two fields no collector gathered. The
+  // whole point of these assertions is that "cannot be evaluated" stays a distinct
+  // and louder answer than "not done yet".
+  const GUM = "state/gumroad.json";
+  const docWith = (product) => ({ [GUM]: { products: [product] } });
+  const coverTest = {
+    any_of: [
+      { state_file: GUM, path: "products[short_url=https://x/l/y].cover_count", predicate: "gte", value: 1 },
+      { state_file: GUM, path: "products[short_url=https://x/l/y].thumbnail_url_present", predicate: "is_true" },
+    ],
+  };
+
+  assert(
+    evaluateSuccessTest(coverTest, docWith({ short_url: "https://x/l/y", cover_count: 1 })).verdict ===
+      "satisfied",
+    "a cover that is present did not read as satisfied",
+  );
+  assert(
+    evaluateSuccessTest(coverTest, docWith({ short_url: "https://x/l/y", cover_count: 0, thumbnail_url_present: false }))
+      .verdict === "not_yet",
+    "a collected-but-absent cover did not read as not_yet",
+  );
+  // THE REGRESSION THAT MATTERS. Fields absent = the collector never gathered
+  // them. If this ever returns not_yet, the bug is back and a performed owner
+  // action is being recorded as ignored.
+  assert(
+    evaluateSuccessTest(coverTest, docWith({ short_url: "https://x/l/y" })).verdict === "unevaluable",
+    "an uncollected field read as 'not done yet' instead of 'cannot be evaluated'",
+  );
+  assert(
+    evaluateSuccessTest(coverTest, { [GUM]: null }).verdict === "unevaluable",
+    "an unreadable state file did not read as unevaluable",
+  );
+  // any_of means one readable pass wins. A second broken clause must not undo a
+  // measurement that already showed the action was performed.
+  assert(
+    evaluateSuccessTest(
+      {
+        any_of: [
+          { state_file: GUM, path: "products[short_url=https://x/l/y].nope", predicate: "is_true" },
+          { state_file: GUM, path: "products[short_url=https://x/l/y].cover_count", predicate: "gte", value: 1 },
+        ],
+      },
+      docWith({ short_url: "https://x/l/y", cover_count: 2 }),
+    ).verdict === "satisfied",
+    "one broken clause suppressed a clause that passed",
+  );
+  assert(
+    evaluateSuccessTest(undefined, {}).verdict === "undeclared",
+    "a request with no machine-readable test did not read as undeclared",
+  );
+  // The selector value is a URL, and the first implementation split the path on
+  // every dot and tore it apart. Dots inside brackets belong to the value.
+  const urlPath = "products[short_url=https://bachiko4.gumroad.com/l/fbozt].cover_count";
+  const resolved = resolvePath(
+    { products: [{ short_url: "https://bachiko4.gumroad.com/l/fbozt", cover_count: 3 }] },
+    urlPath,
+  );
+  assert(resolved.found === true && resolved.value === 3, "a dotted URL inside a selector did not resolve");
+  // Selecting by field rather than by index: a second product must not be able to
+  // answer for the first.
+  const twoProducts = {
+    products: [
+      { short_url: "https://other/l/aaa", cover_count: 9 },
+      { short_url: "https://bachiko4.gumroad.com/l/fbozt", cover_count: 0 },
+    ],
+  };
+  assert(resolvePath(twoProducts, urlPath).value === 0, "the selector matched the wrong product row");
+
+  // And the live board: every pending request must carry a machine-readable test.
+  // Prose is not a test — nothing reads it, which is how this defect happened.
+  const ownerNow = JSON.parse(await readFile(join(root, "state/owner-requests.json"), "utf8"));
+  for (const r of (ownerNow.requests ?? []).filter((x) => x.status !== "done")) {
+    assert(
+      Array.isArray(r.success_test_machine?.any_of) && r.success_test_machine.any_of.length > 0,
+      `pending owner request ${r.id} has no machine-readable success_test`,
+    );
+  }
 }
 
 console.log("All usage monitor tests passed.");

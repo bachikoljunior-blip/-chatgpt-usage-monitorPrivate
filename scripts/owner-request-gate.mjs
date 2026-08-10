@@ -97,6 +97,124 @@ export function ownerRequestGate(request, channels) {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Whether a request that SHIPPED has been performed.
+//
+// Everything above judges admissibility — should this ask go out. Nothing judged
+// satisfaction, and on 2026-08-10 that cost a completed owner action.
+//
+// 2026-08-09.gumroad-cover-upload wrote its success_test with unusual care:
+// "state/gumroad.json returns covers >= 1, or thumbnail_url non-null". Both
+// fields were prose. read-gumroad.mjs collected NEITHER, and still does not
+// collect thumbnail_url under that name. So the test was unevaluable the day it
+// was written, and the owner had ALREADY DONE IT — the live product page serves
+// covers[0], a 1280x720 PNG, read this lap from the page's own data-page JSON.
+// At judge_by 2026-08-16 the request would have failed open and been recorded as
+// the owner not acting.
+//
+// The instance is cheap to fix and the class is not. RUNBOOK 6 rations owner
+// requests partly on whether earlier ones worked, so a performed action recorded
+// as ignored makes every future ask look dearer than it is — and the error is
+// invisible, because "pending" is exactly what an unread test looks like.
+//
+// Hence three outcomes, not two. UNEVALUABLE IS NOT FALSE. A test naming a path
+// nothing collects is a broken instrument, and it must be louder than a test that
+// simply has not passed yet — the false negative here is silent by construction,
+// which is the property that let it survive.
+
+// Dotted path with an optional selector on a list element:
+//   products[short_url=https://x/l/y].cover_count
+// One syntax rather than two. A positional index would have read products[0],
+// which is right until the day a second product exists and then silently reports
+// the wrong row.
+export function resolvePath(doc, path) {
+  // Split on dots OUTSIDE brackets. The first version split on every dot, and the
+  // selector value here is a URL — so it tore
+  // products[short_url=https://bachiko4.gumroad.com/l/fbozt] into five segments and
+  // reported "not present", which is the unevaluable verdict for the wrong reason.
+  // Caught by running it rather than by reading it.
+  const segments = [];
+  let buf = "";
+  let depth = 0;
+  for (const ch of String(path)) {
+    if (ch === "[") depth += 1;
+    else if (ch === "]") depth -= 1;
+    if (ch === "." && depth === 0) {
+      segments.push(buf);
+      buf = "";
+      continue;
+    }
+    buf += ch;
+  }
+  segments.push(buf);
+
+  let node = doc;
+  for (const raw of segments) {
+    const m = /^([A-Za-z0-9_]+)\[([^=\]]+)=(.*)\]$/.exec(raw);
+    if (m) {
+      const [, list, field, want] = m;
+      const arr = node?.[list];
+      if (!Array.isArray(arr)) return { found: false, why: `${list} is not a list` };
+      const hit = arr.find((e) => String(e?.[field]) === want);
+      if (hit === undefined) return { found: false, why: `no ${list} entry with ${field}=${want}` };
+      node = hit;
+      continue;
+    }
+    if (node === null || typeof node !== "object" || !(raw in node)) {
+      return { found: false, why: `${raw} is not present` };
+    }
+    node = node[raw];
+  }
+  return { found: true, value: node };
+}
+
+const PREDICATES = {
+  gte: (v, want) => typeof v === "number" && v >= want,
+  is_true: (v) => v === true,
+  non_null: (v) => v !== null && v !== undefined,
+  eq: (v, want) => v === want,
+};
+
+// A clause reads one path in one state document. `docs` maps state path -> parsed
+// JSON, or a thrown-shaped null when the file could not be read at all.
+export function evaluateClause(clause, docs) {
+  const file = clause?.state_file;
+  const doc = docs?.[file];
+  if (doc === undefined || doc === null) {
+    return { verdict: "unevaluable", detail: `${file} could not be read` };
+  }
+  const pred = PREDICATES[clause?.predicate];
+  if (!pred) return { verdict: "unevaluable", detail: `unknown predicate ${clause?.predicate}` };
+  const got = resolvePath(doc, clause.path);
+  if (!got.found) {
+    // The defect this whole section exists for: the field is not collected, so the
+    // condition can never be true no matter what the owner does.
+    return { verdict: "unevaluable", detail: `${file}: ${clause.path} — ${got.why}` };
+  }
+  return {
+    verdict: pred(got.value, clause.value) ? "satisfied" : "not_yet",
+    detail: `${file}: ${clause.path} = ${JSON.stringify(got.value)}`,
+  };
+}
+
+// any_of, because the cover request accepts either covers or thumbnail_url and
+// collapsing them would decide the test by whichever field this file happened to
+// look at. Satisfaction wins over unevaluable: if ONE readable clause passes, the
+// action was performed, and a second broken clause does not undo that.
+export function evaluateSuccessTest(test, docs) {
+  const clauses = Array.isArray(test?.any_of) ? test.any_of : null;
+  if (!clauses || clauses.length === 0) {
+    return { verdict: "undeclared", detail: "no machine-readable success_test", clauses: [] };
+  }
+  const results = clauses.map((c) => ({ clause: c, ...evaluateClause(c, docs) }));
+  const verdict = results.some((r) => r.verdict === "satisfied")
+    ? "satisfied"
+    : results.some((r) => r.verdict === "not_yet")
+      ? "not_yet"
+      : "unevaluable";
+  return { verdict, clauses: results };
+}
+
 async function readState(rel, local) {
   if (local) return readFile(resolve(REPO, rel), "utf8");
   const { stdout } = await run("git", ["show", `origin/main:${rel}`], {
@@ -116,13 +234,56 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   console.log(`  ${three.reason}`);
 
   const pending = (owner.requests ?? []).filter((r) => r.status !== "done");
+
+  // Read every state file any pending success_test names. Unreadable files stay
+  // null so evaluateClause reports unevaluable rather than throwing — a missing
+  // state file is one of the ways a test silently cannot pass.
+  const wanted = new Set(
+    pending.flatMap((r) => (r.success_test_machine?.any_of ?? []).map((c) => c.state_file)),
+  );
+  const docs = {};
+  for (const rel of wanted) {
+    try {
+      docs[rel] = JSON.parse(await readState(rel, local));
+    } catch {
+      docs[rel] = null;
+    }
+  }
+
+  let unevaluable = 0;
   for (const r of pending) {
     const v = ownerRequestGate(r, eta.channels);
     console.log(`${v.id}: admissible=${v.admissible}`);
     if (v.undeclared.length > 0) console.log(`  undeclared: ${v.undeclared.join("; ")}`);
     if (v.declared_failing.length > 0) console.log(`  failing: ${v.declared_failing.join("; ")}`);
+
+    const s = evaluateSuccessTest(r.success_test_machine, docs);
+    console.log(`  success_test: ${s.verdict}`);
+    for (const c of s.clauses) console.log(`    ${c.verdict}: ${c.detail}`);
+    if (s.verdict === "satisfied") {
+      console.log(`    ^ PERFORMED. Mark status done — a pending row here is now wrong.`);
+    }
+    if (s.verdict === "unevaluable") unevaluable += 1;
+    if (s.verdict === "undeclared") {
+      console.log(
+        "    ^ no machine-readable test. Prose success_test is not a test: nothing reads it.",
+      );
+    }
   }
   if (pending.length === 0) console.log("no pending owner requests");
+
+  // The one condition worth going red on. Gate 3's closure is the world's fault and
+  // is reported quietly (see below); an unevaluable success test is OUR fault, is
+  // always fixable by the loop, and hides a completed owner action while it lasts.
+  if (unevaluable > 0) {
+    console.error(
+      `\n${unevaluable} pending owner request(s) carry a success_test that CANNOT BE EVALUATED. ` +
+        "That is not 'not done yet' — it is a test that can never pass, so the request will " +
+        "fail open at judge_by and be recorded as the owner not acting. Collect the field or " +
+        "point the test at an instrument that exists.",
+    );
+    process.exit(1);
+  }
 
   // Deliberately exit 0 while the closure is structural. Red here would mean "the
   // world has not produced revenue yet", which no lap can fix by working harder and

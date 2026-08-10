@@ -106,6 +106,43 @@ try {
       p.file_info && typeof p.file_info === "object" && !Array.isArray(p.file_info)
         ? Object.keys(p.file_info)
         : null,
+    // Whether the listing shows a picture.
+    //
+    // 2026-08-10: owner request 2026-08-09.gumroad-cover-upload states its
+    // success_test as "state/gumroad.json returns covers >= 1, or thumbnail_url
+    // non-null". NEITHER FIELD WAS EVER COLLECTED. The test could not pass on the
+    // day it was written, so at judge_by 2026-08-16 it would have failed open and
+    // been recorded as the owner not acting — while the live product page serves
+    // covers[0], a 1280x720 PNG, which is exactly what was asked for.
+    //
+    // That miscount is expensive out of proportion to the field: RUNBOOK 6 rations
+    // owner requests on whether earlier ones worked, so a performed action recorded
+    // as ignored makes every future ask look less affordable than it is.
+    //
+    // Counts only, never URLs. A cover URL is a public-files link and state/ takes
+    // the narrowest thing that answers the question. "Is there a picture" is
+    // answered by a number.
+    cover_count: Array.isArray(p.covers) ? p.covers.length : null,
+    // Distinct from cover_count on purpose. Gumroad has served a product with
+    // covers populated and thumbnail_url null in the same payload, and the success
+    // test above accepts EITHER, so collapsing them would decide the test by which
+    // field happened to be chosen here.
+    thumbnail_url_present:
+      typeof p.thumbnail_url === "string" && p.thumbnail_url.length > 0,
+    main_cover_id_present:
+      typeof p.main_cover_id === "string" && p.main_cover_id.length > 0,
+    // Same reasoning as file_info_shape: if /v2/products does not serve covers at
+    // all, that is a different fact from "serves covers, product has none", and
+    // the two must not collapse into one null. Measured, not assumed — this lap
+    // read covers from the PUBLIC page, not from this endpoint, and whether the
+    // API carries the field is settled by the next collection rather than here.
+    covers_field_shape: Array.isArray(p.covers)
+      ? "array"
+      : p.covers === undefined
+        ? "absent"
+        : p.covers === null
+          ? "null"
+          : typeof p.covers,
   }));
 
   payload = {

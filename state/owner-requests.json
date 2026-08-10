@@ -174,7 +174,23 @@
         "not_reducible_further": "v2 API に cover 経路が無いことを実測済み（上記）。だから自動化で置き換えられない。画像そのものはこちらで生成・コミット済みなので、残りは1操作。",
         "why_a_second_pending_request_is_acceptable": "2026-08-09.itch-page-for-the-kit と競合しない。別のプラットフォーム・別の画面・2分。itch の依頼は10分で、そちらを薄めるものではない。"
       },
-      "source": "state/constraints.json listing_has_no_cover_image（api_capability_measured に測定の全文）"
+      "source": "state/constraints.json listing_has_no_cover_image（api_capability_measured に測定の全文）",
+      "success_test_machine": {
+        "note": "The prose success_test above named covers and thumbnail_url, and read-gumroad.mjs collected neither, so it could never pass. This is the same sentence as a path a machine resolves. scripts/owner-request-gate.mjs evaluates it and goes red if it becomes unresolvable again.",
+        "any_of": [
+          {
+            "state_file": "state/gumroad.json",
+            "path": "products[short_url=https://bachiko4.gumroad.com/l/fbozt].cover_count",
+            "predicate": "gte",
+            "value": 1
+          },
+          {
+            "state_file": "state/gumroad.json",
+            "path": "products[short_url=https://bachiko4.gumroad.com/l/fbozt].thumbnail_url_present",
+            "predicate": "is_true"
+          }
+        ]
+      }
     },
     {
       "id": "2026-08-09.reddit-account-username",

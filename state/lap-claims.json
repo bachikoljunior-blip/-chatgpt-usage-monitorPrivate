@@ -745,6 +745,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T03:51:32.211Z",
+      "candidate": "listing_has_no_cover_image",
+      "kind": "prerequisite",
+      "mechanism": "An owner action that was ACTUALLY PERFORMED is invisible to this loop. The live listing serves covers[0] 1280x720 PNG (read from the public product page's data-page JSON this lap), but owner request 2026-08-09.gumroad-cover-upload names its success_test as 'state/gumroad.json returns covers>=1 or thumbnail_url non-null' and read-gumroad.mjs collects NEITHER field. The test was unevaluable the day it was written, so at judge_by 2026-08-16 it would have failed open and been recorded as the owner not acting. That miscounts the only evidence RUNBOOK 6 gate 1 has for whether owner asks work at all, and it keeps candidate listing_has_no_cover_image on the actionable board competing for laps against real work. No days claim: this does not itself move a channel. It stops the board being wrong about what is outstanding.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
