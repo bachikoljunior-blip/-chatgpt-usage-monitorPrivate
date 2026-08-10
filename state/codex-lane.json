@@ -28,35 +28,6 @@
     "read_by": "scripts/lane-authorship.mjs",
     "erased_and_restored": "WRITTEN AT 06:05Z INTO THIS FILE, ERASED BY THE 06:15:49Z LANE RUN, RESTORED AT 06:35Z. codex-inbox.yml regenerates this file wholesale on every run, so the finding survived fourteen minutes and then existed only in git history. scripts/record-lane-run.mjs now carries DURABLE_KEYS forward and tests/run-tests.mjs goes red when that carry-forward is removed. Kept as part of the record because the mistake is more instructive than the measurement: a machine-regenerated file is a fine place for a machine output and a terrible place for a conclusion, and once both are JSON they look identical."
   },
-  "schema_version": 1,
-  "status": "ok",
-  "checked_at": "2026-08-10T06:55:31.557Z",
-  "ran": true,
-  "task_id": "2026-08-10.m",
-  "reason": "task 2026-08-10.m is live and unmarked (skipped 10: 2026-08-10.c: already done: codex/outbox/2026-08-10.c.md exists; 2026-08-10.d: already done: codex/outbox/2026-08-10.d.md exists; 2026-08-10.e: already done: codex/outbox/2026-08-10.e.md exists; 2026-08-10.f: already done: codex/outbox/2026-08-10.f.md exists; 2026-08-10.g: already done: codex/outbox/2026-08-10.g.md exists; 2026-08-10.h: already done: codex/outbox/2026-08-10.h.md exists; 2026-08-10.i: already done: codex/outbox/2026-08-10.i.md exists; 2026-08-10.j: already done: codex/outbox/2026-08-10.j.md exists; 2026-08-10.k: already done: codex/outbox/2026-08-10.k.md exists; 2026-08-10.l: already done: codex/outbox/2026-08-10.l.md exists)",
-  "model_key": "spark",
-  "model": "gpt-5.3-codex-spark",
-  "runs": [
-    {
-      "task_id": "2026-08-10.m",
-      "model_key": "spark",
-      "model": "gpt-5.3-codex-spark",
-      "at": "2026-08-10T06:55:31.557Z"
-    },
-    {
-      "task_id": "2026-08-10.l",
-      "model_key": "account_default",
-      "model": "default",
-      "at": "2026-08-10T06:22:58.598Z"
-    },
-    {
-      "task_id": "2026-08-10.k",
-      "model_key": "spark",
-      "model": "gpt-5.3-codex-spark",
-      "at": "2026-08-10T06:15:49.487Z"
-    }
-  ],
-  "note": "Written by every run of .github/workflows/codex-inbox.yml, including the runs that skip because the task already carries its done marker. state/automations.json points codex-loop's liveness here for that reason.",
   "answers_with_no_ledger_run": [
     {
       "task_id": "2026-08-10.n",
@@ -78,36 +49,39 @@
       "the_check_did_its_job": "This surfaced as a red tests/run-tests.mjs the moment the answer landed, before any lap read the numbers and acted on them. That is the ledger rule working as intended and is recorded as such."
     }
   ],
-  "derived_artifacts": [
+  "schema_version": 1,
+  "status": "ok",
+  "checked_at": "2026-08-10T09:02:43.288Z",
+  "ran": true,
+  "task_id": "2026-08-10.p",
+  "reason": "task 2026-08-10.p is live and unmarked (skipped 13: 2026-08-10.c: already done: codex/outbox/2026-08-10.c.md exists; 2026-08-10.d: already done: codex/outbox/2026-08-10.d.md exists; 2026-08-10.e: already done: codex/outbox/2026-08-10.e.md exists; 2026-08-10.f: already done: codex/outbox/2026-08-10.f.md exists; 2026-08-10.g: already done: codex/outbox/2026-08-10.g.md exists; 2026-08-10.h: already done: codex/outbox/2026-08-10.h.md exists; 2026-08-10.i: already done: codex/outbox/2026-08-10.i.md exists; 2026-08-10.j: already done: codex/outbox/2026-08-10.j.md exists; 2026-08-10.k: already done: codex/outbox/2026-08-10.k.md exists; 2026-08-10.l: already done: codex/outbox/2026-08-10.l.md exists; 2026-08-10.m: already done: codex/outbox/2026-08-10.m.md exists; 2026-08-10.n: already done: codex/outbox/2026-08-10.n.md exists; 2026-08-10.o: already done: codex/outbox/2026-08-10.o.md exists)",
+  "model_key": "spark",
+  "model": "gpt-5.3-codex-spark",
+  "runs": [
     {
-      "path": "assets/free-demo/index.html",
-      "derived_from": "codex/outbox/2026-08-09.q.md",
-      "verbatim_fraction": 0.94,
-      "measured_at": "2026-08-10T07:55:00Z",
-      "effective_author": "account_default",
-      "how_established": "2026-08-09.q ran before the dispatch began naming a model (scripts/spark-model.mjs landed 2026-08-10 ~04:51Z; state/usage.json shows codex_bengalfox at 0% used until then). `codex exec` with no --model runs the account default, so every answer before that hour is account_default's. Round 4's pairing block records the same key, established independently.",
-      "note": "This is the LIVE artifact and it is 94% verbatim from the lane answer it was installed from — 166 of 176 substantive lines. It is a transplant, not a rewrite, which is what 'installed at assets/free-demo/index.html' already said; the number puts a floor under it."
+      "task_id": "2026-08-10.p",
+      "model_key": "spark",
+      "model": "gpt-5.3-codex-spark",
+      "at": "2026-08-10T09:02:43.288Z"
     },
     {
-      "path": "codex/outbox/2026-08-10.j.md",
-      "derived_from": "codex/outbox/2026-08-10.h.md",
-      "verbatim_fraction": 0.98,
-      "measured_at": "2026-08-10T07:55:00Z",
-      "effective_author": "unestablished",
-      "how_established": null,
-      "why_unestablished": "490 of .j's 498 substantive lines are .h's, so .j's author is .h's author. .h predates state/codex-lane.json runs[] — the ledger's earliest entry is 2026-08-10.k — so no record says which model ran it. The register recorded .j as authored_by spark; spark ran the task and wrote roughly eight lines of the file.",
-      "what_this_costs": "Task 2026-08-10.l — account_default reviewing .j — was filed as a non-author pairing and cannot be confirmed as one. It is one of the three readings the blind_reviewer_finding rests on. NOT re-adjudicated here: .l returned 見覚え ない and found a real defect, and .k plus the .i control are untouched by this. The next lap should decide what the 2x2 still supports, with this measurement in hand and a fresh context."
+      "task_id": "2026-08-10.m",
+      "model_key": "spark",
+      "model": "gpt-5.3-codex-spark",
+      "at": "2026-08-10T06:55:31.557Z"
     },
     {
-      "path": "codex/outbox/2026-08-10.n.md",
-      "derived_from": "codex/outbox/2026-08-10.j.md",
-      "verbatim_fraction": 0.99,
-      "measured_at": "2026-08-10T07:55:00Z",
-      "effective_author": "unestablished",
-      "how_established": null,
-      "why_unestablished": "495 of 498 substantive lines are .j's, and .j's are .h's. The chain roots in .h, which has no ledger run. Independently, .n itself has no ledger run (see answers_with_no_ledger_run).",
-      "what_this_already_did": "Task 2026-08-10.q — spark reviewing .n, filed one lap earlier as a clean non-author pairing — was WITHDRAWN before it ran. Rule 4 refused it while the slot was still unspent, which is the difference between this check and roundSelfReviewed(): one fires on the task, the other on the answer, one round later."
+      "task_id": "2026-08-10.l",
+      "model_key": "account_default",
+      "model": "default",
+      "at": "2026-08-10T06:22:58.598Z"
+    },
+    {
+      "task_id": "2026-08-10.k",
+      "model_key": "spark",
+      "model": "gpt-5.3-codex-spark",
+      "at": "2026-08-10T06:15:49.487Z"
     }
   ],
-  "what_the_lineage_measurement_found": "Every rebuild this lane has produced is the previous version with a few lines changed. .h -> .j is 98%, .j -> .n is 99%, and all three carry the same two dead statements character for character (state.runDust += 0; and state.totalTouched += 0;) while the independently-written live artifact carries neither. The register was treating them as separate artifacts by separate authors on the strength of the model: header in the task that commissioned each one. A task with attach: hands the model the previous version, so what the running model authors is the DIFF."
+  "note": "Written by every run of .github/workflows/codex-inbox.yml, including the runs that skip because the task already carries its done marker. state/automations.json points codex-loop's liveness here for that reason."
 }
