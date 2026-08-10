@@ -1,13 +1,6 @@
 {
   "schema_version": 1,
-  "open": {
-    "eta-loop": {
-      "at": "2026-08-10T01:21:57.865Z",
-      "usage_fetched_at": "2026-08-10T01:20:55.144Z",
-      "remaining_percent": 28,
-      "resets_at": "2026-08-14T22:00:00.347Z"
-    }
-  },
+  "open": {},
   "samples": [
     {
       "id": "eta-loop",
@@ -731,6 +724,24 @@
       "observed_delta_percent": 0,
       "usable": false,
       "reason": "below_measurement_resolution"
+    },
+    {
+      "id": "eta-loop",
+      "started_at": "2026-08-10T01:21:57.865Z",
+      "ended_at": "2026-08-10T01:36:19.739Z",
+      "cost_percent": null,
+      "observed_delta_percent": 0,
+      "usable": false,
+      "reason": "below_measurement_resolution"
+    },
+    {
+      "id": "eta-loop",
+      "started_at": "2026-08-10T01:36:55.203Z",
+      "ended_at": "2026-08-10T01:41:28.813Z",
+      "cost_percent": null,
+      "observed_delta_percent": 0,
+      "usable": false,
+      "reason": "no_new_usage_reading"
     }
   ],
   "pending_verification": {
