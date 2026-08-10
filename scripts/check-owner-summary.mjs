@@ -26,19 +26,45 @@
 //   * no jargon from the curated list below
 //   * no file paths, no snake_case identifiers, no bare hashes
 //
-// THERE IS NO UPPER LENGTH LIMIT, AND THERE USED TO BE.
+// THERE IS NO UPPER LENGTH LIMIT, AND REMOVING JARGON MAKES THE TEXT LONGER.
 //
-// The first version of this file capped the summary at 700 characters and told laps
-// the detail belonged in the other fields. The owner corrected it the same day:
-// 用語を使わないのと情報量を落とすは別だから。情報量落とすな. Dropping jargon and
-// dropping content are different operations, and a ceiling makes a lap perform the
-// second while believing it did the first — the cheapest way to satisfy a length cap
-// is to delete a finding, and the findings are the reason anyone is reading.
+// This file was wrong twice on the same day and the second correction is the one
+// that matters.
 //
-// So the rule is TRANSLATION, not compression. Every fact that would have gone into
-// the technical fields belongs here too, in words that carry outside this loop. If
-// that runs long, it runs long. A reader can stop; a reader cannot recover a
-// measurement nobody wrote down.
+// First version: a 700-character cap, and laps told the detail belonged in the
+// technical fields. Owner: 用語を使わないのと情報量を落とすは別だから。情報量落とすな.
+// A cap is satisfied most cheaply by deleting a finding, and the findings are why
+// anyone reads.
+//
+// Second version removed the cap and still got it wrong, because the author obeyed
+// the word ban by SUBSTITUTION — 候補 became あてになりそうな相手, which names less
+// than the word it replaced. Owner:
+//
+//   用語使わないって、今が伝わるようにしようとしてるのになんで意味わからん例えで
+//   言うんだよ。ちゃんと説明しろよ。普通専門用語なんて既知の省略なんだから
+//   用語使わないで説明するなら複雑めで長くなるだろ
+//
+// That is the governing model of this whole file, and it is correct. A technical
+// term is an ABBREVIATION of something the speaker and listener already share. Take
+// the abbreviation away from a reader who does not share it and you owe them the
+// expansion — the thing the word stood for, written out. Expansions are longer and
+// more complicated than the words they replace. That is what expansion IS.
+//
+// So the failure mode is not length. It is a vague synonym standing where an
+// explanation belongs, which reads like plain language and carries less than the
+// jargon did. A summary that got SHORTER when the terms came out did not explain
+// them; it gestured at them.
+//
+//   wrong (banned word removed, meaning removed with it):
+//     あてになりそうな相手は4つ書き出してあります
+//   right (the word gone, what it stood for written out):
+//     こちらが作ったものを、作っていない誰かに見せて感想をもらう必要があります。
+//     頼めそうな先を4つ書き出してあります。実際に頼んだものは0件です。
+//
+// The machine below can check that the text is long enough to be an expansion, that
+// measurements survived, and that the abbreviations are gone. IT CANNOT CHECK THAT
+// AN EXPANSION HAPPENED. A lap that clears every rule here and still substituted has
+// produced exactly the text the owner rejected twice.
 //
 // What it CANNOT check is whether the sentences are true or whether they are the
 // important ones. That stays a judgement, and saying so here is deliberate: a
@@ -49,11 +75,15 @@ import { readStateJson } from "./state-source.mjs";
 
 export const STATE_PATH = "state/continue.json";
 export const FIELD = "owner_summary";
-export const MIN_CHARS = 60;
+// An expansion floor, not a style preference. 60 was the first value and it was set
+// against "a label is not an explanation" — but a summary that fits in 60 characters
+// has not unpacked a single term, it has replaced each one with a shorter word. Every
+// abbreviation removed costs a clause; a lap that did the work lands well past this.
+export const MIN_CHARS = 400;
 // Numbers are the first casualty when someone "simplifies": counts, amounts, dates
 // and durations turn into 少し, おおむね, 順調. A summary with no digit in it has
 // almost certainly lost a measurement rather than translated one.
-export const MIN_NUMBERS = 2;
+export const MIN_NUMBERS = 3;
 
 // Terms an outsider cannot resolve. Kept to words this project actually uses in its
 // handoffs — a longer list would fail honest summaries and teach laps to fight the
@@ -70,6 +100,15 @@ export const JARGON = [
   // process nouns that read as status rather than as what happened
   "セッション", "session", "ハンドオフ", "handoff", "後継", "successor",
   "デプロイ", "deploy", "マージ", "merge", "リファクタ",
+];
+
+// The residue of substitution. These are the words that appear when a term was taken
+// out and nothing was put in its place: they occupy the sentence position where a
+// measurement or a mechanism belongs, and read as though something was said.
+export const VAGUE = [
+  "おおむね", "概ね", "順調", "適宜", "ある程度", "一定の", "諸々", "いろいろ",
+  "基盤が整", "整備しました", "対応しました", "改善しました", "強化しました",
+  "進めました", "しっかり", "きちんと", "など多数", "といったところ",
 ];
 
 const HAS_KANA = /[぀-ヿ]/;
@@ -118,8 +157,19 @@ export function checkSummary(summary) {
   if (found.length) {
     problems.push(
       `these are terms only this loop understands: ${found.join("、")}. ` +
-        "Say what happened in the world instead — what was tried, what came back, what it means " +
-        "for the money. Translate the term; do NOT drop the fact it was naming.",
+        "A term is an abbreviation of something the reader does not share. Do not swap it for a " +
+        "vaguer word — write out what it stood for: what was tried, what came back, what it " +
+        "means for the money. The expansion is longer and more involved than the word. " +
+        "That is what expanding it means.",
+    );
+  }
+
+  const vague = VAGUE.filter((w) => text.includes(w));
+  if (vague.length) {
+    problems.push(
+      `these say nothing: ${vague.join("、")}. They sit where a number or a mechanism belongs. ` +
+        "If a term was removed here, write out what it stood for instead of putting a softer " +
+        "word in its place — the expansion is longer than the abbreviation, and that is correct.",
     );
   }
 

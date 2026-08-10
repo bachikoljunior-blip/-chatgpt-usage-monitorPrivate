@@ -4268,10 +4268,24 @@ function assert(condition, message) {
 // and not follow, because nothing ever contradicts you, so it is a field with a
 // reader rather than a paragraph in the runbook.
 {
+  // Long enough to be an expansion, because that is the standard. A term is an
+  // abbreviation of something the reader already shares; take it away from a reader
+  // who does not share it and you owe them the thing it stood for, written out. The
+  // expansion is longer and more involved than the word — that is what expanding is.
   const good =
-    "売り物を人に見せて感想をもらう試みを2回やりました。1回目は開いただけで遊んでもらえず、" +
-    "2回目は遊んでもらえたのに相手が前に見たことのあるものでした。だからどちらも判断には使えません。" +
-    "次は初めて見る人にもう一度頼みます。お金はまだ1円も入っていません。";
+    "作ったものを人に見せて感想をもらう試みを2回やりました。1回目は相手が開いただけで遊ばず、" +
+    "2回目は遊んでくれたものの「これは前に見た」と言われました。ここで困ったのは、なぜ前に見た" +
+    "ことになったのかが2通り考えられる点です。相手の記憶が良かったからか、それとも、そのゲームを" +
+    "書いたのが相手自身だからか。前者なら見せ方を変えれば済みますが、後者なら、自分が作ったものの" +
+    "感想を自分に聞いていることになり、何回やっても意味がありません。そこで、こちらが一切関わって" +
+    "いない別のゲームを同じやり方で見せて、見覚えがあるかだけ聞きました。答えは「ない」でした。" +
+    "つまり相手は初めて見るものを初めてと答えられるので、後者の説明のほうが有力になりました。" +
+    "3件しか試していないので断定はしません。ここから出てくるのは、作ったものを作っていない誰かに" +
+    "見てもらう手段が、実際に使えると確かめたものが1つもない、ということです。頼めそうな先は4つ" +
+    "書き出してあります。経緯を何も知らない新しいClaude、あなた自身、外部の実在の人、そして" +
+    "ChatGPT側にもう1本ある未使用の枠です。4つとも、まだ1つも試していません。" +
+    "感想が取れない限り、売っているものが良いのか悪いのかは永久に判定できません。" +
+    "お金は8か月間ずっと0円のままで、この回も動いていません。";
   assert(checkSummary(good).ok, `a plain Japanese summary was rejected: ${checkSummary(good).problems.join(" / ")}`);
 
   // Absent is the state this was written for, and it must be loud.
@@ -4280,24 +4294,43 @@ function assert(condition, message) {
 
   // Each rule has to be shown to fire, or it is decoration.
   assert(!checkSummary("短い。").ok, "a label passed as an explanation");
+
+  // The failure the owner rejected twice, and the reason the floor is where it is:
+  // every term removed and replaced by a shorter, vaguer word. It reads like plain
+  // language and names less than the jargon did. Nothing here is a banned word — it
+  // is short because nothing was ever expanded.
+  assert(
+    !checkSummary(
+      "見せて感想をもらう試みをやりましたが、あてになりそうな相手はまだいません。" +
+        "次は別のやり方でもう一度やってみます。お金は0円のままです。",
+    ).ok,
+    "a summary that substituted vaguer words for every term passed — substitution is what " +
+      "the expansion rule exists to catch",
+  );
+
+  // The residue of that substitution, named directly.
+  assert(
+    !checkSummary(good.replace("3件しか試していないので断定はしません。", "おおむね順調です。")).ok,
+    "おおむね / 順調 passed; they sit where a number or a mechanism belongs",
+  );
   assert(
     !checkSummary("The lap ran and the gate admitted the candidate, so the work proceeded as expected today.").ok,
     "an English summary passed the Japanese requirement",
   );
   assert(
-    !checkSummary(good + "ETAは変わっていません。").ok,
+    !checkSummary(`${good}ETAは変わっていません。`).ok,
     "the loop's own vocabulary passed as plain language",
   );
   assert(
-    !checkSummary(good + "詳しくは state/eta.json を見てください。").ok,
+    !checkSummary(`${good}詳しくは state/eta.json を見てください。`).ok,
     "a file path passed, and the owner does not have the file open",
   );
   assert(
-    !checkSummary(good + "idle_eta_days は空のままです。").ok,
+    !checkSummary(`${good}idle_eta_days は空のままです。`).ok,
     "an identifier passed as a word",
   );
   assert(
-    !checkSummary(good + "記録は 901debad にあります。").ok,
+    !checkSummary(`${good}記録は 901debad にあります。`).ok,
     "a hash passed, and it names something to a machine and nothing to a reader",
   );
   // There is deliberately NO upper bound, and this assertion is the record of why.
@@ -4315,7 +4348,7 @@ function assert(condition, message) {
   // durations are the first thing lost when someone "simplifies", and they turn into
   // 少し / おおむね / 順調, which read like information and are not.
   assert(
-    !checkSummary("売り物を人に見せて感想をもらいましたが、おおむね良くない反応でした。次はやり方を変えて、もう一度だけ試してみるつもりです。お金はまだ入っていません。").ok,
+    !checkSummary(good.replace(/[0-9]/g, "")).ok,
     "a summary with no numbers passed, so a measurement could be dropped rather than translated",
   );
 
