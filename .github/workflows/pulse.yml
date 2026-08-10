@@ -183,6 +183,14 @@ jobs:
           # It runs hourly rather than per lap because the change that causes it is
           # an owner action in a web UI, not a commit.
           node scripts/check-itch-paywall.mjs || rc=1
+          # RUNBOOK 6's five gates, which nothing evaluated until 2026-08-10. It
+          # PRINTS rather than fails: gate 3 is structurally closed while every
+          # channel is infinite, and that is a fact about the world not producing
+          # revenue yet, which no lap fixes by working harder. Red here would drown
+          # the checks that are actionable. It is in the hourly run so the closure
+          # is visible without a lap going looking, and so the day a channel goes
+          # finite is visible too.
+          node scripts/owner-request-gate.mjs || rc=1
           # The two files laps EDIT BY HAND that the gate then reads. Nothing ran the
           # checker on either, and it showed: verify-sanitized-state kept its own copy
           # of the lap-claim kinds, never learned about route_change, and rejected every

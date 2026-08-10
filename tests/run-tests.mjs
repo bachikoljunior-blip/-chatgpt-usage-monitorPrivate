@@ -36,6 +36,7 @@ import {
 } from "../scripts/venue-readiness.mjs";
 import { funnelCheck } from "../scripts/funnel-check.mjs";
 import { itchPaywallCheck } from "../scripts/check-itch-paywall.mjs";
+import { gateThreeState, ownerRequestGate } from "../scripts/owner-request-gate.mjs";
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import { judge as judgeSpark, sparkModelCandidate, sparkWindow } from "../scripts/spark-model.mjs";
 import {
@@ -3029,6 +3030,87 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(
     itchState.games.every((g) => typeof g.kind === "string"),
     "read-itch.mjs stopped collecting `kind`, so nothing can tell a paid page from a donation page",
+  );
+}
+
+// --- RUNBOOK 6's owner-request gate, as data rather than as a remembered rule ---
+//
+// 2026-08-10. Five gates, stated in the runbook since it was written, evaluated by
+// nothing: seven scripts mention owner requests and none tests admissibility. The
+// rule therefore ran only when a lap remembered it — the defect check-wiring.mjs
+// exists to catch, occurring in the document that defines the rule.
+//
+// The assertions pin the DIRECTION of gate 3, because the tempting fix when it
+// blocks something is to soften it, and softening it silently is how a loop starts
+// asking the owner for things on no evidence.
+{
+  const infinite = [
+    { id: "gumroad", idle_eta_days: null, planned_eta_days: null },
+    { id: "itch", idle_eta_days: null, planned_eta_days: null },
+  ];
+  const closed = gateThreeState(infinite);
+  assert(closed.structurally_closed === true, "an all-infinite board did not report gate 3 as closed");
+  assert(
+    closed.channels_with_finite_eta.length === 0,
+    "a channel was reported as carrying a finite ETA when none does",
+  );
+
+  // And it must OPEN by itself the moment the world changes. A closure that has to
+  // be lifted by hand is a closure that outlives its cause — the failure the whole
+  // constraint registry's recheck_after exists to prevent.
+  const opened = gateThreeState([...infinite, { id: "x", idle_eta_days: 42, planned_eta_days: null }]);
+  assert(opened.structurally_closed === false, "a finite channel did not reopen gate 3");
+  assert(opened.channels_with_finite_eta.includes("x"), "the finite channel was not named");
+  assert(
+    gateThreeState([{ id: "y", idle_eta_days: null, planned_eta_days: 7 }]).structurally_closed === false,
+    "a finite PLANNED eta did not reopen gate 3, so a request that unblocks a path could never be filed",
+  );
+  // Infinity is not a finite number, and null is not zero.
+  assert(
+    gateThreeState([{ id: "z", idle_eta_days: Infinity, planned_eta_days: Infinity }]).structurally_closed,
+    "Infinity was accepted as a finite ETA",
+  );
+
+  // An undeclared gate is a hole, not a pass. This is the half that would rot
+  // fastest: a request that simply omits the fields must not sail through.
+  const bare = ownerRequestGate({ id: "r", status: "pending" }, [{ id: "x", idle_eta_days: 5 }]);
+  assert(bare.admissible === false, "a request declaring no gates at all was admissible");
+  assert(bare.undeclared.length === 4, "undeclared gates were not all reported");
+
+  const full = {
+    id: "r",
+    status: "pending",
+    automation_attempted: true,
+    automation_cost_exceeds_manual_cost: true,
+    paste_ready: true,
+    cannot_decompose_further: true,
+  };
+  assert(
+    ownerRequestGate(full, [{ id: "x", idle_eta_days: 5 }]).admissible === true,
+    "a fully declared request on a finite board was refused",
+  );
+  assert(
+    ownerRequestGate(full, infinite).admissible === false,
+    "gate 3 did not bind a fully declared request on an infinite board",
+  );
+  assert(
+    ownerRequestGate({ ...full, paste_ready: false }, [{ id: "x", idle_eta_days: 5 }]).admissible === false,
+    "a request declaring paste_ready false was admissible",
+  );
+  // Already-performed requests are history. Judging them would make this red
+  // forever over something nobody can change.
+  assert(
+    ownerRequestGate({ ...full, status: "done" }, infinite).admissible === null,
+    "a completed request was re-judged",
+  );
+
+  // And the committed board really is closed, measured rather than asserted. If
+  // this flips, a channel went finite and the next lap has a request it can file.
+  const etaNow = JSON.parse(await readFile(join(root, "state/eta.json"), "utf8"));
+  const live = gateThreeState(etaNow.channels);
+  assert(
+    typeof live.structurally_closed === "boolean" && Array.isArray(live.channels_with_finite_eta),
+    "the live board could not be evaluated against gate 3 at all",
   );
 }
 
