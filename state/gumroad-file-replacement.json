@@ -210,5 +210,14 @@
     "status": 200,
     "success": true,
     "message": "(none)"
+  },
+  "why_it_is_absent_and_what_would_reach_it": {
+    "recorded_at": "2026-08-10T12:05:00Z",
+    "source": "codex/outbox/2026-08-10.u.md",
+    "status": "SOURCED, NOT VERIFIED HERE. Every claim below carries a URL and a verbatim quote, and no lap has opened any of them. They are checkable — the sources are the PUBLIC Gumroad source repository (github.com/antiwork/gumroad), which this session can read through the GitHub tools. Until one lap does, this is a good answer rather than a measurement, and the distinction is the one this register keeps breaking.",
+    "finding": "The upload path exists and is NOT in /v2 at all, which is why 12 probes found nothing. The dashboard uploads through Evaporate.js straight to S3, signing every part against gumroad.com/s3_utility/generate_multipart_signature, a SESSION-authenticated endpoint. The quoted line from the implementing pull request: \"The web frontend does this via Evaporate and a session-authenticated signing endpoint, neither of which is accessible to OAuth clients.\" Only after the bytes are in S3 does the resulting URL become acceptable to PUT /v2/products/:id files[][url] — which is exactly the refusal we measured, read from the other side.",
+    "what_it_would_take": "A logged-in Gumroad session cookie with seller admin rights, carried into CI, plus the S3 key rule the dashboard uses. That is a credential this lane does not hold and has no documented way to obtain or refresh. So the verdict not_replaceable stands for the credential we have, and the reason is now specific rather than an absence: it is not that the door is missing, it is that it opens for a different key.",
+    "also_learned": "No replace operation exists at all — the shape is add-then-remove, the whole files list must be resent, and a file still referenced by rich content cannot be removed in the same update. Free products cap at 250 MB total. Buyers see current files, so a replacement would reach existing purchasers.",
+    "the_lead_worth_one_lap": "The sources are a public repository this session can READ. Verifying two quotes (the pull request line and s3_utility_controller.rb) would convert this whole block from sourced to measured, and would also settle whether the S3 key rule is derivable rather than guessed. Cheap, and it is the only remaining way the priced listing could ever ship a fix unattended."
   }
 }
