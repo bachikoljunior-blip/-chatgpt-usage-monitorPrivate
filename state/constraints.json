@@ -186,8 +186,15 @@
       "venue_survey": {
         "measured_at": "2026-08-09T15:07:00Z",
         "source": "codex/outbox/2026-08-09.o.md — three venues, promotion rules QUOTED rather than summarised, eligibility asked for as a number or an explicit none, and a live dated slot asked for as evidence the venue is not dormant.",
-        "venues_postable_today_from_a_standing_start": 0,
+        "venues_postable_today_from_a_standing_start": 1,
         "venues_surveyed": 3,
+        "the_count_was_corrected_by_the_check_that_was_built_for_exactly_this": {
+          "at": "2026-08-10T00:2xZ",
+          "by": "eta-loop, after scripts/venue-readiness.mjs exited 1 during a post-rebase test run",
+          "what_happened": "The owner created the itch.io page. state/itch.json on origin/main went to game_count 1 at 2026-08-10T00:04:11Z, the row's postable_when became satisfied on both of its members, and the CLI reported \"venues_postable_today_from_a_standing_start says 0, but the rows derive 1\".",
+          "why_this_is_the_record_and_not_a_note": "This is the event the_one named on 2026-08-09T17:06Z as the single most likely thing to happen next in this repository, and the reason the reader was written: \"the itch.io row's blocker is an owner action that is ALREADY PENDING ... every reader would have gone on seeing 0.\" It was hand-written prose 18 hours ago; it caught the event without anyone looking for it. Prediction 2026-08-09.postable-today-gets-a-reader condition (b) assigns the correction to whichever lap sees the check fail, and cites the check rather than the prose. This is that.",
+          "what_this_does_NOT_mean": "Not a sale, and not an ETA. It means route 1 — abandoned at 2026-08-09T22:55Z for want of a lift, NOT refuted — now has one open door with zero further owner actions, at the only surveyed venue whose quoted rule permits showing a paid product. what_it_does_NOT_withdraw said this door should be walked through if the owner performed the action. The owner performed the action."
+        },
         "per_venue": [
           {
             "venue": "itch.io — Release Announcements",
@@ -201,7 +208,7 @@
             "paid_promotion_note": "From this row's own rule_quoted, which contemplates self-promotion rather than forbidding it — 'Please keep self promotion to a reasonable level' — and then REQUIRES 'A link to the page on itch.io'. itch.io pages carry a price; the board's whole purpose is announcing releases. So a reader who likes the thing may lawfully be shown the thing we are paid for, which is the step r/gamedev's rule forbids in writing. This is the field's whole point: this venue and r/gamedev were equally 'open' until somebody asked what a post there could lead to.",
             "eligibility_threshold": "none stated — no karma, no account age, no day-of-week restriction",
             "live_slot_evidence": "an asset pack (CBORN Character Pack 01) posted 2026-08-09, the day of the survey",
-            "postable_today": false,
+            "postable_today": true,
             "postable_when": [
               {
                 "state_file": "state/itch.json",
@@ -219,7 +226,9 @@
               "what_is_NOT_claimed": "That an English announcement sells anything. The board's rule requires a summary; this makes one exist, in the language the board reads, and makes its absence visible to a machine instead of to whoever happens to re-read rule_quoted next."
             },
             "postable_when_note": "This is the row the reader was added for. The blocker is an owner action that is already pending, so this venue flips to postable the moment the page exists — and until 2026-08-09 nothing would have noticed, because postable_today was hand-written and venues_postable_today_from_a_standing_start was hand-counted from it. game_count is the field state/itch.json actually carries; the survey prose says 'reports zero games', which is the same measurement in words.",
-            "blocked_on": "the required link is to a page ON itch.io, and state/itch.json reports zero games. That page is owner request 2026-08-09.itch-page-for-the-kit, already pending.",
+            "blocked_on": null,
+            "blocked_on_was": "the required link is to a page ON itch.io, and state/itch.json reports zero games. That page is owner request 2026-08-09.itch-page-for-the-kit, already pending.",
+            "blocked_on_cleared_at": "2026-08-10T00:04:11Z, the fetched_at of the state/itch.json reading that reports game_count 1. Owner request 2026-08-09.itch-page-for-the-kit is fulfilled. Both members of postable_when are now satisfied — the page exists and assets/announce/itch-release-announcement.en.md is committed — so this row is postable on the venue's own three stated requirements, not on one of them.",
             "owner_request_id": "2026-08-09.itch-page-for-the-kit",
             "owner_request_id_note": "The same id blocked_on has named in prose since this row was written, now as data. It was unreadable there, and the cost showed the moment the elected route was re-pointed onto this row at 22:3xZ: state/owner-requests.json binds each request to one CANDIDATE, this one to `itch` (the channel), so the elected candidate went on printing OWNER REQUEST PENDING (2026-08-09.reddit-account-create) beside a prerequisite that named itch.io. Neither statement was false — they were about different doors, and nothing could tell a reader that.",
             "the_reason_this_venue_matters_most": "It is the only surveyed venue with no eligibility threshold AND a dated live slot AND rules that permit a paid asset pack. Its only blocker is an owner action already asked for.",

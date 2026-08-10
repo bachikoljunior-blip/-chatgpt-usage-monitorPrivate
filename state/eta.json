@@ -1,9 +1,11 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T00:11:17.002Z",
+  "fetched_at": "2026-08-10T00:19:02.077Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
-  "repricings_with_no_candidate": [],
+  "repricings_with_no_candidate": [
+    "itch"
+  ],
   "portfolio_caveat": {
     "claim_in_circulation": "28 published artifacts, no route to a buyer, ¥0 in eight months",
     "verdict": "unsupported by anything enumerable from here, and NOT thereby refuted",
@@ -45,11 +47,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.23
+      "days_unchanged": 0.24
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.23
+      "days_unchanged": 0.24
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -67,7 +69,7 @@
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-09T23:02:57.688Z",
+      "measured_at": "2026-08-10T00:01:42.357Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
       "revenue_window_days": 0.299,
@@ -84,17 +86,17 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-09T23:04:42.809Z",
+      "measured_at": "2026-08-10T00:04:11.549Z",
       "monthly_yen_now": 0,
-      "games": 0,
+      "games": 1,
       "total_views": 0,
       "idle_eta_days": null,
-      "idle_eta_reason": "no game pages exist; creating one is a web form with no API, so idle it never starts",
-      "owner_actions_required": 1,
-      "planned_unblock": "create one game page (form only); butler automates everything after",
-      "automatable": false,
+      "idle_eta_reason": "published but no revenue trajectory yet",
+      "owner_actions_required": 0,
+      "planned_unblock": null,
+      "automatable": true,
       "planned_eta_days": null,
-      "planned_eta_reason": "the owner action is affordable and would unblock it, but nothing measured feeds it afterwards, so it still arrives never. The action is necessary, not sufficient."
+      "planned_eta_reason": "no owner action is required and none would help: the trajectory itself is flat"
     },
     {
       "id": "youtube",
@@ -141,6 +143,18 @@
     },
     {
       "kind": "constraint_recheck",
+      "id": "itch_profile_games_fields",
+      "why": "medium: decides whether the three funnel stages (found / opened / bought) can be separated at all. Cannot be resolved by testing — only by publishing a game.",
+      "owner_actions": 0,
+      "note": "PARTLY MEASURED: api.itch.io/profile/games authenticates and returns a games collection. Which per-game fields it carries is still unknown, because the account currently has zero games.",
+      "measure_via": "here",
+      "actionable_now": true,
+      "unlock_condition_evaluated": true,
+      "eta_effect_days": null,
+      "eta_effect_basis": "no comparable estimate recorded"
+    },
+    {
+      "kind": "constraint_recheck",
       "id": "no_standing_where_buyers_gather",
       "why": "large: all seven zero-base options are now refuted and every one failed on the term this constraint names. This is the only route in the whole evidence set where a first buyer actually arrived, and the fastest on record. Written as 'five of the seven' when this entry was created at 11:05; codex/outbox/2026-08-09.j.md took the remaining two an hour later, which is why this constraint sorts first — nothing was moved by hand to put it there.",
       "owner_actions": 0,
@@ -172,20 +186,6 @@
       "actionable_now": true,
       "eta_effect_days": null,
       "eta_effect_basis": "no comparable estimate recorded"
-    },
-    {
-      "kind": "channel_unblock",
-      "id": "itch",
-      "why": "turns an infinite path finite",
-      "owner_actions": 1,
-      "note": "create one game page (form only); butler automates everything after",
-      "actionable_now": true,
-      "eta_effect_days": null,
-      "eta_effect_basis": "no comparable estimate recorded",
-      "success_test": "someone who was not told about the page finds it and refers it, or arrives from itch's own search or browse. Measured from state/itch.json views and from any referral that can be traced, not from the page's existence.",
-      "not_success": "the page exists and is well made. That is the pattern the portfolio already ran 28 times: 28 published artifacts, no route to a buyer, ¥0 in eight months. Publishing and waiting was checked against outside evidence and produced one to six months at zero every time, and signup counts do not substitute — about 1,200 accounts and still no revenue in the clearest case on record.",
-      "repriced_by": "state/zerobase.json distribution_answer.it_reprices_the_weekly_owner_action",
-      "repriced_because": "distribution_answer elected route 2 — long-tail findable pages a third party can discover and refer — as the only evidence-carrying route that runs with zero recurring owner actions. The itch.io page is a route-2 surface on a marketplace with its own search, so the action does not change but what counts as success does."
     },
     {
       "kind": "zero_base_option",
@@ -224,8 +224,8 @@
             "note": "Registered in scripts/venue-readiness.mjs PREREQUISITE_INSTRUMENTS, which is what makes a non-venue term admissible at all. Until this lap prerequisiteCheck hard-failed every term outside the venue vocabulary, so a non-venue route was unelectable — not by argument but by the guard meant to keep elections honest. The guarantee kept is the one that matters: the term must be something a NAMED machine reports, so it can turn out to be wrong. This one goes red when the snapshot is stale past 7 days or the day series stops yielding a rate."
           },
           "counts": {
-            "postable": 0,
-            "venue_rule": 1,
+            "postable": 1,
+            "venue_rule": 0,
             "venue_unsettled": 1,
             "account": 1
           },
@@ -250,19 +250,6 @@
         "binding_venues_without_a_revenue_path": [],
         "owner_requests_clearing_the_prerequisite": []
       }
-    },
-    {
-      "kind": "constraint_recheck",
-      "id": "itch_profile_games_fields",
-      "why": "medium: decides whether the three funnel stages (found / opened / bought) can be separated at all. Cannot be resolved by testing — only by publishing a game.",
-      "owner_actions": 0,
-      "note": "PARTLY MEASURED: api.itch.io/profile/games authenticates and returns a games collection. Which per-game fields it carries is still unknown, because the account currently has zero games.",
-      "measure_via": "here",
-      "actionable_now": false,
-      "unlock_condition_evaluated": true,
-      "not_actionable_reason": "waits on a measured condition: games is greater than zero on some channel — not yet (gumroad=null, itch=0, youtube=null)",
-      "eta_effect_days": null,
-      "eta_effect_basis": "no comparable estimate recorded"
     },
     {
       "kind": "constraint_recheck",
