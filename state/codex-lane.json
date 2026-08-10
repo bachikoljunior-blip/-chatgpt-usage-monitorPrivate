@@ -1,37 +1,19 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "checked_at": "2026-08-10T05:09:39.254Z",
+  "checked_at": "2026-08-10T06:15:49.487Z",
   "ran": true,
-  "task_id": "2026-08-10.h",
-  "reason": "task 2026-08-10.h is live and unmarked (skipped 5: 2026-08-10.c: already done: codex/outbox/2026-08-10.c.md exists; 2026-08-10.d: already done: codex/outbox/2026-08-10.d.md exists; 2026-08-10.e: already done: codex/outbox/2026-08-10.e.md exists; 2026-08-10.f: already done: codex/outbox/2026-08-10.f.md exists; 2026-08-10.g: already done: codex/outbox/2026-08-10.g.md exists)",
-  "note": "Written by every run of .github/workflows/codex-inbox.yml, including the runs that skip because the task already carries its done marker. state/automations.json points codex-loop's liveness here for that reason.",
-  "which_pool_a_named_run_actually_spends": {
-    "settled_at": "2026-08-10T06:05:00Z",
-    "question": "RUNBOOK 5.5 and scripts/spark-model.mjs both filed the derived slug as a HYPOTHESIS, to be settled by which window moved after a named run rather than by argument.",
-    "answer": "the derived slug lands on Spark",
-    "evidence": {
-      "usage_reading_before": {
-        "fetched_at": "2026-08-10T04:51:54.504Z",
-        "codex_used_percent": 7,
-        "codex_bengalfox_used_percent": 0
-      },
-      "usage_reading_after": {
-        "fetched_at": "2026-08-10T05:06:57.843Z",
-        "codex_used_percent": 7,
-        "codex_bengalfox_used_percent": 1
-      },
-      "the_only_lane_run_in_that_interval": "2026-08-10.h",
-      "model_recorded_by_the_transport": "gpt-5.3-codex-spark",
-      "why_this_is_a_settlement": "one window moved and the other did not, across an interval containing exactly one lane run whose recorded model was the derived slug. A both-moved or neither-moved reading would not have settled it."
-    },
-    "the_consequence_nobody_had_drawn": "The dispatch names that model UNCONDITIONALLY, so from ~05:00Z the lane BUILDS AND REVIEWS as one model, and the account default became unreachable. The account default is the only model here that authored none of the Spark-built artifacts. The fix that made the second pool spendable removed the second reviewer.",
-    "what_it_corrects_in_the_prior_handoff": "The 05:35Z handoff named Spark as the leading candidate for a reviewer OUTSIDE the lane, on the stated grounds that it was a different pool at 100% unused. It was neither: it had already been spent, and it IS the lane. Acting on that handoff would have asked the author to review its own work — the same void round .i measured.",
-    "authorship_as_of_this_settlement": {
-      "assets/free-demo/index.html": "account_default (task 2026-08-09.q, before Spark was ever reachable — codex_bengalfox sat at 0% used until 2026-08-10T05:00Z)",
-      "codex/outbox/2026-08-10.h.md": "spark",
-      "2026-08-10.j": "spark (queued)"
-    },
-    "read_by": "scripts/lane-authorship.mjs"
-  }
+  "task_id": "2026-08-10.k",
+  "reason": "task 2026-08-10.k is live and unmarked (skipped 8: 2026-08-10.c: already done: codex/outbox/2026-08-10.c.md exists; 2026-08-10.d: already done: codex/outbox/2026-08-10.d.md exists; 2026-08-10.e: already done: codex/outbox/2026-08-10.e.md exists; 2026-08-10.f: already done: codex/outbox/2026-08-10.f.md exists; 2026-08-10.g: already done: codex/outbox/2026-08-10.g.md exists; 2026-08-10.h: already done: codex/outbox/2026-08-10.h.md exists; 2026-08-10.i: already done: codex/outbox/2026-08-10.i.md exists; 2026-08-10.j: already done: codex/outbox/2026-08-10.j.md exists)",
+  "model_key": "spark",
+  "model": "gpt-5.3-codex-spark",
+  "runs": [
+    {
+      "task_id": "2026-08-10.k",
+      "model_key": "spark",
+      "model": "gpt-5.3-codex-spark",
+      "at": "2026-08-10T06:15:49.487Z"
+    }
+  ],
+  "note": "Written by every run of .github/workflows/codex-inbox.yml, including the runs that skip because the task already carries its done marker. state/automations.json points codex-loop's liveness here for that reason."
 }
