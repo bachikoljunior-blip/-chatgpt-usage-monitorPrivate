@@ -1,36 +1,36 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T02:56:32.162Z",
+  "fetched_at": "2026-08-10T03:01:23.697Z",
   "note": "Cost per lap derived by joining the committed history of state/claude-usage.json with the lap timestamps in state/laps.json. This is an UPPER bound: any consumption not recorded as a lap raises the numerator and never the denominator. Recorded separately from state/automations.json because it is a different kind of number than a direct measurement, and collapsing the two would hide which is which.",
-  "usage_revisions": 16,
-  "readings": 16,
+  "usage_revisions": 221,
+  "readings": 207,
   "segments": [
     {
-      "from": "2026-08-10T01:14:08.651Z",
-      "to": "2026-08-10T02:51:53.437Z",
-      "hours": 1.63,
-      "readings": 16,
-      "drop_percent": 2,
-      "laps_inside": 6,
+      "from": "2026-08-08T05:38:40.927Z",
+      "to": "2026-08-10T03:01:13.970Z",
+      "hours": 45.38,
+      "readings": 207,
+      "drop_percent": 73,
+      "laps_inside": 87,
       "laps_by_id": {
-        "eta-loop": 6
+        "eta-loop": 87
       },
-      "upper_bound_percent_per_lap": 0.3333,
-      "burn_percent_per_day": 29.464
+      "upper_bound_percent_per_lap": 0.8391,
+      "burn_percent_per_day": 38.611
     }
   ],
   "best": {
-    "from": "2026-08-10T01:14:08.651Z",
-    "to": "2026-08-10T02:51:53.437Z",
-    "hours": 1.63,
-    "readings": 16,
-    "drop_percent": 2,
-    "laps_inside": 6,
+    "from": "2026-08-08T05:38:40.927Z",
+    "to": "2026-08-10T03:01:13.970Z",
+    "hours": 45.38,
+    "readings": 207,
+    "drop_percent": 73,
+    "laps_inside": 87,
     "laps_by_id": {
-      "eta-loop": 6
+      "eta-loop": 87
     },
-    "upper_bound_percent_per_lap": 0.3333,
-    "burn_percent_per_day": 29.464
+    "upper_bound_percent_per_lap": 0.8391,
+    "burn_percent_per_day": 38.611
   }
 }
