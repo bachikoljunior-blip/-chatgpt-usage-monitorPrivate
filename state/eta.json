@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T10:53:12.449Z",
+  "fetched_at": "2026-08-10T11:49:10.511Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -32,22 +32,22 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.68
+      "days_unchanged": 0.72
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.68
+      "days_unchanged": 0.72
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
   "route_election": {
-    "elected": "route_6_an_independent_judge_is_the_binding_term",
+    "elected": "route_4_the_offer_form_is_the_binding_term",
     "aligned": [
-      "pair_the_two_models_so_a_judge_is_never_the_author"
+      "recurring_offer_on_the_rail_we_can_list_ourselves"
     ],
     "on_abandoned_route": [
-      "recurring_offer_on_the_rail_we_can_list_ourselves",
       "the_lane_builds_the_payload",
+      "pair_the_two_models_so_a_judge_is_never_the_author",
       "high_intent_tool_site",
       "findable_surface_at_scale",
       "honest_post_where_buyers_gather",
@@ -100,7 +100,7 @@
       "idle_eta_reason": "measured, not unreadable: 1208.75/day views and 394.75/day engaged over 4 days (2026-08-04..2026-08-07), zero owner actions. Ad revenue is not the path — at this rate the YouTube Partner gate is 4000 days away on subscribers, and the sibling loop prices the far side of it in the ¥1,000s/month against a ¥200,000 target. What the ranking may use is the ADDRESSABLE reach and not this one: 2 of 4851 playbacks over 28d. No threshold is applied here — the two numbers are printed because a route was elected on the larger one while the smaller existed and had never been read. DELIVERY CEILING FIRST: 2 of 4851 playbacks over 28d reach a surface that renders the description (0.04%), so the ceiling on clicks to ANY url placed here is 2 per 28 days — independent of which url and of who the audience is. Everything below is about a link nobody arrives at. The surface PERMITS the paid product's link and FORBIDS the free demo's (github) — so route 1's entire payload cannot go here as hosted. That is the exact INVERSE of r/gamedev, which permits the free artifact and forbids being paid. A lap may NOT perform the edit; it is the sibling loop's act.",
       "owner_actions_required": 0,
       "stale": false,
-      "stale_days": 0.5,
+      "stale_days": 0.6,
       "reach": {
         "usable": true,
         "window_days": 4,
@@ -205,75 +205,11 @@
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_4_the_offer_form_is_the_binding_term",
-        "elected_route": "route_6_an_independent_judge_is_the_binding_term",
-        "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T06:00:00Z",
-        "why": null,
-        "prerequisite": null,
-        "prerequisite_measured": null,
-        "language_mismatches": null,
-        "binding_venues_without_a_revenue_path": null,
-        "owner_requests_clearing_the_prerequisite": null,
-        "elected_but_refuted": false
-      }
-    },
-    {
-      "kind": "zero_base_option",
-      "id": "the_lane_builds_the_payload",
-      "why": "22 completed lane tasks produced one payload. The pool that can build is at 94% with Spark untouched, the pool that cannot is at 24%, and route 4's own prerequisite is an artifact. Every other candidate on this board waits on something outside us — a venue, a stranger, a buyer. This one waits on nothing.",
-      "serves_route": "route_5_lane_allocation_is_the_binding_term",
-      "owner_actions": "0",
-      "days_to_first_yen_estimate": "unmeasured",
-      "estimate_not_measurement": true,
-      "owner_actions_to_list_measured": null,
-      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
-      "refuted": null,
-      "measured_surface": null,
-      "actionable_now": true,
-      "eta_effect_days": null,
-      "recurring_owner_actions_per_month": 1,
-      "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
-      "eta_effect_basis": "no comparable estimate recorded",
-      "route_alignment": {
-        "serves_route": "route_5_lane_allocation_is_the_binding_term",
-        "elected_route": "route_6_an_independent_judge_is_the_binding_term",
-        "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T06:00:00Z",
-        "why": null,
-        "prerequisite": null,
-        "prerequisite_measured": null,
-        "language_mismatches": null,
-        "binding_venues_without_a_revenue_path": null,
-        "owner_requests_clearing_the_prerequisite": null,
-        "elected_but_refuted": false
-      }
-    },
-    {
-      "kind": "zero_base_option",
-      "id": "pair_the_two_models_so_a_judge_is_never_the_author",
-      "why": "Two rung-2 rounds have been run and both were void, for the same reason each time: the reviewer was the author. The .i control settled that this is authorship rather than engagement — shown a game nobody here wrote, the lane played 12 taps and answered 見覚え ない, so it can tell first sight from recognition. Until a non-author judges something, no payload can be priced, and every channel reads idle infinity for that reason rather than for want of things built.",
-      "serves_route": "route_6_an_independent_judge_is_the_binding_term",
-      "owner_actions": "0",
-      "days_to_first_yen_estimate": "unmeasured",
-      "estimate_not_measurement": true,
-      "owner_actions_to_list_measured": null,
-      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
-      "refuted": null,
-      "measured_surface": null,
-      "actionable_now": true,
-      "eta_effect_days": null,
-      "recurring_owner_actions_per_month": 1,
-      "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
-      "eta_effect_basis": "no comparable estimate recorded",
-      "route_alignment": {
-        "serves_route": "route_6_an_independent_judge_is_the_binding_term",
-        "elected_route": "route_6_an_independent_judge_is_the_binding_term",
+        "elected_route": "route_4_the_offer_form_is_the_binding_term",
         "status": "elected",
-        "elected_at": "2026-08-10T06:00:00Z",
-        "why": "Every channel reads idle ETA infinity, and the reason is not that too little has been built. It is that nothing built has ever been judged by someone who did not build it, so no payload can be priced and building faster produces more unpriceable payloads. Two rung-2 rounds have been run and both were void: the reviewer was the author. The .i control settled that this is authorship rather than engagement — the lane played a game nobody here wrote, 12 taps, and answered 見覚え ない, so it can tell first sight from recognition.",
-        "prerequisite": "ONE RUNG-2 ROUND THAT IS NOT VOID. A judge that did not author the artifact reads it cold and reports 見覚え ない together with a 払うか verdict. Two rounds have been run and both were void for the same reason — the reviewer was the author — so the count of usable stranger readings this project holds is zero, on an artifact that has been live since 2026-08-09.",
+        "elected_at": "2026-08-10T11:47:00Z",
+        "why": "The prerequisite is satisfied and the answer is in. state/product-loop.json free_demo round 8 is the first countable rung-2 round in this project history: rounds_engaged went 0 -> 1, the evidence is about what the reviewer RAN — a real browser, 4 taps, one purchase, 10 more taps, 6 seconds of waiting, then the DOM read — and 見覚え came back ない. Verdict: 払わない. The reason is structural rather than cosmetic: the choice set never widens after the first purchase. Void round 9 reached the same defect from the opposite method (source read, producerTypes, the 4 -> 100 jump) and is recorded as an observation rather than a verdict. So a non-author has now judged, and what it judged is that this artifact in this form is not paid for. The remaining question is which term to vary, and exactly one term has never been varied in eight months at zero yen: the OFFER FORM. Every offer this account has ever listed has been a one-time self-serve download.",
+        "prerequisite": "SATISFIED 2026-08-10T10:52Z. One rung-2 round that is not void: a judge that did not author the artifact read it cold, reported 見覚え ない, and its evidence was about what it RAN rather than what it could have read in the source. state/product-loop.json free_demo rounds[8], task 2026-08-10.s.",
         "prerequisite_measured": {
           "term": "stranger_reaction",
           "instrument": {
@@ -311,6 +247,70 @@
         ],
         "binding_venues_without_a_revenue_path": [],
         "owner_requests_clearing_the_prerequisite": [],
+        "elected_but_refuted": false
+      }
+    },
+    {
+      "kind": "zero_base_option",
+      "id": "the_lane_builds_the_payload",
+      "why": "22 completed lane tasks produced one payload. The pool that can build is at 94% with Spark untouched, the pool that cannot is at 24%, and route 4's own prerequisite is an artifact. Every other candidate on this board waits on something outside us — a venue, a stranger, a buyer. This one waits on nothing.",
+      "serves_route": "route_5_lane_allocation_is_the_binding_term",
+      "owner_actions": "0",
+      "days_to_first_yen_estimate": "unmeasured",
+      "estimate_not_measurement": true,
+      "owner_actions_to_list_measured": null,
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "refuted": null,
+      "measured_surface": null,
+      "actionable_now": true,
+      "eta_effect_days": null,
+      "recurring_owner_actions_per_month": 1,
+      "estimate_reliability": "discredited_by_siblings",
+      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "eta_effect_basis": "no comparable estimate recorded",
+      "route_alignment": {
+        "serves_route": "route_5_lane_allocation_is_the_binding_term",
+        "elected_route": "route_4_the_offer_form_is_the_binding_term",
+        "status": "on_abandoned_route",
+        "elected_at": "2026-08-10T11:47:00Z",
+        "why": null,
+        "prerequisite": null,
+        "prerequisite_measured": null,
+        "language_mismatches": null,
+        "binding_venues_without_a_revenue_path": null,
+        "owner_requests_clearing_the_prerequisite": null,
+        "elected_but_refuted": false
+      }
+    },
+    {
+      "kind": "zero_base_option",
+      "id": "pair_the_two_models_so_a_judge_is_never_the_author",
+      "why": "Two rung-2 rounds have been run and both were void, for the same reason each time: the reviewer was the author. The .i control settled that this is authorship rather than engagement — shown a game nobody here wrote, the lane played 12 taps and answered 見覚え ない, so it can tell first sight from recognition. Until a non-author judges something, no payload can be priced, and every channel reads idle infinity for that reason rather than for want of things built.",
+      "serves_route": "route_6_an_independent_judge_is_the_binding_term",
+      "owner_actions": "0",
+      "days_to_first_yen_estimate": "unmeasured",
+      "estimate_not_measurement": true,
+      "owner_actions_to_list_measured": null,
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "refuted": null,
+      "measured_surface": null,
+      "actionable_now": true,
+      "eta_effect_days": null,
+      "recurring_owner_actions_per_month": 1,
+      "estimate_reliability": "discredited_by_siblings",
+      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "eta_effect_basis": "no comparable estimate recorded",
+      "route_alignment": {
+        "serves_route": "route_6_an_independent_judge_is_the_binding_term",
+        "elected_route": "route_4_the_offer_form_is_the_binding_term",
+        "status": "on_abandoned_route",
+        "elected_at": "2026-08-10T11:47:00Z",
+        "why": null,
+        "prerequisite": null,
+        "prerequisite_measured": null,
+        "language_mismatches": null,
+        "binding_venues_without_a_revenue_path": null,
+        "owner_requests_clearing_the_prerequisite": null,
         "elected_but_refuted": false
       }
     },
@@ -396,9 +396,9 @@
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 60 days at the conservative end (estimate, not measured)",
       "route_alignment": {
         "serves_route": "route_2_unattended_findable_pages",
-        "elected_route": "route_6_an_independent_judge_is_the_binding_term",
+        "elected_route": "route_4_the_offer_form_is_the_binding_term",
         "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T06:00:00Z",
+        "elected_at": "2026-08-10T11:47:00Z",
         "why": null,
         "prerequisite": null,
         "prerequisite_measured": null,
@@ -432,7 +432,7 @@
         "published_count": 10,
         "pages_found_by_search": 0,
         "verdict": "published_but_not_findable",
-        "measured_at": "2026-08-10T10:13:58.099Z",
+        "measured_at": "2026-08-10T10:53:13.589Z",
         "what_it_settles": "Not a shortage of pages. Ten serve 200 and a search index returned none of them, so page COUNT is not the binding term — the missing step is an inbound path from a surface that is already crawled. Building more pages buys nothing until that step exists.",
         "inbound_surface": {
           "verdict": "no_crawled_surface_found",
@@ -451,9 +451,9 @@
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_2_unattended_findable_pages",
-        "elected_route": "route_6_an_independent_judge_is_the_binding_term",
+        "elected_route": "route_4_the_offer_form_is_the_binding_term",
         "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T06:00:00Z",
+        "elected_at": "2026-08-10T11:47:00Z",
         "why": null,
         "prerequisite": null,
         "prerequisite_measured": null,
@@ -496,9 +496,9 @@
       "repriced_because": "The candidate was carrying the route adopted at 3555e97 with no test of whether the act it names can be performed. It can not, today: 0 of 3 surveyed venues are postable from a standing start, and neither of the two hard refusals is about standing. Recorded on the candidate rather than in the constraint alone because the constraint is not what a lap picks from.",
       "route_alignment": {
         "serves_route": "route_1_post_where_buyers_gather",
-        "elected_route": "route_6_an_independent_judge_is_the_binding_term",
+        "elected_route": "route_4_the_offer_form_is_the_binding_term",
         "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T06:00:00Z",
+        "elected_at": "2026-08-10T11:47:00Z",
         "why": null,
         "prerequisite": null,
         "prerequisite_measured": null,
@@ -628,9 +628,9 @@
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_3_use_the_reach_already_owned",
-        "elected_route": "route_6_an_independent_judge_is_the_binding_term",
+        "elected_route": "route_4_the_offer_form_is_the_binding_term",
         "status": "on_abandoned_route",
-        "elected_at": "2026-08-10T06:00:00Z",
+        "elected_at": "2026-08-10T11:47:00Z",
         "why": null,
         "prerequisite": null,
         "prerequisite_measured": null,

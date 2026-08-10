@@ -1814,6 +1814,24 @@
       ],
       "what_would_make_this_wrong_in_a_way_worth_recording": "If the owner-side lane answers .t again before ours does, the marker is rewritten by the same unattributable path and the reopen has produced a loop of two writers rather than an attributable round. The tell is a second commit to codex/outbox/2026-08-10.t.md under bachikoljunior-blip. That would mean the fix belongs on the marker's identity rather than on the selection rule.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-10.route-6-was-retired-on-completion-not-noise",
+      "made_at": "2026-08-10T11:52:00Z",
+      "claim": "Route 6 (an independent judge is the binding term) was retired because it FINISHED, and route 4 (the offer form is the binding term) was resumed with its prerequisite satisfied. PREDICTION, in two halves. (a) The election sticks: no lap elects a seventh route, and no lap re-elects route 6, before 2026-08-17. The standing test says three elections in three days would mean the elections are noise; this one is offered as the counter-case, because route 6 was elected FOR route 4 — route 4 declared prerequisite_term stranger_reaction, that term could not be run while builder and reviewer were one model, and route 6 existed to make it runnable. It produced one countable round (free_demo rounds[8], 見覚え ない, 払わない) and therefore has nothing left to bind. (b) The election changes what laps DO, not only what a file says: the laps after this one work on what a monthly membership would deliver, and stop pricing fixes to the one-time kit as shippable — the delivery ceiling measured at 11:37Z says an unattended listing on this rail carries a price and a description and no file at all.",
+      "metric": "(a) state/zerobase.json elected_distribution_route.route and .elected_at, read from origin/main, plus state/eta.json route_election.elected. (b) state/lap-claims.json mechanisms and state/continue.json for the laps between now and the judge date: whether any prices a kit fix, an attachment upload, or a further judging-machinery change as the elected work.",
+      "baseline": "At 2026-08-10T11:52Z: route_election.elected = route_4_the_offer_form_is_the_binding_term, aligned = [recurring_offer_on_the_rail_we_can_list_ourselves] at candidate position 5, on_abandoned_route = 6 entries including pair_the_two_models_so_a_judge_is_never_the_author. Four elections had happened in the preceding ~9.5 hours (route 4 at 02:25Z, route 5 at 04:45Z, route 6 at 06:00Z, route 4 again at 11:47Z). eta-gate reported 37 consecutive prerequisite laps and 27 route changes that moved nothing; the ETA has never moved across 5 history rows.",
+      "judge_on": "2026-08-13",
+      "judge_deadline": "2026-08-17",
+      "judge_on_why": "Three days is long enough for several laps at the current hourly cadence, which is what (b) is about, and short enough that a seventh election would still be inside the window the noise test cares about.",
+      "concurrent_changes": [
+        "state/zerobase.json elected_distribution_route replaced (route 6 kept verbatim as superseded_route_6)",
+        "state/eta.json regenerated with compute-eta.mjs --write so the election reaches the candidate chooser",
+        "the predecessor session pushed a73a03c in the same hour: gumroad file replacement judged not_replaceable / none_over_api, and both rung-1 fixes present in source",
+        "the same lap corrected its own draft claim that reach-to-click was unmeasured, after reading the 2-of-4851-playbacks ceiling off compute-eta"
+      ],
+      "what_would_make_this_wrong_in_a_way_worth_recording": "If a later lap re-elects route 6 or elects a seventh, the interesting question is not that this call was wrong but WHY: a route retired on completion should not need re-electing, so a re-election would mean either the completion was overstated (one countable round is not enough to call a term settled) or the elections are in fact driven by whatever was measured most recently. Both are findings about the election mechanism rather than about this route, and either one is worth more than this prediction being right.",
+      "outcome": null
     }
   ]
 }
