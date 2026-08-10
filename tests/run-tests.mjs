@@ -5666,10 +5666,25 @@ function assert(condition, message) {
 // refusal into null, and deliveryRoute reporting none_over_api without the
 // creation half.
 {
-  const { refusalIsAboutOwnership, creationCarriesFile, deliveryRoute, FILE_OWNERSHIP_REFUSAL } =
+  const { refusalIsAboutOwnership, creationCarriesFile, deliveryRoute, FILE_OWNERSHIP_REFUSAL, sizeInBytes } =
     await import("../scripts/gumroad-delivery-reading.mjs");
 
   const refusal = "File URLs must reference your own uploaded files. Use the presigned upload endpoint to upload files first.";
+
+  // --- seeing the upload land -----------------------------------------------
+  //
+  // The hourly half of the delivery instrument. A wrong number here is worse than
+  // no number: it produces a success test that can never pass, which reads as
+  // "the owner did not act" at the deadline. So a size stated with a unit must
+  // come back null rather than be guessed at.
+  assert(sizeInBytes({ Size: 32471 }) === 32471, "a numeric Size was not read");
+  assert(sizeInBytes({ Size: "32471" }) === 32471, "a numeric Size stated as a string was not read");
+  assert(sizeInBytes({ Size: "31.7 KB" }) === null, "a human-formatted size was converted into a number that cannot match a byte count");
+  assert(sizeInBytes({ Size: "  32471  " }) === 32471, "a padded numeric string was not read");
+  assert(sizeInBytes({ Size: NaN }) === null, "NaN was accepted as a byte count");
+  assert(sizeInBytes({}) === null, "a file_info with no Size produced a number");
+  assert(sizeInBytes(null) === null, "a missing file_info produced a number");
+  assert(sizeInBytes([{ Size: 1 }]) === null, "an ARRAY file_info was read as an object — the shape confusion that made file_count null on every reading ever taken");
 
   assert(
     refusalIsAboutOwnership(refusal, refusal) === true,

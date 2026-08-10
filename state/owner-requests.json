@@ -286,6 +286,88 @@
       "clock_started": "2026-08-10. The 48-hour eligibility window is the only numeric posting requirement found across six surveyed venues, so the earliest date a post can be attempted is 2026-08-12.",
       "username_not_collected": "step_2 asked for the username and it was not given. Deliberately not chased: the stated reason for wanting it was \"then we can compute elapsed time here\", and that reason is wrong — reddit.com returns 403 from this environment, so the username buys no observation. The clock starts from the report, not from a lookup. Ask only if a step actually needs it (writing the post is an owner action anyway, so it may never).",
       "still_not_success": "Unchanged: success is a post that still exists 24 hours later, not an account. The account is the precondition. Nothing about the 2026-03-20 auto-removal example (comment karma below 10) has been ruled out for r/gamedev."
+    },
+    {
+      "id": "2026-08-10.gumroad-replace-the-kit-file",
+      "created_at": "2026-08-10T12:45:00Z",
+      "status": "pending",
+      "candidate_id": "idle_clicker_kit.deliver_both_rung_one_fixes",
+      "owner_actions": 1,
+      "estimated_owner_minutes": 3,
+      "one_line": "Gumroad の商品に添付してあるファイルを、こちらで用意した新しい ZIP に差し替えてください。ZIP は作ってあります。落として、上げるだけです。",
+      "owner_typing_and_judgement_count": "打ち込む文字：0。判断する箇所：0。操作：下のURLを開いて ZIP を保存 → Gumroad で該当商品の Content を開く → 古いファイルを削除 → 保存した ZIP を追加 → Save。",
+      "why_now_and_not_before": {
+        "what_changed": "販売ページが約束していることのうち、守れていなかった2件が両方とも直った。ライセンスの記述（8/10 前半の周）と、遊びの数値の初期設定（同 後半の周）。片方だけの時点では出さなかった。1件でも2件でも、あなたの手間は同じ1回だからです。",
+        "why_it_cannot_be_automated": "商品に添付されたファイルは、こちらの持っているアクセストークンでは差し替えられない。3方向すべて実測で塞がっている：既存商品の差し替え、新規作成時の添付、外部URLの指定。さらに codex/outbox/2026-08-10.u.md が最後の可能性（管理画面が使っている非公開の口）を潰した —— Gumroad 自身の公開ソースに「ログイン済みブラウザのセッションを使うものであり、OAuth クライアントからは到達できない」と書いてある。つまり調べていないのではなく、調べた結果できません。",
+        "what_the_two_fixes_are": [
+          "LICENSE.txt：「ライセンスは2種類あります。購入時に選んだ種別が適用されます」と書いてあったが、購入時に選ぶ画面は存在しない。1種類に確定させ、受託制作は範囲外だと明記した。",
+          "brand.config.json：最初の設備を買うまでタップ15回、その間ずっと増加は毎秒0だった。6回に短縮し、その設備の毎秒増加を 0.2 から 1.2 に。次の種類の設備までの待ち時間が 600秒 から 100秒 になった。実際にブラウザで動かして測り直してある。"
+        ],
+        "the_third_file": "README.md も一緒に変わります。ライセンスの記述と対応させたためで、独立した変更ではありません。"
+      },
+      "the_ask": {
+        "step_1": {
+          "what": "この URL を開いて、ZIP を保存する（GitHub にログインした状態で開いてください）",
+          "url": "https://github.com/bachikoljunior-blip/-chatgpt-usage-monitorPrivate/raw/main/dist/brandable-idle-clicker.zip",
+          "file_bytes": 32471,
+          "file_sha256": "e08de1bd905870bc1346f38a8fa202df38d4a7d1b7ec60fa3cbd839e1f835daf",
+          "note": "中身は12ファイル。いま販売ページに付いているものと同じ構成で、上の3ファイルだけが新しくなっています。"
+        },
+        "step_2": {
+          "what": "Gumroad にログインし、Products → 該当商品 → Edit → Content を開く",
+          "url": "https://bachiko4.gumroad.com/l/fbozt",
+          "product_name": "放置クリッカー制作キット 商用ライセンス｜設定ファイル1枚でリスキンできる HTML/CSS/JS 一式"
+        },
+        "step_3": {
+          "what": "いま付いているファイルを削除し、保存した ZIP を追加して Save",
+          "why_delete_first": "Gumroad には「差し替え」という操作がありません。追加してから古い方を消す形になります。2つ並んだままだと、買った人にどちらが正しいのか分かりません。",
+          "nothing_to_decide": "ファイル名も、説明文も、価格も、タグも、画像も変更しません。添付ファイル1つだけです。"
+        }
+      },
+      "what_this_lap_could_not_do_and_why": {
+        "the_upload": "アップロードだけは、こちらからはできません。上の why_it_cannot_be_automated が実測の内容です。",
+        "notifying_existing_buyers": "購入者への通知は不要です。売上は0件なので、通知すべき相手がまだいません。今回の差し替えは「これから買う人が受け取るもの」を直すためのものです。"
+      },
+      "success_test": "state/gumroad.json の添付ファイルのサイズが 32471 バイトになる。または state/product-source.json のマニフェストで LICENSE.txt の sha256 が新しい値になる。",
+      "success_test_machine": {
+        "note": "2つの経路を持たせてあるのは、片方が毎時、もう片方が手動起動だからです。file_size_bytes は read-gumroad.mjs が毎時集める（2026-08-10 に追加。それまでは file_info の キー名 だけを集めていて、値は集めていませんでした）。product-source の方が決定的だが、gumroad-monitor.yml の fetch_product_source 入力を誰かが起動したときにしか更新されない。決定的な方だけを見る検査は、誰も起動しないまま期限を迎え、「オーナーが動かなかった」と記録されます —— 2026-08-09.gumroad-cover-upload で実際にそうなりかけました。",
+        "any_of": [
+          {
+            "state_file": "state/gumroad.json",
+            "path": "products[short_url=https://bachiko4.gumroad.com/l/fbozt].file_size_bytes",
+            "predicate": "eq",
+            "value": 32471
+          },
+          {
+            "state_file": "state/product-source.json",
+            "path": "manifest[path=brandable-idle-clicker/LICENSE.txt].sha256",
+            "predicate": "eq",
+            "value": "6415c95aef18d8bcf0541fe3a60185fa0dd60fd2dda287b3bdb347477683b7b8"
+          },
+          {
+            "state_file": "state/product-source.json",
+            "path": "manifest[path=brandable-idle-clicker/brand.config.json].sha256",
+            "predicate": "eq",
+            "value": "2f3192262584cc71685f25386c38662a0a94b07a122b3079eac4fd85b4262b18"
+          }
+        ]
+      },
+      "not_success": "ZIP を落としただけ、あるいは追加したが古いファイルを消していない状態。前者は上のどの検査も動きません。後者は file_size_bytes が別の値になるか、そもそも1商品に2ファイル付いた状態になるので、file_count が変わったかどうかを見て判定します。",
+      "judge_by": "2026-08-17",
+      "minimised": {
+        "owner_actions": 1,
+        "could_it_be_zero": "いいえ。API の3方向すべてと、管理画面の非公開経路まで実測で塞がっています。",
+        "could_it_be_split": "分けるべきではありません。修正2件を1回のアップロードに載せてあります。分ければ手間が2倍になります。",
+        "what_was_prepared_here": "ZIP そのもの（scripts/build-product-archive.mjs が生成し、いま販売中の添付との差分3件を印字して確認済み）、ダウンロードURL、商品URL、操作手順。あなたが決めることは1つもありません。",
+        "typing": 0,
+        "judgements": 0
+      },
+      "automation_attempted": true,
+      "automation_cost_exceeds_manual_cost": true,
+      "paste_ready": true,
+      "cannot_decompose_further": true,
+      "source": "state/gumroad-file-replacement.json（差し替え不可の実測）、codex/outbox/2026-08-10.u.md（非v2経路の否定・Gumroad 公開ソース引用）、state/promise-conformance.json（失敗している2行）、state/product-source.json（買った人がいま受け取る中身）、dist/brandable-idle-clicker.zip（渡すもの）。",
+      "performed_evidence": null
     }
   ]
 }

@@ -19,6 +19,7 @@ import { fileURLToPath } from "node:url";
 import { mkdir } from "node:fs/promises";
 
 import { appendReading } from "./revenue-rate.mjs";
+import { sizeInBytes } from "./gumroad-delivery-reading.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, "..");
@@ -105,6 +106,30 @@ try {
     file_info_keys:
       p.file_info && typeof p.file_info === "object" && !Array.isArray(p.file_info)
         ? Object.keys(p.file_info)
+        : null,
+    // The one VALUE worth the exception, and the exception is narrow: a byte count,
+    // kept only when it is already a number.
+    //
+    // 2026-08-10. Delivery of any fix to this product is measured as one owner
+    // upload with no API route, so the loop needs to be able to SEE that the upload
+    // happened. The definitive instrument is state/product-source.json, which
+    // re-digests the actual attachment — but that only runs when someone dispatches
+    // gumroad-monitor.yml with fetch_product_source, so a request whose success test
+    // reads only that field sits at "not yet" until a lap remembers to dispatch, and
+    // then fails open at judge_by and is recorded as the owner not acting. That is
+    // precisely how 2026-08-09.gumroad-cover-upload was mis-recorded, and the lesson
+    // there was: collect the field, or point the test at an instrument that exists.
+    //
+    // This is collected hourly by the existing schedule and changes the moment a
+    // different file is attached. Numbers only: a human-formatted "31.7 KB" cannot
+    // be compared against a built archive's byte count, and silently storing one
+    // would give a test that can never pass — the failure mode this exists to end.
+    // The shape is recorded next to it so null reads as "not a number" rather than
+    // as "not collected".
+    file_size_bytes: sizeInBytes(p.file_info),
+    file_size_value_shape:
+      p.file_info && typeof p.file_info === "object" && !Array.isArray(p.file_info)
+        ? typeof p.file_info.Size
         : null,
     // Whether the listing shows a picture.
     //

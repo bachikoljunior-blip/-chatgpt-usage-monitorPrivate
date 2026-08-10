@@ -66,3 +66,37 @@ export function deliveryRoute({ verdict, carriesFile }) {
   if (carriesFile === false && verdict === "not_replaceable") return "none_over_api";
   return "unmeasured";
 }
+
+/**
+ * The attached file's size in bytes, when the API states it as a number.
+ *
+ * 2026-08-10. Once delivery was measured as "one owner upload, no API route",
+ * the loop needed a way to SEE an upload land. The definitive instrument is
+ * state/product-source.json, which re-digests the attachment — but it only runs
+ * on a workflow_dispatch input, so a success test reading only that field waits
+ * for a lap to remember, then fails open at its deadline and records the owner
+ * as not having acted. That exact mis-recording already happened once, to
+ * 2026-08-09.gumroad-cover-upload.
+ *
+ * file_info.Size is served by the hourly read and moves the moment a different
+ * file is attached. It lives here rather than in read-gumroad.mjs because that
+ * script talks to a live API at import time and so cannot be tested.
+ *
+ * Numbers only, and that restraint is the point. A human-formatted "31.7 KB"
+ * cannot be compared against a built archive's byte count, so converting one
+ * would manufacture a test that can never pass — the failure this exists to end.
+ * null means "not a number", which is loud, rather than a wrong number, which is
+ * not.
+ *
+ * @param fileInfo the product's file_info as served
+ * @returns a finite byte count, or null
+ */
+export function sizeInBytes(fileInfo) {
+  if (!fileInfo || typeof fileInfo !== "object" || Array.isArray(fileInfo)) return null;
+  const raw = fileInfo.Size;
+  if (typeof raw === "number") return Number.isFinite(raw) ? raw : null;
+  // A string of digits is still a number stated as a string. Anything with a unit
+  // in it is not, and must not be guessed at.
+  if (typeof raw === "string" && /^\d+$/.test(raw.trim())) return Number(raw.trim());
+  return null;
+}
