@@ -66,6 +66,16 @@
       "what_is_therefore_unknown": "Which model wrote it. codex/INBOX.md task 2026-08-10.n carries model: account_default, and that is a REQUEST. The ledger is the only record of what actually ran, and it has nothing. If Spark in fact produced this text, then Spark wrote both .j and .n, and the alternation the task was created to preserve did not happen.",
       "what_must_not_be_done_because_of_it": "Do not file a review of .n paired against author_model_key account_default. roundSelfReviewed() would return false on that pairing and it would be false on a guess — the pairing rule's whole value is that it fires before a lane slot is spent, and pairing against an unverified header spends the slot and finds out afterwards.",
       "how_to_establish_it_if_it_matters": "Re-run the task through the lane under a fresh task_id so the workflow writes a ledger entry, and compare the two answers. That costs one lane slot on the abundant pool and zero Claude budget. Cheaper alternative: treat .n as authorless and have BOTH models review it, since a round is only void when the reviewer IS the author, and at most one of the two can be."
+    },
+    {
+      "task_id": "2026-08-10.o",
+      "acknowledged_at": "2026-08-10T08:25:00Z",
+      "author": null,
+      "why_no_run": "codex/outbox/2026-08-10.o.md arrived as commit dfc3678, authored by bachikoljunior-blip <bachikoljunior@gmail.com> rather than chatgpt-usage-monitor[bot]. It touched only the outbox file — no ledger entry, no state/answers/latest.json, no state/answers/latest.md, all three of which .github/workflows/codex-inbox.yml writes on every run that produces an answer. Same shape as .n (commit 5ca9505, 07:0xZ), 1.7 hours earlier.",
+      "the_n_record_is_now_wrong_and_is_left_standing": "The .n entry says its commit is 'the ONLY outbox commit in this repository's history not made by the bot'. That was true when written and is false now: there are two. Corrected here rather than edited there, because the .n entry is the record of what was known at the time and rewriting it would hide that one anomaly read as an anomaly and two read as a route.",
+      "what_this_does_and_does_not_establish": "It does NOT establish a second automated delivery path. The commits carry the owner's own identity, and the owner relaying an answer by hand produces exactly this signature. Two readings fit the evidence and nothing here separates them. What IS established: for these answers the ledger has no run, so the authoring model is unknown, which pool was spent is unknown, and scripts/lane-allocation.mjs does not count them.",
+      "why_this_one_is_still_usable": "produces: research. .o reads public pages and reports numbers; it does not judge an artifact this loop wrote. Unestablished authorship voids a REVIEW because a reviewer might be the author. There is no author to collide with here — the subject is itch.io and reddit, not our file. So the venue numbers may be used, and no round is being recorded off them.",
+      "the_check_did_its_job": "This surfaced as a red tests/run-tests.mjs the moment the answer landed, before any lap read the numbers and acted on them. That is the ledger rule working as intended and is recorded as such."
     }
   ],
   "derived_artifacts": [
