@@ -1388,6 +1388,19 @@
         "Nothing else was changed this lap. The collector edit, the gate edit, the structured success test and the vacuity-control replacement in run-tests are one causal chain: the test cannot be evaluated unless the field is collected, and it cannot be trusted unless a broken checker still goes red."
       ],
       "outcome": null
+    },
+    {
+      "id": "2026-08-10.the-escape-hatch-was-a-metronome",
+      "made_at": "2026-08-10T04:20:00Z",
+      "claim": "state/lap-claims.json reads pppRpppRpppR... - eleven cycles of exactly three prerequisites and one route_change, 47 claims, improves=true on zero, and all five eta-history rows null/null. route_change reset the prerequisite run UNCONDITIONALLY, so the rule the gate quotes at every rejection - three rounds without movement means the route is wrong - could never fire twice running. It was not a cap but a metronome, and it is worse than the livelock it replaced in 3.9: a livelock stops and is visible, this one runs, commits, and prints verdict: go while buying nothing. The claim is that the refill is now EARNED: a route change refills the groundwork budget only if state/eta-history.json moved after the previous one. Unproductive route changes are still ADMITTED so a lane always stays open. NOT claimed: that this moves any ETA. It changes what the loop is permitted to spend laps on, which is upstream of that. Taken under RUNBOOK 3.9 instrument exception - asking the gate for permission to repair the gate is the circularity that section names - so evidence is mechanical: four assertions plus the invariant, three mutations red.",
+      "metric": "Read from committed state on origin/main, none from a lap account of itself. (a) node scripts/eta-gate.mjs prints a route-changes-that-moved-nothing line and the count does not fall without state/eta-history.json gaining a row whose idle/planned differs. (b) node tests/run-tests.mjs fails when any of the three mutations is reapplied: refills_prerequisites hardcoded true, treadmill hardcoded false, or the route lane closed on the treadmill. All three were run at 04:1xZ and all three went red. (c) THE ONE THAT DECIDES IT: does the pppR pattern break? Count the kinds in state/lap-claims.json on the judge date. If it still reads three prerequisites per route change, the reset is being obtained some other way - most likely a lap recording route_change with a mechanism that is groundwork under a bigger name, which is the exact abuse RUNBOOK 3.9 warns about and which no machine can catch. (d) The falsifier for the fix being too harsh: if laps start reporting they cannot do necessary groundwork at all, the cap is starving real work and the threshold, not the principle, is wrong. (e) Whether any lap reads treadmill:true as permission to end the lap. A9 and RUNBOOK 3.9 forbid it; state/continue.json is where that would show.",
+      "baseline": "At 2026-08-10T04:15Z: 47 claims (36 prerequisite, 11 route_change), 0 improves, sequence pppR x11, eta-history 5 rows all null/null, eta has ever moved false. Under the old counter the gate reported consecutive prerequisites 3 and refilled on every route change; under the new one it reports 37 consecutive prerequisites and 11 unproductive route changes.",
+      "judge_on": "2026-08-13",
+      "judge_deadline": "2026-08-17",
+      "concurrent_changes": [
+        "Same lap as the owner-request success_test change (prediction 2026-08-10.a-performed-owner-action-read-as-pending), which is unrelated machinery - one touches owner-request accounting, this one touches lap admission. They share only the session."
+      ],
+      "outcome": null
     }
   ]
 }

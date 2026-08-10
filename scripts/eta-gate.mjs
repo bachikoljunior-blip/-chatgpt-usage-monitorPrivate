@@ -111,10 +111,56 @@ const rows = history?.rows ?? [];
 const distinct = new Set(rows.map((r) => `${r.idle_eta_days}/${r.planned_eta_days}`));
 const etaHasEverMoved = distinct.size > 1;
 
+// A route change breaks the prerequisite run only if it EARNED the break.
+//
+// The old loop stopped at the first non-prerequisite claim, so any route change
+// refilled the groundwork budget by existing. Measured 2026-08-10: the claim kinds
+// read pppRpppRpppR... for eleven cycles with improves=true on none of the 47 and
+// every eta-history row null/null. The cap fired eleven times and bound for one lap
+// each time. See the header of scripts/gate-verdict.mjs.
+//
+// Productive means the ETA actually moved after that route change was recorded —
+// read from state/eta-history.json, which no lap writes by hand, rather than from
+// the claim's own after_claimed, which is the lap's opinion of itself.
+const etaAt = (iso) => {
+  const t = Date.parse(iso);
+  let last = null;
+  for (const r of rows) {
+    if (Date.parse(r.at) <= t) last = r;
+  }
+  return last;
+};
+const movedAfter = (iso) => {
+  const t = Date.parse(iso);
+  const before = etaAt(iso);
+  // No history row before the claim means we cannot tell whether anything moved.
+  // UNKNOWN IS NOT PRODUCTIVE. The first version returned true here — the absent
+  // "before" compared unequal to every later row — so the six oldest route changes
+  // counted as earning their refill purely because they predate eta-history.json,
+  // and the run stopped at 6 instead of 11. That is this repository's most-recorded
+  // defect wearing a new hat: an unmeasured thing scoring as a measured pass. The
+  // whole point of this rule is that the refill is EARNED, and absence of evidence
+  // does not earn it.
+  if (before === null) return false;
+  const key = (r) => `${r.idle_eta_days}/${r.planned_eta_days}`;
+  return rows.some((r) => Date.parse(r.at) > t && key(r) !== key(before));
+};
+
 let consecutivePrerequisites = 0;
+let routeChangesWithoutMovement = 0;
 for (let i = claims.length - 1; i >= 0; i -= 1) {
-  if (claims[i].kind !== "prerequisite") break;
-  consecutivePrerequisites += 1;
+  const c = claims[i];
+  if (c.kind === "prerequisite") {
+    consecutivePrerequisites += 1;
+    continue;
+  }
+  if (c.kind === "route_change" && !movedAfter(c.at)) {
+    // Unproductive: it does not reset the run, and it is counted so the verdict can
+    // say how long this has been going on.
+    routeChangesWithoutMovement += 1;
+    continue;
+  }
+  break;
 }
 
 // The registry entry for THIS candidate, and the standing directives in force. An
@@ -137,6 +183,7 @@ const { verdict, reason, improves } = decideVerdict({
   consecutivePrerequisites,
   max: MAX_CONSECUTIVE_PREREQUISITES,
   directiveBlock,
+  routeChangesWithoutMovement,
 });
 
 console.log(`ETA gate for ${id} (${kind})`);
@@ -144,6 +191,12 @@ console.log(`  before: idle ${show(beforeIdle)} · planned ${show(beforePlanned)
 console.log(`  after:  idle ${show(afterIdle)} · planned ${show(afterPlanned)}   [claimed]`);
 console.log(`  eta has ever moved: ${etaHasEverMoved} (${rows.length} history row(s))`);
 console.log(`  consecutive prerequisite laps: ${consecutivePrerequisites}`);
+if (routeChangesWithoutMovement > 0) {
+  console.log(
+    `  route changes in this run that moved nothing: ${routeChangesWithoutMovement} ` +
+      "(they no longer refill the groundwork budget)",
+  );
+}
 if (allConstraints === null) {
   console.log("  standing directives: state/constraints.json unreadable, so NONE were checked");
 } else {

@@ -29,6 +29,44 @@
 // loop that has genuinely changed direction has earned the right to lay groundwork
 // again; what it has not earned is three more rounds of groundwork on the route it
 // just abandoned, and the counter still measures exactly that.
+//
+// ---------------------------------------------------------------------------
+// 2026-08-10: THE PARAGRAPH ABOVE WAS WRONG, AND THE SHAPE OF THE HISTORY SAYS SO.
+//
+// state/lap-claims.json, 47 claims, read as one string per kind:
+//
+//     pppRpppRpppRpppRpppRpppRpppRpppRpppRpppRppp
+//
+// Eleven cycles of exactly three prerequisites and one route change, and
+// improves=true on zero of the 47. state/eta-history.json holds five rows and every
+// one is null/null. The ETA has never moved, so the cap has fired eleven times and
+// bound for a single lap each time.
+//
+// The refill assumed the thing it was supposed to test. "A loop that has genuinely
+// changed direction has earned the right to lay groundwork again" is a claim about
+// the loop's sincerity, and sincerity was never measured — declaring the route
+// changed was sufficient. So the rule the gate quotes at every rejection, "three
+// rounds without movement means the route is wrong", cannot fire twice in a row. It
+// is not a cap; it is a metronome, and this loop has been keeping time to it for
+// about twenty-four hours.
+//
+// This is worse than the livelock it replaced. A livelock stops and is therefore
+// visible. This runs, produces commits, and reports "verdict: go" while buying
+// nothing — and every lap that hit it read the rejection text, took the one lane
+// offered, and reset the counter for the next lap to do the same.
+//
+// THE FIX IS THAT THE RESET MUST BE EARNED BY EVIDENCE RATHER THAN BY DECLARATION.
+// A route change refills the groundwork budget only if the ETA has actually moved
+// since the previous route change. An unproductive one is still ADMITTED — the lane
+// must stay open, that is the invariant tests/run-tests.mjs guards — but it no
+// longer buys three fresh prerequisite laps. So a loop that keeps changing route
+// without moving the number keeps its route lane and loses its groundwork lane,
+// which is the intended reading of "the route is wrong, not the parameter".
+//
+// Deliberately NOT done here: making the treadmill a stop condition. A9 and A13 are
+// explicit, and RUNBOOK 3.9 says doing nothing is the one answer the gate does not
+// authorise. The verdict carries treadmill:true so a lap can see the state it is in;
+// what it must not do is read it as permission to end the lap.
 
 export const MAX_CONSECUTIVE_PREREQUISITES = 3;
 export const KINDS = ["direct", "prerequisite", "route_change"];
@@ -46,7 +84,12 @@ export function decideVerdict({
   consecutivePrerequisites = 0,
   max = MAX_CONSECUTIVE_PREREQUISITES,
   directiveBlock = null,
+  // How many route changes in the trailing run bought nothing. Zero on a healthy
+  // loop. Defaulted so every existing caller keeps its current behaviour and the
+  // treadmill branch is opt-in rather than a surprise.
+  routeChangesWithoutMovement = 0,
 }) {
+  const treadmill = routeChangesWithoutMovement > 0;
   const improvesIdle = cmp(afterIdle) < cmp(beforeIdle);
   const improvesPlanned = cmp(afterPlanned) < cmp(beforePlanned);
   const improves = improvesIdle || improvesPlanned;
@@ -96,12 +139,23 @@ export function decideVerdict({
           verdict: "go",
           improves,
           capFired,
-          reason:
-            `${consecutivePrerequisites} prerequisite laps in a row with the ETA unchanged, so the ` +
-            "parameter lane is closed and this is the lane that remains. Admitted as a route change: " +
-            "abandon the current route and produce candidates that can claim to move the number. " +
-            "This resets the prerequisite run, which is the point — a loop that has actually changed " +
-            "direction may lay groundwork again.",
+          treadmill,
+          // The reset is reported, not assumed, because it is the field the previous
+          // version got wrong by never computing it.
+          refills_prerequisites: !treadmill,
+          reason: treadmill
+            ? `${consecutivePrerequisites} prerequisite laps in a row with the ETA unchanged, and ` +
+              `${routeChangesWithoutMovement} route change(s) before this one that also moved nothing. ` +
+              "Admitted, because the route lane must stay open and doing nothing is not an answer — " +
+              "but it does NOT refill the groundwork budget this time. The refill is earned by the " +
+              "number moving, not by saying the route changed; unconditional refill is what turned " +
+              "this rule into a metronome (pppRpppR..., eleven cycles, zero movement). Change the " +
+              "route for real, or make a claim that moves a channel."
+            : `${consecutivePrerequisites} prerequisite laps in a row with the ETA unchanged, so the ` +
+              "parameter lane is closed and this is the lane that remains. Admitted as a route change: " +
+              "abandon the current route and produce candidates that can claim to move the number. " +
+              "This resets the prerequisite run, which is the point — a loop that has actually changed " +
+              "direction may lay groundwork again.",
         }
       : {
           verdict: "reject",

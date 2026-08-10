@@ -1301,6 +1301,52 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     "a direct claim with no improvement was admitted",
   );
 
+  // --- the refill must be earned ---------------------------------------------
+  // Measured 2026-08-10 from state/lap-claims.json: 47 claims reading
+  // pppRpppRpppR... for eleven cycles, improves=true on none, every eta-history row
+  // null/null. Because a route change reset the prerequisite run unconditionally,
+  // the "three rounds without movement means change the route" rule could never
+  // fire twice running. It was a metronome, not a cap.
+  const tread = { ...at(3), routeChangesWithoutMovement: 11 };
+  // The invariant still holds first: a lane stays open even on the treadmill.
+  assert(
+    ["direct", "prerequisite", "route_change"]
+      .map((kind) => decideVerdict({ ...tread, kind }).verdict)
+      .includes("go"),
+    "every lane rejected on the treadmill — the fix recreated the livelock it replaced",
+  );
+  assert(
+    decideVerdict({ ...tread, kind: "route_change" }).verdict === "go",
+    "the route lane closed on the treadmill; it must stay open",
+  );
+  // ...but it no longer buys three fresh prerequisite laps.
+  assert(
+    decideVerdict({ ...tread, kind: "route_change" }).refills_prerequisites === false,
+    "an unproductive route change still refilled the groundwork budget",
+  );
+  assert(
+    decideVerdict({ ...at(3), kind: "route_change" }).refills_prerequisites === true,
+    "a first route change stopped refilling; the cap became a stop rather than a redirect",
+  );
+  assert(
+    decideVerdict({ ...tread, kind: "route_change" }).treadmill === true &&
+      decideVerdict({ ...at(3), kind: "route_change" }).treadmill === false,
+    "the treadmill state was not reported to the lap",
+  );
+  // A route change that DID move the number is not on the treadmill, so it keeps
+  // the refill. Otherwise the rule would punish the only case it wants to reward.
+  assert(
+    decideVerdict({ ...at(3), kind: "route_change", routeChangesWithoutMovement: 0 })
+      .refills_prerequisites === true,
+    "a productive route change lost its refill",
+  );
+  // An improving claim outranks the treadmill entirely — this branch is reached
+  // before any of it, and a loop that can move the number is not stuck.
+  assert(
+    decideVerdict({ ...tread, kind: "prerequisite", afterPlanned: 12 }).verdict === "go",
+    "an improving claim was refused because of the treadmill",
+  );
+
   // ...and it must not become the lane everything uses. While groundwork is still
   // affordable, "I am changing the route" is groundwork with a grander name.
   assert(

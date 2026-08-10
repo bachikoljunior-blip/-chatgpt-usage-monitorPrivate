@@ -1,6 +1,13 @@
 {
   "schema_version": 1,
-  "open": {},
+  "open": {
+    "eta-loop": {
+      "at": "2026-08-10T04:02:31.862Z",
+      "usage_fetched_at": "2026-08-10T04:02:16.660Z",
+      "remaining_percent": 24,
+      "resets_at": "2026-08-14T22:00:00.919Z"
+    }
+  },
   "samples": [
     {
       "id": "eta-loop",
@@ -808,12 +815,12 @@
     },
     {
       "id": "eta-loop",
-      "started_at": "2026-08-10T04:05:48.751Z",
-      "ended_at": "2026-08-10T04:05:56.114Z",
+      "started_at": "2026-08-10T03:42:46.253Z",
+      "ended_at": "2026-08-10T04:02:24.107Z",
       "cost_percent": null,
-      "observed_delta_percent": 0,
+      "observed_delta_percent": 1,
       "usable": false,
-      "reason": "no_new_usage_reading"
+      "reason": "at_measurement_quantum"
     }
   ],
   "pending_verification": {
