@@ -2,10 +2,21 @@
   "schema_version": 1,
   "status": "ok",
   "source": "codex-app-server",
-  "fetched_at": "2026-08-10T02:11:21.418Z",
-  "fresh_until": "2026-08-10T04:11:21.418Z",
+  "fetched_at": "2026-08-10T02:14:50.686Z",
+  "fresh_until": "2026-08-10T04:14:50.686Z",
   "plan_type": "pro",
   "quota_windows": [
+    {
+      "limit_id": "codex_bengalfox",
+      "limit_name": "GPT-5.3-Codex-Spark",
+      "slot": "primary",
+      "used_percent": 0,
+      "remaining_percent": 100,
+      "window_duration_minutes": 10080,
+      "resets_at": 1786932891,
+      "resets_at_iso": "2026-08-17T02:14:51.000Z",
+      "reached_type": null
+    },
     {
       "limit_id": "codex",
       "limit_name": null,
@@ -16,33 +27,22 @@
       "resets_at": 1786826371,
       "resets_at_iso": "2026-08-15T20:39:31.000Z",
       "reached_type": null
-    },
-    {
-      "limit_id": "codex_bengalfox",
-      "limit_name": "GPT-5.3-Codex-Spark",
-      "slot": "primary",
-      "used_percent": 0,
-      "remaining_percent": 100,
-      "window_duration_minutes": 10080,
-      "resets_at": 1786932682,
-      "resets_at_iso": "2026-08-17T02:11:22.000Z",
-      "reached_type": null
     }
   ],
   "governing_window": {
-    "limit_id": "codex",
-    "limit_name": null,
+    "limit_id": "codex_bengalfox",
+    "limit_name": "GPT-5.3-Codex-Spark",
     "slot": "primary",
-    "used_percent": 6,
-    "remaining_percent": 94,
+    "used_percent": 0,
+    "remaining_percent": 100,
     "window_duration_minutes": 10080,
-    "resets_at": 1786826371,
-    "resets_at_iso": "2026-08-15T20:39:31.000Z",
+    "resets_at": 1786932891,
+    "resets_at_iso": "2026-08-17T02:14:51.000Z",
     "reached_type": null
   },
   "available_reset_credits": 0,
   "token_usage_summary": {
-    "lifetime_tokens": 3010385304,
+    "lifetime_tokens": 3010780482,
     "peak_daily_tokens": 833349372,
     "longest_running_turn_seconds": 16405,
     "current_streak_days": 4,
@@ -99,7 +99,7 @@
     },
     {
       "start_date": "2026-08-09",
-      "tokens": 131170718
+      "tokens": 131565896
     }
   ],
   "recommended_mode": "normal"
