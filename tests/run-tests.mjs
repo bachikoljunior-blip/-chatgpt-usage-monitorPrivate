@@ -3840,6 +3840,61 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   }
 }
 
+// The push path is the only way any state file reaches origin/main, and every
+// reader in this repository defaults to origin/main. So a defect here is not a
+// convenience bug: it decides whether a lap's measurements exist for anyone else.
+// Two defects were carried in known_gaps across several handoffs and confirmed
+// first-hand on 2026-08-10 before being fixed. This is their reader.
+//
+// The script is bash and cannot be imported, so these are assertions on its
+// text. That is weaker than executing it, and it is deliberate rather than lazy:
+// the alternative needs a git remote, and a test that needs the network is a
+// test that gets skipped. Text catches the two ways this regresses — someone
+// deleting --autostash, or someone restoring an unconditional success message.
+{
+  const pushScript = readFileSync(join(root, "scripts/push-with-retry.sh"), "utf8");
+  // Comments must be stripped before any of this looks for code. The first
+  // version of this block did not, and its --autostash mutation passed GREEN:
+  // the header comment explaining the fix contains both "git pull --rebase" and
+  // "--autostash", so `find` matched the prose and never read the command. A
+  // check whose subject is a file that documents itself has to be told the
+  // difference between the file and its explanation.
+  const pushCode = pushScript
+    .split("\n")
+    .filter((l) => !l.trim().startsWith("#"));
+
+  // Defect 1: `record-lap --phase=start` dirties state/laps.json before a lap does
+  // any work, so the tree is dirty at push time BY DESIGN. Without --autostash the
+  // rebase refuses and every attempt then fails non-fast-forward.
+  const pullLine = pushCode.find((l) => l.includes("git pull --rebase"));
+  assert(pullLine, "push-with-retry.sh no longer pulls before pushing");
+  assert(
+    pullLine.includes("--autostash"),
+    "push-with-retry.sh pulls without --autostash; a lap that stamped its own start cannot push",
+  );
+
+  // Defect 2: it reported "pushed on attempt 1" with nothing pushed. The fix is a
+  // no-op branch comparing HEAD against the remote ref. Without that comparison
+  // the lie is back.
+  assert(
+    pushCode.some((l) => l.includes("nothing to push")),
+    "push-with-retry.sh has no no-op branch; it will report a push that did not happen",
+  );
+  assert(
+    pushCode.some((l) => l.includes("ls-remote")),
+    "push-with-retry.sh no longer reads the remote ref, so it cannot tell a push from a no-op",
+  );
+
+  // The success message must name a SHA. "pushed on attempt 1" is exactly the
+  // string that was uninformative enough to be believed for days.
+  const successLine = pushCode.find((l) => l.includes('echo "pushed'));
+  assert(successLine, "push-with-retry.sh no longer reports a successful push");
+  assert(
+    successLine.includes("${local_sha}") && successLine.includes("origin/main is now"),
+    "push-with-retry.sh reports a push without the SHA that landed; the caller cannot confirm it",
+  );
+}
+
 console.log("All usage monitor tests passed.");
 
 function run(command, args, extraEnv = {}, { allowFailure = false } = {}) {
