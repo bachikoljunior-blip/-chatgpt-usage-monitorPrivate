@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T15:07:23.621Z",
+  "fetched_at": "2026-08-10T15:17:10.829Z",
   "probe": "POST /v2/products with a malformed rich_content to see whether the validator exists, then — only if it does — a throwaway created WITH a one-page ProseMirror document, read back, and deleted",
   "question": "Can a TEXT offer be delivered over the API with no file upload? prompt_pack is a document and its source is in this repository; the file walk may still need a seller web session and this branch cannot.",
   "steps": [
@@ -14,15 +14,32 @@
     },
     {
       "step": "create_with_rich_content",
+      "body_encoding": "json",
       "http_status": 200,
-      "success": false,
-      "got_id": false,
-      "message": "rich_content must be an array of content page objects."
+      "success": true,
+      "got_id": true,
+      "message": null,
+      "body_was_read": true
+    },
+    {
+      "step": "read_back",
+      "http_status": 200,
+      "content_pages": 1,
+      "landed": true,
+      "content_keys_present": [
+        "rich_content"
+      ]
+    },
+    {
+      "step": "delete",
+      "http_status": 200,
+      "success": true,
+      "still_present": false
     }
   ],
   "parameter_recognised": true,
-  "content_landed": false,
-  "verdict": "recognised_but_did_not_land",
-  "verdict_reason": "The deployment validates rich_content and then the read-back carried no pages. That is a shape or an encoding problem on our side, not an absence: form encoding cannot carry nested arrays and the page was sent as a JSON string. Re-probe with a JSON body before concluding anything about the API.",
+  "content_landed": true,
+  "verdict": "text_is_deliverable_over_the_api",
+  "verdict_reason": "A product created over the API came back carrying its content pages. A document offer needs no upload, so prompt_pack is listable at zero owner actions and the delivery term is answered for text — NOT for files, which is a separate walk.",
   "what_this_does_not_settle": "File delivery. Bytes still have to go through presign/complete (state/gumroad-presign.json shows those doors answer) and that walk is untried. A text route landing does not fix the priced kit, whose buyer downloads a file."
 }
