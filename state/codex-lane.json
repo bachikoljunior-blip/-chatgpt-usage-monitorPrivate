@@ -115,15 +115,31 @@
       "durability": "scripts/record-lane-run.mjs DURABLE_KEYS carries this forward, and tests/run-tests.mjs goes red if it is dropped. Without that, the hourly lane run regenerates this file wholesale and the finding survives until the next run — which is what happened to which_pool_a_named_run_actually_spends on 2026-08-10 at 06:15:49Z."
     }
   ],
+  "where_the_unledgered_answers_come_from": {
+    "measured_at": "2026-08-10T13:50:00Z",
+    "question": "Six of the last answers (.n .o .r .t .v .w) landed with no ledger row, all authored bachikoljunior-blip. The register said this could not separate 'the owner relays answers by hand' from 'a second automated path exists'. Both readings were still open because nobody had looked at what CAN commit here.",
+    "what_was_read": "`git config user.name` across every file in .github/workflows, and the add-commit of each outbox answer (author, committer, timezone, file count).",
+    "finding": "NO WORKFLOW IN THIS REPOSITORY COMMITS UNDER THAT IDENTITY. All ten workflows that commit declare a bot name — chatgpt-usage-monitor[bot], claude-usage-monitor[bot], gumroad-monitor[bot], itch-monitor[bot], listing-sync[bot], pulse[bot] — and laps commit as Claude <noreply@anthropic.com>. So the six answers were not produced by anything this repository runs.",
+    "the_signature_that_separates_them": "Every bot and lap commit is stamped +00:00. All six unledgered answers are stamped +09:00 (JST), author equal to committer, one file changed, and an English sentence-case message ('Add Codex verification result for 2026-08-10.w'). That is a consistent second producer, not an occasional hand relay: a person pasting six files over seven hours would not hold that shape while every other commit in the repository holds the other one.",
+    "what_this_changes": "Two things that were resting on the ledger. (1) 'Re-run the task under a fresh task_id so the workflow writes a ledger entry' — the standing repair in the .n entry — CANNOT establish who wrote the original: it would establish who wrote the RE-RUN. The two producers are different, so the answers are not comparable by re-running. (2) Which weekly ChatGPT window a given answer spent is confounded, because state/usage.json meters an account and the ledger only sees one of the two paths that spend it. scripts/spark-model.mjs settles 'did naming Spark work' by reading which window moved; that reading is only sound for answers the ledger actually saw.",
+    "what_is_still_unknown": "Which product the second path is (ChatGPT agent mode, Codex cloud, or the owner acting through either), and whether it reads codex/INBOX.md on a schedule or on demand. Nothing readable from inside this repository distinguishes those, and none of them changes the two consequences above.",
+    "how_this_stays_true": "tests/run-tests.mjs scans .github/workflows for declared committer identities and fails if any workflow starts committing under a non-bot name. If that happens, this finding is wrong and the register must be re-derived rather than trusted."
+  },
   "schema_version": 1,
   "status": "ok",
-  "checked_at": "2026-08-10T14:05:09.125Z",
+  "checked_at": "2026-08-10T15:31:49.895Z",
   "ran": true,
-  "task_id": "2026-08-10.payload-01",
-  "reason": "task 2026-08-10.payload-01 is live and unmarked (skipped 20: 2026-08-10.c: already done: codex/outbox/2026-08-10.c.md exists; 2026-08-10.d: already done: codex/outbox/2026-08-10.d.md exists; 2026-08-10.e: already done: codex/outbox/2026-08-10.e.md exists; 2026-08-10.f: already done: codex/outbox/2026-08-10.f.md exists; 2026-08-10.g: already done: codex/outbox/2026-08-10.g.md exists; 2026-08-10.h: already done: codex/outbox/2026-08-10.h.md exists; 2026-08-10.i: already done: codex/outbox/2026-08-10.i.md exists; 2026-08-10.j: already done: codex/outbox/2026-08-10.j.md exists; 2026-08-10.k: already done: codex/outbox/2026-08-10.k.md exists; 2026-08-10.l: already done: codex/outbox/2026-08-10.l.md exists; 2026-08-10.m: already done: codex/outbox/2026-08-10.m.md exists; 2026-08-10.n: already done: codex/outbox/2026-08-10.n.md exists; 2026-08-10.o: already done: codex/outbox/2026-08-10.o.md exists; 2026-08-10.p: already done: codex/outbox/2026-08-10.p.md exists; 2026-08-10.r: already done: codex/outbox/2026-08-10.r.md exists; 2026-08-10.s: already done: codex/outbox/2026-08-10.s.md exists; 2026-08-10.t: already done: codex/outbox/2026-08-10.t.md exists; 2026-08-10.u: already done: codex/outbox/2026-08-10.u.md exists; 2026-08-10.v: already done: codex/outbox/2026-08-10.v.md exists; 2026-08-10.w: already done: codex/outbox/2026-08-10.w.md exists)",
+  "task_id": "2026-08-10.payload-01-review",
+  "reason": "task 2026-08-10.payload-01-review is live and unmarked (skipped 21: 2026-08-10.c: already done: codex/outbox/2026-08-10.c.md exists; 2026-08-10.d: already done: codex/outbox/2026-08-10.d.md exists; 2026-08-10.e: already done: codex/outbox/2026-08-10.e.md exists; 2026-08-10.f: already done: codex/outbox/2026-08-10.f.md exists; 2026-08-10.g: already done: codex/outbox/2026-08-10.g.md exists; 2026-08-10.h: already done: codex/outbox/2026-08-10.h.md exists; 2026-08-10.i: already done: codex/outbox/2026-08-10.i.md exists; 2026-08-10.j: already done: codex/outbox/2026-08-10.j.md exists; 2026-08-10.k: already done: codex/outbox/2026-08-10.k.md exists; 2026-08-10.l: already done: codex/outbox/2026-08-10.l.md exists; 2026-08-10.m: already done: codex/outbox/2026-08-10.m.md exists; 2026-08-10.n: already done: codex/outbox/2026-08-10.n.md exists; 2026-08-10.o: already done: codex/outbox/2026-08-10.o.md exists; 2026-08-10.p: already done: codex/outbox/2026-08-10.p.md exists; 2026-08-10.r: already done: codex/outbox/2026-08-10.r.md exists; 2026-08-10.s: already done: codex/outbox/2026-08-10.s.md exists; 2026-08-10.t: already done: codex/outbox/2026-08-10.t.md exists; 2026-08-10.u: already done: codex/outbox/2026-08-10.u.md exists; 2026-08-10.v: already done: codex/outbox/2026-08-10.v.md exists; 2026-08-10.w: already done: codex/outbox/2026-08-10.w.md exists; 2026-08-10.payload-01: already done: codex/outbox/payload-01.md exists)",
   "model_key": "spark",
-  "model": "default",
+  "model": "gpt-5.3-codex-spark",
   "runs": [
+    {
+      "task_id": "2026-08-10.payload-01-review",
+      "model_key": "spark",
+      "model": "gpt-5.3-codex-spark",
+      "at": "2026-08-10T15:31:49.895Z"
+    },
     {
       "task_id": "2026-08-10.payload-01",
       "model_key": "spark",
@@ -173,15 +189,5 @@
       "at": "2026-08-10T06:15:49.487Z"
     }
   ],
-  "note": "Written by every run of .github/workflows/codex-inbox.yml, including the runs that skip because the task already carries its done marker. state/automations.json points codex-loop's liveness here for that reason.",
-  "where_the_unledgered_answers_come_from": {
-    "measured_at": "2026-08-10T13:50:00Z",
-    "question": "Six of the last answers (.n .o .r .t .v .w) landed with no ledger row, all authored bachikoljunior-blip. The register said this could not separate 'the owner relays answers by hand' from 'a second automated path exists'. Both readings were still open because nobody had looked at what CAN commit here.",
-    "what_was_read": "`git config user.name` across every file in .github/workflows, and the add-commit of each outbox answer (author, committer, timezone, file count).",
-    "finding": "NO WORKFLOW IN THIS REPOSITORY COMMITS UNDER THAT IDENTITY. All ten workflows that commit declare a bot name — chatgpt-usage-monitor[bot], claude-usage-monitor[bot], gumroad-monitor[bot], itch-monitor[bot], listing-sync[bot], pulse[bot] — and laps commit as Claude <noreply@anthropic.com>. So the six answers were not produced by anything this repository runs.",
-    "the_signature_that_separates_them": "Every bot and lap commit is stamped +00:00. All six unledgered answers are stamped +09:00 (JST), author equal to committer, one file changed, and an English sentence-case message ('Add Codex verification result for 2026-08-10.w'). That is a consistent second producer, not an occasional hand relay: a person pasting six files over seven hours would not hold that shape while every other commit in the repository holds the other one.",
-    "what_this_changes": "Two things that were resting on the ledger. (1) 'Re-run the task under a fresh task_id so the workflow writes a ledger entry' — the standing repair in the .n entry — CANNOT establish who wrote the original: it would establish who wrote the RE-RUN. The two producers are different, so the answers are not comparable by re-running. (2) Which weekly ChatGPT window a given answer spent is confounded, because state/usage.json meters an account and the ledger only sees one of the two paths that spend it. scripts/spark-model.mjs settles 'did naming Spark work' by reading which window moved; that reading is only sound for answers the ledger actually saw.",
-    "what_is_still_unknown": "Which product the second path is (ChatGPT agent mode, Codex cloud, or the owner acting through either), and whether it reads codex/INBOX.md on a schedule or on demand. Nothing readable from inside this repository distinguishes those, and none of them changes the two consequences above.",
-    "how_this_stays_true": "tests/run-tests.mjs scans .github/workflows for declared committer identities and fails if any workflow starts committing under a non-bot name. If that happens, this finding is wrong and the register must be re-derived rather than trusted."
-  }
+  "note": "Written by every run of .github/workflows/codex-inbox.yml, including the runs that skip because the task already carries its done marker. state/automations.json points codex-loop's liveness here for that reason."
 }
