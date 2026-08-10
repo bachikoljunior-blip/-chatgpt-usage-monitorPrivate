@@ -665,6 +665,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T01:25:22.534Z",
+      "candidate": "point_the_reach_we_own_at_the_thing_we_sell",
+      "kind": "prerequisite",
+      "mechanism": "Task 2026-08-10.a returned at commit 562d80e and no machine reads it. It answers the question the elected candidate itself deferred (and_a_harder_question_this_lap_deliberately_did_not_answer: WHAT to point the reach at). Measured from outside, 10 URLs opened: ZERO examples of anyone selling an English-market developer product to a Japanese money-and-procedures audience; what that audience is observed buying is recurring memberships (4/8), FP consultations (2/8) and apps (2/8) at 540-5980 JPY/month, median 2590, against our USD 25 one-off. This does not lower any ETA and is not claimed to. It makes the mismatch MACHINE-READABLE before the sibling-repo config edit ships, so ~1200 views/day are not spent re-measuring something already measured. Counted as groundwork because that is what it is.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

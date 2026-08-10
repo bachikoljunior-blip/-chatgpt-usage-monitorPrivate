@@ -102,11 +102,41 @@ export function applyRouteElection(candidates, election, prerequisiteMeasured = 
       owner_requests_clearing_the_prerequisite: isElected
         ? prerequisiteMeasured?.owner_requests_clearing_the_term ?? null
         : null,
+      // An elected candidate that has been refuted. Before 2026-08-10 these two
+      // fields could not see each other: `refuted` sank the candidate to the bottom
+      // of the ranking while `status` went on printing "elected" beside it, and both
+      // were correct in isolation. The lap that refuted
+      // point_the_reach_we_own_at_the_thing_we_sell produced exactly that pair, and
+      // a reader taking either line alone would have got the opposite instruction
+      // from the other. Naming it does not resolve it — resolving it is a route
+      // decision — but it stops the contradiction from being invisible.
+      elected_but_refuted: isElected ? Boolean(c.refuted) : false,
     };
     if (isElected) aligned.push(c.id);
     if (isAbandoned) onAbandoned.push(c.id);
   }
-  return { elected: election.route, aligned, on_abandoned_route: onAbandoned };
+  // Whether the elected route still has anything to do. `aligned` being non-empty
+  // was previously treated as that guarantee — the route needs a candidate under it
+  // "or applyRouteElection has nothing to elect" — but a refuted candidate satisfies
+  // the count while carrying no work anyone should take.
+  const alignedCandidates = (candidates ?? []).filter((c) => aligned.includes(c.id));
+  const electedRouteHasNoUnrefutedCandidate =
+    alignedCandidates.length > 0 && alignedCandidates.every((c) => Boolean(c.refuted));
+  return {
+    elected: election.route,
+    aligned,
+    on_abandoned_route: onAbandoned,
+    elected_route_has_no_unrefuted_candidate: electedRouteHasNoUnrefutedCandidate,
+    // Written as a sentence rather than left for the reader to assemble, because the
+    // reader is a lap picking work under a budget and this is the one thing it must
+    // not miss.
+    elected_route_status: electedRouteHasNoUnrefutedCandidate
+      ? `every candidate serving the elected route (${election.route}) is refuted. The route is still ` +
+        "elected and there is nothing under it to take. This is a route decision owed to the next " +
+        "lap: either give the route an unrefuted candidate, or elect a different route. Do not read " +
+        "the surviving 'elected' label as an instruction to take the refuted candidate anyway."
+      : null,
+  };
 }
 
 export function applyRepricings(candidates, repricings) {

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T01:25:26.638Z",
+  "fetched_at": "2026-08-10T01:33:28.410Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -57,7 +57,9 @@
       "high_intent_tool_site",
       "findable_surface_at_scale",
       "honest_post_where_buyers_gather"
-    ]
+    ],
+    "elected_route_has_no_unrefuted_candidate": true,
+    "elected_route_status": "every candidate serving the elected route (route_3_use_the_reach_already_owned) is refuted. The route is still elected and there is nothing under it to take. This is a route decision owed to the next lap: either give the route an unrefuted candidate, or elect a different route. Do not read the surviving 'elected' label as an instruction to take the refuted candidate anyway."
   },
   "channels": [
     {
@@ -208,71 +210,6 @@
       "eta_effect_basis": "no comparable estimate recorded"
     },
     {
-      "kind": "zero_base_option",
-      "id": "point_the_reach_we_own_at_the_thing_we_sell",
-      "why": "The channel delivers ~1,200 views/day unattended and currently points at nothing of ours. Putting a link in front of that traffic — description, pinned comment, end screen, or one short built from the kit — is a repo-side act with no venue rule, no account to create and no owner form. Its two ENDS are counted by machines that already run hourly: views by scripts/measure-reach.mjs, sales by scripts/read-gumroad.mjs. The middle is not — see funnel below.",
-      "serves_route": "route_3_use_the_reach_already_owned",
-      "owner_actions": "0",
-      "days_to_first_yen_estimate": "unmeasured",
-      "estimate_not_measurement": true,
-      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
-      "refuted": null,
-      "measured_surface": null,
-      "actionable_now": true,
-      "eta_effect_days": null,
-      "recurring_owner_actions_per_month": 1,
-      "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
-      "eta_effect_basis": "no comparable estimate recorded",
-      "route_alignment": {
-        "serves_route": "route_3_use_the_reach_already_owned",
-        "elected_route": "route_3_use_the_reach_already_owned",
-        "status": "elected",
-        "elected_at": "2026-08-09T22:55:00Z",
-        "why": "Route 1's own justification names the thing that makes a first post work: 'every near-success in six surveys had a third party with reach point at the thing, or several venues on the same day' — and all_options_refuted.the_term_they_all_failed_on adds the third form, 'an audience that already existed'. That is a LIFT, and the route was elected on cases that had one. Two of the three were already measured absent here: no third party has ever pointed at anything of ours, and breadth was measured 0 postable across 6 venues in two batches and abandoned at 15:20Z. The third was never measured — because state/eta.json asserted the YouTube figures were 'not readable here'. Measured this lap: 1,208.75 views/day and 394.75 engaged views/day over 2026-08-04..08-07, unattended, hourly, zero owner actions. The loop has been trying to BUY reach at venue doors that each cost an owner action while owning reach it never counted.",
-        "prerequisite": "REACH THAT WE ALREADY HOLD, reported as a rate rather than as a state. It is satisfied today: 1,208.75 views/day and 394.75 engaged views/day over a four-day window, unattended. Unlike every prerequisite before it (standing, account, venue_rule) this one costs zero owner actions and is already met, so the route's blocker is no longer permission — it is whether the reach converts, which is a countable experiment rather than a queue.",
-        "prerequisite_measured": {
-          "term": "reach",
-          "instrument": {
-            "script": "scripts/measure-reach.mjs",
-            "function": "deriveReach",
-            "state_file": "state/youtube-scan.json",
-            "path": "record.views_by_day and record.totals",
-            "vocabulary": [
-              "reach"
-            ],
-            "note": "Registered in scripts/venue-readiness.mjs PREREQUISITE_INSTRUMENTS, which is what makes a non-venue term admissible at all. Until this lap prerequisiteCheck hard-failed every term outside the venue vocabulary, so a non-venue route was unelectable — not by argument but by the guard meant to keep elections honest. The guarantee kept is the one that matters: the term must be something a NAMED machine reports, so it can turn out to be wrong. This one goes red when the snapshot is stale past 7 days or the day series stops yielding a rate."
-          },
-          "counts": {
-            "postable": 1,
-            "venue_rule": 0,
-            "venue_unsettled": 1,
-            "account": 0,
-            "account_too_new": 1
-          },
-          "venues_on_the_named_term": null,
-          "language_mismatches": [
-            "r/gamedev"
-          ],
-          "venues_with_a_revenue_path": [
-            "itch.io — Release Announcements",
-            "GameDev.net — Your Announcements"
-          ],
-          "binding_venues_without_a_revenue_path": [],
-          "owner_requests_clearing_the_term": [],
-          "ok": true,
-          "problem": null,
-          "measured_elsewhere": "scripts/measure-reach.mjs",
-          "note": "the elected route's prerequisite is \"reach\", measured by scripts/measure-reach.mjs. The venue revenue-path test below does not apply and was NOT run — it would have passed vacuously on zero rows. The venue rows are still derived and printed above, because a route change does not delete the evidence the previous route was elected on."
-        },
-        "language_mismatches": [
-          "r/gamedev"
-        ],
-        "binding_venues_without_a_revenue_path": [],
-        "owner_requests_clearing_the_prerequisite": []
-      }
-    },
-    {
       "kind": "constraint_recheck",
       "id": "eta_effect_inheritance_via_unblocks",
       "why": "high for ranking quality: it is what lets design and machinery work answer 'how many days' at all, by deriving the answer from what they unblock instead of estimating it.",
@@ -321,7 +258,7 @@
       "eta_effect_days": 21,
       "recurring_owner_actions_per_month": 0,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 21 days at the conservative end (estimate, not measured)"
     },
     {
@@ -348,7 +285,7 @@
       "eta_effect_days": 60,
       "recurring_owner_actions_per_month": 0,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 60 days at the conservative end (estimate, not measured)",
       "route_alignment": {
         "serves_route": "route_2_unattended_findable_pages",
@@ -360,7 +297,8 @@
         "prerequisite_measured": null,
         "language_mismatches": null,
         "binding_venues_without_a_revenue_path": null,
-        "owner_requests_clearing_the_prerequisite": null
+        "owner_requests_clearing_the_prerequisite": null,
+        "elected_but_refuted": false
       }
     },
     {
@@ -386,7 +324,7 @@
         "published_count": 10,
         "pages_found_by_search": 0,
         "verdict": "published_but_not_findable",
-        "measured_at": "2026-08-10T01:20:59.427Z",
+        "measured_at": "2026-08-10T01:25:28.403Z",
         "what_it_settles": "Not a shortage of pages. Ten serve 200 and a search index returned none of them, so page COUNT is not the binding term — the missing step is an inbound path from a surface that is already crawled. Building more pages buys nothing until that step exists.",
         "inbound_surface": {
           "verdict": "no_crawled_surface_found",
@@ -401,7 +339,7 @@
       "eta_effect_days": null,
       "recurring_owner_actions_per_month": 0,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_2_unattended_findable_pages",
@@ -413,7 +351,8 @@
         "prerequisite_measured": null,
         "language_mismatches": null,
         "binding_venues_without_a_revenue_path": null,
-        "owner_requests_clearing_the_prerequisite": null
+        "owner_requests_clearing_the_prerequisite": null,
+        "elected_but_refuted": false
       }
     },
     {
@@ -440,7 +379,7 @@
       "eta_effect_days": null,
       "recurring_owner_actions_per_month": 0,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "no comparable estimate recorded",
       "success_test": "A post exists in a venue whose self-promotion rules permit it as quoted, made from an account that met that venue eligibility threshold stated as a number or an explicit none, linking an artifact the reader can try without paying and without signing up. Measured from the post URL and the venue rule text, not from the pack being prepared.",
       "not_success": "A paste-ready venue pack sitting in state/owner-requests.json. That is preparation, and this candidate has been blocked on execution rather than preparation since it was written. Also not success: a post into GameDev.net, whose eligibility could not be established — posting there tests nothing, because a removal would be indistinguishable from the auto-removals already on record.",
@@ -456,7 +395,8 @@
         "prerequisite_measured": null,
         "language_mismatches": null,
         "binding_venues_without_a_revenue_path": null,
-        "owner_requests_clearing_the_prerequisite": null
+        "owner_requests_clearing_the_prerequisite": null,
+        "elected_but_refuted": false
       },
       "blocked_on_rechecked": {
         "at": "2026-08-09T11:28:00.123Z",
@@ -490,7 +430,7 @@
       "eta_effect_days": 21,
       "recurring_owner_actions_per_month": 1,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 21 days at the conservative end (estimate, not measured)"
     },
     {
@@ -516,7 +456,7 @@
       "eta_effect_days": 14,
       "recurring_owner_actions_per_month": 1,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 14 days at the conservative end (estimate, not measured)"
     },
     {
@@ -543,8 +483,84 @@
       "eta_effect_days": 30,
       "recurring_owner_actions_per_month": 1,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 30 days at the conservative end (estimate, not measured)"
+    },
+    {
+      "kind": "zero_base_option",
+      "id": "point_the_reach_we_own_at_the_thing_we_sell",
+      "why": "The channel delivers ~1,200 views/day unattended and currently points at nothing of ours. Putting a link in front of that traffic — description, pinned comment, end screen, or one short built from the kit — is a repo-side act with no venue rule, no account to create and no owner form. Its two ENDS are counted by machines that already run hourly: views by scripts/measure-reach.mjs, sales by scripts/read-gumroad.mjs. The middle is not — see funnel below.",
+      "serves_route": "route_3_use_the_reach_already_owned",
+      "owner_actions": "0",
+      "days_to_first_yen_estimate": "unmeasured",
+      "estimate_not_measurement": true,
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "refuted": {
+        "at": "2026-08-10T01:26:28Z",
+        "by": "codex-loop (codex/outbox/2026-08-10.a.md)",
+        "claim_tested": "not a speed claim — this option deliberately carries none (estimate_deliberately_absent). What was tested is the premise under the AIM: that pointing the reach we own at the thing we already sell is a pairing with any observed precedent.",
+        "finding": "None found. Eight sales pages serving the Japanese money-and-procedures audience were opened with prices read off the page: recurring membership communities 4, FP consultations 2, apps 2; band 540-5,980 JPY per month, median 2,590. The decisive question — does ANY creator serving this audience sell a developer-facing product at all — returned 無 across those 8 pages, four Japanese web searches, and two near-miss sites opened to check. The one boundary case, TaxGuard Pro's デベロッパー＆API tier at ¥1,980/month, is a Japanese investment-tax API whose page splits its audience into investors, tax accountants and developers, and is not an instance of this audience buying an English-market developer product. Our side of the pairing is a USD 25 one-off English developer asset kit.",
+        "verdict": "the AIM does not survive: no observed precedent for this audience buying this class. The ACT is untouched.",
+        "sources_in": "codex/outbox/2026-08-10.a.md",
+        "why_this_is_weaker_than_the_other_refutations_on_this_board": "The options refuted above failed against counter-examples that ran the candidate and recorded the outcome. This one failed against an absence, and an absence within a named search range is not proof of zero. It is recorded as a refutation anyway because of cost asymmetry, not because it is the same grade of evidence: the trial that would settle it directly spends ~1,200 views/day through a funnel whose clicks step has measured_by null, so its zero would not separate 'never clicked' from 'clicked and refused'.",
+        "not_refuted": "The ACT, which is the part with the standing value: config/channel.yaml publish.footer is still one config edit that reaches every video including the back catalogue, and the sibling repo's upload guard still permits a Gumroad link (it forbids github, リポジトリ, ソースコード — none of which the link contains). Also not refuted: that the kit sells to DEVELOPERS elsewhere, which is what product_form_vs_addressed_buyer branch A rests on. What died is the overlap between the audience we HAVE and the buyer we ADDRESS — so a successor may re-propose this option with a different payload, and should not read it as 'the reach is worthless'.",
+        "what_it_saved": "This option was ELECTED and one config edit from shipping, with the edit waiting only on coordination with the sibling loop. The objection it fell to was written in its own text from the start, under the_honest_objection_to_it, with the note that a candidate whose weakest point lives only in the successor's notes gets picked on its strongest point forever. It was picked on its strongest point for three laps. The measurement is what stopped it."
+      },
+      "measured_surface": null,
+      "actionable_now": true,
+      "eta_effect_days": null,
+      "recurring_owner_actions_per_month": 1,
+      "estimate_reliability": "discredited_by_siblings",
+      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "eta_effect_basis": "no comparable estimate recorded",
+      "route_alignment": {
+        "serves_route": "route_3_use_the_reach_already_owned",
+        "elected_route": "route_3_use_the_reach_already_owned",
+        "status": "elected",
+        "elected_at": "2026-08-09T22:55:00Z",
+        "why": "Route 1's own justification names the thing that makes a first post work: 'every near-success in six surveys had a third party with reach point at the thing, or several venues on the same day' — and all_options_refuted.the_term_they_all_failed_on adds the third form, 'an audience that already existed'. That is a LIFT, and the route was elected on cases that had one. Two of the three were already measured absent here: no third party has ever pointed at anything of ours, and breadth was measured 0 postable across 6 venues in two batches and abandoned at 15:20Z. The third was never measured — because state/eta.json asserted the YouTube figures were 'not readable here'. Measured this lap: 1,208.75 views/day and 394.75 engaged views/day over 2026-08-04..08-07, unattended, hourly, zero owner actions. The loop has been trying to BUY reach at venue doors that each cost an owner action while owning reach it never counted.",
+        "prerequisite": "REACH THAT WE ALREADY HOLD, reported as a rate rather than as a state. It is satisfied today: 1,208.75 views/day and 394.75 engaged views/day over a four-day window, unattended. Unlike every prerequisite before it (standing, account, venue_rule) this one costs zero owner actions and is already met, so the route's blocker is no longer permission — it is whether the reach converts, which is a countable experiment rather than a queue.",
+        "prerequisite_measured": {
+          "term": "reach",
+          "instrument": {
+            "script": "scripts/measure-reach.mjs",
+            "function": "deriveReach",
+            "state_file": "state/youtube-scan.json",
+            "path": "record.views_by_day and record.totals",
+            "vocabulary": [
+              "reach"
+            ],
+            "note": "Registered in scripts/venue-readiness.mjs PREREQUISITE_INSTRUMENTS, which is what makes a non-venue term admissible at all. Until this lap prerequisiteCheck hard-failed every term outside the venue vocabulary, so a non-venue route was unelectable — not by argument but by the guard meant to keep elections honest. The guarantee kept is the one that matters: the term must be something a NAMED machine reports, so it can turn out to be wrong. This one goes red when the snapshot is stale past 7 days or the day series stops yielding a rate."
+          },
+          "counts": {
+            "postable": 1,
+            "venue_rule": 0,
+            "venue_unsettled": 1,
+            "account": 0,
+            "account_too_new": 1
+          },
+          "venues_on_the_named_term": null,
+          "language_mismatches": [
+            "r/gamedev"
+          ],
+          "venues_with_a_revenue_path": [
+            "itch.io — Release Announcements",
+            "GameDev.net — Your Announcements"
+          ],
+          "binding_venues_without_a_revenue_path": [],
+          "owner_requests_clearing_the_term": [],
+          "ok": true,
+          "problem": null,
+          "measured_elsewhere": "scripts/measure-reach.mjs",
+          "note": "the elected route's prerequisite is \"reach\", measured by scripts/measure-reach.mjs. The venue revenue-path test below does not apply and was NOT run — it would have passed vacuously on zero rows. The venue rows are still derived and printed above, because a route change does not delete the evidence the previous route was elected on."
+        },
+        "language_mismatches": [
+          "r/gamedev"
+        ],
+        "binding_venues_without_a_revenue_path": [],
+        "owner_requests_clearing_the_prerequisite": [],
+        "elected_but_refuted": true
+      }
     },
     {
       "kind": "efficiency",

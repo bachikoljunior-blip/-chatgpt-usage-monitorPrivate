@@ -887,6 +887,58 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     "the election summary did not report which candidates it covered",
   );
 
+  // --- an elected candidate that has been refuted -----------------------------
+  //
+  // 2026-08-10. `refuted` and `status` could not see each other. The first sank a
+  // candidate to the bottom of the ranking; the second went on printing "elected"
+  // beside it. Both were correct alone and they instructed a reader in opposite
+  // directions, which is the shape this repository keeps finding under different
+  // names. Landing codex/outbox/2026-08-10.a.md on
+  // point_the_reach_we_own_at_the_thing_we_sell produced exactly that pair.
+  const refutedElected = [
+    { id: "elected_and_refuted", serves_route: "r1", refuted: { verdict: "no precedent" } },
+    { id: "elected_and_fine", serves_route: "r1" },
+  ];
+  const partly = applyRouteElection(refutedElected, election);
+  assert(
+    refutedElected[0].route_alignment.elected_but_refuted === true,
+    "an elected candidate carrying a refutation did not say so on its alignment",
+  );
+  assert(
+    refutedElected[1].route_alignment.elected_but_refuted === false,
+    "an unrefuted candidate was marked as refuted",
+  );
+  // One survivor is enough for the route to still have work under it. The board-level
+  // flag must not fire on the mere presence of a refuted sibling.
+  assert(
+    partly.elected_route_has_no_unrefuted_candidate === false,
+    "the route was declared empty while an unrefuted candidate still served it",
+  );
+
+  // And the case that matters: every candidate under the elected route refuted. The
+  // count of aligned candidates is still non-zero, which is what the old reading
+  // treated as the guarantee that the route had something to do.
+  const allRefuted = [{ id: "only_one", serves_route: "r1", refuted: { verdict: "no precedent" } }];
+  const empty = applyRouteElection(allRefuted, election);
+  assert(
+    empty.aligned.length === 1,
+    "the aligned list stopped counting refuted candidates — they must still be listed, only flagged",
+  );
+  assert(
+    empty.elected_route_has_no_unrefuted_candidate === true,
+    "an elected route whose every candidate is refuted still reported itself as having work",
+  );
+  assert(
+    typeof empty.elected_route_status === "string" && empty.elected_route_status.includes("r1"),
+    "the empty-route state was flagged as a boolean with no sentence naming the route",
+  );
+  // A route with an unrefuted candidate says nothing, so the sentence cannot become
+  // permanent furniture that stops being read.
+  assert(
+    partly.elected_route_status === null,
+    "the owed-decision sentence printed while the route still had work",
+  );
+
   // No election must be inert rather than an error, and must not silently mark
   // everything off-route.
   const untouched = [{ id: "x", serves_route: "r1" }];
@@ -2895,6 +2947,35 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     real.gaps.includes("clicks"),
     "the committed candidate stopped reporting clicks as unmeasured — if a click instrument now exists, say which script reports it",
   );
+
+  // --- a constraint that refutes an option must reach the option ---------------
+  //
+  // 2026-08-10. RUNBOOK 5's third check names the failure this guards: a decision
+  // recorded somewhere the work-picker does not read changes nothing. It had just
+  // happened again — codex/outbox/2026-08-10.a.md landed on main at 562d80e and
+  // answered the question the elected candidate itself deferred, and three laps ran
+  // afterwards with the answer sitting unread in the outbox while the candidate kept
+  // ranking fifth on its strongest point.
+  //
+  // So the link is data, not prose, and it is checked in the direction that fails
+  // silently: constraints -> zerobase. A constraint may name the option it refutes;
+  // if it does, that option must carry the refutation where the ranking reads it.
+  const cons = JSON.parse(await readFile(join(root, "state/constraints.json"), "utf8"));
+  for (const c of cons.constraints ?? []) {
+    const target = c.refutes_zerobase_option;
+    if (!target) continue;
+    const option = zb.options.find((o) => o.id === target);
+    assert(
+      option,
+      `state/constraints.json ${c.id} refutes zero-base option ${target}, which does not exist in state/zerobase.json`,
+    );
+    assert(
+      option.refuted,
+      `state/constraints.json ${c.id} refutes ${target}, but that option carries no \`refuted\` block — ` +
+        "so the ranking still offers it unmarked. Either attach the refutation or drop the claim; a " +
+        "measurement the picker cannot see is the failure RUNBOOK 5 names.",
+    );
+  }
 }
 
 // --- the itch channel can represent its own revenue ---------------------------

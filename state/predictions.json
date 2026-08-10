@@ -1084,6 +1084,36 @@
       ],
       "falsified_if": "The lane reports the model was refused and fell back, or a named run still moves only the codex window. Either outcome means the slug is wrong, NOT that the rule is wrong — the rule is the owner's statement plus a 100% window, and neither depends on the slug. The repair in that case is to ask the lane itself what model names it accepts, which costs one INBOX task on the pool we are trying to reach. Also falsified, more quietly, if no codex-inbox run happens before the judge date: an unfired lane proves nothing, and reading it as confirmation would be the stale-measurement failure this project has already made twice.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-10.refuted-elected-candidate-forces-a-route-decision",
+      "made_at": "2026-08-10T01:26:28Z",
+      "claim": "Landing codex/outbox/2026-08-10.a.md refuted the AIM of point_the_reach_we_own_at_the_thing_we_sell, which is the ONLY candidate under the elected route. The ranking now sinks it to second-from-last while the route election still labels it 'elected' — two true fields pointing opposite ways. The prediction is about whether the new flags are read rather than merely present: that the next lap to pick work RESOLVES the route (elects a different route, or attaches an unrefuted candidate to route 3) instead of taking the refuted candidate on its 'elected' label or quietly picking something else and leaving the contradiction standing. This is registered because the failure mode is silence — an unresolved contradiction costs nothing visible per lap and can persist indefinitely, which is exactly how the previous route election survived three refutations.",
+      "metric": "Read from committed state on origin/main, none from a lap's account of itself. (a) Does state/eta.json route_election.elected_route_has_no_unrefuted_candidate read false again — meaning either the elected route changed or an unrefuted candidate was attached to it? (b) If it still reads true, does state/lap-claims.json show any claim recorded against point_the_reach_we_own_at_the_thing_we_sell after 2026-08-10T01:26Z, which would mean a lap took the refuted candidate anyway? (c) Does state/zerobase.json elected_distribution_route.elected_at change?",
+      "baseline": {
+        "measured_at": "2026-08-10T01:26:28Z",
+        "elected_route": "route_3_use_the_reach_already_owned",
+        "elected_route_has_no_unrefuted_candidate": true,
+        "candidates_serving_the_elected_route": 1,
+        "of_those_refuted": 1,
+        "candidate_rank_before_refutation": 5,
+        "candidate_rank_after_refutation": 14
+      },
+      "judge_on": "2026-08-11",
+      "judge_deadline": "2026-08-14",
+      "min_observations": {
+        "source": "state/laps.json",
+        "path": "samples",
+        "min": 3,
+        "usable_only": false,
+        "note": "Three laps must have RUN after this one before the question is fair — one lap declining to resolve a route is not evidence that the flag is unread. usable_only is false on purpose: cost-measurability is irrelevant here, what is counted is that laps happened at all, and 52 consecutive laps are unmeasurable for cost so usable_only true would never reach 3."
+      },
+      "concurrent_changes": [
+        "One commit, and the parts are inseparable by design: state/constraints.json reach_audience_buys_a_different_class_than_we_sell (the measurement), state/zerobase.json refuted (the reader the ranking uses), scripts/repricing.mjs elected_but_refuted + elected_route_has_no_unrefuted_candidate (the contradiction made visible), scripts/compute-eta.mjs printing both, and the tests. Splitting them would have landed a measurement no machine reads, which is the failure being corrected.",
+        "Not this change and running anyway: the Spark model routing (2026-08-10.spark-is-reached-by-naming-it) changes which pool answers INBOX tasks. It does not touch the ranking, but a later reader comparing lane behaviour across this date should know both landed within the same hour."
+      ],
+      "falsified_if": "Three or more laps run past the judge date with elected_route_has_no_unrefuted_candidate still true and no route decision recorded. That would mean the flag is decoration — the same defect one layer up, since this change's whole justification is that a refutation the picker cannot see changes nothing. Also falsified, differently and worse: a lap records a claim against the refuted candidate, meaning the 'elected' label beat the refutation in a real decision. NOT falsified if a lap resolves it by re-aiming the candidate and removing the refuted block — that is a resolution, and the constraints->zerobase test forces it to be deliberate.",
+      "outcome": null
     }
   ]
 }

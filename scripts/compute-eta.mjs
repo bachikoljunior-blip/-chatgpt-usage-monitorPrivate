@@ -905,6 +905,15 @@ for (const c of candidates) {
   // an abandoned route that reads well is exactly what this loop kept picking.
   if (c.route_alignment) {
     console.log(`      ROUTE: ${c.route_alignment.status} (${c.route_alignment.serves_route})`);
+    // Before the prose, not after it. The prose under an elected route is its
+    // election argument, written when the candidate was believed good; read first it
+    // sells a candidate the next line then withdraws.
+    if (c.route_alignment.elected_but_refuted) {
+      console.log(
+        "      ELECTED BUT REFUTED — the label above and the refutation below are both current. " +
+          "See refuted.verdict; do not take this candidate on the strength of 'elected'.",
+      );
+    }
     console.log(`      ${c.route_alignment.why}`);
     if (c.route_alignment.prerequisite) {
       console.log(`      prerequisite: ${c.route_alignment.prerequisite}`);
@@ -980,4 +989,11 @@ for (const c of candidates) {
 }
 for (const id of unmatchedRepricings) {
   console.log(`  REPRICING NOT APPLIED: no candidate with id ${JSON.stringify(id)}`);
+}
+// Last line rather than beside the candidate, because it is a fact about the BOARD
+// and not about any one row. A lap that reads only the ranking sees the refuted
+// candidate at the bottom and correctly skips it — and thereby never learns that the
+// elected route now has nothing above it either.
+if (routeElection.elected_route_has_no_unrefuted_candidate) {
+  console.log(`  ROUTE OWES A DECISION: ${routeElection.elected_route_status}`);
 }
