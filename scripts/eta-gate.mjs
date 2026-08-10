@@ -41,7 +41,7 @@
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { readStateJson, REPO } from "./state-source.mjs";
-import { decideVerdict, KINDS, MAX_CONSECUTIVE_PREREQUISITES } from "./gate-verdict.mjs";
+import { decideVerdict, scanRun, KINDS, MAX_CONSECUTIVE_PREREQUISITES } from "./gate-verdict.mjs";
 import { blockedByDirective, directiveBlockers } from "./directive-block.mjs";
 
 const preferLocal = process.argv.includes("--local");
@@ -88,13 +88,19 @@ if (problems.length) {
   process.exit(20);
 }
 
-const [{ value: eta }, { value: history }, { value: claimsFile }, { value: constraintsFile }] =
-  await Promise.all([
-    readStateJson("state/eta.json", { preferLocal }),
-    readStateJson("state/eta-history.json", { preferLocal }),
-    readStateJson("state/lap-claims.json", { preferLocal }),
-    readStateJson("state/constraints.json", { preferLocal }),
-  ]);
+const [
+  { value: eta },
+  { value: history },
+  { value: claimsFile },
+  { value: constraintsFile },
+  { value: productLoop },
+] = await Promise.all([
+  readStateJson("state/eta.json", { preferLocal }),
+  readStateJson("state/eta-history.json", { preferLocal }),
+  readStateJson("state/lap-claims.json", { preferLocal }),
+  readStateJson("state/constraints.json", { preferLocal }),
+  readStateJson("state/product-loop.json", { preferLocal }),
+]);
 
 if (!eta) {
   console.log("  state/eta.json is unreadable, so there is no 'before' to improve on.");
@@ -121,7 +127,9 @@ const etaHasEverMoved = distinct.size > 1;
 //
 // Productive means the ETA actually moved after that route change was recorded —
 // read from state/eta-history.json, which no lap writes by hand, rather than from
-// the claim's own after_claimed, which is the lap's opinion of itself.
+// the claim's own after_claimed, which is the lap's opinion of itself. Since
+// 2026-08-10 a landed MEASUREMENT counts as productive too; the block below the
+// etaAt/movedAfter pair says why, and why that is not the metronome coming back.
 const etaAt = (iso) => {
   const t = Date.parse(iso);
   let last = null;
@@ -146,22 +154,51 @@ const movedAfter = (iso) => {
   return rows.some((r) => Date.parse(r.at) > t && key(r) !== key(before));
 };
 
-let consecutivePrerequisites = 0;
-let routeChangesWithoutMovement = 0;
-for (let i = claims.length - 1; i >= 0; i -= 1) {
-  const c = claims[i];
-  if (c.kind === "prerequisite") {
-    consecutivePrerequisites += 1;
-    continue;
+// ...and it also breaks the run if a MEASUREMENT landed after it. Added 2026-08-10
+// against a measured deadlock, not a hunch: the gate reported 37 consecutive
+// prerequisite laps, 27 route changes that moved nothing, and eta-history flat across
+// every row. Read the two lanes together and they close on each other. The refill is
+// earned by the ETA moving; the ETA is revenue, so it moves only if something is
+// built or sold; building is groundwork, which is exactly what the closed lane
+// admits. So the ONLY admissible act became "change the route", forever — and 27
+// route changes is what that looks like from inside. This is the same shape as the
+// deadlock that created the route lane in the first place (RUNBOOK 3.9: direct and
+// prerequisite both rejecting at once), recurring one level up.
+//
+// What must NOT come back is the metronome the refill rule was removed to stop:
+// pppRpppR..., eleven cycles, route changes that were claimed BECAUSE the cap fired
+// and had nothing between them. The distinguishing property of a metronome tick is
+// that nothing was measured — so that is what is read, rather than restoring an
+// unconditional refill.
+//
+// The register is state/product-loop.json, and the choice is not arbitrary. It is
+// the loop's own definition (RUNBOOK 5.4) of a measurement about the thing being
+// sold: a rung actually run against an offer, counted or void. No hourly workflow
+// writes it — laps do — so it cannot drift upward on its own the way a monitor
+// snapshot would, which is the failure that would quietly hand back the metronome.
+// A route change that produces a round changed direction for real. One followed by
+// nothing but the next route change did not.
+const roundTimes = [];
+for (const offer of productLoop?.offers ?? []) {
+  for (const r of offer?.rounds ?? []) {
+    if (r?.at) roundTimes.push(Date.parse(r.at));
   }
-  if (c.kind === "route_change" && !movedAfter(c.at)) {
-    // Unproductive: it does not reset the run, and it is counted so the verdict can
-    // say how long this has been going on.
-    routeChangesWithoutMovement += 1;
-    continue;
+  for (const r of offer?.void_rounds ?? []) {
+    // Void rounds count. The verdict is discarded, the MEASUREMENT happened, and a
+    // rule that only counted rounds we liked would pay laps for agreeable answers.
+    if (r?.recorded_at) roundTimes.push(Date.parse(r.recorded_at));
   }
-  break;
 }
+const measuredAfter = (iso) => {
+  const t = Date.parse(iso);
+  return roundTimes.some((r) => Number.isFinite(r) && r > t);
+};
+
+const { consecutivePrerequisites, routeChangesWithoutMovement } = scanRun({
+  claims,
+  movedAfter,
+  measuredAfter,
+});
 
 // The registry entry for THIS candidate, and the standing directives in force. An
 // unreadable constraints file yields no blockers rather than an error: the gate's job
@@ -194,7 +231,7 @@ console.log(`  consecutive prerequisite laps: ${consecutivePrerequisites}`);
 if (routeChangesWithoutMovement > 0) {
   console.log(
     `  route changes in this run that moved nothing: ${routeChangesWithoutMovement} ` +
-      "(they no longer refill the groundwork budget)",
+      "(no ETA movement and no product-loop round after them, so no refill)",
   );
 }
 if (allConstraints === null) {

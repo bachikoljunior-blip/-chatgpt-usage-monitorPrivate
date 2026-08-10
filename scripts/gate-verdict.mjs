@@ -202,3 +202,41 @@ export function decideVerdict({
       "Either way the lap continues — pick again.",
   };
 }
+
+// How far back the "run" of prerequisite laps reaches, walking the claim log newest
+// first. Extracted from scripts/eta-gate.mjs so the rule can be exercised without a
+// repository behind it — the two predicates are injected rather than read here, which
+// is the whole reason this is testable at all.
+//
+//   movedAfter(iso)    did state/eta-history.json change after this claim
+//   measuredAfter(iso) did state/product-loop.json gain a round after this claim
+//
+// A route change is PRODUCTIVE if either is true, and a productive route change ends
+// the run — that is the refill. A barren one is counted and stepped over, so the cap
+// keeps binding for a loop that only ever changes its mind.
+//
+// Added 2026-08-10 against a measured deadlock: 37 consecutive prerequisites, 27
+// barren route changes, eta-history flat on every row, and therefore no lane open
+// but the one that produced the 27. See the long comment in scripts/eta-gate.mjs.
+// The loophole this deliberately accepts is that laps write state/product-loop.json,
+// so a lap could refill itself by recording a round. That is bounded by the round
+// rules in scripts/product-loop.mjs --check, which pulse.yml runs hourly and which
+// refuse a round that claims engagement it cannot evidence — the same gatekeeper
+// that voided four rounds this project wanted to keep.
+export function scanRun({ claims = [], movedAfter, measuredAfter }) {
+  let consecutivePrerequisites = 0;
+  let routeChangesWithoutMovement = 0;
+  for (let i = claims.length - 1; i >= 0; i -= 1) {
+    const c = claims[i];
+    if (c.kind === "prerequisite") {
+      consecutivePrerequisites += 1;
+      continue;
+    }
+    if (c.kind === "route_change" && !movedAfter(c.at) && !measuredAfter(c.at)) {
+      routeChangesWithoutMovement += 1;
+      continue;
+    }
+    break;
+  }
+  return { consecutivePrerequisites, routeChangesWithoutMovement };
+}

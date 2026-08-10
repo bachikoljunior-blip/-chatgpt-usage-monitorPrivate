@@ -24,7 +24,7 @@ import {
   parseInboxTasks, selectTask,
 } from "../scripts/inbox-task.mjs";
 import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/revenue-rate.mjs";
-import { decideVerdict, KINDS } from "../scripts/gate-verdict.mjs";
+import { decideVerdict, scanRun, KINDS } from "../scripts/gate-verdict.mjs";
 import { roundRecognised, roundSelfReviewed, blindLeaks, blindQuestionIsAnswerable, inBlindScope, judge, engagementSupported, transcriptIsSelfConsistent } from "../scripts/product-loop.mjs";
 import {
   KINDS as LANE_KINDS, classify as laneClassify, completedIds, producesOf,
@@ -1712,6 +1712,46 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     decideVerdict({ ...at(3), kind: "route_change", routeChangesWithoutMovement: 0 })
       .refills_prerequisites === true,
     "a productive route change lost its refill",
+  );
+
+  // scanRun: the deadlock the measurement lane exists to break, and the metronome it
+  // must not bring back. Both directions are asserted here, so a suite that passes
+  // with either assertion deleted does not count.
+  //
+  // Read together, the two lanes closed on each other before 2026-08-10: the refill
+  // was earned only by the ETA moving, the ETA is revenue, revenue needs groundwork,
+  // and groundwork was the lane the cap had shut. 37 prerequisites and 27 barren
+  // route changes on the real claim log, with no lane open but the one that made the
+  // 27.
+  const claimLog = [
+    { kind: "prerequisite", at: "2026-08-10T05:00:00Z" },
+    { kind: "route_change", at: "2026-08-10T06:00:00Z" },
+    { kind: "prerequisite", at: "2026-08-10T07:00:00Z" },
+    { kind: "prerequisite", at: "2026-08-10T08:00:00Z" },
+  ];
+  const never = () => false;
+  const deadlocked = scanRun({ claims: claimLog, movedAfter: never, measuredAfter: never });
+  assert(
+    deadlocked.consecutivePrerequisites === 3 && deadlocked.routeChangesWithoutMovement === 1,
+    "a barren route change stopped being counted, which is the metronome coming back",
+  );
+  const measuredAt0700 = (iso) => Date.parse("2026-08-10T07:30:00Z") > Date.parse(iso);
+  const refilled = scanRun({
+    claims: claimLog,
+    movedAfter: never,
+    measuredAfter: measuredAt0700,
+  });
+  assert(
+    refilled.consecutivePrerequisites === 2 && refilled.routeChangesWithoutMovement === 0,
+    "a route change followed by a landed measurement did not end the prerequisite run",
+  );
+  // And a measurement that predates the route change buys nothing: the rule is about
+  // what the change PRODUCED, not about what was lying around before it.
+  const stale = (iso) => Date.parse("2026-08-10T05:00:00Z") > Date.parse(iso);
+  assert(
+    scanRun({ claims: claimLog, movedAfter: never, measuredAfter: stale })
+      .consecutivePrerequisites === 3,
+    "a measurement older than the route change refilled the groundwork budget",
   );
   // An improving claim outranks the treadmill entirely — this branch is reached
   // before any of it, and a loop that can move the number is not stuck.
