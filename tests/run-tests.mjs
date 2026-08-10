@@ -21,7 +21,7 @@ import { judge as judgeAuthorship, keyOfLandedModel, verbatimInheritance, pickAn
 import { applyRepricings, applyRouteElection } from "../scripts/repricing.mjs";
 import {
   ATTACHMENTS, buildPrompt, decide, effectiveAttachments, markerEarned, parseInboxHeader,
-  parseInboxTasks, selectTask,
+  parseInboxTasks, selectTask, resolveMarker,
 } from "../scripts/inbox-task.mjs";
 import { appendReading, daysToTarget, deriveMonthlyRate } from "../scripts/revenue-rate.mjs";
 import { decideVerdict, scanRun, KINDS } from "../scripts/gate-verdict.mjs";
@@ -1279,6 +1279,83 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     !selectTask(two, { today: "2026-08-10", markerExists: () => true }).run,
     "a fully drained queue still reported work",
   );
+
+  // --- The standing task at the floor of the queue --------------------------
+  // 2026-08-10. A drained queue is not a rest, it is the dead window: the Claude
+  // pool empties in about half a day at the observed burn and stays empty for
+  // about four, and nothing writes an inbox task without Claude. So the abundant
+  // pool idles because the scarce one is out — the same inversion the queue was
+  // built to end, at four days instead of seventeen minutes.
+  //
+  // A {today} marker is how one task can say "again tomorrow" without a lap. The
+  // three properties that make it safe are all here: it does not jump the queue,
+  // it does not run twice in a day, and it does come back the next day.
+  //
+  // Mutations run red before this was kept: resolveMarker returning the marker
+  // unresolved (the standing task then runs once and never again), and resolving
+  // it in decide() rather than in selectTask (the existence test and the marker
+  // the workflow writes then disagree about which day the run belongs to).
+  {
+    const standing =
+      "preamble\n" +
+      "```yaml\ntask_id: t.a\nvalid_until: 2026-08-17\n" +
+      'done_marker: codex/outbox/t.a.md\ndone_signal: "## x"\n```\nbody\n' +
+      "```yaml\ntask_id: t.floor\nvalid_until: 2026-12-31\n" +
+      'done_marker: codex/outbox/standing-{today}.md\ndone_signal: "## x"\n```\nbody\n';
+    const parsedStanding = parseInboxTasks(standing);
+
+    const withFiledWork = selectTask(parsedStanding, {
+      today: "2026-08-10",
+      markerExists: () => false,
+    });
+    assert(
+      withFiledWork.task.task_id === "t.a",
+      "the standing task jumped ahead of filed work, so it competes with the queue instead of backing it",
+    );
+
+    const drained = selectTask(parsedStanding, {
+      today: "2026-08-10",
+      markerExists: (m) => m === "codex/outbox/t.a.md",
+    });
+    assert(
+      drained.run && drained.task.task_id === "t.floor",
+      "a drained queue did not fall through to the standing task, so the dead window stays dead",
+    );
+    assert(
+      drained.task.done_marker === "codex/outbox/standing-2026-08-10.md",
+      `the standing task's marker was not dated: ${drained.task.done_marker}`,
+    );
+
+    const alreadyRanToday = selectTask(parsedStanding, {
+      today: "2026-08-10",
+      markerExists: (m) => m === "codex/outbox/t.a.md" || m === "codex/outbox/standing-2026-08-10.md",
+    });
+    assert(
+      !alreadyRanToday.run,
+      "the standing task ran twice in one day, which is how an hourly schedule turns a daily task into 24",
+    );
+
+    const tomorrow = selectTask(parsedStanding, {
+      today: "2026-08-11",
+      markerExists: (m) => m === "codex/outbox/t.a.md" || m === "codex/outbox/standing-2026-08-10.md",
+    });
+    assert(
+      tomorrow.run && tomorrow.task.done_marker === "codex/outbox/standing-2026-08-11.md",
+      "yesterday's marker closed the standing task for good, which is the failure it exists to avoid",
+    );
+
+    // An ordinary marker must be untouched. Every other task in the file depends
+    // on it being written and read verbatim.
+    assert(
+      resolveMarker("codex/outbox/t.a.md", "2026-08-10") === "codex/outbox/t.a.md",
+      "a marker with no placeholder was rewritten",
+    );
+    assert(
+      resolveMarker("codex/outbox/standing-{today}.md", undefined) ===
+        "codex/outbox/standing-{today}.md",
+      "a missing today silently produced a marker path, which would mark the wrong file",
+    );
+  }
 
   // The failure that would cost a real measurement: handing the model the whole
   // queue lets it answer the wrong task, and the in-flight one is silently lost.

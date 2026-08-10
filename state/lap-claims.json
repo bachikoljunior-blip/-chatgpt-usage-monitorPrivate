@@ -1082,6 +1082,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T13:10:33.936Z",
+      "candidate": "the_loop_stops_thinking_when_the_claude_pool_empties",
+      "kind": "prerequisite",
+      "mechanism": "The Claude pool is at 15% and burning 32%/day against a flat 14%/day, so it empties in about half a day and stays empty for roughly four. During that window nothing DECIDES: collectors collect, the Codex lane runs only tasks already written into its inbox, and nothing writes one without Claude. The inbox is file-ordered, so a standing task placed at the FLOOR of the queue runs exactly when every filed task is marked or expired — which is the definition of the dead window. That converts the abundant pool's idle days into external measurements, and it is the same move RUNBOOK 3 makes when it says every kind of work moved to the untight side is a lap cost saved without giving anything up.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

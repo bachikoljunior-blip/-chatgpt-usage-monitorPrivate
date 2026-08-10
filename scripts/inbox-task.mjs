@@ -129,6 +129,38 @@ export function parseInboxTasks(text) {
 }
 
 /**
+ * A done_marker may name the DAY it belongs to: `{today}` becomes YYYY-MM-DD.
+ *
+ * 2026-08-10. The Claude pool is at 15% and burning 32%/day against a flat
+ * 14.29%/day, so it empties in about half a day and stays empty for about four.
+ * In that window nothing in this system DECIDES. The collectors collect and the
+ * Codex lane runs, but the lane only runs tasks already written into its inbox,
+ * and nothing writes one without Claude. So the scarce pool sets the pace of the
+ * abundant one for most of every week — the inversion RUNBOOK 3 splits its two
+ * selection lists to prevent, at a larger scale than the 17 minutes that made it
+ * split them.
+ *
+ * A fixed marker cannot express "run again tomorrow": it is written once and the
+ * task is closed forever. That is exactly right for a survey, which is why it is
+ * the default and stays the default. It is wrong for the one task whose job is to
+ * exist when the queue is otherwise empty.
+ *
+ * The floor of the queue is where such a task goes. selectTask walks in file
+ * order, so a task at the bottom runs only when every task above it is marked or
+ * expired — which is the definition of the dead window, computed rather than
+ * guessed at.
+ *
+ * Kept deliberately small: one placeholder, no formats, no arithmetic. A marker
+ * language is a second thing that can be wrong, and the cost control this repo
+ * depends on most is the marker.
+ */
+export function resolveMarker(marker, today) {
+  if (typeof marker !== "string" || !marker) return marker ?? null;
+  if (typeof today !== "string" || !/^\d{4}-\d{2}-\d{2}/.test(today)) return marker;
+  return marker.split("{today}").join(today.slice(0, 10));
+}
+
+/**
  * The first task in the queue that is still worth running.
  *
  * Order is file order, not priority: the queue is a queue. `markerExists` is a
@@ -142,7 +174,13 @@ export function selectTask(parsed, { today, markerExists, markerAttributable = (
   if (parsed.error) return { run: false, reason: parsed.error, task: null };
   const skipped = [];
   const reopened = [];
-  for (const task of parsed.tasks) {
+  for (const raw of parsed.tasks) {
+    // Resolve {today} ONCE, here, and carry the resolved task everywhere after.
+    // The marker is checked in three places — the existence test below, the
+    // reason strings, and the done_marker the workflow writes after a run — and
+    // if any two of them resolved it separately they could disagree about which
+    // day the run belongs to, which is the one bug a dated marker can have.
+    const task = raw.error ? raw : { ...raw, done_marker: resolveMarker(raw.done_marker, today) };
     // One definition of "should this run", asked once per task. A queue that
     // judged entries by its own rules would drift from the single-task rules
     // the tests pin.
