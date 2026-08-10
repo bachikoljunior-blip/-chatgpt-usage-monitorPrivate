@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T21:28:40.468Z",
+  "fetched_at": "2026-08-10T22:22:43.131Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -40,11 +40,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 1.12
+      "days_unchanged": 1.16
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 1.12
+      "days_unchanged": 1.16
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -65,7 +65,7 @@
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-10T21:23:16.656Z",
+      "measured_at": "2026-08-10T22:17:15.383Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
       "revenue_window_days": 1.386,
@@ -82,7 +82,7 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-10T21:25:24.961Z",
+      "measured_at": "2026-08-10T22:19:27.393Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
       "revenue_window_days": 0.848,
@@ -139,17 +139,6 @@
       "measure_via": "here",
       "actionable_now": true,
       "unlock_condition_evaluated": true,
-      "eta_effect_days": null,
-      "eta_effect_basis": "no comparable estimate recorded"
-    },
-    {
-      "kind": "constraint_recheck",
-      "id": "no_standing_where_buyers_gather",
-      "why": "large: all seven zero-base options are now refuted and every one failed on the term this constraint names. This is the only route in the whole evidence set where a first buyer actually arrived, and the fastest on record. Written as 'five of the seven' when this entry was created at 11:05; codex/outbox/2026-08-09.j.md took the remaining two an hour later, which is why this constraint sorts first — nothing was moved by hand to put it there.",
-      "owner_actions": 0,
-      "note": "UNMEASURED ON OUR SIDE, EVIDENCED FROM OUTSIDE: what blocks the only route on record that ever reached a first buyer is STANDING in the community the buyers are in — prior participation, an existing following, or several venues hit at once. Not recurring owner actions. Standing accrues before the post; it is a prerequisite, not a repeat action. Whether the owner has standing anywhere has never been checked, so this entry records a blocker whose size is unknown, not a blocker known to be present.",
-      "measure_via": "here",
-      "actionable_now": true,
       "eta_effect_days": null,
       "eta_effect_basis": "no comparable estimate recorded"
     },
@@ -321,14 +310,14 @@
         "file_route": {
           "upload_route_exists": true,
           "verdict": "the earlier absence was measured on the wrong paths",
-          "measured_at": "2026-08-10T21:23:15.656Z",
+          "measured_at": "2026-08-10T22:17:14.192Z",
           "source": "state/gumroad-presign.json"
         },
         "text_route": {
           "parameter_recognised": true,
           "content_landed": false,
           "verdict": "recognised_passage_untried",
-          "measured_at": "2026-08-10T21:23:15.892Z",
+          "measured_at": "2026-08-10T22:17:14.494Z",
           "source": "state/gumroad-rich-content.json"
         },
         "payload_walk": {
@@ -481,7 +470,7 @@
         "published_count": 10,
         "pages_found_by_search": 0,
         "verdict": "published_but_not_findable",
-        "measured_at": "2026-08-10T13:46:09.395Z",
+        "measured_at": "2026-08-10T21:28:42.164Z",
         "what_it_settles": "Not a shortage of pages. Ten serve 200 and a search index returned none of them, so page COUNT is not the binding term — the missing step is an inbound path from a surface that is already crawled. Building more pages buys nothing until that step exists.",
         "inbound_surface": {
           "verdict": "no_crawled_surface_found",
@@ -562,12 +551,12 @@
           "counts": {
             "delivery_unmeasured": 0,
             "postable": 1,
-            "venue_rule": 0,
-            "venue_unsettled": 2,
+            "venue_rule": 1,
+            "venue_unsettled": 1,
             "account": 0,
             "account_too_new": 1
           },
-          "venues_on_the_named_term": 2,
+          "venues_on_the_named_term": 1,
           "language_mismatches": [
             "r/gamedev",
             "r/incremental_games"
