@@ -1,7 +1,7 @@
 # ChatGPT / Codex usage
 
 - Status: **ok**
-- Updated: `2026-08-10T10:26:13.147Z`
+- Updated: `2026-08-10T10:36:38.206Z`
 - Recommended mode: **normal**
 - Plan: **pro**
 
