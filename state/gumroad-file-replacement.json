@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-10T10:36:36.757Z",
+  "question": "Can the file a buyer downloads be replaced over the Gumroad v2 API, with no owner action?",
+  "probe": "Against a throwaway product created and deleted in the same run: route probes with a documented and a fabricated control, form-encoded PUT probes with a fake-parameter control, and a real multipart/form-data upload with bytes.",
+  "throwaway": {
+    "created": true,
+    "product_id": null,
+    "deleted": true,
+    "confirmed_absent": true,
+    "product_id_shape": "string"
+  },
+  "route_probes": [
+    {
+      "path": "files",
+      "status": 404,
+      "bytes": 900,
+      "json": false,
+      "verdict": "absent — byte-identical to a path that was never defined"
+    },
+    {
+      "path": "product_files",
+      "status": 404,
+      "bytes": 900,
+      "json": false,
+      "verdict": "absent — byte-identical to a path that was never defined"
+    },
+    {
+      "path": "asset_previews",
+      "status": 404,
+      "bytes": 900,
+      "json": false,
+      "verdict": "absent — byte-identical to a path that was never defined"
+    }
+  ],
+  "put_probes": [
+    {
+      "param": "file_url",
+      "status": 200,
+      "success": true,
+      "distinguishable_from_fake_control": false
+    },
+    {
+      "param": "files[][url]",
+      "status": 200,
+      "success": false,
+      "distinguishable_from_fake_control": true
+    },
+    {
+      "param": "product_file_url",
+      "status": 200,
+      "success": true,
+      "distinguishable_from_fake_control": false
+    }
+  ],
+  "multipart": {
+    "path": "products/:id/files",
+    "status": 404,
+    "bytes": 900,
+    "json": false,
+    "success": null,
+    "message": "(none)"
+  },
+  "verdict": "partial",
+  "verdict_reason": "something answered differently from its control without the file shape moving (routes present: false, params distinguishable: true). Read the bodies above before concluding; this is not yet an answer in either direction.",
+  "live_product_untouched": true,
+  "controls_separated": true
+}
