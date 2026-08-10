@@ -206,6 +206,15 @@ function uploadRouteExists() {
  * refusals collected from paths the vendor source does not name, sent with a form
  * encoding that cannot carry an array of objects.
  */
+function readJsonOrNull(f) {
+  if (!existsSync(f)) return null;
+  try {
+    return JSON.parse(readFileSync(f, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
 function fileWalkReading() {
   const f = path.join(ROOT, "state", "gumroad-file-walk.json");
   if (!existsSync(f)) return null;
@@ -300,6 +309,22 @@ function deliveryChannel() {
       walk = JSON.parse(readFileSync(wf, "utf8"));
     } catch {
       walk = null;
+    }
+    // A throwaway is not this product. The walk creates its own product and replaces
+    // an attachment on it; state/product-delivery.json is the record of trying the
+    // same thing HERE. When that record is newer and says it did not take, it wins —
+    // it is the only measurement in this function taken on the listing a buyer opens.
+    const live = readJsonOrNull(path.join(ROOT, "state/product-delivery.json"));
+    if (live && live.delivered === false && newerThan(live.attempted_at, walk?.fetched_at)) {
+      return {
+        verdict: "not_replaceable_here",
+        route: "unmeasured",
+        sentence:
+          `MEASURED ${live.attempted_at} ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, ` +
+          `both calls answered 2xx, and the served file list did not move (${live.verdict}). ` +
+          `state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. ` +
+          "The difference between the two products is unmeasured and is the next thing to measure; until then no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it.",
+      };
     }
     if (walk?.attachment_can_be_replaced === true && newerThan(walk.fetched_at, probe?.fetched_at)) {
       return {

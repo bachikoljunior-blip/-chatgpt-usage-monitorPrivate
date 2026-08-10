@@ -220,10 +220,48 @@ const main = async () => {
 
   // The PUT's own 2xx is not the answer. Read it back.
   const after = await call(`products/${productId}`, "GET");
-  const verdict = deliveredCleanly(after.json?.product?.files, ARCHIVE_NAME);
+  const afterFiles = after.json?.product?.files ?? [];
+  const verdict = deliveredCleanly(afterFiles, ARCHIVE_NAME);
   console.log(`read back: ${verdict.why}`);
+
+  // Written whether it worked or not, and BEFORE the exit, because the failing case
+  // is the one a later reader most needs. state/gumroad-file-walk.json proves the
+  // replace route on a throwaway this script created; that is not evidence about
+  // THIS product, and for an hour on 2026-08-10 promise-conformance generalised the
+  // one to the other and printed a claim the storefront contradicts.
+  const keys = (fs) => fs.map((f) => String(f.url ?? "").split("?")[0].split("/").slice(-3).join("/"));
+  const beforeKeys = keys(beforeFiles);
+  const afterKeys = keys(afterFiles);
+  await writeFile(
+    resolve(REPO, "state/product-delivery.json"),
+    `${JSON.stringify(
+      {
+        schema_version: 1,
+        status: "ok",
+        attempted_at: new Date().toISOString(),
+        product_id_shape: "string",
+        archive_sha256: sha,
+        files_before: beforeKeys,
+        files_after: afterKeys,
+        put_status: put.status,
+        delivered: verdict.ok,
+        verdict: verdict.ok ? "delivered" : afterKeys.join("|") === beforeKeys.join("|") ? "no_op" : "changed_but_not_clean",
+        why: verdict.why,
+        what_this_means_for_the_walk: verdict.ok
+          ? "the route measured on a throwaway also works on the live listing"
+          : "the route measured in state/gumroad-file-walk.json replaced an attachment on a product this code CREATED, and does not do the same thing here. A file upload and a PUT both answered 2xx and the served file list did not move at all. Whatever separates the two cases, 'the attachment can be replaced over the API' is not yet true of this product and must not be printed as if it were.",
+        orphan_uploads: verdict.ok
+          ? null
+          : "every failed attempt uploads an archive to storage that is then attached to nothing. Two attempts on 2026-08-10. Harmless but not free; a lap that keeps retrying this blind is paying for litter.",
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
   if (!verdict.ok) {
     console.error("the storefront does not show one correct file. Look at it by hand before anything else ships.");
+    console.error("recorded in state/product-delivery.json — promise-conformance reads it and will not claim replaceability.");
     process.exit(1);
   }
   console.log(
