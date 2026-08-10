@@ -180,10 +180,24 @@ function deliveryChannel() {
     return unmeasured;
   }
   const v = probe?.verdict;
+  // Replacement and delivery are not the same question, and reading one off the
+  // other is how "the attachment cannot be replaced" quietly became "nothing can
+  // reach a buyer". Relisting delivers without replacing, so the route is stated
+  // separately or not at all.
+  const route = probe?.delivery_route ?? "unmeasured";
+  const routeSentence =
+    route === "relist_with_file"
+      ? " DELIVERY IS STILL OPEN: creation carries a file at zero owner actions, so a corrected kit reaches a buyer by being listed afresh, and replacement never has to work."
+      : route === "none_over_api"
+        ? " AND NEITHER DOES CREATION: a create sent with a file was refused by the same rule, so no route in this API puts bytes in front of a buyer. Every source fix to this product needs one owner action to upload, and that is a measured ceiling rather than an unexplored one."
+        : route === "replace_in_place"
+          ? ""
+          : " Whether a corrected kit could instead be DELIVERED by listing it afresh is unmeasured — absence of replacement is not absence of delivery.";
   if (v === "not_replaceable") {
     return {
       verdict: v,
-      sentence: `MEASURED ${probe.fetched_at}: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable and this promise cannot be repaired in place. ${probe.verdict_reason ?? ""}`.trim(),
+      route,
+      sentence: `MEASURED ${probe.fetched_at}: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable in place.${routeSentence} ${probe.verdict_reason ?? ""}`.trim(),
     };
   }
   if (v === "replaceable") {

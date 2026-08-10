@@ -5472,3 +5472,102 @@ function assert(condition, message) {
   assert(resolveServedPath("/srv/app", "/../app-secrets/x") === null, "a sibling directory sharing a name prefix was served");
   assert(resolveServedPath("/srv/app", "/index.html?v=2#top") === "/srv/app/index.html", "a query string was treated as part of the filename");
 }
+
+// --- how the delivery probe's responses are READ -----------------------------
+//
+// The probe itself talks to a live API, so what is attacked here is the reading,
+// which is where this measurement went wrong on 2026-08-10 at 10:45Z. A lap
+// judged the delivery question from a probe that sent files[][url] a URL that
+// resolves for nobody, read the refusal as "recognised, rejected for its VALUE",
+// and concluded a real URL might work. It does not: the same refusal comes back
+// for a URL we own that answers 200. The wrong reading turned a closed door into
+// an open one and two handoffs carried it.
+//
+// Mutations run red before this was kept: refusalIsAboutOwnership returning
+// false when the messages match, creationCarriesFile folding an ownership
+// refusal into null, and deliveryRoute reporting none_over_api without the
+// creation half.
+{
+  const { refusalIsAboutOwnership, creationCarriesFile, deliveryRoute, FILE_OWNERSHIP_REFUSAL } =
+    await import("../scripts/gumroad-delivery-reading.mjs");
+
+  const refusal = "File URLs must reference your own uploaded files. Use the presigned upload endpoint to upload files first.";
+
+  assert(
+    refusalIsAboutOwnership(refusal, refusal) === true,
+    "an identical refusal for an unresolvable URL and for one we own was not read as being about ownership — that reading is the whole difference between a closed door and a lead",
+  );
+  assert(
+    refusalIsAboutOwnership(refusal, "That file is too large.") === false,
+    "a refusal that MOVED with the value was read as ownership, which would close a door that is actually open",
+  );
+  assert(
+    refusalIsAboutOwnership(refusal, null) === null,
+    "one message with no control was turned into a verdict; a single refusal cannot say why it refused",
+  );
+  assert(refusalIsAboutOwnership("", "") === null, "two empty messages were compared as if they were evidence");
+
+  // A create refused by the ownership rule is an ANSWER. Only a refusal for
+  // another reason — the daily creation cap — leaves it open, and collapsing
+  // the two into null is what would let "unmeasured" outlive the measurement.
+  assert(
+    creationCarriesFile(null, refusal) === false,
+    "a create refused by the file-ownership rule was recorded as unmeasured, which reopens a question that was answered",
+  );
+  assert(
+    creationCarriesFile(null, "You have reached your daily product creation limit.") === null,
+    "a create refused by the daily cap was read as an answer about files; a cap is not an answer",
+  );
+  assert(
+    creationCarriesFile({ files: [{ id: "x" }] }, "") === true,
+    "a created product that carries a file was not read as carrying one",
+  );
+  assert(
+    creationCarriesFile({ files: [] }, "") === false,
+    "a created product with an empty file list was not read as carrying none",
+  );
+
+  assert(
+    deliveryRoute({ verdict: "not_replaceable", carriesFile: false }) === "none_over_api",
+    "replacement closed and creation closed did not read as no route at all",
+  );
+  assert(
+    deliveryRoute({ verdict: "not_replaceable", carriesFile: true }) === "relist_with_file",
+    "replacement being closed was read as delivery being closed, when creation carrying a file delivers without replacing",
+  );
+  assert(
+    deliveryRoute({ verdict: "not_replaceable", carriesFile: null }) === "unmeasured",
+    "an unmeasured creation half was rounded down to no route, which is the direction that stops work that could still ship",
+  );
+  assert(
+    deliveryRoute({ verdict: "replaceable", carriesFile: null }) === "replace_in_place",
+    "a replaceable attachment did not read as deliverable in place",
+  );
+  assert(
+    deliveryRoute({ verdict: "partial", carriesFile: false }) === "unmeasured",
+    "an unsettled replacement verdict produced a settled route",
+  );
+
+  assert(FILE_OWNERSHIP_REFUSAL.test(refusal), "the ownership refusal no longer matches the message Gumroad actually returns");
+}
+
+// The state the probe wrote has to carry the controls, or a later reader is back
+// to the 10:45Z position: a verdict with nothing behind it. Read from the file
+// rather than from the run, because the file is what the next lap sees.
+{
+  const { readFileSync: rfs } = await import("node:fs");
+  const probe = JSON.parse(rfs(new URL("../state/gumroad-file-replacement.json", import.meta.url), "utf8"));
+  assert(Array.isArray(probe.presigned_probes), "the delivery probe stopped recording the hunt for the endpoint the API names");
+  assert(
+    probe.verdict !== "not_replaceable" || probe.presigned_probes.length > 0,
+    "an absence was recorded without searching for the endpoint the refusal itself points at",
+  );
+  assert(
+    probe.verdict !== "not_replaceable" || probe.real_url_put?.message_moved_from_invalid_url === false,
+    "not_replaceable was recorded without the control that separates a bad value from an unownable URL",
+  );
+  assert(
+    typeof probe.delivery_route === "string",
+    "the probe stopped stating a delivery route, so replacement and delivery collapse back into one question",
+  );
+}

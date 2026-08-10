@@ -70,6 +70,12 @@
 // Exit 2 = no token.
 
 import { writeFileSync } from "node:fs";
+import {
+  FILE_OWNERSHIP_REFUSAL,
+  creationCarriesFile,
+  deliveryRoute,
+  refusalIsAboutOwnership,
+} from "./gumroad-delivery-reading.mjs";
 
 const token = process.env.GUMROAD_TOKEN;
 if (!token) {
@@ -129,15 +135,34 @@ const result = {
   question:
     "Can the file a buyer downloads be replaced over the Gumroad v2 API, with no owner action?",
   probe:
-    "Against a throwaway product created and deleted in the same run: route probes with a documented and a fabricated control, form-encoded PUT probes with a fake-parameter control, and a real multipart/form-data upload with bytes.",
+    "Against throwaway products created and deleted in the same run: route probes with a documented and a fabricated control, form-encoded PUT probes with a fake-parameter control, a real multipart/form-data upload with bytes, a hunt for the presigned upload endpoint the API's own refusal names, the same file parameter given a URL we own that answers 200 rather than one that cannot resolve, and a creation carrying a file.",
   throwaway: { created: false, product_id: null, deleted: false, confirmed_absent: null },
   route_probes: [],
   put_probes: [],
   multipart: null,
+  // The refusal the first run recorded named an endpoint — "Use the presigned
+  // upload endpoint to upload files first" — and nothing looked for it. A named
+  // endpoint that is absent from the surface is a different finding from one
+  // nobody searched for, and only the second is a reason to ask a person.
+  presigned_probes: [],
+  // Whether the parameter is refused for the VALUE or for OWNERSHIP is the whole
+  // resolution of the previous "partial": example.invalid is a URL that does not
+  // resolve, so its rejection proves nothing about a URL that does.
+  real_url_put: null,
+  // The route that does not need replacement at all. Creation already measures
+  // at zero owner actions (state/gumroad-capabilities.json), so if a product can
+  // be CREATED carrying a file, every future source fix is deliverable by
+  // listing the corrected kit afresh, and replacement never has to work.
+  relisting: null,
+  delivery_route: "unmeasured",
   verdict: null,
   verdict_reason: null,
   live_product_untouched: null,
 };
+
+// A URL we actually own and that actually answers 200, as opposed to
+// example.invalid. state/public-host.json checks this host on every pulse.
+const REAL_OWNED_URL = "https://bachikoljunior-blip.github.io/O/hoshikuzu/";
 
 const finish = (code) => {
   if (outPath) writeFileSync(outPath, `${JSON.stringify(result, null, 2)}\n`);
@@ -276,15 +301,181 @@ try {
     message: redact(mp.json?.message ?? "(none)"),
   };
 
+  // --- 4.5 the endpoint the API named itself ---------------------------------
+  // The refusal says "Use the presigned upload endpoint to upload files first".
+  // If that endpoint is on this surface, replacement works and the earlier probe
+  // simply had not found it. If it is absent, then the endpoint the API points
+  // at is not one this token can reach, and THAT is the measured ceiling — a
+  // sentence in an error message is not an API.
+  const topFabricated = await call("__nonexistent_probe_zzz");
+  console.log("\npresigned-endpoint probes (top-level; the fabricated control first):");
+  console.log(`  fabricated __nonexistent_probe_zzz : ${shape(topFabricated)}`);
+  const presignedCandidates = [
+    "presigned_upload",
+    "presigned_uploads",
+    "uploads",
+    "s3/presign",
+    "product_files",
+    "files",
+  ];
+  for (const candidate of presignedCandidates) {
+    for (const method of ["GET", "POST"]) {
+      const r = await call(candidate, method === "POST" ? { method, params: { zzz: "probe" } } : {});
+      let verdict;
+      if (!controlsAreInformative) {
+        verdict = "undecidable — the controls did not separate";
+      } else if (r.status === topFabricated.status && r.bytes === topFabricated.bytes && !r.json) {
+        verdict = "absent — byte-identical to a path that was never defined";
+      } else if (r.json) {
+        verdict = "PRESENT — answers in JSON, which no fabricated path does";
+      } else {
+        verdict = "differs from the control — read the body before concluding";
+      }
+      console.log(`  candidate ${method} ${candidate.padEnd(18)}: ${shape(r)} => ${verdict}`);
+      result.presigned_probes.push({
+        path: candidate,
+        method,
+        status: r.status,
+        bytes: r.bytes,
+        json: Boolean(r.json),
+        message: redact(r.json?.message ?? "(none)"),
+        verdict,
+      });
+    }
+  }
+
+  // --- 4.6 the same parameter, with a URL that actually resolves -------------
+  // This is the step that resolves the previous run's "partial". The earlier
+  // probe sent https://example.invalid/zzz-probe.zip — a URL that cannot be
+  // fetched by anyone — so its rejection is equally consistent with "the value
+  // was bad" and with "no external URL is ever accepted". Same parameter, same
+  // product, a URL we own that answers 200: if the message does not move, the
+  // refusal is about OWNERSHIP rather than the value, and replacement by URL is
+  // closed rather than merely unproven.
+  const realPut = await call(`products/${enc}`, {
+    method: "PUT",
+    params: { "files[][url]": REAL_OWNED_URL },
+  });
+  const fakeUrlProbe = result.put_probes.find((p) => p.param === "files[][url]") ?? null;
+  const realMsg = redact(realPut.json?.message ?? "(none)");
+  const ownership = fakeUrlProbe ? refusalIsAboutOwnership(fakeUrlProbe.message, realMsg) : null;
+  const messageMoved = ownership === null ? null : !ownership;
+  console.log(
+    `\nfiles[][url] with a URL we own : HTTP ${realPut.status} success=${realPut.json?.success ?? "?"} msg=${realMsg}`,
+  );
+  console.log(`  same message as the unresolvable URL: ${messageMoved === null ? "?" : !messageMoved}`);
+  result.real_url_put = {
+    url: REAL_OWNED_URL,
+    status: realPut.status,
+    success: realPut.json?.success ?? null,
+    message: realMsg,
+    message_moved_from_invalid_url: messageMoved,
+    reads_as:
+      messageMoved === false
+        ? "the refusal does not depend on whether the URL resolves, so it is about ownership of the file rather than the value — replacement by an external URL is closed, not unproven"
+        : messageMoved === true
+          ? "the message MOVED when the URL became real — the parameter is doing something with the value, so read it before concluding anything is closed"
+          : "no comparison was available",
+  };
+
   // --- 5. did the throwaway's download actually change? ----------------------
   const after = fileShot((await call(`products/${enc}`)).json?.product);
   const moved = JSON.stringify(before) !== JSON.stringify(after);
   console.log(`\nthrowaway files before: ${JSON.stringify(before)}`);
   console.log(`throwaway files after : ${JSON.stringify(after)}`);
 
+  // --- 5.5 the route that never needs replacement ----------------------------
+  // Replacement is only one way to get a corrected file to a buyer. Creating a
+  // listing already costs zero owner actions, so if creation can carry a file,
+  // the delivery problem is solved for every future fix and the attachment on
+  // the current listing stops being the thing everything waits on.
+  //
+  // Deliberately a SECOND throwaway rather than a parameter on the first: the
+  // question is whether the file rides in at creation time, and a PUT after the
+  // fact is the question this script already answered.
+  const createdWithFile = await call("products", {
+    method: "POST",
+    params: {
+      name: "zzz-probe-create-with-file (delete me)",
+      price: 100,
+      description: "Temporary probe product. Created and deleted by scripts/probe-gumroad-file-replacement.mjs.",
+      "files[][url]": REAL_OWNED_URL,
+    },
+  });
+  const withFileId = createdWithFile.json?.product?.id ?? null;
+  const withFileShot = withFileId ? fileShot(createdWithFile.json?.product) : null;
+  // A creation that came back with no product is not automatically unmeasured.
+  // If it was refused by the SAME file-ownership rule the PUT hit, that is the
+  // answer to this question — creation cannot carry an external file either.
+  // Only a refusal for some other reason (the daily creation cap, a rate limit)
+  // leaves it unmeasured, and the two must not collapse into one null.
+  const createRefusedTheParameter =
+    !withFileId && FILE_OWNERSHIP_REFUSAL.test(createdWithFile.json?.message ?? "");
+  const carriesFile = creationCarriesFile(
+    createdWithFile.json?.product ?? null,
+    createdWithFile.json?.message ?? "",
+  );
+  console.log(
+    `\ncreate WITH files[][url] : HTTP ${createdWithFile.status} success=${createdWithFile.json?.success ?? "?"} msg=${redact(createdWithFile.json?.message ?? "(none)")}`,
+  );
+  console.log(`  created: ${Boolean(withFileId)} · file shape: ${JSON.stringify(withFileShot)} · carries a file: ${carriesFile}`);
+  result.relisting = {
+    attempted: true,
+    url: REAL_OWNED_URL,
+    status: createdWithFile.status,
+    success: createdWithFile.json?.success ?? null,
+    message: redact(createdWithFile.json?.message ?? "(none)"),
+    created: Boolean(withFileId),
+    refused_by_the_file_rule: createRefusedTheParameter,
+    file_shape: withFileShot,
+    control_file_shape: before,
+    carries_file: carriesFile,
+    deleted: null,
+    confirmed_absent: null,
+    reads_as:
+      carriesFile === true
+        ? "a product can be CREATED carrying a file, so a corrected kit is deliverable by listing it afresh and replacement never has to work"
+        : createRefusedTheParameter
+          ? "creation was REFUSED by the same file-ownership rule the PUT hit, and no product was made at all — so the listing rail cannot carry a download either, reached from the other side. This is an answer, not a gap."
+          : carriesFile === false
+            ? "creation accepts the parameter and produces a product with NO file, so the listing rail carries a price and a description but not a download — the same ceiling replacement hit, reached from the other side"
+            : `creation returned no product for another reason (${redact(createdWithFile.json?.message ?? "(none)")}), so this says nothing; creation is capped per day and a cap is not an answer`,
+  };
+  if (withFileId) {
+    const encWithFile = encodeURIComponent(withFileId);
+    let del2 = { status: 0, json: null };
+    for (let attempt = 1; attempt <= 4; attempt += 1) {
+      del2 = await call(`products/${encWithFile}`, { method: "DELETE" });
+      if (del2.status === 200 && del2.json?.success === true) break;
+      console.error(`second throwaway delete attempt ${attempt} failed (HTTP ${del2.status}); retrying`);
+      await new Promise((r) => setTimeout(r, 1000 * 2 ** attempt));
+    }
+    result.relisting.deleted = del2.status === 200 && del2.json?.success === true;
+    const coll2 = await call("products");
+    result.relisting.confirmed_absent = coll2.json
+      ? !(coll2.json?.products ?? []).some((p) => p.id === withFileId)
+      : null;
+    console.log(
+      `  cleanup: delete HTTP ${del2.status}, absent from the collection: ${result.relisting.confirmed_absent}`,
+    );
+    if (!result.relisting.deleted || result.relisting.confirmed_absent !== true) {
+      result.status = "throwaway_left_behind";
+      console.error("THE SECOND PROBE PRODUCT IS STILL ON THE ACCOUNT — it needs deleting by hand.");
+      exitCode = 1;
+    }
+  }
+
   const anyRoutePresent = result.route_probes.some((r) => r.verdict.startsWith("PRESENT"));
   const anyParamDistinguishable = result.put_probes.some((p) => p.distinguishable_from_fake_control);
   const multipartAccepted = mp.status >= 200 && mp.status < 300 && mp.json?.success === true;
+  const anyPresignedPresent = result.presigned_probes.some((p) => p.verdict.startsWith("PRESENT"));
+  // The previous run's "partial" rested entirely on files[][url] answering
+  // differently from a fake parameter. That lead survives only if the refusal
+  // tracks the VALUE. If a URL we own and that answers 200 gets the identical
+  // refusal, the parameter is rejecting external URLs as such, and a lead that
+  // cannot be followed is not a lead.
+  const ownershipNotValue = result.real_url_put?.message_moved_from_invalid_url === false;
+  const paramLeadSurvives = anyParamDistinguishable && !ownershipNotValue;
 
   if (moved || multipartAccepted) {
     result.verdict = "replaceable";
@@ -293,10 +484,20 @@ try {
     result.verdict = "undecidable";
     result.verdict_reason =
       "the documented and fabricated control paths did not separate, so no route probe here is evidence either way. Re-run; do not record an absence from this.";
-  } else if (!anyRoutePresent && !anyParamDistinguishable && !multipartAccepted) {
+  } else if (!anyRoutePresent && !anyPresignedPresent && !paramLeadSurvives && !multipartAccepted) {
     result.verdict = "not_replaceable";
     result.verdict_reason =
-      "no candidate route answers differently from a path that was never defined; every candidate PUT parameter is indistinguishable from a parameter name that is certainly fake; a real multipart upload with bytes was refused; and the throwaway's file shape did not move. The file a buyer downloads cannot be replaced over this API surface. Every source fix to the priced product is therefore undeliverable, and the alternatives are to retire the listing or to list a corrected product afresh — which state/gumroad-capabilities.json already measures at zero owner actions.";
+      "no candidate route answers differently from a path that was never defined; a real multipart upload with bytes was refused; the throwaway's file shape did not move; " +
+      `the presigned upload endpoint the API's own refusal names is absent from this surface (${result.presigned_probes.length} path/method pairs, all byte-identical to a path that was never defined); ` +
+      (ownershipNotValue
+        ? "and files[][url] returns the IDENTICAL refusal for a URL we own that answers 200 as for a URL that cannot resolve, so it rejects external URLs as such rather than rejecting a bad value. "
+        : "") +
+      "The file a buyer downloads cannot be replaced over this API surface. " +
+      (result.relisting?.carries_file === true
+        ? "It does not have to be: creation carries a file, so a corrected kit is deliverable by listing it afresh at zero owner actions."
+        : result.relisting?.carries_file === false
+          ? `Nor can creation carry one: ${result.relisting.refused_by_the_file_rule ? "a create sent WITH files[][url] was refused by the identical file-ownership rule and produced no product at all" : "a product created WITH files[][url] comes back with no file"}, so the listing rail delivers a price and a description and no download. Attaching bytes is outside this API entirely — a measured ceiling rather than a gap in the probing, and the strongest owner-request candidate on the board.`
+          : "Whether creation can carry a file went unmeasured this run.");
   } else {
     // A differing response is NOT automatically a lead, and it is not
     // automatically noise either — which way it cuts depends on the message,
@@ -316,7 +517,17 @@ try {
       `Control was: HTTP ${result.put_control?.status} success=${result.put_control?.success} "${result.put_control?.message}". ` +
       `READ THOSE MESSAGES BEFORE CONCLUDING. Rejected for the VALUE (a bad URL) means the parameter is recognised and replacement by URL may work with a real one — a lead, not an absence. Rejected for the NAME or SHAPE means the same as absent.`;
   }
+
+  // The verdict is about REPLACEMENT. The question a lap actually has is "can a
+  // corrected file reach a buyer at all", and those come apart: relisting
+  // delivers without replacing. Kept as its own field so a reader cannot infer
+  // one from the other.
+  result.delivery_route = deliveryRoute({
+    verdict: result.verdict,
+    carriesFile: result.relisting?.carries_file ?? null,
+  });
   console.log(`\nverdict: ${result.verdict} — ${result.verdict_reason}`);
+  console.log(`delivery route: ${result.delivery_route}`);
 } finally {
   // --- 6. clean up, and confirm it ------------------------------------------
   // Retried, because the first run of this script left a product on a live

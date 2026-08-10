@@ -986,6 +986,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T11:05:11.747Z",
+      "candidate": "the_delivery_channel_decides_which_fixes_are_worth_making",
+      "kind": "route_change",
+      "mechanism": "Stop editing the kit's contents while the channel that carries an edit to a buyer is unmeasured. The prior probe left a live lead: files url is recognised and its refusal names a presigned upload endpoint. Probe for that endpoint with the fabricated-path control, and measure whether create carries a file, since create already costs zero owner actions.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

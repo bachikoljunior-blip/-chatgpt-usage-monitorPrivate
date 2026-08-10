@@ -1278,12 +1278,25 @@ done_signal: "## 出典"
 **Gumroad の販売者API（api.gumroad.com/v2 系）で、既存商品の「購入者がダウンロードする
 ファイル」を差し替える手順**を、公開されている情報から特定してください。
 
-こちらで実測して分かっているのはここまでです。**この2行以外の前提を持ち込まないでください。**
+こちらで実測して分かっているのは次の5点です。**この5点以外の前提を持ち込まないでください。**
+（この task はまだ一度も実行されていません。2026-08-10 11:1xZ に実測が3つ増えたので、
+前提の行だけを差し替えました。訊いていることは変わっていません。）
 
 - `PUT /v2/products/:id` に `files[][url]` を送ると、HTTP 200 で `success: false` が返り、
   メッセージは `File URLs must reference your own uploaded files. Use the presigned upload endpoint to upload files first.`
 - `/v2/products/:id/files`、`/v2/products/:id/product_files`、`/v2/products/:id/asset_previews`
   はいずれも存在しない経路として応答します（定義されていないパスと byte 単位で同一）。
+- **上のメッセージが名指しする presigned upload の口を、`/v2/` 直下で12通り探して全部空振りでした。**
+  `presigned_upload` `presigned_uploads` `uploads` `s3/presign` `product_files` `files` の
+  それぞれ GET と POST。**12通りとも、定義されていないパスと byte 単位で同一の応答**です
+  （対照として、実在する `variant_categories` は 200/json を返します）。
+- **`files[][url]` の拒否は「URLの中身が悪い」からではありません。** こちらが所有していて
+  実際に 200 を返す URL を送っても、**到達しない URL を送ったときと1文字も同じメッセージ**が返ります。
+- **`POST /v2/products` に `files[][url]` を付けて新規作成しても、同じメッセージで拒否され、
+  商品自体が作られません。** つまり「新しく出品し直す」経路でもファイルは載りません。
+
+**だから訊きたいのは「`/v2/` のどこか」ではありません。** そこには無いことが測れています。
+**`api.gumroad.com/v2` の外にある口**（管理画面が実際に使っている口を含む）を探してください。
 
 ### 答えてほしいこと（この見出しの順で）
 
