@@ -493,7 +493,30 @@
             "postable_when_note": "Two members, both AND-ed, both repo files, matching the itch.io row's shape (the playable thing plus the text that goes in front of readers). The first exists and is what rule 4 requires a link to. The second does NOT exist yet and is the post body carrying the mandatory 'AI Disclosure' section — without it the post is removed by the venue's own announcement, and the 30-day rule means the slot is spent when that happens. Writing it is lap work: no owner action, no venue permission, no external reachability. Deliberately NOT written in the same lap as this filing so that the register change and the artifact are separable — RUNBOOK 4, one change per lap.",
             "blocked_on_changed_at": "2026-08-10T22:05:00Z",
             "blocked_on_was": "unverified eligibility. Counted as not-postable on purpose, on the same rule as GameDev.net: the measured failure mode in this evidence set is a standing-start account being auto-removed, and an unpublished threshold is exactly the condition that produced it.",
-            "blocked_on_changed_meaning": "The row did not get better by argument. It moved from a blocker of the kind 'nobody can find out' to a blocker of the kind 'nobody has written the file yet'. venue-readiness prints the first as venue_unsettled and the second as venue_rule, and only the second is something a lap can clear."
+            "blocked_on_changed_meaning": "The row did not get better by argument. It moved from a blocker of the kind 'nobody can find out' to a blocker of the kind 'nobody has written the file yet'. venue-readiness prints the first as venue_unsettled and the second as venue_rule, and only the second is something a lap can clear.",
+            "post_shape_lead": {
+              "filed_at": "2026-08-10T22:35:00Z",
+              "source": "codex/outbox/incremental-post-shape.md (task 2026-08-11.incremental-post-shape)",
+              "rated": "LEAD, NOT MEASUREMENT. Ninth answer arriving with no ledger run — state/codex-lane.json answers_with_no_ledger_run carries the row, the signature match and why this one is rated a strong lead rather than discarded. Nothing here may be cited as the venue having been observed.",
+              "why_it_was_asked": "required_post_sections.one_per_30_days. One own-content post per month, and a post missing the mandatory section is removed AND spends the slot. The task existed to stop the slot being spent on a malformed body.",
+              "what_it_retires": {
+                "the_label_is_matched_loosely": "Three surviving posts carry the section under three different spellings — \"AI Disclosure :\", \"**AI Disclosure**\", \"AI disclosure:\" — all at the end of the body, all still standing. So assets/announce/reddit-incremental-post.en.md does not have to guess an exact string, which was the specific risk to the slot.",
+                "the_itch_io_rail_survives": "Five posts naming itch.io as the current playable, none flagged removed. The handoff named this as unmeasured because every surviving PAID post in incremental-eligibility.md linked Steam, a rail this account cannot use."
+              },
+              "what_it_opens_and_is_the_reason_this_is_filed_in_the_row": {
+                "paid_and_itch_io_together_is_unobserved": "The three surviving paid posts were Steam. Of the five surviving itch.io posts, one is explicitly free and four state no price — zero confirmed paid. Each half of what this account would post is observed surviving; the combination is observed nowhere. paid_promotion_permitted stays TRUE — it rests on the venue rule text (\"Does not have to be free\"), which this does not touch — but the survival evidence under it does not cover our shape.",
+                "no_post_in_the_top_ten_offers_a_tool": "Ten of ten top self-promotion posts offer a GAME; zero offer a creation kit or asset pack. This row was added because it is the only venue whose readers gather for the exact category this account sells — see delivery.what_it_means_for_the_route. That sentence is now qualified: the readers gather for idle/clicker GAMES, and the only thing this account sells is the KIT that makes them, aimed by product_form_vs_addressed_buyer branch A at the person who publishes their own. The addressee is the poster; the audience is the players that poster builds for.",
+                "what_this_is_NOT": "Not evidence the venue refuses kit posts. It is a ranking snapshot off a crawl the answer itself declares 5 days stale, and it counts what was posted and ranked, not what was removed. Absence of precedent is not prohibition, and rule 4 as quoted on this row is satisfied by a kit post that links the free playable demo."
+              },
+              "what_it_does_not_change": "postable_when, blocked_on and postable_today are untouched. The blocker is still that assets/announce/reddit-incremental-post.en.md does not exist. This filing changes what that file should say and what the owed route decision knows, not whether the row is postable.",
+              "lane_run": {
+                "task_id": "2026-08-11.incremental-post-shape",
+                "ledger": "state/codex-lane.json",
+                "row": "answers_with_no_ledger_run",
+                "checked_before_filing": true,
+                "why_recorded": "tests/run-tests.mjs was RED on origin/main for this exact answer when this lap started — the ledger check firing before any lap read the numbers and acted on them, which is the behaviour it was built for."
+              }
+            }
           }
         ],
         "what_this_does_to_the_lift_mechanism": "The route adopted at 3555e97 was substitute breadth for standing. Breadth is now measured rather than assumed, and it did not substitute: 0 of 3. But the reason is NOT that standing turned out to be required after all — no venue refused us for lack of standing. Two refused for reasons that have nothing to do with reputation: one wants a page on its own platform, one forbids the product form. Standing remains unmeasured on our side, as the claim above says. What has changed is that the next blocker is no longer reputational and is no longer unknown.",

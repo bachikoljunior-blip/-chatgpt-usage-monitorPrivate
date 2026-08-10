@@ -1306,6 +1306,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T23:02:23.237Z",
+      "candidate": "honest_post_where_buyers_gather",
+      "kind": "prerequisite",
+      "mechanism": "The owed route decision (4 laps) chooses between abandon / re-point to r/incremental_games / elect off the venue board. The answer that bears on option 2 has arrived (codex/outbox/incremental-post-shape.md) and is UNUSABLE: tests/run-tests.mjs is red on origin/main because it is the ninth answer with no ledger run, so nothing may be filed off it. Acknowledging it in state/codex-lane.json with what it may and may not be used for is the precondition for the decision reading it at all. No ETA movement is claimed; the claim is that the decision currently has no readable material and after this it does.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
