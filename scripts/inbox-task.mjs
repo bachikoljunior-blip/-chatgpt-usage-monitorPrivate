@@ -77,6 +77,11 @@ function headerFromBody(body) {
   // every task would then carry it.
   const attachRaw = field("attach");
   const attach = attachRaw ? attachRaw.split(",").map((s) => s.trim()).filter(Boolean) : [];
+  // What the task IS: measurement, review, payload. scripts/lane-allocation.mjs and
+  // scripts/product-loop.mjs inBlindScope() both read it off the raw section text;
+  // rule 4 of lane-authorship.mjs needs it off the parsed task, and re-deriving it
+  // there would be a second reader of the same field that can drift from this one.
+  const produces = field("produces");
   const missing = Object.entries({ task_id, valid_until, done_marker, done_signal })
     .filter(([, v]) => !v)
     .map(([k]) => k);
@@ -84,7 +89,7 @@ function headerFromBody(body) {
   if (!MODEL_KEYS.includes(model)) {
     return { error: `INBOX task ${task_id}: model must be one of ${MODEL_KEYS.join(", ")}, got ${model}` };
   }
-  return { task_id, valid_until, done_marker, done_signal, model, reviews_authored_by, attach };
+  return { task_id, valid_until, done_marker, done_signal, model, reviews_authored_by, attach, produces };
 }
 
 /**

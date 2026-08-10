@@ -21,7 +21,20 @@
  */
 import { readFile, readdir } from "node:fs/promises";
 
-export const KINDS = ["payload", "surface", "measurement", "research"];
+// `review` was missing until 2026-08-10T08:0xZ, and it was missing on the two tasks
+// this project's central finding rests on. .k and .l are produces: review, so the
+// classifier counted them as neither measurement nor research — they were
+// unclassified to this reader while being invisible to the blind scanner, which had
+// the same gap in the same word. A kind used by real tasks and known to no list is
+// worse than an unrecognised one: nothing goes red, and the share arithmetic that
+// decides whether the lane still produces anything sellable is computed over a
+// denominator with a hole in it.
+//
+// It counts as its own kind rather than folding into measurement. A review judges an
+// artifact WE hold; a measurement reads the outside world. Merging them would let a
+// lane that only reviews its own output report the same allocation as one that goes
+// out and measures something.
+export const KINDS = ["payload", "surface", "measurement", "research", "review"];
 
 /**
  * The `produces:` value declared in a task's yaml header, or null.

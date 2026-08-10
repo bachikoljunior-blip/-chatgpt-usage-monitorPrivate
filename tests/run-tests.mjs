@@ -17,7 +17,7 @@ import {
 } from "../scripts/derive-lap-cost.mjs";
 import { classify, resolveLastSeen, unverifiedReservations } from "../scripts/check-heartbeats.mjs";
 import { buildLaneRecord, LANE_STATE_PATH } from "../scripts/record-lane-run.mjs";
-import { judge as judgeAuthorship, keyOfLandedModel } from "../scripts/lane-authorship.mjs";
+import { judge as judgeAuthorship, keyOfLandedModel, verbatimInheritance, pickAncestor } from "../scripts/lane-authorship.mjs";
 import { applyRepricings, applyRouteElection } from "../scripts/repricing.mjs";
 import {
   ATTACHMENTS, buildPrompt, decide, effectiveAttachments, markerEarned, parseInboxHeader,
@@ -878,6 +878,78 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       }).ok,
       "an acknowledged unledgered answer still counted as a problem",
     );
+    // Rule 4. A "rebuild" commissioned with attach: is the previous version with
+    // edits, so the model that ran it authored the diff. Measured 2026-08-10:
+    // .n is 99% verbatim from .j and .j is 98% from .h, and all three carry the same
+    // two dead statements character for character.
+    const child = "const producerTypes = [];\nstate.runDust += 0;\nfunction tap() { return 1; }";
+    const parent = "const producerTypes = [];\nstate.runDust += 0;\nfunction tap() { return 2; }";
+    assert(verbatimInheritance(child, parent).fraction > 0.6,
+      "a file two thirds identical to its parent did not read as inherited");
+    assert(verbatimInheritance(child, "totally different content here entirely").fraction === 0,
+      "an unrelated file read as inherited");
+    // Trivial lines are dropped, or a closing brace matching a closing brace would
+    // put every file above the threshold regardless of what it contains.
+    assert(verbatimInheritance("}\n}\n}", "}\n}\n}").child === 0,
+      "punctuation was counted as inheritance, which would make the measure meaningless");
+
+    // Ancestry needs an ORDERING. Overlap is symmetric, so without it the newest
+    // rebuild reads as the parent of the file it was copied from — which the live
+    // tree produced before this was fixed: .l reported as reviewing a .j "derived
+    // from" .n, the same 99% read backwards.
+    {
+      const body = "const producerTypes = [];\nstate.runDust += 0;\nfunction tap() { return 1; }";
+      // The NEWER candidate is the closer match — that is the whole trap. Without an
+      // ordering the strongest overlap wins, and the strongest overlap is the file
+      // that was copied FROM the child, not the one the child was copied from.
+      const cands = [
+        { path: "codex/outbox/2026-08-10.h.md", text: body.replace("return 1", "return 9") },
+        { path: "codex/outbox/2026-08-10.z.md", text: body },
+      ];
+      const got = pickAncestor("codex/outbox/2026-08-10.j.md", body, cands);
+      assert(got?.derived_from === "codex/outbox/2026-08-10.h.md",
+        `an answer NEWER than the child was picked as its ancestor: ${got?.derived_from}`);
+      // An artifact outside codex/outbox has no id, so it may descend from anything.
+      assert(pickAncestor("assets/free-demo/index.html", body, cands)?.derived_from,
+        "a file with no task id was left without an ancestor because it could not be ordered");
+    }
+
+    {
+      const rev = {
+        task_id: "2026-08-10.zz", model: "spark", produces: "review",
+        attach: ["codex/outbox/x.md"], valid_until: "2026-08-17",
+        done_marker: "m", done_signal: "s",
+      };
+      const derived = [{ path: "codex/outbox/x.md", derived_from: "codex/outbox/w.md", fraction: 0.99 }];
+      // Unrecorded lineage: a problem, because the register has not said whose code
+      // the reviewer is about to read.
+      assert(!judgeAuthorship({ tasks: [rev], runs: [], sparkSlug: SLUG, derivations: derived }).ok,
+        "a review of a 99%-inherited artifact passed with no effective_author recorded");
+      // Recorded, and it names the reviewer itself: the void round, refused before
+      // the slot is spent rather than diagnosed after the answer comes back.
+      assert(!judgeAuthorship({
+        tasks: [rev], runs: [], sparkSlug: SLUG,
+        derivations: [{ ...derived[0], effective_author: "spark" }],
+      }).ok, "a reviewer was sent to read code the register says is its own");
+      assert(judgeAuthorship({
+        tasks: [rev], runs: [], sparkSlug: SLUG,
+        derivations: [{ ...derived[0], effective_author: "account_default" }],
+      }).ok, "a genuine non-author pairing on a derived artifact was refused");
+      // Unestablished: fatal while the task can still be withdrawn, a recorded fact
+      // once it has answered. This is what withdrew 2026-08-10.q before it ran.
+      const unest = [{ ...derived[0], effective_author: "unestablished" }];
+      assert(!judgeAuthorship({ tasks: [rev], runs: [], sparkSlug: SLUG, derivations: unest }).ok,
+        "a queued review of an artifact with no establishable author was allowed to spend a slot");
+      assert(judgeAuthorship({
+        tasks: [rev], runs: [], sparkSlug: SLUG, derivations: unest, landedTasks: ["2026-08-10.zz"],
+      }).ok, "a review that has already answered was held to a pairing nobody can now change");
+      // The task's own kind still decides. A builder is handed the previous version
+      // by design and has no blind to break.
+      assert(judgeAuthorship({
+        tasks: [{ ...rev, produces: "payload" }], runs: [], sparkSlug: SLUG, derivations: derived,
+      }).ok, "a build task was held to the reviewer-is-not-the-author rule");
+    }
+
     // And the live pair: the register's acknowledgement must actually cover the
     // answers on disk, or the check is green because someone edited the list.
     {
@@ -902,6 +974,13 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   {
     const inboxText = await readFile(join(root, "codex/INBOX.md"), "utf8");
     const parsedInbox = parseInboxTasks(inboxText);
+    // `produces:` has to survive the parser. Rule 4 of lane-authorship.mjs scopes on
+    // it, and an undefined field silently makes every review task invisible to that
+    // rule — the check would be green because it has nothing to look at.
+    assert(
+      parsedInbox.tasks.some((t) => t.produces === "measurement"),
+      "no parsed task reports produces: measurement, so rule 4 and the blind scope have no subject",
+    );
     const withChoice = parsedInbox.tasks.filter((t) => t.reviews_authored_by);
     assert(
       withChoice.length >= 1,
@@ -4115,6 +4194,25 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       "a kind outside KINDS must be red; a typo would otherwise become a silent fifth category");
     assert(!LANE_KINDS.includes("artifact"),
       "'artifact' is deliberately not a kind — payload and surface are separated so copy cannot be counted as goods");
+
+    // `review` IS a kind. It was not until 2026-08-10, and the two tasks the
+    // project's central finding rests on (.k and .l) both declare it — so they
+    // counted as neither measurement nor research, and the share arithmetic that
+    // decides whether the lane still produces anything sellable had a hole in its
+    // denominator. A word real tasks use and no list knows goes red nowhere.
+    assert(LANE_KINDS.includes("review"),
+      "'review' is not a kind, so every blind-review task falls out of the allocation unclassified");
+    {
+      const reviewLive = laneJudge({
+        rows: eightResearch, liveTasks: [{ task_id: "2026-08-10.x", produces: "review" }],
+        register, electedRoute: ROUTE,
+      });
+      assert(!reviewLive.problems.some((p) => /not a kind/.test(p)),
+        "a live review task was rejected as an unknown kind");
+      const reviewRows = laneClassify(["2026-08-10.x"], new Map([["2026-08-10.x", "review"]]), []);
+      assert(reviewRows.some((r) => r.produces === "review"),
+        "a completed review task did not classify as review — it would sit in unclassified and be counted nowhere");
+    }
 
     // Route-scoped: if a later lap elects a route where research is the binding
     // term, this floor must stop binding rather than be deleted.

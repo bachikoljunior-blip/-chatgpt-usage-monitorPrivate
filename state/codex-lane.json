@@ -67,5 +67,37 @@
       "what_must_not_be_done_because_of_it": "Do not file a review of .n paired against author_model_key account_default. roundSelfReviewed() would return false on that pairing and it would be false on a guess — the pairing rule's whole value is that it fires before a lane slot is spent, and pairing against an unverified header spends the slot and finds out afterwards.",
       "how_to_establish_it_if_it_matters": "Re-run the task through the lane under a fresh task_id so the workflow writes a ledger entry, and compare the two answers. That costs one lane slot on the abundant pool and zero Claude budget. Cheaper alternative: treat .n as authorless and have BOTH models review it, since a round is only void when the reviewer IS the author, and at most one of the two can be."
     }
-  ]
+  ],
+  "derived_artifacts": [
+    {
+      "path": "assets/free-demo/index.html",
+      "derived_from": "codex/outbox/2026-08-09.q.md",
+      "verbatim_fraction": 0.94,
+      "measured_at": "2026-08-10T07:55:00Z",
+      "effective_author": "account_default",
+      "how_established": "2026-08-09.q ran before the dispatch began naming a model (scripts/spark-model.mjs landed 2026-08-10 ~04:51Z; state/usage.json shows codex_bengalfox at 0% used until then). `codex exec` with no --model runs the account default, so every answer before that hour is account_default's. Round 4's pairing block records the same key, established independently.",
+      "note": "This is the LIVE artifact and it is 94% verbatim from the lane answer it was installed from — 166 of 176 substantive lines. It is a transplant, not a rewrite, which is what 'installed at assets/free-demo/index.html' already said; the number puts a floor under it."
+    },
+    {
+      "path": "codex/outbox/2026-08-10.j.md",
+      "derived_from": "codex/outbox/2026-08-10.h.md",
+      "verbatim_fraction": 0.98,
+      "measured_at": "2026-08-10T07:55:00Z",
+      "effective_author": "unestablished",
+      "how_established": null,
+      "why_unestablished": "490 of .j's 498 substantive lines are .h's, so .j's author is .h's author. .h predates state/codex-lane.json runs[] — the ledger's earliest entry is 2026-08-10.k — so no record says which model ran it. The register recorded .j as authored_by spark; spark ran the task and wrote roughly eight lines of the file.",
+      "what_this_costs": "Task 2026-08-10.l — account_default reviewing .j — was filed as a non-author pairing and cannot be confirmed as one. It is one of the three readings the blind_reviewer_finding rests on. NOT re-adjudicated here: .l returned 見覚え ない and found a real defect, and .k plus the .i control are untouched by this. The next lap should decide what the 2x2 still supports, with this measurement in hand and a fresh context."
+    },
+    {
+      "path": "codex/outbox/2026-08-10.n.md",
+      "derived_from": "codex/outbox/2026-08-10.j.md",
+      "verbatim_fraction": 0.99,
+      "measured_at": "2026-08-10T07:55:00Z",
+      "effective_author": "unestablished",
+      "how_established": null,
+      "why_unestablished": "495 of 498 substantive lines are .j's, and .j's are .h's. The chain roots in .h, which has no ledger run. Independently, .n itself has no ledger run (see answers_with_no_ledger_run).",
+      "what_this_already_did": "Task 2026-08-10.q — spark reviewing .n, filed one lap earlier as a clean non-author pairing — was WITHDRAWN before it ran. Rule 4 refused it while the slot was still unspent, which is the difference between this check and roundSelfReviewed(): one fires on the task, the other on the answer, one round later."
+    }
+  ],
+  "what_the_lineage_measurement_found": "Every rebuild this lane has produced is the previous version with a few lines changed. .h -> .j is 98%, .j -> .n is 99%, and all three carry the same two dead statements character for character (state.runDust += 0; and state.totalTouched += 0;) while the independently-written live artifact carries neither. The register was treating them as separate artifacts by separate authors on the strength of the model: header in the task that commissioned each one. A task with attach: hands the model the previous version, so what the running model authors is the DIFF."
 }

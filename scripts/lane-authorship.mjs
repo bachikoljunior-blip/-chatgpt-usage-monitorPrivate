@@ -56,6 +56,12 @@ import { parseInboxTasks, MODEL_KEYS, DEFAULT_MODEL_KEY } from "./inbox-task.mjs
 export const INBOX_PATH = "codex/INBOX.md";
 export const LANE_STATE_PATH = "state/codex-lane.json";
 
+// Above this share of verbatim lines, an artifact is the previous version with edits
+// and its author is whoever wrote the previous version. Blunt on purpose: verbatim
+// line matching is a FLOOR, so anything over half is copied under any reading, and
+// the measured case that motivated it is 99%, not 51%.
+export const DERIVED_THRESHOLD = 0.5;
+
 /**
  * Which model key a landed slug belongs to.
  *
@@ -112,9 +118,80 @@ export function unledgeredAnswers({ answers = [], runs = [], acknowledged = [] }
 }
 
 /**
+ * How much of a "rebuild" is the previous version, copied.
+ *
+ * The pairing rule assumes a task's author is the model that ran it. That holds for
+ * an artifact written from nothing. It does NOT hold for a task with `attach:`,
+ * which hands the model the previous version and asks for a better one — there the
+ * running model authors the DIFF, and everything it left alone still belongs to
+ * whoever wrote it first.
+ *
+ * Measured 2026-08-10, and it is not a small residue. Every rebuild this lane has
+ * produced carries the same two dead statements, character for character:
+ *
+ *   .h (v2)  state.runDust += 0;      state.totalTouched += 0;
+ *   .j (v3)  state.runDust += 0;      state.totalTouched += 0;
+ *   .n (v5)  state.runDust += 0;      state.totalTouched += 0;
+ *
+ * while assets/free-demo/index.html, which was written independently, has neither.
+ * Two lines that do nothing, surviving three "rebuilds" and two nominally different
+ * models, are not a coincidence — they are the signature of an edit presented as a
+ * rewrite. The register was already treating .j and .n as artifacts by different
+ * authors on the strength of the `model:` header.
+ *
+ * Lines are compared verbatim and trivial ones are dropped: a closing brace matching
+ * a closing brace is not inheritance, and counting it would put every file above 50%
+ * regardless. That makes this a floor rather than an estimate — reformatted or
+ * renamed code reads as new here, so a high number means copying and a low one does
+ * not mean independence.
+ *
+ * @returns {{child: number, shared: number, fraction: number}}
+ */
+/**
+ * The most likely ancestor of an artifact among the answers that came before it.
+ *
+ * Pure so the ordering rule can be tested. Verbatim overlap is SYMMETRIC, so without
+ * an ordering the newest rebuild reads as the parent of the file it was copied from —
+ * measured on the live tree, where .l was reported as reviewing a .j "derived from"
+ * .n, which is the same 99% read backwards. Task ids sort by date, and an artifact
+ * outside codex/outbox has no id, so anything may be its ancestor.
+ *
+ * @param {string} childPath
+ * @param {string} childText
+ * @param {Array<{path: string, text: string}>} candidates
+ * @param {number} threshold
+ */
+export function pickAncestor(childPath, childText, candidates, threshold = DERIVED_THRESHOLD) {
+  const childId = /^codex\/outbox\/(.+)\.md$/.exec(childPath)?.[1] ?? null;
+  let best = null;
+  for (const c of candidates) {
+    if (c.path === childPath) continue;
+    const id = /^codex\/outbox\/(.+)\.md$/.exec(c.path)?.[1] ?? null;
+    if (childId !== null && id !== null && id >= childId) continue;
+    const { fraction } = verbatimInheritance(childText, c.text);
+    if (fraction >= threshold && (!best || fraction > best.fraction)) {
+      best = { path: childPath, derived_from: c.path, fraction };
+    }
+  }
+  return best;
+}
+
+export function verbatimInheritance(childText, parentText) {
+  const meaningful = (t) =>
+    String(t ?? "")
+      .split("\n")
+      .map((l) => l.trim())
+      .filter((l) => l.length >= 8);
+  const parent = new Set(meaningful(parentText));
+  const child = meaningful(childText);
+  const shared = child.filter((l) => parent.has(l)).length;
+  return { child: child.length, shared, fraction: child.length ? shared / child.length : 0 };
+}
+
+/**
  * @returns {{ok: boolean, problems: string[], notes: string[]}}
  */
-export function judge({ tasks, runs, sparkSlug, answers = [], acknowledged = [] }) {
+export function judge({ tasks, runs, sparkSlug, answers = [], acknowledged = [], derivations = [], landedTasks = [] }) {
   const problems = [];
   const notes = [];
 
@@ -155,6 +232,59 @@ export function judge({ tasks, runs, sparkSlug, answers = [], acknowledged = [] 
     }
   }
 
+  // Rule 4: a review of a DERIVED artifact must be paired against where the code
+  // came from, not against whoever last touched it.
+  //
+  // Measured 2026-08-10: codex/outbox/2026-08-10.n.md is 99% verbatim from
+  // codex/outbox/2026-08-10.j.md — 495 of 498 substantive lines. It was commissioned
+  // as a rebuild by account_default and it is a three-line edit of spark's file. The
+  // task filed to review it named account_default as the author, so the header said
+  // "spark reviews account_default's work" while the artifact was 99% spark's. Rule 1
+  // passed it. The round would have come back and been kept or voided on the answer,
+  // one lane slot too late — the same one-round-late cost roundSelfReviewed() exists
+  // to remove, reappearing one level up because the pairing was read off a header.
+  //
+  // The threshold is deliberately blunt. Verbatim line matching is a floor, so a file
+  // over half identical is copied by any reading, and the rule only asks the register
+  // to SAY who the code belongs to. Silence is what it refuses.
+  for (const task of tasks) {
+    if (task.error || task.produces !== "review" || !task.attach?.length) continue;
+    for (const att of task.attach) {
+      const lineage = derivations.find((d) => d.path === att);
+      if (!lineage) continue;
+      // A rule must bite where the outcome can still change. A task that has already
+      // returned an answer cannot be re-paired, so an unestablished ancestor there is
+      // a fact to carry rather than a failure to fix — the same scoping the blind-leak
+      // test uses. On a task still in the queue it is a problem, because a slot is
+      // about to be spent on a round that cannot be told from a self-review.
+      const landed = landedTasks.includes(task.task_id);
+      if (lineage.effective_author === "unestablished") {
+        const line =
+          `${task.task_id}: reviews ${att}, ${(lineage.fraction * 100).toFixed(0)}% verbatim from ` +
+          `${lineage.derived_from}, whose author is UNESTABLISHED — the pairing cannot be checked`;
+        if (landed) notes.push(`${line} (already answered; recorded, not fixable)`);
+        else problems.push(`${line}. Do not spend a slot on it: change the artifact or withdraw the task`);
+      } else if (!lineage.effective_author) {
+        problems.push(
+          `${task.task_id}: reviews ${att}, which is ${(lineage.fraction * 100).toFixed(0)}% verbatim from ` +
+            `${lineage.derived_from} — record its effective_author in ${LANE_STATE_PATH} derived_artifacts. ` +
+            "Whoever ran the rebuild authored the difference, not the file",
+        );
+      } else if (lineage.effective_author === (task.model ?? DEFAULT_MODEL_KEY)) {
+        problems.push(
+          `${task.task_id}: runs on ${task.model ?? DEFAULT_MODEL_KEY} and ${att} is ` +
+            `${(lineage.fraction * 100).toFixed(0)}% verbatim from ${lineage.derived_from}, whose effective ` +
+            `author is ${lineage.effective_author} — the reviewer would be reading its own code`,
+        );
+      } else {
+        notes.push(
+          `${task.task_id}: ${att} is ${(lineage.fraction * 100).toFixed(0)}% inherited from ` +
+            `${lineage.derived_from} (effective author ${lineage.effective_author}), reviewed by ${task.model ?? DEFAULT_MODEL_KEY}`,
+        );
+      }
+    }
+  }
+
   // Rule 3: an answer with no ledger run behind it. See unledgeredAnswers().
   for (const id of unledgeredAnswers({ answers, runs, acknowledged })) {
     problems.push(
@@ -189,13 +319,57 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     .filter((f) => f.endsWith(".md"))
     .map((f) => f.slice(0, -3));
 
+  // Measure the lineage of every artifact a review task is about to judge, then let
+  // judge() rule on it. Measuring here rather than inside judge() keeps judge() pure;
+  // passing the MEASUREMENT rather than the acknowledgement is what makes an
+  // unrecorded derivation a problem instead of a silent pass.
+  const derivations = [];
+  for (const task of parsed.tasks ?? []) {
+    if (task.error || task.produces !== "review" || !task.attach?.length) continue;
+    for (const att of task.attach) {
+      if (derivations.some((d) => d.path === att)) continue;
+      const childText = await readFile(resolve(REPO, att), "utf8").catch(() => null);
+      if (childText === null) continue;
+      const candidates = [];
+      for (const id of answers) {
+        const path = `codex/outbox/${id}.md`;
+        const text = await readFile(resolve(REPO, path), "utf8").catch(() => null);
+        if (text !== null) candidates.push({ path, text });
+      }
+      const best = pickAncestor(att, childText, candidates);
+      if (!best) continue;
+      const declared = (lane?.derived_artifacts ?? []).find((d) => d.path === att);
+      derivations.push({ ...best, effective_author: declared?.effective_author ?? null });
+    }
+  }
+
   const verdict = judge({
     tasks: parsed.tasks ?? [],
     runs: Array.isArray(lane?.runs) ? lane.runs : [],
     sparkSlug,
     answers,
     acknowledged: lane?.answers_with_no_ledger_run ?? [],
+    derivations,
+    landedTasks: answers,
   });
+
+  // Every landed answer whose task handed the model a previous version. Printed as a
+  // measurement rather than judged: a high figure does not break a rule, it tells the
+  // register that "authored_by: <the model that ran>" is a claim about the diff.
+  for (const task of parsed.tasks ?? []) {
+    if (task.error || !task.attach?.length) continue;
+    const child = await readFile(resolve(REPO, "codex/outbox", `${task.task_id}.md`), "utf8").catch(() => null);
+    if (child === null) continue;
+    for (const parentPath of task.attach) {
+      const parent = await readFile(resolve(REPO, parentPath), "utf8").catch(() => null);
+      if (parent === null) continue;
+      const { child: n, shared, fraction } = verbatimInheritance(child, parent);
+      console.log(
+        `  --  ${task.task_id}: ${(fraction * 100).toFixed(0)}% of its ${n} substantive lines are verbatim ` +
+          `from ${parentPath} (${shared}). Whoever ran it authored the difference, not the file`,
+      );
+    }
+  }
 
   for (const note of verdict.notes) console.log(`  ok  ${note}`);
   for (const problem of verdict.problems) console.log(`  BAD ${problem}`);
