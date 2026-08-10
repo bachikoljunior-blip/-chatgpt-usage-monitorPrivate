@@ -579,6 +579,29 @@
         "what_the_rule_cannot_do": "A transcript printing no ALL-CAPS labels can be checked against nothing. That returns `unusable`, and unusable counts as NOT supported rather than as unknown — a claim present and unverifiable is not silence. Recorded here rather than left to be discovered, because a vacuous pass reads exactly like a measurement.",
         "do_not": "Do not write 遊んだ over a reviewer who pasted no transcript. Do not paste a transcript this loop produced — that is rounds_played_here, and roundHasReviewer keeps the two apart on purpose."
       }
+    },
+    {
+      "id": "prompt_pack",
+      "what": "個人開発者向けの日本語プロンプト集。10項目、各項目が 困りごと / そのまま貼るもの / 返ってきたら見る所 の3ラベル。codex/outbox/payload-01.md がそのままの本体。",
+      "live_to_buyers": false,
+      "published_at": null,
+      "source": {
+        "repo": "bachikoljunior-blip/-chatgpt-usage-monitorPrivate",
+        "path": "codex/outbox/payload-01.md"
+      },
+      "source_note": "THE FIRST OFFER IN THIS REGISTER WHOSE SOURCE THIS PROJECT ACTUALLY HAS. idle_clicker_kit is in the register only because a workflow downloads what a buyer gets today; its real source exists in no repository (state/constraints.json the_product_itself_has_never_been_opened) and every fix to it waits on one owner upload. This one was written into the repository by the lane and can be edited, re-measured and retired without anybody outside.",
+      "why_it_is_here_at_all": "Route 5 (lane allocation is the binding term) was elected at 13:45Z on the claim that the pool which can BUILD was idle while the pool that decides was at 14%. Its test was whether the lane, asked for a deliverable instead of a survey, would return one: 22 completed lane tasks had produced zero. codex/outbox/payload-01.md arrived 14:05:09Z and scripts/check-payload.mjs reports conforms on every mechanically checkable term (10 items, 0 missing labels, 0 over the placeholder limit, 0 outward references, 0 repeated titles). Registering it here is the difference between the route having a result and the route having a result nobody reads.",
+      "measurement": {
+        "rung": "stranger_reaction",
+        "why_this_rung": "promise_conformance needs a sales page making promises, and this has none — no listing, no price, no description. Running rung 1 against an absent listing would pass vacuously. The open question is the one rung 2 asks: would somebody who did not write it pay for it. RUNBOOK 5.4 default verdict is 払わない unless something overturns it.",
+        "how": "Hand the document to a reviewer that did not author it, blind to where it came from, default verdict negative. Ask for a decision (would you pay, and how much) and the single strongest reason against. Not a rewrite and not a feature list.",
+        "not_this_rung_yet": "sells_against and behaviour. Both need this to be purchasable, and it is not: state/gumroad-file-replacement.json establishes that no route in the Gumroad v2 API puts BYTES in front of a buyer, so a product created over the API carries a price and a description and no download. How this gets delivered at all is an open question and it is NOT settled by registering it here.",
+        "who_must_not_do_it": "THE ACCOUNT DEFAULT. This is measured, not assumed: state/codex-lane.json run 2026-08-10.payload-01 records model_key spark and model \"default\" — the named Spark slug was requested and the transport fell back, so the artifact was authored by the account default. A round reviewed by the account default is a self-review and void.",
+        "the_live_risk_on_this_offer": "The reviewer must therefore be spark, and spark is exactly the key that just silently fell back. If the review run records model \"default\" again, the round is VOID and must be discarded rather than kept — that is lane-authorship rule 2, and this offer is the first case where it is load-bearing rather than hypothetical. Read state/codex-lane.json runs[] for the review task before recording any verdict from it."
+      },
+      "rounds": [],
+      "retire": null,
+      "how_it_exits": "RUNBOOK 5.4: a registered offer must be able to leave, and もう作ってあるから is not a reason to keep it. Two exits. (1) A rung-2 round by a non-author returns 払わない with a reason that is about the CONTENT rather than the packaging, twice, with no approach change available — retire it. (2) No delivery route is found by 2026-08-24: a document nobody can buy is not an offer, and keeping it here would make this register the list-of-what-we-have that 5.4 forbids."
     }
   ],
   "what_this_file_must_not_become": "A list of what is already being offered. state/options.json decayed exactly that way on 2026-08-08 — every registry enumerated existing assets, so no amount of turning them could ever conclude 'this portfolio is wrong'. An offer that fails its loop is supposed to be able to leave."
