@@ -3527,8 +3527,29 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     "a flat itch series produced a finite ETA — a level was read as a trajectory",
   );
 
-  // The committed seed is a single row on purpose: one reading is a LEVEL, and the
-  // channel must say so rather than reporting a rate off one point.
+  // One reading is a LEVEL, and the channel must say so rather than reporting a
+  // rate off one point. Asserted against a SYNTHETIC one-row series, not against
+  // the committed file.
+  //
+  // It used to read the committed file, on the reasoning that "the committed seed
+  // is a single row on purpose". It was one row on purpose for about seven hours.
+  // state/itch-history.json is appended to by an hourly collector, and at
+  // 2026-08-10T06:56:36Z it appended the second reading — at which point this
+  // assertion went red for every lap and every pulse run, with nothing wrong
+  // anywhere. A suite that binds live machine-written data as though it were a
+  // fixture fails on success: the collector doing exactly its job is what breaks
+  // it, and the cheap way out is to delete the row.
+  const fromOne = daysToTarget(
+    [{ at: "2026-08-10T00:00:00Z", total_sales_count: 0, total_sales_usd_cents: 0 }],
+    { targetYen: 200000 },
+  );
+  assert(
+    fromOne.rate.derivable === false,
+    "a rate was derived from a single reading, which is a level and not a trajectory",
+  );
+
+  // What the LIVE file is still held to — properties that stay true however many
+  // rows the collector adds, which is the test a growing series can carry.
   const committed = JSON.parse(await readFile(join(root, "state/itch-history.json"), "utf8"));
   assert(
     Array.isArray(committed.readings) && committed.readings.length >= 1,
@@ -3538,11 +3559,26 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     committed.revenue_is_a_lower_bound === true,
     "the itch series stopped declaring that its revenue figure is derived, not measured",
   );
-  const fromOne = daysToTarget(committed.readings, { targetYen: 200000 });
+  // Readings must be ordered and never rewritten in place: a rate is only
+  // meaningful over a series whose earlier rows are the ones that were observed.
+  const stamps = committed.readings.map((r) => Date.parse(r.at));
   assert(
-    fromOne.rate.derivable === false,
-    "a rate was derived from a single reading, which is a level and not a trajectory",
+    stamps.every((t) => Number.isFinite(t)) &&
+      stamps.every((t, i) => i === 0 || t >= stamps[i - 1]),
+    "the itch series is out of order or carries an unparseable timestamp",
   );
+  // And the invariant that survives growth: while every row reads the same
+  // revenue, the channel reports no ETA. This is the one that would have caught
+  // the real error — a flat series reporting a finite number of days — and it
+  // does not care how long the series is.
+  const live = daysToTarget(committed.readings, { targetYen: 200000 });
+  const flatLive = new Set(committed.readings.map((r) => r.total_sales_usd_cents)).size === 1;
+  if (flatLive) {
+    assert(
+      live.eta_days === null,
+      "a flat live itch series produced a finite ETA — a level was read as a trajectory",
+    );
+  }
 
   // The assertions above bind revenue-rate.mjs, which was already correct. They do
   // NOT bind the itch CHANNEL to it — restoring the constant in compute-eta.mjs would
@@ -4002,10 +4038,19 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
       "product names the owner uses himself were treated as jargon");
     // The failure mode this rule is most likely to have next: a full field that
     // nobody rewrote. Existence checks pass; the owner reads last lap's report.
-    assert(judgeSummary("同じ文章です。", { previous: "同じ文章です。" }).some((x) => /identical/.test(x)),
-      "an inherited owner_summary passed");
-    assert(judgeSummary("新しい文章です。", { previous: "古い文章です。" }).length === 0,
-      "a rewritten owner_summary was rejected");
+    assert(judgeSummary("同じ文章です。", {
+      previous: "同じ文章です。", previousFetchedAt: "2026-08-10T05:00:00Z", fetchedAt: "2026-08-10T06:00:00Z",
+    }).some((x) => /identical/.test(x)), "an inherited owner_summary passed while the lap advanced");
+    // The false positive that bit on the first version of this rule: a second
+    // commit inside ONE lap leaves both the report and fetched_at alone. Going
+    // red there invites retyping the summary to make it differ, which is worse
+    // than what the rule prevents.
+    assert(judgeSummary("同じ文章です。", {
+      previous: "同じ文章です。", previousFetchedAt: "2026-08-10T06:00:00Z", fetchedAt: "2026-08-10T06:00:00Z",
+    }).length === 0, "a follow-up commit inside one lap was called a stale report");
+    assert(judgeSummary("新しい文章です。", {
+      previous: "古い文章です。", previousFetchedAt: "2026-08-10T05:00:00Z", fetchedAt: "2026-08-10T06:00:00Z",
+    }).length === 0, "a rewritten owner_summary was rejected");
 
     // The live field, which is the half that can rot.
     const live = JSON.parse(await readFile(join(root, "state/continue.json"), "utf8"));
