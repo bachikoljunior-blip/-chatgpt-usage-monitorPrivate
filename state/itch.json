@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T00:30:37.823Z",
+  "fetched_at": "2026-08-10T01:01:19.288Z",
   "source": "api.itch.io/profile/games",
   "profile": {
     "username": "bachikoljunior-blip",
@@ -38,7 +38,9 @@
     "downloads_count",
     "purchases_count",
     "min_price_cents",
-    "published_at"
+    "published_at",
+    "kind",
+    "classification"
   ],
   "games": [
     {
@@ -49,7 +51,11 @@
       "downloads_count": 0,
       "purchases_count": 0,
       "min_price_cents": 2500,
-      "published_at": "2026-08-09T23:11:11Z"
+      "published_at": "2026-08-09T23:11:11Z",
+      "kind": "default",
+      "classification": "assets",
+      "can_be_bought": null,
+      "has_demo": null
     }
   ]
 }
