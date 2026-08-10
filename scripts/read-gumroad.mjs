@@ -59,7 +59,46 @@ try {
     currency: p.currency ?? null,
     sales_count: Number(p.sales_count ?? 0),
     sales_usd_cents: Number(p.sales_usd_cents ?? 0),
-    file_count: Array.isArray(p.file_info) ? p.file_info.length : null,
+    // Whether the paid product has anything to deliver.
+    //
+    // This mattered less when it was written and it is now the ONLY remaining way
+    // to observe the product at all. 2026-08-10: the four artifacts the live
+    // listing promises — brand.config.json, generator.html, validate_config.py,
+    // test_engine.py — return zero across every repository this account owns, on
+    // an instrument validated in the same lap by a positive control. So there is
+    // no source tree to open, and the single copy of the thing being sold is
+    // whatever file is attached here.
+    //
+    // The old line asked `Array.isArray(p.file_info)` and Gumroad returns an
+    // OBJECT, so file_count has been null on every reading ever taken — an
+    // unmeasured field that read as "the API does not report it".
+    //
+    // Shape-agnostic on purpose. Nothing in this repository has ever seen
+    // Gumroad's actual file_info payload, so committing to one shape now would
+    // just move the same bug. Record what arrived and let the next reading say
+    // which branch was taken, rather than collapsing "no file" and "wrong guess"
+    // into the same null a second time.
+    file_info_shape: Array.isArray(p.file_info)
+      ? "array"
+      : p.file_info && typeof p.file_info === "object"
+        ? "object"
+        : p.file_info === undefined
+          ? "absent"
+          : typeof p.file_info,
+    file_count: Array.isArray(p.file_info)
+      ? p.file_info.length
+      : p.file_info && typeof p.file_info === "object"
+        ? Object.keys(p.file_info).length
+        : null,
+    // Key NAMES only. Gumroad's documented keys are metadata labels such as Size;
+    // values could carry anything, and the rule here is that nothing enters state/
+    // unless it is known to be safe. The names are what tell a later reader
+    // whether an empty count means "no file" or "this endpoint never describes
+    // files".
+    file_info_keys:
+      p.file_info && typeof p.file_info === "object" && !Array.isArray(p.file_info)
+        ? Object.keys(p.file_info)
+        : null,
   }));
 
   payload = {

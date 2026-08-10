@@ -649,6 +649,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T01:10:57.444Z",
+      "candidate": "the_product_itself_has_never_been_opened",
+      "kind": "prerequisite",
+      "mechanism": "Open the thing being sold. state/constraints.json has carried this as unopened since it was written, with the owner saying unprompted that they have not opened it either — so both parties who could judge the product declined to, and the listing was built anyway. It was recorded as blocked by external_repos_unreachable. That block is false as of now: bachikoljunior-blip/kit is private, reachable through add_repo, and last pushed 2026-08-08, one day before the listing went live. CORRECTING MY OWN EARLIER FRAMING: I first gated this as 'nobody has seen what a visitor sees', which is wrong — state/owner-requests.json records the page verified logged-out on 2026-08-09, returning 200 with 25.00 and 購入 in the body. The SURFACE has been checked. The CONTENTS have not, and that is the constraint's actual claim. No day count moves and none is claimed. What moves is that a zero stops being undifferentiated: if the kit does not deliver what the listing promises, every surface lap since is decorating a failure, and the 2026-08-23 judgement would read 'wrong venue' when the cause was the product.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
