@@ -483,7 +483,19 @@ if (zerobase?.verdict === "adopt_for_next_test") {
                   ? "A TEXT offer is deliverable at zero owner actions. prompt_pack can be listed, " +
                     "which makes something here buyable for the first time. Says nothing about the " +
                     "priced kit, whose buyer downloads a file."
-                  : richContentProbe?.parameter_recognised === true
+                  : richContentProbe?.verdict === "recognised_but_create_refused"
+                    ? "PASSAGE WAS ATTEMPTED AND REFUSED AT THE DOOR — do not dispatch the probe " +
+                      "again expecting news. No product was created, so nothing was read back and " +
+                      "nothing here says content cannot be stored. state/gumroad-rich-content.json " +
+                      "steps[].message and body_was_read separate the two live readings: a refusal " +
+                      "naming rich_content is the document's SHAPE against process_rich_content, " +
+                      "and a refusal naming a missing field is the JSON body going unparsed."
+                    : richContentProbe?.verdict === "recognised_but_did_not_land"
+                      ? "A product WAS created with a content document and came back empty. The " +
+                        "create verb is answered; the update verb is not, and the vendor source " +
+                        "runs process_rich_content on both. That is the next act, and it needs no " +
+                        "new product — the throwaway pattern already in these probes covers it."
+                    : richContentProbe?.parameter_recognised === true
                     ? "RECOGNITION ONLY, ON BOTH ROUTES. The upload endpoints answer their own " +
                       "validation errors and the content parameter answers its own validator, so " +
                       "neither is absent — and neither has been walked. Nothing here says a byte " +

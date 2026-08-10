@@ -49,6 +49,22 @@ export const PROBE_NAME = "rich content probe — auto-deleted, not for sale";
  * reading one key and calling it absent is how a working feature gets recorded as
  * missing, which is the exact defect this route was elected to correct.
  */
+/**
+ * Which of the four readings a run produced, as a pure function of what the run
+ * actually did. It is separated out because the distinction it holds is the one
+ * the whole route turns on and it kept collapsing in prose: a refusal at the door
+ * is not an empty room. The first run of this probe reported "did not land" for a
+ * create that was REFUSED, which reads as "the content was accepted and then
+ * vanished" and points the next lap at storage instead of at the request.
+ */
+export function verdictOf({ recognised, steps, landed }) {
+  const did = (name) => (steps ?? []).some((s) => s.step === name);
+  if (!recognised) return "not_recognised";
+  if (!did("create_with_rich_content")) return "recognised_passage_untried";
+  if (landed?.landed) return "text_is_deliverable_over_the_api";
+  return did("read_back") ? "recognised_but_did_not_land" : "recognised_but_create_refused";
+}
+
 export function contentLanded(product) {
   const buckets = [product?.rich_content, product?.alive_rich_contents, product?.content];
   for (const b of buckets) {
@@ -87,6 +103,35 @@ const run = async () => {
     return { status: res.status, success: json?.success === true, json };
   };
 
+  // The same call with a JSON body, which is the only encoding that can carry what
+  // the validator asks for. A form body cannot hold an array of OBJECTS: the first
+  // attempt sent the page as a JSON *string* under `rich_content[]`, so the server
+  // received an array of one string, answered "rich_content must be an array of
+  // content page objects", and that refusal was recorded as a fact about the API.
+  // It was a fact about the encoding.
+  //
+  // The token goes in the QUERY STRING as well as in the body on purpose. If the
+  // deployment does not parse JSON bodies at all, the request still authenticates
+  // and comes back complaining about a missing name — which is how "the body was
+  // never read" is told apart from "the credential was refused". Without that, a
+  // 401 would be indistinguishable from a rejection of the content itself.
+  const callJson = async (method, path, body) => {
+    const qs = new URLSearchParams({ access_token: token });
+    const res = await fetch(`${API}${path}?${qs}`, {
+      method,
+      signal: AbortSignal.timeout(30_000),
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ access_token: token, ...(body ?? {}) }),
+    });
+    let json = null;
+    try {
+      json = await res.json();
+    } catch {
+      /* status alone still says whether the route is there */
+    }
+    return { status: res.status, success: json?.success === true, json };
+  };
+
   const message = (r) =>
     typeof r.json?.message === "string"
       ? r.json.message.slice(0, 300)
@@ -94,13 +139,13 @@ const run = async () => {
         ? r.json.error.slice(0, 300)
         : null;
 
-  // A one-page ProseMirror document. Form encoding cannot carry nested arrays, so
-  // the page is sent as a JSON string under rich_content[0]; if the deployment
-  // parses it, that is also part of the answer.
-  const page = JSON.stringify({
+  // A one-page ProseMirror document, kept as a real object and sent inside a JSON
+  // body. It is the shape the vendor's process_rich_content writes into a
+  // RichContent row: a title and a `description` that is a ProseMirror doc.
+  const page = {
     title: "内容",
     description: { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "probe" }] }] },
-  });
+  };
 
   let productId = null;
   let recognised = null;
@@ -133,21 +178,26 @@ const run = async () => {
     //    anywhere; step 2 creates a real product and belongs on the workflow, which
     //    is where every other creating probe here already lives.
     if (recognised && !productId && !process.argv.includes("--recognise-only")) {
-      const created = await call("POST", "/products", {
+      const created = await callJson("POST", "/products", {
         name: PROBE_NAME,
-        price: "500",
+        price: 500,
         description:
           "Temporary probe created by automation to test whether product content can be delivered over the API without a file. Deleted in the same run.",
-        published: "false",
-        "rich_content[]": page,
+        published: false,
+        rich_content: [page],
       });
       productId = created.json?.product?.id ?? null;
       steps.push({
         step: "create_with_rich_content",
+        body_encoding: "json",
         http_status: created.status,
         success: created.success,
         got_id: Boolean(productId),
         message: message(created),
+        // A JSON body that was never parsed produces a complaint about the fields
+        // it carried, not about the content. Recorded as its own reading so the
+        // difference is in the file rather than in whoever reads the message.
+        body_was_read: created.success || !/name/i.test(message(created) ?? ""),
       });
 
       if (productId) {
@@ -183,14 +233,7 @@ const run = async () => {
   // branch, --recognise-only wrote "recognised_but_did_not_land" — a verdict about a
   // step it did not take, in the file the board reads. That is the same defect the
   // whole route was elected to correct, produced by the correction itself.
-  const passageTried = steps.some((s) => s.step === "create_with_rich_content");
-  const verdict = !recognised
-    ? "not_recognised"
-    : !passageTried
-      ? "recognised_passage_untried"
-      : landed.landed
-        ? "text_is_deliverable_over_the_api"
-        : "recognised_but_did_not_land";
+  const verdict = verdictOf({ recognised, steps, landed });
 
   const report = {
     schema_version: 1,
@@ -210,8 +253,10 @@ const run = async () => {
         : verdict === "recognised_passage_untried"
         ? "The deployment answers with its OWN rich_content validator, word for word from the vendor source, and created nothing doing it — so the parameter is live here and not merely present upstream. Passage was not attempted in this run: creating a real product spends the ten-a-day cap and belongs on the workflow. Recognition is not delivery."
       : verdict === "recognised_but_did_not_land"
-          ? "The deployment validates rich_content and then the read-back carried no pages. That is a shape or an encoding problem on our side, not an absence: form encoding cannot carry nested arrays and the page was sent as a JSON string. Re-probe with a JSON body before concluding anything about the API."
-          : "The deployment did not answer with a rich_content validator, so the parameter is unknown to it or is rejected earlier. Absence here is about this deployment and not about the vendor source, which does accept it.",
+          ? "A product WAS created carrying a content document sent as a real array of objects in a JSON body, and the read-back carried no pages under any of the three names this API has used for content. That is now a statement about the API rather than about our encoding, and the next question is the update verb: process_rich_content runs on both, and create may simply drop it."
+          : verdict === "recognised_but_create_refused"
+            ? "The create was REFUSED — no product exists and nothing was read back, so nothing here says content cannot be stored. Read steps[].message and body_was_read: a complaint naming rich_content means the document's SHAPE was rejected (compare it against process_rich_content in the vendor source), while a complaint about a missing name means the JSON body was never parsed and the encoding question is still open."
+            : "The deployment did not answer with a rich_content validator, so the parameter is unknown to it or is rejected earlier. Absence here is about this deployment and not about the vendor source, which does accept it.",
     what_this_does_not_settle:
       "File delivery. Bytes still have to go through presign/complete (state/gumroad-presign.json shows those doors answer) and that walk is untried. A text route landing does not fix the priced kit, whose buyer downloads a file.",
   };

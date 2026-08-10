@@ -54,6 +54,7 @@ import {
 } from "../scripts/owner-request-gate.mjs";
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import { classifyLifecycle } from "../scripts/probe-gumroad-lifecycle.mjs";
+import { contentLanded, verdictOf as richContentVerdictOf } from "../scripts/probe-gumroad-rich-content.mjs";
 import { recurrenceOf, classifyRecurrence, listingMeasurement } from "../scripts/probe-gumroad-recurring.mjs";
 import { promisesPresent, manifestOf, extractionDir } from "../scripts/fetch-product-source.mjs";
 import {
@@ -2194,6 +2195,68 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
 // a zero-owner-action rail was one classification away from being recorded as
 // needing a person. Held here because that misreading is invisible in the
 // output — every field looked well-formed.
+// A REFUSAL AT THE DOOR IS NOT AN EMPTY ROOM.
+//
+// 2026-08-10T15:07Z: the content probe's create was refused ("rich_content must be
+// an array of content page objects") and the run recorded verdict
+// recognised_but_did_not_land. No product was ever created, so no read-back ever
+// happened — but "did not land" reads as "the content was accepted and then was not
+// stored", which points the next lap at the API's storage instead of at our own
+// request. The request was the defect: URLSearchParams sent the page as a JSON
+// STRING under rich_content[], so the server received an array of one string and
+// said so, correctly. A form body cannot carry an array of objects at all.
+//
+// Both directions are held. Collapsing the refusal back into "did not land" is what
+// made a fact about our encoding get written down as a fact about the API, and this
+// route was elected precisely to stop that class of error.
+{
+  const recognise = { step: "malformed_rich_content", http_status: 200, recognised: true };
+  const createStep = { step: "create_with_rich_content", body_encoding: "json", success: false, got_id: false };
+
+  assert(
+    richContentVerdictOf({
+      recognised: true,
+      steps: [recognise, createStep],
+      landed: { landed: false, pages: 0 },
+    }) === "recognised_but_create_refused",
+    "a create that was refused — no product, no read-back — was reported as content failing to land",
+  );
+
+  assert(
+    richContentVerdictOf({
+      recognised: true,
+      steps: [recognise, createStep, { step: "read_back", landed: false, content_pages: 0 }],
+      landed: { landed: false, pages: 0 },
+    }) === "recognised_but_did_not_land",
+    "a product that WAS created and came back empty must still read as did_not_land: that one is about the API",
+  );
+
+  assert(
+    richContentVerdictOf({
+      recognised: true,
+      steps: [recognise, createStep, { step: "read_back", landed: true, content_pages: 1 }],
+      landed: { landed: true, pages: 1 },
+    }) === "text_is_deliverable_over_the_api",
+    "a read-back carrying pages did not report the text route as deliverable",
+  );
+
+  // The recognise-only run must not report on a step it never took. This already
+  // went wrong once, writing a passage verdict from a run that created nothing.
+  assert(
+    richContentVerdictOf({ recognised: true, steps: [recognise], landed: { landed: false, pages: 0 } }) ===
+      "recognised_passage_untried",
+    "a run that never attempted passage reported a verdict about passage",
+  );
+
+  // Content has travelled under three names across versions of this API. Reading
+  // one key and calling it absent is how a working feature gets recorded missing.
+  assert(
+    contentLanded({ rich_content: [], alive_rich_contents: [{ id: 1 }] }).landed === true &&
+      contentLanded({ rich_content: [], content: [] }).landed === false,
+    "the read-back checked only one of the names this API uses for content",
+  );
+}
+
 {
   const create = { step: "create", http_status: 200, success: true, got_id: true, product_id: "ABC==", message: null };
 

@@ -1146,6 +1146,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T15:12:25.709Z",
+      "candidate": "walk_the_upload_and_content_routes_end_to_end",
+      "kind": "prerequisite",
+      "mechanism": "The text-delivery probe was refused at create because rich_content was form-encoded: URLSearchParams sends rich_content[] as an array of ONE JSON STRING, and the validator demands an array of content page OBJECTS, so the answer recorded is about our encoding and not about the API. Sending the same document as a JSON body is the only way to tell a shape error from an absence. It moves no channel by itself; it decides whether prompt_pack is listable at zero owner actions, which is the term every channel is stopped on.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
