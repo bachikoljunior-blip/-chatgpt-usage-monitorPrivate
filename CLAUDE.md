@@ -119,6 +119,15 @@ It installs the pinned Codex CLI if missing, decrypts `state/auth.vault` into a 
 decrypted credentials. Exit code `2` means `CODEX_AUTH_JSON` is absent — use the Actions path.
 Do not pass `--persist-vault` outside the workflow: GitHub Actions owns the vault on `main`.
 
+**Spark is a second weekly pool, and it is only spent when the request names it.** `state/usage.json`
+carries two Codex windows: `codex` (the account default) and `codex_bengalfox` / `GPT-5.3-Codex-Spark`.
+`codex exec` with no `--model` runs the default, so the Spark window stayed at 100% for this lane's
+entire history while the other one burned — and that untouched 100% was being counted as spare
+capacity in the ETA reasoning. It was not spare; it was unreachable. Pass `--model` (the slug is
+derived from the meter by `scripts/spark-model.mjs`, never typed in), and settle which pool a run
+actually spent by reading which window moved afterwards. `node scripts/spark-model.mjs --check`
+enforces it and runs hourly in `pulse.yml`.
+
 Do **not** get `CODEX_AUTH_JSON` into a cloud session by adding it to the cloud environment's
 variables. Cloud environments have no secrets store, the values are readable by anyone using the
 environment, and the Claude Code documentation says not to put credentials there. The Actions

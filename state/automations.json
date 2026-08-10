@@ -141,7 +141,7 @@
       "pool": "codex_week",
       "cadence_minutes": 60,
       "enabled": true,
-      "note": "Spends the Codex weekly pool, which is separate from the Claude window and was sitting at 100% unused on 2026-08-09 because nothing dispatched it. The mouth is codex/INBOX.md; scripts/inbox-task.mjs decides whether the task is live and unmarked before any model runs. Hourly since 2026-08-09: the daily cron had delivered zero runs in the workflow's entire history — all ten were workflow_dispatch — so an external answer arrived only when a lap happened to have MCP tools, and that is the lane the whole route depends on.",
+      "note": "Spends the Codex weekly pool, which is separate from the Claude window and was sitting at 100% unused on 2026-08-09 because nothing dispatched it. The mouth is codex/INBOX.md; scripts/inbox-task.mjs decides whether the task is live and unmarked before any model runs. Hourly since 2026-08-09: the daily cron had delivered zero runs in the workflow's entire history — all ten were workflow_dispatch — so an external answer arrived only when a lap happened to have MCP tools, and that is the lane the whole route depends on. 2026-08-10: the pool this row calls separate and unused is actually TWO weekly windows, and only one was reachable — codex exec with no --model runs the account default, so GPT-5.3-Codex-Spark stayed at 100% for this lane's entire history while being cited as spare capacity. The dispatch now names a model derived from the meter (scripts/spark-model.mjs) and falls back to the default if refused; scripts/spark-model.mjs --check runs in pulse.yml so it cannot quietly go back to unnamed.",
       "avg_cost_percent": 0,
       "samples": 0,
       "last_seen": null,

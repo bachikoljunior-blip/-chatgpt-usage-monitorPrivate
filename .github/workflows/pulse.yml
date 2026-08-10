@@ -145,6 +145,11 @@ jobs:
           # and the rule that opens the venue can be broken by any later edit to it.
           # Silent while the file is absent.
           node scripts/check-free-artifact.mjs || rc=1
+          # Two weekly Codex pools exist and only one of them is reachable without
+          # being named. This goes red when the dispatch stops naming a model while
+          # the Spark window still has capacity — i.e. when a whole quota silently
+          # goes back to being counted as "spare" while nothing can spend it.
+          node scripts/spark-model.mjs --check || rc=1
           # The venue is handed a URL, and the rule above is enforced on a file in
           # this repository. If those two ever differ, the guard guards the copy
           # nobody can reach. No --write here: the writing copy runs before the

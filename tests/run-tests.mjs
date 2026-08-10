@@ -37,6 +37,7 @@ import {
 import { funnelCheck } from "../scripts/funnel-check.mjs";
 import { itchPaywallCheck } from "../scripts/check-itch-paywall.mjs";
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
+import { judge as judgeSpark, sparkModelCandidate, sparkWindow } from "../scripts/spark-model.mjs";
 import {
   checkAddressee, checkRequestsAddressee, copyChanged, diffListing, pasteableStrings,
   readCoverSource, readOwnerRequests, readRepoListing,
@@ -3071,4 +3072,49 @@ function runAsync(command, args, extraEnv = {}, { allowFailure = false } = {}) {
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+// --- A quota you cannot name is not spare capacity ---------------------------
+// 2026-08-10, owner: Spark is only spent when the instruction to ChatGPT says to
+// use it. The meter had been saying the same thing and nobody read it that way —
+// state/usage.json carries two weekly Codex windows, and across the lane's whole
+// history the default one burned while GPT-5.3-Codex-Spark sat at 100%. That
+// untouched 100% was then quoted repeatedly in this repository as headroom that
+// made delegation free.
+//
+// Held here because the failure is silent by construction: every run succeeds,
+// every answer arrives, and the only symptom is a number that never moves.
+{
+  const spark = { limit_id: "codex_bengalfox", limit_name: "GPT-5.3-Codex-Spark", remaining_percent: 100 };
+  const plain = { limit_id: "codex", limit_name: null, remaining_percent: 94 };
+  const usage = { quota_windows: [plain, spark] };
+
+  assert(
+    sparkModelCandidate(usage) === "gpt-5.3-codex-spark",
+    "the Spark slug is derived from limit_name; it must not be typed into a script",
+  );
+  // A null limit_name must not crash the matcher — the default window has one.
+  assert(sparkWindow({ quota_windows: [plain] }) === null, "a window with no name matched /spark/");
+  assert(
+    sparkModelCandidate({ quota_windows: [plain] }) === null,
+    "with no Spark window the answer is 'name nothing', never a guess",
+  );
+
+  // The check must be able to fail, or it proves nothing. This is the exact
+  // state the repository was in until this commit.
+  const missing = judgeSpark({ usage, workflowText: "run: node scripts/ask-chatgpt.mjs --file p.txt" });
+  assert(!missing.ok, "a dispatch passing no --model was judged fine while Spark sat at 100%");
+
+  const named = judgeSpark({ usage, workflowText: 'ask --model "$SPARK_MODEL"' });
+  assert(named.ok, "a dispatch that names a model was still reported as unreachable");
+
+  // Exhausted is the other legitimate green: if Spark is at 0 it is plainly
+  // being spent, whatever the workflow text looks like.
+  assert(
+    judgeSpark({
+      usage: { quota_windows: [{ ...spark, remaining_percent: 0 }] },
+      workflowText: "no model here",
+    }).ok,
+    "an exhausted Spark window was reported as unreachable",
+  );
 }

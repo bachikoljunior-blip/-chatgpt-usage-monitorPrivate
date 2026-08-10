@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T16:25:00Z",
+  "fetched_at": "2026-08-10T01:11:08.287Z",
   "note": "Everything here is what was true when it was measured, not a permanent property of the world. Each entry carries a recheck date because on 2026-08-08 two items declared impossible were solved the same day. A constraint falling away usually moves the ETA more than any ordinary improvement does, so rechecks are ETA candidates in their own right.",
   "constraints": [
     {
@@ -728,6 +728,19 @@
       "the_shape_worth_keeping": "The claim that died was not sloppy — it was specific, load-bearing, and reached by good reasoning from true facts about two OTHER venues. What it never had was a quote from the venue it was about. Every venue rule in this repository that survived contact was quoted; this one was inferred.",
       "still_open": "Whether a paid DOWNLOADABLE project may carry a free demo upload. api.itch.io serves a has_demo field, which suggests itch has the concept, and https://itch.io/docs/creators/pricing says \"itch.io lets you set minimum prices on individual files\" — but no fetched page states that a file's minimum of 0 is reachable while the project's minimum is 25. itch.io began returning HTTP 429 before this could be settled. It does not change the finding above: a demo download is not browser play, and browse-and-search favouring play-in-browser was the whole reason the ride-along was rated strongest.",
       "eta_effect_if_lifted": "none upward. This constraint only removes a route; it does not open one. Its value is that the route it removes ends in an irreversible act on a live storefront — a USD 25 product that anyone can take for free, with no way to un-give it."
+    },
+    {
+      "id": "spark_pool_unreachable_unless_named",
+      "claim": "The ChatGPT account has TWO weekly Codex quota windows and this project could only ever spend one of them. codex exec with no --model runs the account default; the default is not Spark. Across the entire history of the lane the codex window burned while codex_bengalfox / GPT-5.3-Codex-Spark sat at 100% remaining — and that untouched 100% was repeatedly cited in this repository as spare capacity that made delegation free. It was not spare. It was unreachable, because nothing named it. Owner stated the rule on 2026-08-10; the meter had been showing it for longer and nobody read it that way.",
+      "evidence": "state/usage.json quota_windows on 2026-08-10T01:05Z: codex 94% remaining, codex_bengalfox (GPT-5.3-Codex-Spark) 100% remaining. state/answers/latest.json records model: \"default\" for the last real ask. .github/workflows/codex-inbox.yml passed no --model until this commit. scripts/spark-model.mjs --check reproduces the finding from those three facts and exits 1.",
+      "measured_at": "2026-08-10T01:05:38.904Z",
+      "recheck_after": "2026-08-24",
+      "eta_effect_if_lifted": "high: the Claude weekly window is the binding constraint and the whole delegation argument rests on the Codex side being cheap. A second full weekly pool doubles the delegable throughput — but only once a request can select it. Until then every ETA line that priced lane work against \"100% unused\" was pricing against a pool it could not touch.",
+      "how_to_measure": "Dispatch codex-inbox.yml once after this change and read state/usage.json on the next collector run. Whichever window used_percent moved is the answer. A run that names gpt-5.3-codex-spark and still moves the codex window means the slug is wrong, not that the rule is.",
+      "measure_via": "codex_lane",
+      "why_that_matters": "The slug gpt-5.3-codex-spark is DERIVED from limit_name, not confirmed. Deriving it is what keeps it from going stale; it is still a hypothesis. The dispatch falls back to the account default when the CLI refuses the name, so being wrong costs one failed invocation and no quota — but it must not be recorded as settled until a window has actually moved.",
+      "what_this_changes": "Two things that are already written down elsewhere become false if this is not fixed: state/automations.json calls the codex_week pool separate and unused, and RUNBOOK step 3 tells laps to hand outside work to the lane because it does not compete for the scarce resource. Both were true of the pool and false of what the lane could reach.",
+      "what_is_still_unmeasured": "Whether Spark, once reached, is the same model class the lane has been judged on. Every capability finding in codex_lane_capability_range_unmapped was measured on the account default. A Spark run is a different model and inherits none of those measurements — do not carry them across."
     }
   ]
 }

@@ -90,10 +90,25 @@ jobs:
         if: steps.task.outputs.run == 'true' || inputs.force
         run: npm install --global @openai/codex@0.147.0
 
+      # The account has TWO weekly Codex pools and this lane was only ever able to
+      # spend one of them. `codex exec` with no --model runs the account default,
+      # and the default is not Spark — so state/usage.json showed the Spark window
+      # at 100% for the lane's entire history while the other one burned, and the
+      # ETA reasoning kept calling that untouched pool "spare capacity". It was
+      # not spare. It was unreachable, because nothing named it.
+      #
+      # The slug is derived from the meter's own limit_name rather than typed in
+      # here, so a rename upstream does not leave a stale string behind.
+      - name: Work out which model spends the Spark pool
+        id: spark
+        if: steps.task.outputs.run == 'true' || inputs.force
+        run: node scripts/spark-model.mjs >> "$GITHUB_OUTPUT"
+
       - name: Hand the inbox to ChatGPT
         if: steps.task.outputs.run == 'true' || inputs.force
         env:
           CODEX_AUTH_JSON: ${{ secrets.CODEX_AUTH_JSON }}
+          SPARK_MODEL: ${{ steps.spark.outputs.spark_model }}
         run: |
           mkdir -p state/answers
           # The prompt carries the INBOX and the state files it references,
@@ -107,12 +122,32 @@ jobs:
           # run a command answers from the prompt alone — which for a task that is
           # entirely "go read the outside world" means an invented answer. The
           # runner is a throwaway VM and the vault is deleted by the script.
-          node scripts/ask-chatgpt.mjs \
-            --file "$RUNNER_TEMP/prompt.txt" \
-            --out state/answers/latest.md \
-            --record state/answers/latest.json \
-            --sandbox danger-full-access \
-            --persist-vault > "$RUNNER_TEMP/answer.txt"
+          ask() {
+            node scripts/ask-chatgpt.mjs \
+              --file "$RUNNER_TEMP/prompt.txt" \
+              --out state/answers/latest.md \
+              --record state/answers/latest.json \
+              --sandbox danger-full-access \
+              --persist-vault "$@" > "$RUNNER_TEMP/answer.txt"
+          }
+          # Ask for Spark, and fall back to the account default if that name is
+          # not one the CLI accepts. The slug is a hypothesis derived from the
+          # meter, and this is what makes being wrong about it cheap: an unknown
+          # model fails before any quota is spent, so the worst case is today's
+          # behaviour plus one wasted second. Which pool a named run actually
+          # spends is then settled by which window moves in the next usage
+          # reading — measured, not argued.
+          if [ -n "$SPARK_MODEL" ]; then
+            if ask --model "$SPARK_MODEL"; then
+              echo "asked with --model $SPARK_MODEL" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "--model $SPARK_MODEL was refused; retrying on the account default" >> "$GITHUB_STEP_SUMMARY"
+              ask
+            fi
+          else
+            echo "no Spark window in the current usage reading; asked on the account default" >> "$GITHUB_STEP_SUMMARY"
+            ask
+          fi
 
       - name: Leave the done marker
         if: steps.task.outputs.run == 'true' || inputs.force
