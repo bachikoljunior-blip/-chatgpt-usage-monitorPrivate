@@ -1,14 +1,16 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T07:01:01.427Z",
+  "fetched_at": "2026-08-10T08:20:12.805Z",
   "overdue_factor": 2,
-  "overdue_count": 0,
+  "overdue_count": 1,
   "never_seen_count": 0,
-  "repair": null,
-  "reconcile_before_judging": [],
+  "repair": "A lap with MCP access should re-arm these triggers, then confirm the next fire actually happened. Do not report them as repaired on the strength of the create call returning.",
+  "reconcile_before_judging": [
+    "cookie-daily"
+  ],
   "registry_reconciled_at": "2026-08-10T06:18:00Z",
-  "registry_reconcile_age_minutes": 43,
+  "registry_reconcile_age_minutes": 122,
   "registry_stale": false,
   "reservations_resting_on_unverified_rows": [],
   "reconcile_instruction": null,
@@ -17,9 +19,9 @@
       "id": "eta-loop",
       "kind": "claude-trigger",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-10T06:56:00.000Z",
+      "last_seen": "2026-08-10T08:00:00Z",
       "last_seen_source": "state_file:state/continue.json",
-      "age_minutes": 5,
+      "age_minutes": 20,
       "status": "ok"
     },
     {
@@ -28,7 +30,7 @@
       "cadence_minutes": 360,
       "last_seen": "2026-08-10T05:15:07.717698Z",
       "last_seen_source": "registry:last_fired_at",
-      "age_minutes": 106,
+      "age_minutes": 185,
       "status": "ok"
     },
     {
@@ -37,25 +39,25 @@
       "cadence_minutes": 60,
       "last_seen": "2026-08-10T05:55:38.060405Z",
       "last_seen_source": "registry:last_fired_at",
-      "age_minutes": 65,
-      "status": "ok"
+      "age_minutes": 145,
+      "status": "overdue"
     },
     {
       "id": "usage-monitor",
       "kind": "github-actions",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-10T06:49:29.352Z",
+      "last_seen": "2026-08-10T07:55:21.533Z",
       "last_seen_source": "state_file:state/usage.json",
-      "age_minutes": 12,
+      "age_minutes": 25,
       "status": "ok"
     },
     {
       "id": "claude-usage-monitor",
       "kind": "github-actions",
       "cadence_minutes": 60,
-      "last_seen": "2026-08-10T06:49:34.834Z",
+      "last_seen": "2026-08-10T07:55:14.567Z",
       "last_seen_source": "state_file:state/claude-usage.json",
-      "age_minutes": 11,
+      "age_minutes": 25,
       "status": "ok"
     },
     {
@@ -64,7 +66,7 @@
       "cadence_minutes": 60,
       "last_seen": "2026-08-10T06:53:42.591Z",
       "last_seen_source": "state_file:state/gumroad.json",
-      "age_minutes": 7,
+      "age_minutes": 87,
       "status": "ok"
     },
     {
@@ -73,7 +75,7 @@
       "cadence_minutes": 90,
       "last_seen": "2026-08-10T06:55:31.557Z",
       "last_seen_source": "state_file:state/codex-lane.json",
-      "age_minutes": 5,
+      "age_minutes": 85,
       "status": "ok"
     }
   ]

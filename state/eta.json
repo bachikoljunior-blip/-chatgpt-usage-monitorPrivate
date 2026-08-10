@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T07:07:36.200Z",
+  "fetched_at": "2026-08-10T08:20:12.276Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -32,11 +32,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.52
+      "days_unchanged": 0.57
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.52
+      "days_unchanged": 0.57
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -266,7 +266,8 @@
             "the_first_tests_are_already_filed": "2026-08-10.k and 2026-08-10.l, on opposite pairings."
           },
           "counts": {
-            "postable": 1,
+            "delivery_unmeasured": 1,
+            "postable": 0,
             "venue_rule": 0,
             "venue_unsettled": 1,
             "account": 0,
