@@ -3,8 +3,8 @@
   "status": "ok",
   "fetched_at": "2026-08-10T03:13:40Z",
   "note": "Live automations and their measured cost per run. pacing.mjs reserves each one's expected consumption before the reset, so a lap plans with what is genuinely spare rather than with the whole pool. avg_cost_percent is filled in by scripts/record-lap.mjs from real start/end readings; null means never measured and is reserved at a high default.",
-  "reconciled_at": "2026-08-10T04:55:00Z",
-  "reconciled_note": "Reconciled against list_triggers at 2026-08-10T04:55:00Z by a lap with MCP — the only thing that can, since Actions cannot call that API. NO DRIFT in the 99 minutes since 03:13:40Z: all four live rows match on enabled and cron, and the two -fresh rows are still absent. That is the second independent observation the absence needed, so 'absent' is now measured rather than read off one listing. What this reconciliation does NOT establish: that the registry will still be right in an hour. The 03:13Z note already made this point — at 66 minutes old the registry was inside every reasonable staleness window and already wrong. Age bounds silent drift; it does not detect the world changing. A run of no-drift readings is not evidence that drift is rare; it is two samples.",
+  "reconciled_at": "2026-08-10T06:18:00Z",
+  "reconciled_note": "Reconciled against list_triggers at 2026-08-10T06:18:00Z by a lap with MCP. TWO DRIFTS in the 83 minutes since 04:55Z, both in rows the previous reconciliation had just confirmed. (1) youtube-loop cron moved from hourly to every six hours, scheduler updated_at 05:22:08Z. (2) cookie-daily was reported OVERDUE by state/heartbeat.json while actually firing on schedule. The two -fresh rows are still absent, now on a third independent observation. The previous note said a run of no-drift readings is two samples and not evidence that drift is rare; the very next reading found drift in both live rows, which settles that question in the direction the note guessed. Do not read this reconciliation as making the registry trustworthy for the next hour — it makes it trustworthy for now, which is the only thing any reading of it can do.",
   "automations": [
     {
       "id": "eta-loop",
@@ -19,16 +19,16 @@
       "avg_cost_percent": null,
       "samples": 0,
       "last_seen": null,
-      "observed_at": "2026-08-10T04:55:00Z",
+      "observed_at": "2026-08-10T06:18:00Z",
       "observed_from": "list_triggers (the scheduler itself, not a repo file)",
-      "last_fired_at": "2026-08-10T04:50:25Z",
+      "last_fired_at": "2026-08-10T05:50:16.222303Z",
       "liveness": {
         "state_file": "state/continue.json",
         "stamp_field": "fetched_at",
         "note": "Every lap writes its continuation decision here, so this dates the loop actually deciding rather than the trigger merely firing. Added 2026-08-09 because check-wiring found continue.json was written by laps and read by nothing — the exact failure this project is named after, sitting in the file that records whether the loop is still choosing. A lap that stops recording now shows up as overdue instead of as silence."
       },
       "scheduler_updated_at": "2026-08-09T10:58:21Z",
-      "next_run_at": "2026-08-10T05:50:00Z"
+      "next_run_at": "2026-08-10T06:50:00Z"
     },
     {
       "id": "revenue-loop",
@@ -54,20 +54,22 @@
       "label": "YouTube",
       "kind": "claude-trigger",
       "pool": "claude_week",
-      "cadence_minutes": 60,
+      "cadence_minutes": 360,
       "enabled": true,
       "avg_cost_percent": null,
       "samples": 0,
       "last_seen": null,
       "trigger_id": "trig_01S5mtxkjiBp6hsttmDvdzgw",
-      "cron": "9 * * * *",
-      "observed_at": "2026-08-10T04:55:00Z",
+      "cron": "9 */6 * * *",
+      "observed_at": "2026-08-10T06:18:00Z",
       "observed_from": "list_triggers (the scheduler itself, not a repo file)",
-      "last_fired_at": "2026-08-10T04:14:27Z",
+      "last_fired_at": "2026-08-10T05:15:07.717698Z",
       "role_changed_at": "2026-08-10T02:02:58Z",
       "note": "No longer the loop that does the work. Its prompt was rewritten at 02:02:58Z to say 本番は毎時 :20 に立つ新しいセッションがやります（オーナー指示 2026-08-10）, leaving this row as a watchdog and session-sweeper. The row that does the work is youtube-loop-fresh below. Recorded because the label 'YouTube' now covers two triggers with different jobs, and reserving for one of them prices the loop at half.",
       "scheduler_updated_at": "2026-08-10T03:06:13Z",
-      "next_run_at": "2026-08-10T05:09:00Z"
+      "next_run_at": "2026-08-10T06:09:00Z",
+      "cadence_corrected_at": "2026-08-10T06:18:00Z",
+      "cadence_correction_note": "MEASURED DRIFT. This row said cron \"9 * * * *\" and cadence_minutes 60 from 04:55Z, reconciled against list_triggers at that time. The live cron reads \"9 */6 * * *\" and the trigger name says 6時間おき; scheduler updated_at is 2026-08-10T05:22:08Z, i.e. AFTER the 04:55Z reconciliation. So the registry was right when written and wrong 83 minutes later, which is the third instance of the thing reconciliation_gap_nobody_has_closed describes and the first where the drift was in the CADENCE rather than in existence. What it cost: pacing reserved 112 runs to reset for this row; at six-hourly it is about 19. The reservation did not actually change the lap budget, because both hourly rows already blew past the cap (173.20% capped to 15.40%) — the cap absorbed the error, which is also why nobody would have noticed it from the gate output."
     },
     {
       "id": "youtube-loop-fresh",
@@ -115,12 +117,14 @@
       "last_seen": null,
       "trigger_id": "trig_011CUbWRXqjNKLcGX5BhDgk9",
       "cron": "55 * * * *",
-      "observed_at": "2026-08-10T04:55:00Z",
+      "observed_at": "2026-08-10T06:18:00Z",
       "observed_from": "list_triggers (the scheduler itself, not a repo file)",
-      "last_fired_at": "2026-08-10T03:56:02Z",
+      "last_fired_at": "2026-08-10T05:55:38.060405Z",
       "note": "Named \"daily\" but the live cron is hourly (55 * * * *). The id is a key other files reference, so the name stays and the cadence follows the scheduler. 2026-08-10: a SECOND cookie trigger exists on the same cron, in the same environment, pushing to the same branch — cookie-daily-fresh below. Both are enabled. That looks like a migration whose old half was not switched off, and it is the owner's migration, not this loop's to finish; what belongs here is that the pool is being spent twice per hour and the reservation must say so.",
       "scheduler_updated_at": "2026-08-10T03:06:22Z",
-      "next_run_at": "2026-08-10T04:55:00Z"
+      "next_run_at": "2026-08-10T06:55:00Z",
+      "reported_overdue_falsely_at": "2026-08-10T06:18:00Z",
+      "reported_overdue_falsely_note": "state/heartbeat.json said OVERDUE for this row at 06:15Z. It is not stopped: list_triggers shows enabled true, cron 55 * * * *, last fired 05:55:38Z — twenty minutes before the alarm — and next run 06:55Z. The alarm is an artifact of WHERE the detector looks. This row has no liveness block, so the only mark available is last_fired_at in this file, and this file is only refreshed by a lap that happens to hold MCP tools. Between such laps the mark ages while the automation keeps firing, and the detector cannot tell that apart from a stopped trigger. RUNBOOK 3 tells a lap to treat overdue as its TOP priority, so a false alarm here does not merely mislead — it redirects the scarce pool. The repair is a liveness mark the automation itself moves, the way codex-loop moves state/codex-lane.json; the cookie loop pushes to a different repository, so that mark has to be something this repo can see, and nobody has priced that."
     },
     {
       "id": "cookie-daily-fresh",
