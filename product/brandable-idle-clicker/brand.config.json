@@ -1,0 +1,83 @@
+{
+  "$schema": "./brand.schema.json",
+  "meta": {
+    "title": "サンプル商店 タップ経営",
+    "tagline": "タップして、売って、大きくする。",
+    "lang": "ja",
+    "description": "ブラウザで遊べる放置クリッカー。設定ファイル1枚で自分のお店の内容に差し替えられます。",
+    "faviconEmoji": "🛍️"
+  },
+  "theme": {
+    "background": "#12151c",
+    "panel": "#1b2029",
+    "panelEdge": "#2b3340",
+    "text": "#e8edf4",
+    "textMuted": "#98a3b3",
+    "accent": "#ffb648",
+    "accentText": "#241703",
+    "positive": "#5fd07a",
+    "negative": "#ef6f6f",
+    "cornerRadius": 14
+  },
+  "currency": {
+    "name": "売上",
+    "unit": "円",
+    "emoji": "💰"
+  },
+  "tapTarget": {
+    "emoji": "🛍️",
+    "label": "商品をタップ",
+    "baseValue": 1,
+    "hint": "タップすると売上が増えます"
+  },
+  "generators": [
+    { "id": "flyer",   "emoji": "📄", "name": "チラシ",       "desc": "近所に配る",             "baseCost": 15,      "baseRate": 0.2 },
+    { "id": "staff",   "emoji": "🧑‍🍳", "name": "スタッフ",     "desc": "手が増える",             "baseCost": 120,     "baseRate": 1.6 },
+    { "id": "shelf",   "emoji": "🗄️", "name": "陳列棚",       "desc": "並べれば売れる",         "baseCost": 1100,    "baseRate": 14 },
+    { "id": "van",     "emoji": "🚚", "name": "配送車",       "desc": "遠くまで届く",           "baseCost": 12000,   "baseRate": 110 },
+    { "id": "branch",  "emoji": "🏪", "name": "2号店",        "desc": "町の反対側にも",         "baseCost": 140000,  "baseRate": 900 },
+    { "id": "online",  "emoji": "🌐", "name": "通販サイト",   "desc": "24時間ひらく",           "baseCost": 2000000, "baseRate": 8000 },
+    { "id": "factory", "emoji": "🏭", "name": "自社工場",     "desc": "つくるところから",       "baseCost": 33000000,"baseRate": 72000 },
+    { "id": "brandhq", "emoji": "🏢", "name": "本社ビル",     "desc": "看板が街に立つ",         "baseCost": 600000000, "baseRate": 800000 }
+  ],
+  "upgrades": [
+    { "id": "u_tap1",  "emoji": "✋", "name": "接客の腕",       "desc": "タップの売上が2倍",       "cost": 300,        "effect": { "type": "tapMultiplier",  "value": 2 } },
+    { "id": "u_all1",  "emoji": "📈", "name": "看板を出す",     "desc": "自動の売上が1.5倍",       "cost": 4000,       "effect": { "type": "rateMultiplier", "value": 1.5 } },
+    { "id": "u_tap2",  "emoji": "🎁", "name": "まとめ売り",     "desc": "タップの売上がさらに3倍", "cost": 60000,      "effect": { "type": "tapMultiplier",  "value": 3 } },
+    { "id": "u_all2",  "emoji": "📣", "name": "地域チラシ",     "desc": "自動の売上が2倍",         "cost": 900000,     "effect": { "type": "rateMultiplier", "value": 2 } },
+    { "id": "u_off1",  "emoji": "🌙", "name": "夜間シフト",     "desc": "オフライン収入が2倍",     "cost": 5000000,    "effect": { "type": "offlineMultiplier", "value": 2 } },
+    { "id": "u_all3",  "emoji": "🏆", "name": "地元で一番",     "desc": "自動の売上が3倍",         "cost": 90000000,   "effect": { "type": "rateMultiplier", "value": 3 } }
+  ],
+  "milestones": [
+    { "at": 100,          "text": "はじめてのお客さんが来ました。" },
+    { "at": 10000,        "text": "常連さんがつきました。" },
+    { "at": 1000000,      "text": "行列ができています。" },
+    { "at": 100000000,    "text": "町でいちばんのお店になりました。" },
+    { "at": 10000000000,  "text": "全国に名前が知られています。" }
+  ],
+  "prestige": {
+    "enabled": true,
+    "label": "リニューアル",
+    "currencyName": "のれん",
+    "emoji": "🎖️",
+    "unlockAt": 1000000,
+    "description": "売上をリセットして、のれんを得ます。のれん1つにつき全収入+10%。",
+    "bonusPerPoint": 0.1
+  },
+  "offline": {
+    "enabled": true,
+    "maxHours": 8,
+    "rateFactor": 0.5
+  },
+  "cta": {
+    "enabled": false,
+    "label": "お店の公式サイトへ",
+    "url": "",
+    "showAfterCurrency": 500,
+    "note": "url を自社のURLにして enabled を true にすると、遊んでいる途中でボタンが出ます。"
+  },
+  "footer": {
+    "text": "© サンプル商店",
+    "url": ""
+  }
+}

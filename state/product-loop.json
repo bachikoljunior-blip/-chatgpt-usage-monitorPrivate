@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T03:12:00Z",
+  "fetched_at": "2026-08-10T09:25:00Z",
   "why_this_exists": "Owner, 2026-08-10: 提供するものは測定分析改善ループまわさないと需要のあるものになっていかない. Every loop in this repository measures the ROUTE — ETA, venues, findable surface, reach, usage, heartbeats. None took the offer itself as its subject, and state/portfolio.json has carried a field named not_examined since it was written. This file is the register the product loop runs on. scripts/product-loop.mjs derives loopability from it and pulse.yml runs the check hourly.",
   "the_ladder_is_in_the_script": "scripts/product-loop.mjs LADDER. Cheapest and fastest signal first: promise_conformance, stranger_reaction, sells_against, behaviour. The order is the design content — measuring conversion on an artifact that does not deliver what its page promises tells you about the promise, not the product.",
   "offers": [
@@ -13,19 +13,29 @@
         "https://bachikoljunior-blip.itch.io/idle-clicker-kit",
         "gumroad (see state/gumroad.json)"
       ],
-      "source": null,
-      "source_measured_at": "2026-08-10T01:15:00Z",
-      "source_finding": "NO SOURCE TREE EXISTS IN ANY REPOSITORY THIS ACCOUNT OWNS. The four artifacts the live listing promises — brand.config.json, generator.html, validate_config.py, test_engine.py — return zero hits across four GitHub code searches, against a positive control (filename:KIT_VERSION) that returns hits inside a PRIVATE repository and therefore proves the index reaches them. A built ZIP plausibly exists as a Gumroad attachment; no source does. Full record: state/constraints.json the_product_itself_has_never_been_opened.the_attempt_to_open_it.",
+      "source": {
+        "repo": "bachikoljunior-blip/-chatgpt-usage-monitorPrivate",
+        "path": "product/brandable-idle-clicker"
+      },
+      "source_measured_at": "2026-08-10T09:25:00Z",
+      "source_finding": "RECOVERED 2026-08-10T09:2xZ. The previous finding said no source tree exists in any repository this account owns, on four GitHub code searches with a positive control. Those searches were correct and the conclusion drawn from them was not: they answer a question about REPOSITORIES, and the source was never in one. GET /v2/products/:id returns files[] with a signed download URL for the seller's own attachment. One authenticated call, zero owner actions, 31,941 bytes, 12 files — and all four artifacts the sales page promises by name (brand.config.json, generator.html, validate_config.py, test_engine.py) are in it, alongside assets/engine.js, assets/style.css and three example configs. Absence found by an instrument is absence within its reach; the reach has to travel with the result. Repeatable via scripts/fetch-product-source.mjs, manifest with digests in state/product-source.json.",
       "measurement": {
-        "rung": null,
-        "why_null": "Every rung above `behaviour` needs the artifact. There is no artifact to open. This is not 'the round has not been run yet' — the round cannot be run, and that is the finding."
+        "rung": "promise_conformance",
+        "why": "The ladder's first rung needs the artifact and the sales page. Both now exist here. This is the first rung this offer has ever been able to declare.",
+        "declared_at": "2026-08-10T09:25:00Z",
+        "already_measured_this_lap": [
+          "validate_config.py, shipped inside the kit, passes on its own brand.config.json and on all three example configs (cafe, salon, creator) — 4 of 4 green",
+          "index.html loads in Chromium with no thrown error (scripts/play-artifact.mjs --file). NOT a gameplay measurement: the tap profile is written for the free demo's markup, so zero taps registered. A kit-specific profile is what rung 1 still needs.",
+          "test_engine.py cannot run here: it imports playwright, which is not installed. The environment has Chromium but not that binding. Recorded as blocked, not as failed."
+        ],
+        "what_rung_1_still_needs": "Read the live sales page's promises one by one against the recovered files, and drive the kit itself rather than the free demo. The promises are enumerable: the README states build-free, no external libraries, no network beyond a configured cta.url, phone-first, and device-local saves. Every one of those is checkable against the source that is now here."
       },
       "rounds": [],
-      "what_this_costs_right_now": "It cannot be inspected, tested, corrected, rebuilt or re-delivered. If a buyer reports it broken there is nothing to fix it in. Every surface change already made to it — copy, addressee, tags, cover, category, announcement — is unjudgeable, because the thing under the surface was never read. And the 2026-08-23 judgement was going to attribute a zero result to the venue.",
+      "what_this_costs_right_now": "Changed 2026-08-10: it can now be inspected, tested, corrected, rebuilt and re-delivered. What it still costs is that no rung has been COMPLETED, so a zero result on this offer remains unattributable — but that is now a round nobody has run, not a round nobody can run.",
       "the_two_ways_out_and_neither_is_free": {
-        "rebuild_the_source": "Write the four promised artifacts, in a repository we own, matching the live listing. Then the offer becomes loopable and every rung opens. Cost: real build work, on the binding resource.",
-        "retire_the_offer": "Stop routing effort to it and put the loop behind something that already has a source. Cost: the listing work already done stops compounding — but it is not lost, because it was never judged in the first place.",
-        "do_not_choose_by_sunk_cost": "The listing, cover, tags and announcement are already paid for and they are not evidence for either option. A14: 'it was already built' is not a reason."
+        "settled": "Neither is needed. The premise under both — that the artifact is lost — was false. rebuild_the_source was pricing work already done and paid for; retire_the_offer was pricing the loss of an asset that was never lost. Kept as a record of what the wrong premise cost: five handoffs carried it, and two of them proposed spending a lap on the choice between them.",
+        "rebuild_the_source": "WITHDRAWN — the source exists.",
+        "retire_the_offer": "STILL AVAILABLE, but it must now be argued on the product rather than on its absence. RUNBOOK 5.4 requires that an offer be able to leave; nothing here says this one should, only that the reason previously on file is gone."
       },
       "explicitly_not_claimed": "That the product is bad. The owner's 中身見てないんだけどこれ絶対売れないと思うよ and any defence of it are equally unbacked. Nobody has opened it. That symmetry is the point — this is a statement about what can be measured, not a verdict on quality."
     },

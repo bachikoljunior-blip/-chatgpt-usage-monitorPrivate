@@ -129,6 +129,24 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
   if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at)) {
     throw new Error("probe state has no valid fetched_at timestamp");
   }
+} else if (Array.isArray(state.manifest)) {
+  // The recovered product source. The signed download URL that produced it carries
+  // a verify token and an expiry, so the rule enforced here is that it never
+  // appears: what may be recorded is the manifest, which is what a later run needs
+  // to tell a re-fetch from a replacement.
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at)) {
+    throw new Error("product source state has no valid fetched_at timestamp");
+  }
+  if (typeof state.promised_artifacts_present !== "boolean") {
+    throw new Error("product source state does not say whether the promised artifacts are present");
+  }
+  for (const f of state.manifest) {
+    if (typeof f.path !== "string" || !f.path) throw new Error("a manifest row has no path");
+    // Without a digest the manifest cannot answer the only question it exists for.
+    if (!/^[0-9a-f]{64}$/.test(f.sha256 ?? "")) {
+      throw new Error(`manifest row ${f.path} has no sha256, so a replaced file would look like a re-fetch`);
+    }
+  }
 } else if (state.demo_matches_repo_copy !== undefined) {
   // The published free demo. The one invariant worth enforcing is that the verdict
   // is never written as a guess: scripts/check-published-demo.mjs must not store a

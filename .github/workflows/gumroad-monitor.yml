@@ -17,6 +17,10 @@ on:
         description: "Create a monthly membership draft, read back whether it is really recurring, then delete it. Settles whether the RECURRING form the elected route needs can be listed without a person, which the one-time lifecycle probe never answered."
         type: boolean
         default: false
+      fetch_product_source:
+        description: "Re-download the sold product's own attachment from the seller API into product/ and refresh state/product-source.json. Non-mutating on Gumroad; detects the day the seller replaces the file."
+        type: boolean
+        default: false
       probe_cover:
         description: "Probe whether a cover image can be set through the API. Reads, plus two writes that carry no real product fields and cannot succeed into a bad state. Re-run to detect the day Gumroad adds the route."
         type: boolean
@@ -100,6 +104,15 @@ jobs:
           # origin/main before staging and would delete this seconds after it was
           # written, which reads as "the probe found nothing".
           cp state/gumroad-recurring.json "$RUNNER_TEMP/gumroad-recurring.json"
+
+      - name: Recover the sold product's source from its own attachment
+        if: always() && inputs.fetch_product_source
+        env:
+          GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
+        run: |
+          node scripts/fetch-product-source.mjs --write
+          node scripts/verify-sanitized-state.mjs state/product-source.json
+          cp state/product-source.json "$RUNNER_TEMP/product-source.json"
 
       - name: Probe whether products can be created over REST
         if: always() && inputs.probe_create

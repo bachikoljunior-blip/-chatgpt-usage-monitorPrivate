@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<link rel="icon" href="data:,">
+<title>読み込み中…</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<noscript>このゲームを遊ぶには JavaScript を有効にしてください。</noscript>
+
+<div id="boot" class="boot">読み込み中…</div>
+
+<main id="app" hidden>
+  <header id="head">
+    <h1 id="title"></h1>
+    <p id="tagline"></p>
+  </header>
+
+  <section id="wallet" aria-live="polite">
+    <div id="currency-name"></div>
+    <div id="amount"></div>
+    <div id="rate"></div>
+    <div id="prestige-line" hidden></div>
+  </section>
+
+  <section id="tap-area">
+    <button id="tap" type="button">
+      <span id="tap-emoji" aria-hidden="true"></span>
+      <span id="tap-label"></span>
+    </button>
+    <p id="tap-hint"></p>
+  </section>
+
+  <p id="ticker" role="status"></p>
+
+  <a id="cta" hidden></a>
+
+  <nav id="tabs" role="tablist">
+    <button type="button" role="tab" data-tab="generators" aria-selected="true">ふやす</button>
+    <button type="button" role="tab" data-tab="upgrades" aria-selected="false">つよくする</button>
+  </nav>
+
+  <section id="generators" role="tabpanel"></section>
+  <section id="upgrades" role="tabpanel" hidden></section>
+
+  <section id="prestige-box" hidden>
+    <h2 id="prestige-title"></h2>
+    <p id="prestige-desc"></p>
+    <button id="prestige-btn" type="button"></button>
+  </section>
+
+  <footer>
+    <span id="footer-text"></span>
+    <button id="reset" type="button">最初から</button>
+  </footer>
+</main>
+
+<script src="assets/engine.js"></script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+/* すべての色と角丸は brand.config.json の theme から流し込まれます。
+   このファイルを編集しなくても見た目は変えられます。 */
+:root {
+  --bg: #12151c;
+  --panel: #1b2029;
+  --edge: #2b3340;
+  --text: #e8edf4;
+  --muted: #98a3b3;
+  --accent: #ffb648;
+  --accent-text: #241703;
+  --positive: #5fd07a;
+  --negative: #ef6f6f;
+  --radius: 14px;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+/* display を明示した要素には UA の hidden が効かない。#cta は display:block を
+   持つので、hidden を付けても空の枠が残っていた。ここで一括して押さえる。 */
+[hidden] { display: none !important; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", system-ui, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+.boot { padding: 24px; color: var(--muted); font-size: 14px; }
+.boot.error { color: var(--negative); white-space: pre-wrap; line-height: 1.7; }
+
+main {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 16px 16px calc(28px + env(safe-area-inset-bottom));
+}
+
+#head { text-align: center; margin-bottom: 14px; }
+h1 { font-size: 21px; margin: 0 0 4px; line-height: 1.3; }
+#tagline { margin: 0; font-size: 13px; color: var(--muted); }
+
+#wallet {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+  padding: 16px;
+  text-align: center;
+}
+#currency-name { font-size: 12px; letter-spacing: .08em; color: var(--muted); margin-bottom: 2px; }
+#amount { font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.2; }
+#rate { margin-top: 4px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+#prestige-line { margin-top: 6px; font-size: 13px; color: var(--accent); }
+
+#tap-area { margin: 18px 0 8px; text-align: center; }
+#tap {
+  width: 100%;
+  padding: 22px 16px;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--accent-text);
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: transform .06s ease;
+  touch-action: manipulation;
+  user-select: none;
+}
+#tap:active { transform: scale(.97); }
+#tap-emoji { font-size: 46px; line-height: 1; }
+#tap-hint { margin: 8px 0 0; font-size: 12px; color: var(--muted); }
+
+#ticker { min-height: 1.3em; margin: 10px 0; text-align: center; font-size: 13px; color: var(--positive); }
+
+#cta {
+  display: block;
+  margin: 4px 0 14px;
+  padding: 13px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  text-decoration: none;
+}
+
+#tabs { display: flex; gap: 8px; margin: 6px 0 12px; }
+#tabs button {
+  flex: 1;
+  padding: 11px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+#tabs button[aria-selected="true"] { color: var(--accent-text); background: var(--accent); border-color: var(--accent); }
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  font: inherit;
+  text-align: left;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.row:disabled { opacity: .42; cursor: default; }
+.row .ico { font-size: 26px; line-height: 1; flex: 0 0 auto; }
+.row .body { flex: 1 1 auto; min-width: 0; }
+/* .name/.desc/.cost/.owned は span なので、block にしないと1行に繋がって出る */
+.row .name, .row .desc, .row .cost, .row .owned { display: block; }
+.row .name { font-size: 15px; font-weight: 700; }
+.row .desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.row .side { flex: 0 0 auto; text-align: right; font-variant-numeric: tabular-nums; }
+.row .cost { font-size: 14px; font-weight: 700; color: var(--accent); }
+.row .owned { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.row.bought .cost { color: var(--positive); }
+
+#prestige-box {
+  margin-top: 18px;
+  padding: 14px;
+  background: var(--panel);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+}
+#prestige-box h2 { margin: 0 0 6px; font-size: 16px; }
+#prestige-desc { margin: 0 0 10px; font-size: 13px; color: var(--muted); line-height: 1.6; }
+#prestige-btn {
+  width: 100%;
+  padding: 12px;
+  font: inherit;
+  font-weight: 700;
+  color: var(--accent-text);
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+footer {
+  margin-top: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+footer a { color: var(--muted); }
+#reset {
+  font: inherit;
+  font-size: 12px;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #tap { transition: none; }
+}

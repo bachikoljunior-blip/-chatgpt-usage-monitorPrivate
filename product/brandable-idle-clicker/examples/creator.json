@@ -1,0 +1,214 @@
+{
+  "$schema": "./brand.schema.json",
+  "meta": {
+    "title": "配信者クリッカー",
+    "tagline": "配信して、伸ばして、届ける。",
+    "lang": "ja",
+    "description": "タップして配信する放置ゲーム。",
+    "faviconEmoji": "🎙️"
+  },
+  "theme": {
+    "background": "#0e1418",
+    "panel": "#151f26",
+    "panelEdge": "#243440",
+    "text": "#e4f1f7",
+    "textMuted": "#8fa6b4",
+    "accent": "#4fd6e0",
+    "accentText": "#04191c",
+    "positive": "#6fe0a0",
+    "negative": "#f07a7a",
+    "cornerRadius": 8
+  },
+  "currency": {
+    "name": "視聴者",
+    "unit": "人",
+    "emoji": "👀"
+  },
+  "tapTarget": {
+    "emoji": "🎙️",
+    "label": "配信する",
+    "baseValue": 1,
+    "hint": "タップするたびに視聴者が増えます"
+  },
+  "generators": [
+    {
+      "id": "flyer",
+      "emoji": "✂️",
+      "name": "切り抜き",
+      "desc": "短く出す",
+      "baseCost": 15,
+      "baseRate": 0.2
+    },
+    {
+      "id": "staff",
+      "emoji": "🎨",
+      "name": "サムネ職人",
+      "desc": "クリックされる",
+      "baseCost": 120,
+      "baseRate": 1.6
+    },
+    {
+      "id": "shelf",
+      "emoji": "🎧",
+      "name": "良いマイク",
+      "desc": "聞きやすくなる",
+      "baseCost": 1100,
+      "baseRate": 14
+    },
+    {
+      "id": "van",
+      "emoji": "🤝",
+      "name": "コラボ",
+      "desc": "別の輪に届く",
+      "baseCost": 12000,
+      "baseRate": 110
+    },
+    {
+      "id": "branch",
+      "emoji": "🌍",
+      "name": "多言語字幕",
+      "desc": "海外にも出る",
+      "baseCost": 140000,
+      "baseRate": 900
+    },
+    {
+      "id": "online",
+      "emoji": "👥",
+      "name": "編集チーム",
+      "desc": "本数が増える",
+      "baseCost": 2000000,
+      "baseRate": 8000
+    },
+    {
+      "id": "factory",
+      "emoji": "🏢",
+      "name": "スタジオ",
+      "desc": "撮れるものが変わる",
+      "baseCost": 33000000,
+      "baseRate": 72000
+    },
+    {
+      "id": "brandhq",
+      "emoji": "🛰️",
+      "name": "自社プラットフォーム",
+      "desc": "自分の場所を持つ",
+      "baseCost": 600000000,
+      "baseRate": 800000
+    }
+  ],
+  "upgrades": [
+    {
+      "id": "u_tap1",
+      "emoji": "✋",
+      "name": "つかみが上手い",
+      "desc": "タップの視聴者が2倍",
+      "cost": 300,
+      "effect": {
+        "type": "tapMultiplier",
+        "value": 2
+      }
+    },
+    {
+      "id": "u_all1",
+      "emoji": "📊",
+      "name": "数字を読む",
+      "desc": "自動の視聴者が1.5倍",
+      "cost": 4000,
+      "effect": {
+        "type": "rateMultiplier",
+        "value": 1.5
+      }
+    },
+    {
+      "id": "u_tap2",
+      "emoji": "🔥",
+      "name": "バズった1本",
+      "desc": "タップの視聴者がさらに3倍",
+      "cost": 60000,
+      "effect": {
+        "type": "tapMultiplier",
+        "value": 3
+      }
+    },
+    {
+      "id": "u_all2",
+      "emoji": "📣",
+      "name": "おすすめに乗る",
+      "desc": "自動の視聴者が2倍",
+      "cost": 900000,
+      "effect": {
+        "type": "rateMultiplier",
+        "value": 2
+      }
+    },
+    {
+      "id": "u_off1",
+      "emoji": "🌙",
+      "name": "アーカイブが回る",
+      "desc": "オフライン収入が2倍",
+      "cost": 5000000,
+      "effect": {
+        "type": "offlineMultiplier",
+        "value": 2
+      }
+    },
+    {
+      "id": "u_all3",
+      "emoji": "🏆",
+      "name": "名前が知られる",
+      "desc": "自動の視聴者が3倍",
+      "cost": 90000000,
+      "effect": {
+        "type": "rateMultiplier",
+        "value": 3
+      }
+    }
+  ],
+  "milestones": [
+    {
+      "at": 100,
+      "text": "はじめてのコメントが来ました。"
+    },
+    {
+      "at": 10000,
+      "text": "固定の視聴者がつきました。"
+    },
+    {
+      "at": 1000000,
+      "text": "同時接続が伸びています。"
+    },
+    {
+      "at": 100000000,
+      "text": "知らない人からも名前を呼ばれます。"
+    },
+    {
+      "at": 10000000000,
+      "text": "海外からのコメントが増えました。"
+    }
+  ],
+  "prestige": {
+    "enabled": true,
+    "label": "チャンネル刷新",
+    "currencyName": "実績",
+    "emoji": "🎖️",
+    "unlockAt": 1000000,
+    "description": "視聴者をリセットして、実績を得ます。実績1つにつき全収入+10%。",
+    "bonusPerPoint": 0.1
+  },
+  "offline": {
+    "enabled": true,
+    "maxHours": 8,
+    "rateFactor": 0.5
+  },
+  "cta": {
+    "enabled": false,
+    "label": "お店の公式サイトへ",
+    "url": "",
+    "showAfterCurrency": 500,
+    "note": "url を自社のURLにして enabled を true にすると、遊んでいる途中でボタンが出ます。"
+  },
+  "footer": {
+    "text": "© 配信者クリッカー",
+    "url": ""
+  }
+}

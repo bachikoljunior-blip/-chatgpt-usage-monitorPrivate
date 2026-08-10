@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:,">
+<title>設定ファイルをつくる — ブランド差し替え型 放置クリッカー</title>
+<style>
+  :root { --bg:#12151c; --panel:#1b2029; --edge:#2b3340; --text:#e8edf4; --muted:#98a3b3; --accent:#ffb648; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-size:15px; line-height:1.6;
+    font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",system-ui,sans-serif; }
+  main { max-width:720px; margin:0 auto; padding:24px 16px 60px; }
+  h1 { font-size:20px; margin:0 0 6px; }
+  .lead { color:var(--muted); font-size:13px; margin:0 0 24px; }
+  fieldset { border:1px solid var(--edge); border-radius:12px; padding:16px; margin:0 0 16px; background:var(--panel); }
+  legend { padding:0 8px; font-size:13px; font-weight:700; color:var(--accent); }
+  label { display:block; margin:10px 0 0; font-size:13px; color:var(--muted); }
+  input[type=text], input[type=url], input[type=number] {
+    width:100%; margin-top:4px; padding:9px 10px; font:inherit; font-size:15px;
+    color:var(--text); background:#10141b; border:1px solid var(--edge); border-radius:8px; }
+  input[type=color] { width:52px; height:34px; margin-top:4px; padding:2px; background:#10141b;
+    border:1px solid var(--edge); border-radius:8px; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 14px; }
+  .swatches { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .swatch { padding:7px 12px; font:inherit; font-size:13px; border-radius:999px; cursor:pointer;
+    border:1px solid var(--edge); background:#10141b; color:var(--text); }
+  .items { display:grid; grid-template-columns:56px 1fr 1fr; gap:8px; align-items:end; }
+  .items > span { font-size:12px; color:var(--muted); }
+  .actions { display:flex; gap:10px; flex-wrap:wrap; margin:20px 0 10px; }
+  button.primary, button.ghost {
+    padding:12px 18px; font:inherit; font-size:15px; font-weight:700; border-radius:10px; cursor:pointer; }
+  button.primary { color:#241703; background:var(--accent); border:none; }
+  button.ghost { color:var(--accent); background:none; border:1px solid var(--accent); }
+  #status { min-height:1.4em; font-size:13px; color:#5fd07a; }
+  #status.bad { color:#ef6f6f; white-space:pre-wrap; }
+  pre { max-height:280px; overflow:auto; padding:14px; font-size:12px; line-height:1.5;
+    background:#0d1117; border:1px solid var(--edge); border-radius:10px; }
+  .hint { font-size:12px; color:var(--muted); margin-top:4px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>設定ファイルをつくる</h1>
+  <p class="lead">埋めて「ダウンロード」を押すと <code>brand.config.json</code> が出ます。
+    それを商品フォルダの同名ファイルに上書きすれば完成です。ここで入力した内容はどこにも送信されません。</p>
+
+  <fieldset>
+    <legend>名前</legend>
+    <label>題名<input type="text" id="title" value="まめや珈琲 焙煎クリッカー"></label>
+    <label>ひとこと説明<input type="text" id="tagline" value="煎って、淹れて、店を増やす。"></label>
+    <label>アイコンの絵文字<input type="text" id="favicon" value="☕" maxlength="4"></label>
+  </fieldset>
+
+  <fieldset>
+    <legend>色</legend>
+    <div class="swatches" id="presets"></div>
+    <div class="grid">
+      <label>背景<input type="color" id="background" value="#1a1410"></label>
+      <label>パネル<input type="color" id="panel" value="#241c16"></label>
+      <label>文字<input type="color" id="text" value="#f2e9df"></label>
+      <label>強調（ボタン）<input type="color" id="accent" value="#c98a3c"></label>
+    </div>
+    <p class="hint">ボタン上の文字色は、強調色の明るさから自動で黒か白を選びます。</p>
+  </fieldset>
+
+  <fieldset>
+    <legend>数えるもの</legend>
+    <div class="grid">
+      <label>名前<input type="text" id="cur-name" value="焙煎豆"></label>
+      <label>単位<input type="text" id="cur-unit" value="g"></label>
+      <label>絵文字<input type="text" id="cur-emoji" value="🫘" maxlength="4"></label>
+      <label>1タップで増える量<input type="number" id="tap-value" value="1" min="0.1" step="0.1"></label>
+    </div>
+    <label>タップボタンの文字<input type="text" id="tap-label" value="豆を煎る"></label>
+    <label>タップボタンの絵文字<input type="text" id="tap-emoji" value="☕" maxlength="4"></label>
+  </fieldset>
+
+  <fieldset>
+    <legend>増やすもの（安い順に8つ）</legend>
+    <p class="hint">名前を空にすると、その行は入りません。値段と毎秒の量はこちらで釣り合うように決めます。</p>
+    <div id="gens"></div>
+  </fieldset>
+
+  <fieldset>
+    <legend>誘導ボタン（任意）</legend>
+    <label>ボタンの文字<input type="text" id="cta-label" value="お店の公式サイトへ"></label>
+    <label>リンク先<input type="url" id="cta-url" placeholder="https://example.jp　空にすると出ません"></label>
+    <label>一番下の表記<input type="text" id="footer" value="© まめや珈琲"></label>
+  </fieldset>
+
+  <div class="actions">
+    <button class="primary" id="download" type="button">brand.config.json をダウンロード</button>
+    <button class="ghost" id="copy" type="button">内容をコピー</button>
+  </div>
+  <p id="status"></p>
+  <pre id="preview"></pre>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  // 値段と毎秒の量は、遊びの速さを決める部分。買い手に決めさせると必ず壊れるので、
+  // ここで固定した梯子を使う。名前と絵文字だけ差し替えてもらう。
+  var LADDER = [
+    { cost: 15,        rate: 0.2,    emoji: '📄', name: '手回し焙煎機', desc: 'ゆっくり煎れる' },
+    { cost: 120,       rate: 1.6,    emoji: '🧑‍🍳', name: 'バリスタ',     desc: '淹れてくれる' },
+    { cost: 1100,      rate: 14,     emoji: '⚙️', name: '業務用焙煎機', desc: 'まとめて煎る' },
+    { cost: 12000,     rate: 110,    emoji: '🚚', name: '仕入れ便',     desc: '生豆が届く' },
+    { cost: 140000,    rate: 900,    emoji: '🏪', name: '2号店',        desc: '駅前にも出す' },
+    { cost: 2000000,   rate: 8000,   emoji: '🌐', name: '通販',         desc: '全国へ送る' },
+    { cost: 33000000,  rate: 72000,  emoji: '🏭', name: '自社農園',     desc: '育てるところから' },
+    { cost: 600000000, rate: 800000, emoji: '🏢', name: '本社ビル',     desc: '街の看板になる' }
+  ];
+
+  var UPGRADES = [
+    { id:'u_tap1', emoji:'✋', name:'腕が上がる',   desc:'タップの量が2倍',       cost:300,      type:'tapMultiplier',     value:2 },
+    { id:'u_all1', emoji:'📈', name:'看板を出す',   desc:'自動の量が1.5倍',       cost:4000,     type:'rateMultiplier',    value:1.5 },
+    { id:'u_tap2', emoji:'🎁', name:'まとめて売る', desc:'タップの量がさらに3倍', cost:60000,    type:'tapMultiplier',     value:3 },
+    { id:'u_all2', emoji:'📣', name:'評判が回る',   desc:'自動の量が2倍',         cost:900000,   type:'rateMultiplier',    value:2 },
+    { id:'u_off1', emoji:'🌙', name:'夜も動く',     desc:'オフライン収入が2倍',   cost:5000000,  type:'offlineMultiplier', value:2 },
+    { id:'u_all3', emoji:'🏆', name:'一番になる',   desc:'自動の量が3倍',         cost:90000000, type:'rateMultiplier',    value:3 }
+  ];
+
+  var PRESETS = [
+    { label:'夜（既定）', background:'#12151c', panel:'#1b2029', text:'#e8edf4', accent:'#ffb648' },
+    { label:'珈琲',       background:'#1a1410', panel:'#241c16', text:'#f2e9df', accent:'#c98a3c' },
+    { label:'サロン',     background:'#14121a', panel:'#1e1b26', text:'#efeaf6', accent:'#c79bff' },
+    { label:'配信',       background:'#0e1418', panel:'#151f26', text:'#e4f1f7', accent:'#4fd6e0' },
+    { label:'森',         background:'#101a14', panel:'#17251c', text:'#e6f2e9', accent:'#6fcf7f' }
+  ];
+
+  function el(id) { return document.getElementById(id); }
+
+  LADDER.forEach(function (item, i) {
+    var wrap = document.createElement('div');
+    wrap.className = 'items';
+    wrap.innerHTML =
+      '<label>絵文字<input type="text" maxlength="4" data-emoji="' + i + '"></label>' +
+      '<label>名前<input type="text" data-name="' + i + '"></label>' +
+      '<label>説明<input type="text" data-desc="' + i + '"></label>';
+    el('gens').appendChild(wrap);
+    wrap.querySelector('[data-emoji]').value = item.emoji;
+    wrap.querySelector('[data-name]').value = item.name;
+    wrap.querySelector('[data-desc]').value = item.desc;
+  });
+
+  PRESETS.forEach(function (p) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'swatch';
+    b.textContent = p.label;
+    b.style.borderColor = p.accent;
+    b.addEventListener('click', function () {
+      el('background').value = p.background;
+      el('panel').value = p.panel;
+      el('text').value = p.text;
+      el('accent').value = p.accent;
+      render();
+    });
+    el('presets').appendChild(b);
+  });
+
+  function luminance(hex) {
+    var n = parseInt(hex.slice(1), 16);
+    var r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+    return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  }
+
+  function mix(hex, other, t) {
+    var a = parseInt(hex.slice(1), 16), b = parseInt(other.slice(1), 16);
+    var out = 0;
+    for (var s = 16; s >= 0; s -= 8) {
+      var av = (a >> s) & 255, bv = (b >> s) & 255;
+      out |= Math.round(av + (bv - av) * t) << s;
+    }
+    return '#' + ('000000' + out.toString(16)).slice(-6);
+  }
+
+  function value(id) { return el(id).value.trim(); }
+
+  function build() {
+    var accent = el('accent').value;
+    var background = el('background').value;
+    var panel = el('panel').value;
+    var text = el('text').value;
+    var url = value('cta-url');
+
+    var generators = [];
+    LADDER.forEach(function (item, i) {
+      var name = document.querySelector('[data-name="' + i + '"]').value.trim();
+      if (!name) return;
+      generators.push({
+        id: 'g' + (i + 1),
+        emoji: document.querySelector('[data-emoji="' + i + '"]').value.trim() || '•',
+        name: name,
+        desc: document.querySelector('[data-desc="' + i + '"]').value.trim(),
+        baseCost: item.cost,
+        baseRate: item.rate
+      });
+    });
+
+    return {
+      meta: {
+        title: value('title'),
+        tagline: value('tagline'),
+        lang: 'ja',
+        description: value('title') + '。ブラウザで遊べる放置クリッカーです。',
+        faviconEmoji: value('favicon')
+      },
+      theme: {
+        background: background,
+        panel: panel,
+        panelEdge: mix(panel, text, 0.18),
+        text: text,
+        textMuted: mix(panel, text, 0.55),
+        accent: accent,
+        accentText: luminance(accent) > 0.55 ? '#141414' : '#ffffff',
+        positive: '#5fd07a',
+        negative: '#ef6f6f',
+        cornerRadius: 14
+      },
+      currency: { name: value('cur-name'), unit: value('cur-unit'), emoji: value('cur-emoji') },
+      tapTarget: {
+        emoji: value('tap-emoji'),
+        label: value('tap-label'),
+        baseValue: parseFloat(el('tap-value').value) || 1,
+        hint: 'タップするたびに' + value('cur-name') + 'が増えます'
+      },
+      generators: generators,
+      upgrades: UPGRADES.map(function (u) {
+        return { id:u.id, emoji:u.emoji, name:u.name, desc:u.desc, cost:u.cost,
+                 effect: { type:u.type, value:u.value } };
+      }),
+      milestones: [
+        { at: 100,         text: 'はじめてのお客さんが来ました。' },
+        { at: 10000,       text: '常連さんがつきました。' },
+        { at: 1000000,     text: '行列ができています。' },
+        { at: 100000000,   text: 'この街で一番になりました。' },
+        { at: 10000000000, text: '遠くからも人が来ます。' }
+      ],
+      prestige: {
+        enabled: true, label: 'リニューアル', currencyName: '信頼', emoji: '🎖️',
+        unlockAt: 1000000,
+        description: value('cur-name') + 'をリセットして信頼を得ます。信頼1つにつき全収入+10%。',
+        bonusPerPoint: 0.1
+      },
+      offline: { enabled: true, maxHours: 8, rateFactor: 0.5 },
+      cta: { enabled: !!url, label: value('cta-label') || '詳しく見る', url: url, showAfterCurrency: 500 },
+      footer: { text: value('footer'), url: '' }
+    };
+  }
+
+  function problems(config) {
+    var out = [];
+    if (!config.meta.title) out.push('題名を入れてください');
+    if (!config.currency.name) out.push('数えるものの名前を入れてください');
+    if (!config.tapTarget.label) out.push('タップボタンの文字を入れてください');
+    if (!config.generators.length) out.push('増やすものを1つ以上残してください');
+    if (!(config.tapTarget.baseValue > 0)) out.push('1タップで増える量は0より大きくしてください');
+    if (config.cta.enabled && !/^https?:\/\//.test(config.cta.url)) {
+      out.push('リンク先は https:// から始めてください');
+    }
+    return out;
+  }
+
+  function render() {
+    var config = build();
+    var bad = problems(config);
+    var status = el('status');
+    if (bad.length) {
+      status.className = 'bad';
+      status.textContent = bad.join('\n');
+    } else {
+      status.className = '';
+      status.textContent = '入力に問題はありません。';
+    }
+    el('preview').textContent = JSON.stringify(config, null, 2);
+    return { config: config, ok: !bad.length };
+  }
+
+  document.addEventListener('input', render);
+
+  el('download').addEventListener('click', function () {
+    var r = render();
+    if (!r.ok) return;
+    var blob = new Blob([JSON.stringify(r.config, null, 2) + '\n'], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'brand.config.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  });
+
+  el('copy').addEventListener('click', function () {
+    var r = render();
+    if (!r.ok) return;
+    var textToCopy = JSON.stringify(r.config, null, 2);
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(textToCopy).then(function () {
+        el('status').textContent = 'コピーしました。brand.config.json に貼り付けてください。';
+      });
+    } else {
+      // クリップボードAPIが無い環境では、選択できる状態にして案内する
+      var range = document.createRange();
+      range.selectNodeContents(el('preview'));
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      el('status').textContent = '下の内容を選択しました。手動でコピーしてください。';
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

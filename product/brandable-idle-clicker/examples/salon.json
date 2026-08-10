@@ -1,0 +1,214 @@
+{
+  "$schema": "./brand.schema.json",
+  "meta": {
+    "title": "サロン ルミエ 予約クリッカー",
+    "tagline": "切って、整えて、指名を増やす。",
+    "lang": "ja",
+    "description": "タップして施術する放置ゲーム。",
+    "faviconEmoji": "💇"
+  },
+  "theme": {
+    "background": "#14121a",
+    "panel": "#1e1b26",
+    "panelEdge": "#332e40",
+    "text": "#efeaf6",
+    "textMuted": "#a49bb4",
+    "accent": "#c79bff",
+    "accentText": "#1b1226",
+    "positive": "#7fd6b0",
+    "negative": "#e585a0",
+    "cornerRadius": 18
+  },
+  "currency": {
+    "name": "指名",
+    "unit": "件",
+    "emoji": "✨"
+  },
+  "tapTarget": {
+    "emoji": "💇",
+    "label": "施術する",
+    "baseValue": 1,
+    "hint": "タップするたびに指名が増えます"
+  },
+  "generators": [
+    {
+      "id": "flyer",
+      "emoji": "🪧",
+      "name": "店頭ボード",
+      "desc": "通りに置く",
+      "baseCost": 15,
+      "baseRate": 0.2
+    },
+    {
+      "id": "staff",
+      "emoji": "💅",
+      "name": "アシスタント",
+      "desc": "手が増える",
+      "baseCost": 120,
+      "baseRate": 1.6
+    },
+    {
+      "id": "shelf",
+      "emoji": "🪑",
+      "name": "セット面を増設",
+      "desc": "同時に見られる",
+      "baseCost": 1100,
+      "baseRate": 14
+    },
+    {
+      "id": "van",
+      "emoji": "📱",
+      "name": "予約アプリ",
+      "desc": "空き枠が埋まる",
+      "baseCost": 12000,
+      "baseRate": 110
+    },
+    {
+      "id": "branch",
+      "emoji": "🏬",
+      "name": "2号店",
+      "desc": "隣町にも出す",
+      "baseCost": 140000,
+      "baseRate": 900
+    },
+    {
+      "id": "online",
+      "emoji": "🎓",
+      "name": "スタイリスト育成",
+      "desc": "人が育つ",
+      "baseCost": 2000000,
+      "baseRate": 8000
+    },
+    {
+      "id": "factory",
+      "emoji": "🏭",
+      "name": "オリジナル商材",
+      "desc": "自分たちで作る",
+      "baseCost": 33000000,
+      "baseRate": 72000
+    },
+    {
+      "id": "brandhq",
+      "emoji": "🏢",
+      "name": "本店ビル",
+      "desc": "看板が街に立つ",
+      "baseCost": 600000000,
+      "baseRate": 800000
+    }
+  ],
+  "upgrades": [
+    {
+      "id": "u_tap1",
+      "emoji": "✋",
+      "name": "カットの腕",
+      "desc": "タップの指名が2倍",
+      "cost": 300,
+      "effect": {
+        "type": "tapMultiplier",
+        "value": 2
+      }
+    },
+    {
+      "id": "u_all1",
+      "emoji": "📸",
+      "name": "スタイル写真",
+      "desc": "自動の指名が1.5倍",
+      "cost": 4000,
+      "effect": {
+        "type": "rateMultiplier",
+        "value": 1.5
+      }
+    },
+    {
+      "id": "u_tap2",
+      "emoji": "🎀",
+      "name": "仕上げの一手",
+      "desc": "タップの指名がさらに3倍",
+      "cost": 60000,
+      "effect": {
+        "type": "tapMultiplier",
+        "value": 3
+      }
+    },
+    {
+      "id": "u_all2",
+      "emoji": "📣",
+      "name": "口コミが回る",
+      "desc": "自動の指名が2倍",
+      "cost": 900000,
+      "effect": {
+        "type": "rateMultiplier",
+        "value": 2
+      }
+    },
+    {
+      "id": "u_off1",
+      "emoji": "🌙",
+      "name": "夜間予約",
+      "desc": "オフライン収入が2倍",
+      "cost": 5000000,
+      "effect": {
+        "type": "offlineMultiplier",
+        "value": 2
+      }
+    },
+    {
+      "id": "u_all3",
+      "emoji": "🏆",
+      "name": "雑誌に載る",
+      "desc": "自動の指名が3倍",
+      "cost": 90000000,
+      "effect": {
+        "type": "rateMultiplier",
+        "value": 3
+      }
+    }
+  ],
+  "milestones": [
+    {
+      "at": 100,
+      "text": "はじめての指名が入りました。"
+    },
+    {
+      "at": 10000,
+      "text": "常連さんがつきました。"
+    },
+    {
+      "at": 1000000,
+      "text": "来月まで予約が埋まっています。"
+    },
+    {
+      "at": 100000000,
+      "text": "この街で一番のサロンになりました。"
+    },
+    {
+      "at": 10000000000,
+      "text": "遠方からも来店があります。"
+    }
+  ],
+  "prestige": {
+    "enabled": true,
+    "label": "リニューアル",
+    "currencyName": "信頼",
+    "emoji": "🎖️",
+    "unlockAt": 1000000,
+    "description": "指名をリセットして、信頼を得ます。信頼1つにつき全収入+10%。",
+    "bonusPerPoint": 0.1
+  },
+  "offline": {
+    "enabled": true,
+    "maxHours": 8,
+    "rateFactor": 0.5
+  },
+  "cta": {
+    "enabled": false,
+    "label": "お店の公式サイトへ",
+    "url": "",
+    "showAfterCurrency": 500,
+    "note": "url を自社のURLにして enabled を true にすると、遊んでいる途中でボタンが出ます。"
+  },
+  "footer": {
+    "text": "© サロン ルミエ",
+    "url": ""
+  }
+}

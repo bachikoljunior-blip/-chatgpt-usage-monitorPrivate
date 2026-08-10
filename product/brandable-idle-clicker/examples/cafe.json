@@ -1,0 +1,214 @@
+{
+  "$schema": "./brand.schema.json",
+  "meta": {
+    "title": "まめや珈琲 焙煎クリッカー",
+    "tagline": "煎って、淹れて、店を増やす。",
+    "lang": "ja",
+    "description": "タップして豆を焙煎する放置ゲーム。",
+    "faviconEmoji": "☕"
+  },
+  "theme": {
+    "background": "#1a1410",
+    "panel": "#241c16",
+    "panelEdge": "#3a2d23",
+    "text": "#f2e9df",
+    "textMuted": "#a89383",
+    "accent": "#c98a3c",
+    "accentText": "#1a1008",
+    "positive": "#8fbf6a",
+    "negative": "#d97a6a",
+    "cornerRadius": 10
+  },
+  "currency": {
+    "name": "焙煎豆",
+    "unit": "g",
+    "emoji": "🫘"
+  },
+  "tapTarget": {
+    "emoji": "☕",
+    "label": "豆を煎る",
+    "baseValue": 1,
+    "hint": "タップするたびに豆が煎り上がります"
+  },
+  "generators": [
+    {
+      "id": "flyer",
+      "emoji": "🔥",
+      "name": "手回し焙煎機",
+      "desc": "ゆっくり煎れる",
+      "baseCost": 15,
+      "baseRate": 0.2
+    },
+    {
+      "id": "staff",
+      "emoji": "🧑‍🍳",
+      "name": "バリスタ",
+      "desc": "淹れてくれる",
+      "baseCost": 120,
+      "baseRate": 1.6
+    },
+    {
+      "id": "shelf",
+      "emoji": "⚙️",
+      "name": "業務用焙煎機",
+      "desc": "まとめて煎る",
+      "baseCost": 1100,
+      "baseRate": 14
+    },
+    {
+      "id": "van",
+      "emoji": "🚚",
+      "name": "仕入れ便",
+      "desc": "生豆が届く",
+      "baseCost": 12000,
+      "baseRate": 110
+    },
+    {
+      "id": "branch",
+      "emoji": "🏪",
+      "name": "2号店",
+      "desc": "駅前にも出す",
+      "baseCost": 140000,
+      "baseRate": 900
+    },
+    {
+      "id": "online",
+      "emoji": "📦",
+      "name": "豆の通販",
+      "desc": "全国へ送る",
+      "baseCost": 2000000,
+      "baseRate": 8000
+    },
+    {
+      "id": "factory",
+      "emoji": "🏭",
+      "name": "自社農園",
+      "desc": "育てるところから",
+      "baseCost": 33000000,
+      "baseRate": 72000
+    },
+    {
+      "id": "brandhq",
+      "emoji": "🏢",
+      "name": "焙煎所ビル",
+      "desc": "街の香りになる",
+      "baseCost": 600000000,
+      "baseRate": 800000
+    }
+  ],
+  "upgrades": [
+    {
+      "id": "u_tap1",
+      "emoji": "✋",
+      "name": "焙煎の勘",
+      "desc": "タップの量が2倍",
+      "cost": 300,
+      "effect": {
+        "type": "tapMultiplier",
+        "value": 2
+      }
+    },
+    {
+      "id": "u_all1",
+      "emoji": "🌡️",
+      "name": "温度計",
+      "desc": "自動の量が1.5倍",
+      "cost": 4000,
+      "effect": {
+        "type": "rateMultiplier",
+        "value": 1.5
+      }
+    },
+    {
+      "id": "u_tap2",
+      "emoji": "🧺",
+      "name": "大きな釜",
+      "desc": "タップの量がさらに3倍",
+      "cost": 60000,
+      "effect": {
+        "type": "tapMultiplier",
+        "value": 3
+      }
+    },
+    {
+      "id": "u_all2",
+      "emoji": "📣",
+      "name": "看板メニュー",
+      "desc": "自動の量が2倍",
+      "cost": 900000,
+      "effect": {
+        "type": "rateMultiplier",
+        "value": 2
+      }
+    },
+    {
+      "id": "u_off1",
+      "emoji": "🌙",
+      "name": "夜通し焙煎",
+      "desc": "オフライン収入が2倍",
+      "cost": 5000000,
+      "effect": {
+        "type": "offlineMultiplier",
+        "value": 2
+      }
+    },
+    {
+      "id": "u_all3",
+      "emoji": "🏆",
+      "name": "品評会で金賞",
+      "desc": "自動の量が3倍",
+      "cost": 90000000,
+      "effect": {
+        "type": "rateMultiplier",
+        "value": 3
+      }
+    }
+  ],
+  "milestones": [
+    {
+      "at": 100,
+      "text": "最初の一杯が売れました。"
+    },
+    {
+      "at": 10000,
+      "text": "香りで人が足を止めます。"
+    },
+    {
+      "at": 1000000,
+      "text": "開店前から行列です。"
+    },
+    {
+      "at": 100000000,
+      "text": "この街の珈琲といえば、ここ。"
+    },
+    {
+      "at": 10000000000,
+      "text": "全国から豆の注文が届きます。"
+    }
+  ],
+  "prestige": {
+    "enabled": true,
+    "label": "暖簾分け",
+    "currencyName": "のれん",
+    "emoji": "🎖️",
+    "unlockAt": 1000000,
+    "description": "豆をリセットして、のれんを得ます。のれん1つにつき全収入+10%。",
+    "bonusPerPoint": 0.1
+  },
+  "offline": {
+    "enabled": true,
+    "maxHours": 8,
+    "rateFactor": 0.5
+  },
+  "cta": {
+    "enabled": false,
+    "label": "お店の公式サイトへ",
+    "url": "",
+    "showAfterCurrency": 500,
+    "note": "url を自社のURLにして enabled を true にすると、遊んでいる途中でボタンが出ます。"
+  },
+  "footer": {
+    "text": "© まめや珈琲",
+    "url": ""
+  }
+}

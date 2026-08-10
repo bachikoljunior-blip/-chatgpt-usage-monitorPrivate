@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T09:03:20.499512Z",
+  "fetched_at": "2026-08-10T09:25:00Z",
   "note": "Everything here is what was true when it was measured, not a permanent property of the world. Each entry carries a recheck date because on 2026-08-08 two items declared impossible were solved the same day. A constraint falling away usually moves the ETA more than any ordinary improvement does, so rechecks are ETA candidates in their own right.",
   "constraints": [
     {
@@ -799,10 +799,10 @@
     },
     {
       "id": "the_product_itself_has_never_been_opened",
-      "claim": "Nobody has examined the contents of the priced product. Every lap so far has worked on the SURFACE — copy, addressee, tags, cover, category, venue, announcement — and the thing being sold has never been opened by anyone in this loop.",
+      "claim": "LIFTED 2026-08-10. Was: the four files the sales page promises exist in no repository this account owns, so the product cannot be opened, measured, fixed or rebuilt. The repository half is still true and no longer matters — the seller API serves the product's own attachment, and it contains all four. See lifted.",
       "evidence": "state/portfolio.json not_examined has carried 'whether the paid product is the same codebase as the free browser build — inferred from titles and never checked' since it was written, and it is still unchecked. The owner said on 2026-08-09, unprompted and after doing both listing actions: 中身見てないんだけどこれ絶対売れないと思うよ — they have not opened it either. So the only two parties who could have judged the product both declined to, and the listing was built anyway.",
-      "measured_at": "2026-08-09",
-      "recheck_after": "2026-08-13",
+      "measured_at": "2026-08-10T09:25:00Z",
+      "recheck_after": "2026-09-10",
       "measure_via": "here",
       "eta_effect_if_lifted": "potentially decisive and cheap. If the kit does not deliver what the page promises, every surface improvement is decorating a failure, and the 8/23 judgement will read as 'the venue was wrong' when the cause was the product. If it does deliver, this removes the largest untested assumption under the whole route.",
       "how_to_measure": "Open the repository the product ships from. Check three things against the live listing text, which is the contract: (1) does brand.config.json actually drive title, palette, unit names, 8 producers, 6 upgrades, milestone text, CTA and footer; (2) do validate_config.py and test_engine.py run and pass; (3) is the shipped archive the same codebase as the free browser build. Report what fails, not that it was checked.",
@@ -832,6 +832,14 @@
           "the_inference_and_its_status": "Gumroad reporting a Size label at all is evidence that SOMETHING is attached — consistent with kit/delivery/README.md, which says the owner attached the file on 2026-08-08. That is an INFERENCE from the presence of a metadata key, not a measurement, and it is written here rather than in state/gumroad.json for exactly that reason. What would settle it properly: a purchase, or an endpoint that lists files. Neither is available today.",
           "the_mistake_worth_keeping": "The first version of the repair counted the object's keys and emitted file_count 1. It went to main and the live reading exposed it within a minute. An assumed figure wearing a measurement's grammar is the defect this repository has recorded more times than any other, and it was reproduced INSIDE the commit that claimed to fix it — by the shape-agnostic branch that was added specifically to avoid guessing. The lesson is not 'be careful'. It is that shape-agnostic code still has to be run against the real shape before its output is trusted, and that the gap between the two was under sixty seconds here only because the collector has a push trigger."
         }
+      },
+      "lifted": {
+        "at": "2026-08-10T09:25:00Z",
+        "by": "scripts/fetch-product-source.mjs, one authenticated GET /v2/products/:id plus the signed files[].url it returns",
+        "what_was_wrong": "Not the searches — those were run correctly and with a positive control proving the index reaches private repositories. What was wrong was the step from 'four code searches find nothing' to 'no source exists'. A code search answers a question about REPOSITORIES. The source was an attachment on the product, which is not a repository and was never in the instrument's reach. The row itself said a built ZIP could exist as a Gumroad attachment and that no source did — the second half was an inference, printed beside the first half in the same voice.",
+        "what_was_recovered": "12 files, 31,941 bytes. All four artifacts the sales page promises by name are present: brand.config.json, generator.html, validate_config.py, test_engine.py. Also assets/engine.js, assets/style.css, README.md, LICENSE.txt, index.html and three example configs. Manifest with sha256 per file in state/product-source.json; extracted at product/brandable-idle-clicker.",
+        "first_measurements": "validate_config.py passes on the shipped brand.config.json and all three examples, 4 of 4. index.html loads in Chromium with no thrown error. test_engine.py is blocked, not failed: it imports playwright, which is not installed here.",
+        "the_transferable_part": "Absence reported by an instrument is absence WITHIN ITS REACH. When the reach is not carried with the result, the next reader inherits a stronger claim than the evidence supports — and here five handoffs did, while two of them proposed spending a lap choosing between rebuilding and retiring an artifact that was one API call away."
       }
     },
     {

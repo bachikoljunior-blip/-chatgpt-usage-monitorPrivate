@@ -52,6 +52,7 @@ import {
 import { browserReachVerdict, CERT_AUTHORITY_INVALID } from "../scripts/probe-browser-reach.mjs";
 import { classifyLifecycle } from "../scripts/probe-gumroad-lifecycle.mjs";
 import { recurrenceOf, classifyRecurrence, listingMeasurement } from "../scripts/probe-gumroad-recurring.mjs";
+import { promisesPresent, manifestOf } from "../scripts/fetch-product-source.mjs";
 import { checkGoal, GOAL, BEGIN as DIRECTIVE_BEGIN } from "../scripts/check-goal-intact.mjs";
 import { judge as judgeSpark, sparkModelCandidate, sparkWindow } from "../scripts/spark-model.mjs";
 import { judge as judgeProductLoop, MAX_ROUND_AGE_DAYS as PRODUCT_MAX_ROUND_AGE_DAYS, roundEngaged, playedEvidenceFor, roundHasReviewer } from "../scripts/product-loop.mjs";
@@ -5103,4 +5104,37 @@ function assert(condition, message) {
       .owner_actions_to_list_recurring === null,
     "a product that could not be read back still produced an owner-action count",
   );
+}
+
+// --- A partial recovery must not report success -----------------------------
+// The four artifacts are named on the sales page, so recovering three of them
+// leaves promise_conformance unmeasurable while the run reads as done. Mutation
+// run red before this was kept: promisesPresent returning all_present on a
+// subset.
+{
+  const full = [
+    "brandable-idle-clicker/brand.config.json",
+    "brandable-idle-clicker/generator.html",
+    "brandable-idle-clicker/validate_config.py",
+    "brandable-idle-clicker/test_engine.py",
+    "brandable-idle-clicker/assets/engine.js",
+  ];
+  assert(promisesPresent(full).all_present, "a complete recovery was not recognised as complete");
+
+  const short = full.filter((p) => !p.endsWith("test_engine.py"));
+  const partial = promisesPresent(short);
+  assert(
+    !partial.all_present && partial.missing.includes("test_engine.py"),
+    "a recovery missing a promised artifact reported success without naming what is missing",
+  );
+
+  // The manifest is the only thing that can tell a re-fetch from a replacement,
+  // so it has to be ordered and carry digests. Unordered rows compare unequal on
+  // every run and the comparison stops meaning anything.
+  const m = manifestOf([
+    { path: "b", bytes: 2, sha256: "b".repeat(64) },
+    { path: "a", bytes: 1, sha256: "a".repeat(64) },
+  ]);
+  assert(m[0].path === "a" && m[1].path === "b", "the manifest is not ordered, so two identical recoveries compare unequal");
+  assert(m.every((r) => r.sha256), "a manifest row lost its digest");
 }

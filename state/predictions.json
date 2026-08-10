@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T09:15:00Z",
+  "fetched_at": "2026-08-10T09:25:00Z",
   "note": "Every change made because it was claimed to shorten the ETA. judge_on is set when the change lands, not when it is convenient. concurrent_changes is what else was in flight, so a later reader can tell a clean attribution from a confounded one.",
   "predictions": [
     {
@@ -1645,6 +1645,24 @@
         "scripts/probe-gumroad-recurring.mjs added and run once against the live Gumroad account",
         "compute-eta.mjs now reads state/gumroad-recurring.json onto the candidate row",
         ".github/workflows/gumroad-monitor.yml gained a probe_recurring dispatch input"
+      ],
+      "outcome": null
+    },
+    {
+      "id": "2026-08-10.absence-was-reported-without-its-reach",
+      "made_at": "2026-08-10T09:25:00Z",
+      "claim": "For five handoffs state/constraints.json the_product_itself_has_never_been_opened said the sold kit's four promised files exist in no repository this account owns, and state/product-loop.json turned that into 'no source tree we own, so nothing can be changed or rebuilt' plus two priced ways out: rebuild it, or retire it. The four GitHub code searches behind it were run correctly, with a positive control proving the index reaches private repositories. The searches were right; the step from them was not. A code search answers a question about REPOSITORIES, and the source was an attachment on the product. GET /v2/products/:id returns files[] with a signed URL for the seller's own file — one authenticated call, zero owner actions, 31,941 bytes, 12 files, all four promised artifacts present. THE NARROW CLAIM IS NOT THAT THE FILE WAS FOUND; it demonstrably was, and the manifest with digests is committed. It is that the offer becomes something the loop RUNS rounds against, rather than a red line in --check that every lap reads and no lap acts on. product-loop --check has been red on this single finding across every lap in this chain.",
+      "metric": "state/product-loop.json idle_clicker_kit: rounds length above 0 with a verified_at and a moved field, and node scripts/product-loop.mjs --check green on this offer",
+      "baseline_at_registration": "idle_clicker_kit NOT LOOPABLE, rounds 0, measurement.rung null, source null, product-loop --check red on exactly this offer; free_demo is the only offer with any rounds",
+      "judge_on": "2026-08-14",
+      "judge_deadline": "2026-08-24",
+      "judge_by": "Read from committed state on origin/main, none from a lap's account of itself. (a) product/brandable-idle-clicker exists on main and state/product-source.json carries 12 manifest rows each with a sha256. (b) idle_clicker_kit declares rung promise_conformance and a later lap COMPLETES it — a declared rung with no round is the same red under a new label. (c) THE ONE THAT DECIDES WHETHER THIS WAS WORTH A LAP: does any lap drive the kit itself, or does play-artifact keep being run only against the free demo? The tap profile is written for the demo's markup, so the kit currently reports 'played' with zero taps — a summary line that reads like a pass and is not one, and the next lap that skims it will inherit exactly the mistake this prediction is about. (d) test_engine.py imports playwright and cannot run here. Recorded as blocked, not failed; if a later lap reports it as failing, that is the same error class again. (e) Whether any lap still cites 'the product has no source' after this. state/continue.json and state/zerobase.json are where that would appear.",
+      "concurrent_changes": [
+        "state/constraints.json the_product_itself_has_never_been_opened marked lifted",
+        "state/product-loop.json idle_clicker_kit given a source, a declared rung, and its two ways out settled",
+        "scripts/fetch-product-source.mjs added, wired into gumroad-monitor.yml behind a dispatch input",
+        "scripts/verify-sanitized-state.mjs gained a manifest branch — new state shapes previously fell through to the usage-state validator and were rejected for having no recommended_mode",
+        "the same lap earlier queued 2026-08-10.r and measured the recurring listing path"
       ],
       "outcome": null
     }

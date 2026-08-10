@@ -906,6 +906,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T09:16:13.284Z",
+      "candidate": "idle_clicker_kit.make_it_loopable",
+      "kind": "route_change",
+      "mechanism": "RUNBOOK 5.4 says the product loop's first finding was that its subject does not exist: the sold kit has no source tree in any repository we own, so it cannot be measured, fixed or rebuilt, and product-loop --check has stayed red on exactly that. Every route elected so far has been about reaching people or about the offer form, all of them downstream of an artifact nobody has ever opened. This abandons that ordering. The BUILT file is an attachment on the live product and the seller API is the one rail we already hold credentials for; if it serves the file, rung 1 (does the artifact satisfy the four things its own sales page promises) becomes measurable for the first time in eight months, and a zero result on this offer stops being attributable to the venue. If it does not serve it, the two ways out in state/product-loop.json are settled down to one and the retire-or-rebuild decision has a measured basis instead of a preference.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

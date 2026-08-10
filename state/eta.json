@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T09:15:37.856Z",
+  "fetched_at": "2026-08-10T09:23:35.283Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -32,11 +32,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.61
+      "days_unchanged": 0.62
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.61
+      "days_unchanged": 0.62
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -59,7 +59,7 @@
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-10T09:15:24.842Z",
+      "measured_at": "2026-08-10T09:00:11.471Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
       "revenue_window_days": 0.87,
@@ -182,12 +182,11 @@
     },
     {
       "kind": "product_loop",
-      "id": "idle_clicker_kit.make_it_loopable",
-      "why": "an offer nothing can measure cannot be improved toward demand, and every surface change already made to it is unjudgeable",
+      "id": "idle_clicker_kit.round_1",
+      "why": "the one thing on offer that CAN be measured has never been measured once",
       "owner_actions": 0,
-      "measure_via": "here",
-      "note": "idle_clicker_kit: no source tree we own, so nothing can be changed or rebuilt; no rung of the ladder is declared as its next measurement. Two ways out and neither is free — rebuild the source, or retire the offer. state/product-loop.json carries both. Sunk listing work is not evidence for either.",
-      "blocks_interpretation_of": "any zero result on this offer, which will otherwise be read as the wrong venue",
+      "measure_via": "codex_lane",
+      "note": "Next rung: promise_conformance. See state/product-loop.json for how, and for which rung is deliberately NOT next and why.",
       "actionable_now": true,
       "eta_effect_days": null,
       "eta_effect_basis": "no comparable estimate recorded"
