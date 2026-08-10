@@ -1242,6 +1242,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T17:57:01.752Z",
+      "candidate": "idle_clicker_kit.promise_conformance",
+      "kind": "prerequisite",
+      "mechanism": "The replace route clears on a throwaway this code created and no-ops on the live listing, so a corrected build cannot reach a buyer. The two candidate explanations are the product's ORIGIN (created in the dashboard) and the file COUNT (the live listing carries two attachments, the throwaway carried one). Attaching two files to a throwaway and PUTting one isolates the count: if it also no-ops the fix is to PUT the union or to delete first, and if it replaces cleanly the origin is the term and the owner request becomes a one-click deletion instead of an upload. Either answer names the next move; today neither is named and the last three shipment attempts uploaded archives that attached to nothing.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

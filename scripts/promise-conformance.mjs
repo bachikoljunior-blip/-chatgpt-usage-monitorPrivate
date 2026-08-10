@@ -206,6 +206,45 @@ function uploadRouteExists() {
  * refusals collected from paths the vendor source does not name, sent with a form
  * encoding that cannot carry an array of objects.
  */
+/**
+ * How much of "why does the route work on a throwaway and not here" is known?
+ *
+ * This clause used to be the fixed sentence "the difference between the two products
+ * is unmeasured and is the next thing to measure". A lap then measured one of the
+ * three candidate terms, and a fixed sentence cannot notice that: it would have gone
+ * on asking for work that was already done, which is the failure mode this register
+ * exists to avoid on the other side (a stale success burying a fresh failure).
+ *
+ * Exported so tests/run-tests.mjs can hold it to the rule that a refuted term is
+ * named as refuted and never quietly dropped.
+ *
+ * @param probe  the parsed state/gumroad-two-file-replace.json, or null
+ */
+export function differenceClause(probe = readJsonOrNull(path.join(ROOT, "state/gumroad-two-file-replace.json"))) {
+  if (!probe || probe.verdict === "not_reached") {
+    return "The difference between the two products is unmeasured and is the next thing to measure.";
+  }
+  const parts = [];
+  if (probe.count_is_the_term === false) {
+    parts.push(
+      `MEASURED ${probe.fetched_at}: the FILE COUNT is not the term — a throwaway carrying two attachments had both replaced by a single-entry files[] PUT`,
+    );
+  } else if (probe.count_is_the_term === true) {
+    parts.push(
+      `MEASURED ${probe.fetched_at}: the FILE COUNT reproduces the failure on a throwaway (${probe.verdict}), so it is the term`,
+    );
+  }
+  const next = probe.next_term_to_test;
+  if (next?.term) parts.push(`the next term to test is ${next.term}: ${next.claim}`);
+  const shape = probe.live_listing_shape;
+  if (shape?.surfaces_disagree) {
+    parts.push(
+      `and the listing names files in two places that disagree — files[] carries ${shape.file_count} (${shape.file_names.join(", ")}) while its rich_content page embeds ${shape.file_embed_ids.length}`,
+    );
+  }
+  return `${parts.join("; ")}.`;
+}
+
 function readJsonOrNull(f) {
   if (!existsSync(f)) return null;
   try {
@@ -323,7 +362,7 @@ function deliveryChannel() {
           `MEASURED ${live.attempted_at} ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, ` +
           `both calls answered 2xx, and the served file list did not move (${live.verdict}). ` +
           `state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. ` +
-          "The difference between the two products is unmeasured and is the next thing to measure; until then no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it.",
+          `${differenceClause()} Until it is closed no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it.`,
       };
     }
     if (walk?.attachment_can_be_replaced === true && newerThan(walk.fetched_at, probe?.fetched_at)) {

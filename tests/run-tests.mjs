@@ -6964,3 +6964,60 @@ function assert(condition, message) {
     assert(v.directive !== "spawn_successor", "a missing measurement was read as permission to keep spawning");
   }
 }
+
+// The replace route clears on a throwaway and no-ops on the listing we sell. Three
+// terms differ between the two products; the probe isolates one of them, and the
+// value of isolating it is entirely in what the OTHER two are then allowed to say.
+// A classifier that folds an unseen shape into the nearest bucket destroys that.
+{
+  const { classifyReplace, liveShape, bareName } = await import("../scripts/probe-gumroad-two-file-replace.mjs");
+  const A = "probe-twofile-a.txt";
+  const B = "probe-twofile-b.txt";
+  const C = "probe-twofile-c.txt";
+  const before = [A, B];
+
+  assert(classifyReplace([C], before).verdict === "replaced", "two files replaced by one was not read as a replacement");
+  assert(classifyReplace([C], before).count_is_the_term === false, "a clean replacement still blamed the file count");
+
+  // The failure the live listing shows: 2xx, nothing moved.
+  assert(classifyReplace([A, B], before).verdict === "no_op", "an unchanged file list was not read as a no-op");
+  assert(classifyReplace([A, B], before).count_is_the_term === true, "a reproduced no-op did not name the count as the term");
+
+  // Appending is a different mechanism with the same buyer-facing result, and the
+  // two must not collapse: one says "PUT is ignored", the other "PUT is additive".
+  assert(classifyReplace([A, B, C], before).verdict === "appended", "an append was reported as a replacement");
+  assert(classifyReplace([A], before).verdict === "dropped", "files vanishing without the new one installed was not flagged");
+
+  // The shape nobody predicted must stay unnamed rather than be forced into a bucket.
+  assert(classifyReplace([], before).verdict !== "replaced", "an empty file list was read as a successful replacement");
+
+  // liveShape exists to separate "the buyer downloads both zips" from "files[] is a
+  // stale index and the embed serves one". Those are opposite conclusions.
+  const twoSurfaces = liveShape({
+    published: true,
+    files: [{ id: "old==", name: "stale" }, { id: "new==", name: "fixed" }],
+    rich_content: [{ description: { type: "doc", content: [{ type: "fileEmbed", attrs: { id: "new==" } }] } }],
+  });
+  assert(twoSurfaces.surfaces_disagree === true, "a listing whose files[] and rich_content name different sets read as agreeing");
+  assert(twoSurfaces.attached_but_not_embedded.join() === "stale", "the attachment no page embeds was not named");
+  assert(twoSurfaces.file_embed_ids.length === 1, "a fileEmbed nested in the page body was not found");
+
+  // No rich_content page at all means there is no second surface to disagree with,
+  // and reporting a disagreement there would invent the very hypothesis under test.
+  assert(liveShape({ files: [{ id: "a==", name: "x" }], rich_content: [] }).surfaces_disagree === false, "a product with no content page was reported as having two disagreeing surfaces");
+
+  assert(bareName("https://files.gumroad.com/x/y/original/a.zip?verify=sig") === "a.zip", "the presigned query string survived into the recorded name");
+
+  // And the register must stop asking for work that has been done.
+  const { differenceClause } = await import("../scripts/promise-conformance.mjs");
+  assert(/unmeasured/.test(differenceClause(null)), "with no probe on disk the register stopped calling the difference unmeasured");
+  const clause = differenceClause({
+    fetched_at: "2026-08-10T18:00:00Z",
+    verdict: "replaced",
+    count_is_the_term: false,
+    next_term_to_test: { term: "rich_content", claim: "the embeds may be what a buyer sees" },
+    live_listing_shape: twoSurfaces,
+  });
+  assert(!/unmeasured/.test(clause), "a measured term was still reported as unmeasured");
+  assert(/rich_content/.test(clause), "the clause dropped the term the probe handed to the next lap");
+}

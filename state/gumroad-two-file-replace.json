@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "fetched_at": "2026-08-10T18:01:31.261Z",
+  "question": "The same replace route clears on a throwaway carrying ONE file and no-ops on the live listing carrying TWO. Is the file count the term that separates them?",
+  "walk": [
+    {
+      "rung": "upload_two",
+      "reached": true,
+      "why": "two files uploaded through presign/s3/complete"
+    },
+    {
+      "rung": "attach_two",
+      "reached": true,
+      "status": 200,
+      "why": "throwaway created carrying two files",
+      "body": null
+    },
+    {
+      "rung": "readback_two",
+      "reached": true,
+      "status": 200,
+      "file_count": 2,
+      "why": "the product really is serving two files, so the comparison against the live listing is like for like",
+      "files": "[\"probe-twofile-a.txt\",\"probe-twofile-b.txt\"]"
+    },
+    {
+      "rung": "put_one",
+      "reached": true,
+      "status": 200,
+      "why": "PUT with a single-entry files[] answered 2xx",
+      "body": null
+    },
+    {
+      "rung": "readback_after",
+      "reached": true,
+      "status": 200,
+      "file_count": 1,
+      "verdict": "replaced",
+      "why": "the product carried two files and the PUT still replaced both with the one sent. The file count is NOT what separates this from the live listing — look at origin (dashboard vs API) or publication state.",
+      "files": "[\"probe-twofile-c.txt\"]"
+    },
+    {
+      "rung": "live_shape",
+      "reached": true,
+      "status": 200,
+      "why": "the listing names files in TWO places and they disagree: files[] carries 2, the rich_content page embeds 1",
+      "shape": {
+        "published": true,
+        "file_count": 2,
+        "file_names": [
+          "Brandable_Idle_Clicker_Kit_v1.0",
+          "brandable-idle-clicker"
+        ],
+        "rich_content_pages": 1,
+        "file_embed_ids": [
+          "oDGDSIBw4Fnqo5UqC-jVDQ=="
+        ],
+        "attached_but_not_embedded": [
+          "Brandable_Idle_Clicker_Kit_v1.0"
+        ],
+        "embedded_but_not_attached": [],
+        "surfaces_disagree": true
+      }
+    },
+    {
+      "rung": "cleanup",
+      "reached": true,
+      "status": 200,
+      "why": "throwaway deleted and confirmed absent from the product collection"
+    }
+  ],
+  "reached": [
+    "upload_two",
+    "attach_two",
+    "readback_two",
+    "put_one",
+    "readback_after",
+    "live_shape",
+    "cleanup"
+  ],
+  "stopped_at": null,
+  "served_before": [
+    "probe-twofile-a.txt",
+    "probe-twofile-b.txt"
+  ],
+  "served_after": [
+    "probe-twofile-c.txt"
+  ],
+  "verdict": "replaced",
+  "count_is_the_term": false,
+  "live_listing_shape": {
+    "published": true,
+    "file_count": 2,
+    "file_names": [
+      "Brandable_Idle_Clicker_Kit_v1.0",
+      "brandable-idle-clicker"
+    ],
+    "rich_content_pages": 1,
+    "file_embed_ids": [
+      "oDGDSIBw4Fnqo5UqC-jVDQ=="
+    ],
+    "attached_but_not_embedded": [
+      "Brandable_Idle_Clicker_Kit_v1.0"
+    ],
+    "embedded_but_not_attached": [],
+    "surfaces_disagree": true
+  },
+  "next_term_to_test": {
+    "term": "rich_content",
+    "claim": "the live listing carries a rich_content page whose fileEmbed names ONE file, while product-level files[] carries more. If the buyer's download list comes from the embeds, then PUT files[] writes to an index nobody serves — which is exactly what a 2xx that changes nothing looks like.",
+    "how_to_test": "on a throwaway: attach a file, PUT a rich_content page embedding it, then PUT files[] with a different file and read back both surfaces. state/payload-listing.json already measured that rich_content is writable over this API, so this is a walk and not a new route.",
+    "what_it_would_change": "if true, the fix to the priced product needs no owner upload and no deletion — it is a rich_content write, which this code can already do."
+  },
+  "what_this_settles": "the product carried two files and the PUT still replaced both with the one sent. The file count is NOT what separates this from the live listing — look at origin (dashboard vs API) or publication state.",
+  "what_this_does_not_settle": "The other two terms. ORIGIN (the live listing was created in the dashboard, every throwaway here over the API) and PUBLICATION (the listing is published and purchasable, every throwaway is a draft) are both still live explanations, and this probe was built so that it changes neither. A clean 'replaced' here does not name which of those two it is — it only rules the count out.",
+  "why_publication_is_not_tested_here": "Testing it means publishing a probe product to a public storefront, and scripts/sweep-gumroad-probe-products.mjs refuses to delete published products by design, so a crash mid-probe would leave a purchasable probe listing no sweeper can clear.",
+  "probe_hygiene": "every product created here is named zzz-probe-twofile-<timestamp>, is left unpublished, and is deleted in a finally block; the live listing is never written to"
+}

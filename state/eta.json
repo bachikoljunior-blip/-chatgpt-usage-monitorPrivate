@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T15:27:53.357Z",
+  "fetched_at": "2026-08-10T18:04:34.160Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -40,11 +40,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.87
+      "days_unchanged": 0.98
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.87
+      "days_unchanged": 0.98
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -66,7 +66,7 @@
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-10T15:26:38.271Z",
+      "measured_at": "2026-08-10T17:43:03.492Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
       "revenue_window_days": 1.125,
@@ -83,7 +83,7 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-10T14:05:24.161Z",
+      "measured_at": "2026-08-10T17:35:37.033Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
       "revenue_window_days": 0.584,
@@ -107,7 +107,7 @@
       "idle_eta_reason": "measured, not unreadable: 1208.75/day views and 394.75/day engaged over 4 days (2026-08-04..2026-08-07), zero owner actions. Ad revenue is not the path — at this rate the YouTube Partner gate is 4000 days away on subscribers, and the sibling loop prices the far side of it in the ¥1,000s/month against a ¥200,000 target. What the ranking may use is the ADDRESSABLE reach and not this one: 2 of 4851 playbacks over 28d. No threshold is applied here — the two numbers are printed because a route was elected on the larger one while the smaller existed and had never been read. DELIVERY CEILING FIRST: 2 of 4851 playbacks over 28d reach a surface that renders the description (0.04%), so the ceiling on clicks to ANY url placed here is 2 per 28 days — independent of which url and of who the audience is. Everything below is about a link nobody arrives at. The surface PERMITS the paid product's link and FORBIDS the free demo's (github) — so route 1's entire payload cannot go here as hosted. That is the exact INVERSE of r/gamedev, which permits the free artifact and forbids being paid. A lap may NOT perform the edit; it is the sibling loop's act.",
       "owner_actions_required": 0,
       "stale": false,
-      "stale_days": 0.7,
+      "stale_days": 0.8,
       "reach": {
         "usable": true,
         "window_days": 4,
@@ -193,10 +193,10 @@
       "why": "the offer is loopable and its own measurement says it is failing — a round that clears a named failure is the one kind of work that is about the thing being sold",
       "owner_actions": 0,
       "measure_via": "here",
-      "note": "Next rung: promise_conformance. 2 finding(s): idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: FIXED IN SOURCE, NOT YET DELIVERED. The shipped tree now measures 6 taps to the first purchase, then 100s idle to a second kind of producer (browser run: 6 taps to the first purchase, opening rate \"毎秒 0円 ／ 1タップ 1円\"). Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so a buyer still downloads the config that needs 15 taps and then 600 seconds of nothing new. MEASURED 2026-08-10T11:09:28.750Z: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable in place. AND NEITHER DOES CREATION: a create sent with a file was refused by the same rule. BUT THE UPLOAD ROUTE IS NOT ABSENT. MEASURED 2026-08-10T15:26:36.131Z: POST /v2/files/presign, POST /v2/files/complete answer with their own validation errors, not with the 404 a never-defined path returns. The earlier ceiling was measured on paths the vendor's source does not name, so 'every fix needs an owner upload' is withdrawn as a conclusion. What is still unmeasured is the walk through: presign, real parts to S3, complete, attach — on a throwaway product, never the live listing. The promise stays failed until a re-fetch shows the delivered digest moved. | idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 MEASURED 2026-08-10T11:09:28.750Z: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable in place. AND NEITHER DOES CREATION: a create sent with a file was refused by the same rule. BUT THE UPLOAD ROUTE IS NOT ABSENT. MEASURED 2026-08-10T15:26:36.131Z: POST /v2/files/presign, POST /v2/files/complete answer with their own validation errors, not with the 404 a never-defined path returns. The earlier ceiling was measured on paths the vendor's source does not name, so 'every fix needs an owner upload' is withdrawn as a conclusion. What is still unmeasured is the walk through: presign, real parts to S3, complete, attach — on a throwaway product, never the live listing. The promise stays failed until a re-fetch shows the delivered digest moved.",
+      "note": "Next rung: promise_conformance. 2 finding(s): idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: FIXED IN SOURCE, NOT YET DELIVERED. The shipped tree now measures 6 taps to the first purchase, then 100s idle to a second kind of producer (browser run: 6 taps to the first purchase, opening rate \"毎秒 0円 ／ 1タップ 1円\"). Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so a buyer still downloads the config that needs 15 taps and then 600 seconds of nothing new. MEASURED 2026-08-10T17:43:01.962Z ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, both calls answered 2xx, and the served file list did not move (no_op). state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. The difference between the two products is unmeasured and is the next thing to measure; until then no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it. The promise stays failed until a re-fetch shows the delivered digest moved. | idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 MEASURED 2026-08-10T17:43:01.962Z ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, both calls answered 2xx, and the served file list did not move (no_op). state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. The difference between the two products is unmeasured and is the next thing to measure; until then no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it. The promise stays failed until a re-fetch shows the delivered digest moved.",
       "product_loop_problems": [
-        "idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: FIXED IN SOURCE, NOT YET DELIVERED. The shipped tree now measures 6 taps to the first purchase, then 100s idle to a second kind of producer (browser run: 6 taps to the first purchase, opening rate \"毎秒 0円 ／ 1タップ 1円\"). Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so a buyer still downloads the config that needs 15 taps and then 600 seconds of nothing new. MEASURED 2026-08-10T11:09:28.750Z: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable in place. AND NEITHER DOES CREATION: a create sent with a file was refused by the same rule. BUT THE UPLOAD ROUTE IS NOT ABSENT. MEASURED 2026-08-10T15:26:36.131Z: POST /v2/files/presign, POST /v2/files/complete answer with their own validation errors, not with the 404 a never-defined path returns. The earlier ceiling was measured on paths the vendor's source does not name, so 'every fix needs an owner upload' is withdrawn as a conclusion. What is still unmeasured is the walk through: presign, real parts to S3, complete, attach — on a throwaway product, never the live listing. The promise stays failed until a re-fetch shows the delivered digest moved.",
-        "idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 MEASURED 2026-08-10T11:09:28.750Z: the attachment CANNOT be replaced over this API surface, so no source fix is deliverable in place. AND NEITHER DOES CREATION: a create sent with a file was refused by the same rule. BUT THE UPLOAD ROUTE IS NOT ABSENT. MEASURED 2026-08-10T15:26:36.131Z: POST /v2/files/presign, POST /v2/files/complete answer with their own validation errors, not with the 404 a never-defined path returns. The earlier ceiling was measured on paths the vendor's source does not name, so 'every fix needs an owner upload' is withdrawn as a conclusion. What is still unmeasured is the walk through: presign, real parts to S3, complete, attach — on a throwaway product, never the live listing. The promise stays failed until a re-fetch shows the delivered digest moved."
+        "idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: FIXED IN SOURCE, NOT YET DELIVERED. The shipped tree now measures 6 taps to the first purchase, then 100s idle to a second kind of producer (browser run: 6 taps to the first purchase, opening rate \"毎秒 0円 ／ 1タップ 1円\"). Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so a buyer still downloads the config that needs 15 taps and then 600 seconds of nothing new. MEASURED 2026-08-10T17:43:01.962Z ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, both calls answered 2xx, and the served file list did not move (no_op). state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. The difference between the two products is unmeasured and is the next thing to measure; until then no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it. The promise stays failed until a re-fetch shows the delivered digest moved.",
+        "idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 MEASURED 2026-08-10T17:43:01.962Z ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, both calls answered 2xx, and the served file list did not move (no_op). state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. The difference between the two products is unmeasured and is the next thing to measure; until then no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it. The promise stays failed until a re-fetch shows the delivered digest moved."
       ],
       "actionable_now": true,
       "eta_effect_days": null,
@@ -204,11 +204,14 @@
     },
     {
       "kind": "product_loop",
-      "id": "prompt_pack.round_1",
-      "why": "the one thing on offer that CAN be measured has never been measured once",
+      "id": "prompt_pack.stranger_reaction",
+      "why": "the offer is loopable and its own measurement says it is failing — a round that clears a named failure is the one kind of work that is about the thing being sold",
       "owner_actions": 0,
-      "measure_via": "codex_lane",
-      "note": "Next rung: stranger_reaction. See state/product-loop.json for how, and for which rung is deliberately NOT next and why.",
+      "measure_via": "here",
+      "note": "Next rung: stranger_reaction. 1 finding(s): prompt_pack has never been RUN — no run is on record. Every round on it is a read. node scripts/play-artifact.mjs --write is the measurement.",
+      "product_loop_problems": [
+        "prompt_pack has never been RUN — no run is on record. Every round on it is a read. node scripts/play-artifact.mjs --write is the measurement."
+      ],
       "actionable_now": true,
       "eta_effect_days": null,
       "eta_effect_basis": "no comparable estimate recorded"
@@ -333,14 +336,14 @@
         "file_route": {
           "upload_route_exists": true,
           "verdict": "the earlier absence was measured on the wrong paths",
-          "measured_at": "2026-08-10T15:26:36.131Z",
+          "measured_at": "2026-08-10T17:42:59.783Z",
           "source": "state/gumroad-presign.json"
         },
         "text_route": {
           "parameter_recognised": true,
           "content_landed": false,
           "verdict": "recognised_passage_untried",
-          "measured_at": "2026-08-10T15:26:36.436Z",
+          "measured_at": "2026-08-10T17:43:00.310Z",
           "source": "state/gumroad-rich-content.json"
         },
         "payload_walk": {
@@ -373,17 +376,19 @@
             "delivery_unmeasured": 0,
             "postable": 1,
             "venue_rule": 0,
-            "venue_unsettled": 1,
+            "venue_unsettled": 2,
             "account": 0,
             "account_too_new": 1
           },
           "venues_on_the_named_term": null,
           "language_mismatches": [
-            "r/gamedev"
+            "r/gamedev",
+            "r/incremental_games"
           ],
           "venues_with_a_revenue_path": [
             "itch.io — Release Announcements",
-            "GameDev.net — Your Announcements"
+            "GameDev.net — Your Announcements",
+            "r/incremental_games"
           ],
           "binding_venues_without_a_revenue_path": [],
           "owner_requests_clearing_the_term": [],
@@ -392,7 +397,8 @@
           "prerequisite_none": "This route waits on nothing outside this repository. The doors were measured open this lap (state/gumroad-presign.json) with the credential already in the repository's secrets, and the throwaway-product pattern the earlier probes used needs no human. The one thing that COULD turn out to be a prerequisite is a seller web session — app/controllers/s3_utility_controller.rb is Sellers::BaseController with authenticate_user! — and that is a finding the route's own first probe would produce, not a condition on starting it. A prerequisite you discover by acting is not a prerequisite."
         },
         "language_mismatches": [
-          "r/gamedev"
+          "r/gamedev",
+          "r/incremental_games"
         ],
         "binding_venues_without_a_revenue_path": [],
         "owner_requests_clearing_the_prerequisite": [],
