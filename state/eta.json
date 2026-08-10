@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T11:49:10.511Z",
+  "fetched_at": "2026-08-10T13:24:37.523Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -22,7 +22,15 @@
     "the_honest_gap": "The private youtube repository holds figures this environment cannot read — state/external-metrics.json has never been published, which is already recorded as a wiring exception. If '28' counted published videos, it could be right and unverifiable from here. So this entry does not say the number is wrong. It says the number has no list under it and the lists that do exist do not add up to it.",
     "what_would_settle_it": "publish state/external-metrics.json from the repository that holds the YouTube credentials, or have whoever wrote 8eca5b1 name what was counted. Until then, treat 28 as an assertion, not an observation."
   },
-  "owner_requests_pending": [],
+  "owner_requests_pending": [
+    {
+      "id": "2026-08-10.gumroad-replace-the-kit-file",
+      "candidate_id": "idle_clicker_kit.deliver_both_rung_one_fixes",
+      "created_at": "2026-08-10T12:45:00Z",
+      "judge_by": "2026-08-17",
+      "one_line": "Gumroad の商品に添付してあるファイルを、こちらで用意した新しい ZIP に差し替えてください。ZIP は作ってあります。落として、上げるだけです。"
+    }
+  ],
   "target_yen_per_month": 200000,
   "idle_eta_days": null,
   "idle_eta_note": "every measurable channel is infinite: zero revenue, zero growth, or blocked behind an owner action. This is the real baseline, not a measurement failure.",
@@ -32,11 +40,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.72
+      "days_unchanged": 0.78
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.72
+      "days_unchanged": 0.78
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -59,7 +67,7 @@
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-10T10:46:01.329Z",
+      "measured_at": "2026-08-10T13:05:24.995Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
       "revenue_window_days": 0.87,
@@ -76,7 +84,7 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-10T10:47:04.382Z",
+      "measured_at": "2026-08-10T12:31:11.839Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
       "revenue_window_days": 0.286,
