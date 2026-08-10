@@ -85,11 +85,18 @@ try {
         : p.file_info === undefined
           ? "absent"
           : typeof p.file_info,
-    file_count: Array.isArray(p.file_info)
-      ? p.file_info.length
-      : p.file_info && typeof p.file_info === "object"
-        ? Object.keys(p.file_info).length
-        : null,
+    // MEASURED THE SAME LAP THIS WAS WRITTEN, AND IT REFUTED THE FIRST VERSION.
+    // The first shape-agnostic attempt counted an object's keys as files, and the
+    // live reading came back file_info_shape "object", keys ["Size"], so it
+    // reported file_count 1. "Size" is a metadata LABEL, not a file, and a
+    // product with ten files would still have reported 1.
+    //
+    // That is the failure this repository keeps recording — an assumed figure in a
+    // measurement's grammar — reproduced inside the commit that claimed to fix it.
+    // So the object branch reports null: this endpoint does not serve a file
+    // count, and null is the true answer. What was actually seen stays in
+    // file_info_shape and file_info_keys, where it cannot be mistaken for a count.
+    file_count: Array.isArray(p.file_info) ? p.file_info.length : null,
     // Key NAMES only. Gumroad's documented keys are metadata labels such as Size;
     // values could carry anything, and the rule here is that nothing enters state/
     // unless it is known to be safe. The names are what tell a later reader
