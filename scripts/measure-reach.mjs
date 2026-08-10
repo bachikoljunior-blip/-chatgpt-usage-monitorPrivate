@@ -151,6 +151,46 @@ export const externalEta = (v) =>
  * promotion sat unread in the same sentence and cost the loop five laps. So this
  * surface's rule is read for what it forbids before anything is placed on it.
  */
+/**
+ * THE CEILING THAT COMES BEFORE THE GUARD.
+ *
+ * The guard test below answers "may this URL be written into a description". It was
+ * asked, answered correctly, and quoted downstream for a day — and nothing had asked
+ * whether any description is ever read. 4,849 of 4,851 playbacks in the sibling
+ * channel's last 28 days ended inside the Shorts feed, which renders no description.
+ * So the ceiling on clicks to ANY url in publish.footer is 2 per 28 days, whatever
+ * the url is and whoever the audience is.
+ *
+ * Returned as a division over counts rather than a recorded verdict, for the same
+ * reason the guard is re-derived rather than trusted: the day either number changes,
+ * a transcribed verdict goes quietly stale and a derived one does not.
+ */
+export function deliverySurface(snapshot) {
+  const d = snapshot?.addressability?.delivery_surface;
+  const by = d?.by_playback_location;
+  if (!d || !by || typeof by !== "object") {
+    return { known: false, why: "no delivery_surface block: the traffic shape of this surface has never been read" };
+  }
+  const reachable = Array.isArray(d.description_reachable_from) ? d.description_reachable_from : [];
+  let total = 0;
+  let addressable = 0;
+  for (const [where, count] of Object.entries(by)) {
+    if (!Number.isFinite(count)) continue;
+    total += count;
+    if (reachable.includes(where)) addressable += count;
+  }
+  if (total <= 0) return { known: false, why: "delivery_surface carries no usable counts" };
+  return {
+    known: true,
+    window_days: Number.isFinite(d.window_days) ? d.window_days : null,
+    playbacks: total,
+    addressable_playbacks: addressable,
+    addressable_fraction: addressable / total,
+    // The number a route costed against reach actually gets to spend.
+    clicks_ceiling_per_window: addressable,
+  };
+}
+
 export function addressabilityVerdict(snapshot) {
   const a = snapshot?.addressability;
   if (!a) return { known: false, why: "the snapshot carries no addressability block" };
@@ -169,12 +209,31 @@ export function addressabilityVerdict(snapshot) {
     // account.exists made when it conflated 'an account exists' with 'a lap can post'.
     lap_may_perform_the_edit: a.lap_may_perform_the_edit ?? null,
     note: a.NOT_settled ?? null,
+    delivery: deliverySurface(snapshot),
   };
 }
 
 export function addressabilitySentence(v) {
   if (!v?.known) return "ADDRESSABILITY UNKNOWN: nobody has established whether the reach can be pointed at anything, which is the difference between a route and a number.";
   const parts = [];
+  // The ceiling leads. Which of our URLs the guard admits only matters on a surface
+  // somebody reaches, and for a day the permitted/forbidden sentence was quoted as
+  // though it were the answer to a question nobody had asked in the right order.
+  const d = v.delivery;
+  if (d?.known) {
+    const pct = (d.addressable_fraction * 100).toFixed(2);
+    parts.push(
+      `DELIVERY CEILING FIRST: ${d.addressable_playbacks} of ${d.playbacks} playbacks over ` +
+        `${d.window_days ?? "?"}d reach a surface that renders the description (${pct}%), so the ceiling on ` +
+        `clicks to ANY url placed here is ${d.clicks_ceiling_per_window} per ${d.window_days ?? "?"} days — ` +
+        "independent of which url and of who the audience is. Everything below is about a link nobody arrives at.",
+    );
+  } else {
+    parts.push(
+      `DELIVERY CEILING NOT MEASURED (${d?.why ?? "no reading"}): whether anyone reaches the surface at all is ` +
+        "unknown, and it dominates every question about what may be written on it.",
+    );
+  }
   parts.push(
     v.paid_link_permitted
       ? "The surface PERMITS the paid product's link"

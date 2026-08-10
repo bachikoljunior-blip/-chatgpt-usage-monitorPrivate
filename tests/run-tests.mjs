@@ -3346,6 +3346,68 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     live.free_link_permitted === false && live.paid_link_permitted === true,
     "the committed snapshot no longer derives the inverse-of-r/gamedev finding",
   );
+
+  // --- the ceiling that has to come before the guard --------------------------
+  //
+  // 2026-08-10. Everything above answers "may this URL be written into a description".
+  // It was asked, answered correctly, and quoted downstream for a day, and nothing had
+  // asked whether any description is ever read. The sibling loop's reply: of 4,851
+  // playbacks in 28 days, 4,849 ended inside SHORTS_FEED, which renders no description.
+  // So the ceiling on clicks to ANY url in publish.footer is 2 per 28 days — a fact
+  // about the surface that no choice of url or audience can move.
+  const { deliverySurface } = await import("../scripts/measure-reach.mjs");
+  const shorts = deliverySurface({
+    addressability: {
+      delivery_surface: {
+        window_days: 28,
+        by_playback_location: { SHORTS_FEED: 4849, WATCH: 2 },
+        description_reachable_from: ["WATCH"],
+      },
+    },
+  });
+  assert(shorts.known === true, "a snapshot carrying delivery counts reported the traffic shape unknown");
+  assert(shorts.playbacks === 4851, `playbacks summed to ${shorts.playbacks}, not 4851`);
+  assert(shorts.clicks_ceiling_per_window === 2, `the ceiling derived as ${shorts.clicks_ceiling_per_window}, not 2`);
+  assert(shorts.addressable_fraction < 0.0005, "0.04% of playbacks read as a usable fraction");
+
+  // A location nobody has classified must NOT quietly count as reachable. The whole
+  // failure being fixed here is a surface being assumed addressable because nothing
+  // said otherwise, so the default has to be the other way.
+  const unclassified = deliverySurface({
+    addressability: {
+      delivery_surface: {
+        window_days: 28,
+        by_playback_location: { SHORTS_FEED: 100, SOMETHING_NEW: 900 },
+        description_reachable_from: ["WATCH"],
+      },
+    },
+  });
+  assert(
+    unclassified.addressable_playbacks === 0,
+    "an unclassified playback location counted as reaching the description",
+  );
+
+  // Unmeasured must not read as fine. Before today this block did not exist at all,
+  // and its absence printed as nothing rather than as a gap.
+  const noCounts = deliverySurface({ addressability: {} });
+  assert(noCounts.known === false, "a snapshot with no delivery counts claimed to know the traffic shape");
+  assert(
+    addressabilitySentence(addressabilityVerdict({ addressability: guard })).includes("CEILING NOT MEASURED"),
+    "a surface whose traffic shape was never read printed without saying so",
+  );
+
+  // The ceiling must LEAD the sentence the ranking reads. Placing it after the
+  // permitted/forbidden clause would leave the first clause quotable on its own,
+  // which is exactly how the guard reading got used as though it were the answer.
+  const liveSentence = addressabilitySentence(live);
+  assert(
+    liveSentence.startsWith("DELIVERY CEILING FIRST"),
+    "the ceiling did not lead the sentence, so the permitted/forbidden clause is quotable without it",
+  );
+  assert(
+    live.delivery?.known === true && live.delivery.clicks_ceiling_per_window === 2,
+    "the committed snapshot lost the delivery counts the ceiling is derived from",
+  );
 }
 
 // --- a funnel step must have a reader, or the claim has to shrink --------------

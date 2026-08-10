@@ -810,6 +810,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T06:55:05.832Z",
+      "candidate": "reach_to_storefront_link",
+      "kind": "route_change",
+      "mechanism": "Abandon the route the last 37 laps served — build an artifact on the lane, have a model judge it, tune it — and take the one term every refuted zero-base option failed on: standing where buyers gather. state/eta.json already measures that standing and nothing has ever used it. The youtube channel reads 1208.75 views/day and 394.75 engaged/day over four days at zero owner actions, and its own note says the surface PERMITS the paid product's link while forbidding the free demo's github URL. Gumroad has 0 lifetime sales and itch has 2 lifetime views, so there is currently no path at all from any audience to the storefront. Placing the paid listing's link in the sibling loop's description template creates the first one. The number moves because a purchase channel with no visitors cannot have a rate, and this is the only reach this project has ever measured.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
