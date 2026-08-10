@@ -135,7 +135,7 @@
     {
       "id": "2026-08-09.gumroad-cover-upload",
       "created_at": "2026-08-09T16:10:00Z",
-      "status": "pending",
+      "status": "done",
       "candidate_id": "listing_has_no_cover_image",
       "owner_actions": 1,
       "estimated_owner_minutes": 2,
@@ -190,6 +190,14 @@
             "predicate": "is_true"
           }
         ]
+      },
+      "performed_evidence": {
+        "verified_at": "2026-08-10T03:56:36.824Z",
+        "reading": "state/gumroad.json products[0]: cover_count 1, covers_field_shape array, main_cover_id_present true, thumbnail_url_present false.",
+        "independent_reading": "The public product page data-page JSON served covers[0]: 1280x720 PNG, native 1280x720, id 088e2fa4dbe1b38018e3c9938368ed65 - read from https://bachiko4.gumroad.com/l/fbozt this lap, before the API was asked. Two endpoints, same answer.",
+        "when_the_owner_actually_did_it": "NOT KNOWN, and not guessable from here. What is measured is that it was true at 03:56Z on 2026-08-10; the request was filed 16:10Z on 2026-08-09. Nothing in this loop looked in between, so the elapsed time is a fact about our instrument, not about the owner.",
+        "the_delay_was_ours": "read-gumroad.mjs collected no cover field, so the success_test named two values that did not exist in the file it named. The action could not have been observed on any day.",
+        "thumbnail_stayed_null": "Recorded because it justifies the any_of. Gumroad served covers populated and thumbnail_url null in the same payload, so a test written against thumbnail_url alone would still read as not done."
       }
     },
     {

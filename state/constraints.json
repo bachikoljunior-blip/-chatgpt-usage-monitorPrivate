@@ -485,9 +485,9 @@
     },
     {
       "id": "listing_has_no_cover_image",
-      "claim": "MEASURED, NOT INFERRED: the priced product has covers: [], main_cover_id: null, thumbnail_url: null and preview_url: null. Gumroad Discover browse is a visual grid of tiles, so the product now carries the eight tags that put it IN the index while presenting a blank tile to everyone the index shows it to. This is the immediate next blocker on the path opened the same day, and it was invisible until the tags made the path real: an untagged product is nowhere, and being nowhere hides the fact that it also has no picture.",
+      "claim": "LIFTED 2026-08-10. Was: the priced product has covers: [], main_cover_id: null, thumbnail_url: null and preview_url: null. The owner uploaded a cover; covers now reports 1 and main_cover_id is set. The original claim and its evidence are kept below because the reasoning that made this the next blocker is still the reasoning that made the tags worth setting. See lifted.",
       "evidence": "GET /v2/products 2026-08-09, the same call that measured tags: [] before they were set. All four image fields are empty or null on the single product; file_info reports only Size 31.2 KB. Nothing here is a self-report - these are the values the storefront serves.",
-      "measured_at": "2026-08-09T13:52:00Z",
+      "measured_at": "2026-08-10T03:56:36.824Z",
       "recheck_after": "2026-08-10",
       "blocks": [
         "no_standing_where_buyers_gather"
@@ -517,6 +517,13 @@
         "source": "assets/gumroad-cover.html",
         "command": "node scripts/render-cover.mjs --store=gumroad",
         "why_not_the_itch_file": "Wrong shape (630x500 against a 16:9 Discover tile) and wrong reader: the itch cover leads with a phrase on assets/listing/gumroad.ja.json addressee_terms.forbidden, which is branch A of product_form_vs_addressed_buyer. scripts/sync-listing.mjs checkAddressee now reads the cover source and holds it to those terms, and tests/run-tests.mjs holds the check."
+      },
+      "lifted": {
+        "at": "2026-08-10T03:56:36.824Z",
+        "by": "the owner, through the web UI, which is the only route - api_capability_measured settled that there is no cover endpoint and that PUT ignores cover_url",
+        "reading": "cover_count 1, main_cover_id_present true (state/gumroad.json). Independently: covers[0] 1280x720 PNG on the public product page.",
+        "how_long_it_sat_lifted_and_unseen": "At least since the request was filed at 2026-08-09T16:10Z, and possibly the whole time. The blocker was gone and the board went on listing it as the immediate next blocker, because no collector gathered the field the success_test named.",
+        "what_this_does_NOT_establish": "That the product now appears in Discover BROWSE. The constraint itself says that question is about Gumroad ranking and cannot be answered from here. A picture existing is the precondition, not the outcome. Do not read a lifted precondition as reach."
       }
     },
     {

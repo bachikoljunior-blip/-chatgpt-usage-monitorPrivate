@@ -1375,6 +1375,19 @@
       ],
       "falsified_if": "Round 2 lands and free_demo still reports engaged 0 while a lap writes it up as a measured stranger reaction — that would mean the number is printed and unread, which is the same failure one layer out. Also falsified if a lap deletes round 1 rather than carrying it at its recorded weight: the point is that a weak round stays visible as weak, not that it disappears.",
       "outcome": null
+    },
+    {
+      "id": "2026-08-10.a-performed-owner-action-read-as-pending",
+      "made_at": "2026-08-10T04:02:00Z",
+      "claim": "Owner request 2026-08-09.gumroad-cover-upload was PERFORMED and this loop recorded it as outstanding for at least 11.8 hours. Its success_test named state/gumroad.json covers and thumbnail_url; read-gumroad.mjs collected neither, so the test could never pass and at judge_by 2026-08-16 it would have failed open as the owner not acting. The claim is that this class is now closed rather than this instance fixed: success tests are data (success_test_machine), owner-request-gate.mjs evaluates them with unevaluable as a THIRD outcome that exits 1, and run-tests refuses a pending request whose test is prose. The measured half is already in: the API serves covers, cover_count reads 1, and covers was populated while thumbnail_url was null in the same payload - which is why the two clauses are separate. NOT claimed: any ETA movement (∞ on every channel, admitted prerequisite 3/3), and NOT claimed that the product now appears in Discover BROWSE. A picture existing is the precondition the constraint named, not the outcome.",
+      "metric": "Read from committed state on origin/main, none from a lap account of itself. (a) node scripts/owner-request-gate.mjs exits 0 and prints a success_test verdict of satisfied or not_yet - never unevaluable - for every pending row. (b) node tests/run-tests.mjs fails when any of the five mutations is reapplied: an uncollected field reading as not_yet rather than unevaluable, the path splitter cutting on every dot, unevaluable outranking satisfied in any_of, an unreadable state file reading as satisfied, and checkRequestsAddressee returning [] unconditionally. All five were run at 03:5xZ and all five went red. (c) THE BEHAVIOURAL HALF, AND THE ONE THAT CAN FAIL QUIETLY: when the next owner request is filed, does it carry success_test_machine naming a field some collector actually writes - and is it marked done because the gate said satisfied, rather than because a lap eyeballed a page? A row flipped to done with no performed_evidence falsifies this. (d) Whether state/gumroad.json cover_count stays >= 1. If it drops to 0 the cover was removed, and the request should reopen rather than stay done. (e) Whether any later lap cites the lifted cover constraint as evidence of REACH. It is not: Discover browse presence is unmeasured and the constraint itself says it cannot be answered from here.",
+      "baseline": "At 2026-08-10T03:38Z: owner-requests.json had 1 pending row (the cover upload), 0 rows carried a machine-readable success_test, read-gumroad.mjs collected no cover field, state/gumroad.json had no cover_count key, and owner-request-gate.mjs evaluated admissibility only - nothing anywhere evaluated whether a shipped request had been performed. Live listing already served covers[0] 1280x720 PNG.",
+      "judge_on": "2026-08-14",
+      "judge_deadline": "2026-08-17",
+      "concurrent_changes": [
+        "Nothing else was changed this lap. The collector edit, the gate edit, the structured success test and the vacuity-control replacement in run-tests are one causal chain: the test cannot be evaluated unless the field is collected, and it cannot be trusted unless a broken checker still goes red."
+      ],
+      "outcome": null
     }
   ]
 }

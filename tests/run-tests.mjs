@@ -1683,17 +1683,29 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   // blob had no reader. This is the reader.
   {
     const requests = (await readOwnerRequests())?.requests ?? [];
-    assert(requests.some((r) => r.status === "pending"),
-      "no pending owner request, so this check is passing on an empty set");
     assert(checkRequestsAddressee(requests, repo.addressee_terms).length === 0,
       `a pending owner request asks the owner to paste the refuted addressee: ${JSON.stringify(checkRequestsAddressee(requests, repo.addressee_terms))}`);
+
+    // This used to assert that a live pending request EXISTS, to stop the line
+    // above passing on an empty set. The instinct was right and the instrument was
+    // wrong: on 2026-08-10 the last pending request was marked done — because it
+    // had in fact been performed — and the suite went red for reaching the state
+    // RUNBOOK 6 explicitly names as a legitimate conclusion ("今週は出さない" is a
+    // result to record, not a failure). A check that forbids the empty state
+    // pressures the board to keep an ask open so the tests stay green.
+    //
+    // Vacuity is defended against properly below instead: the synthetic rows prove
+    // the checker still catches a forbidden term and still ignores one that is
+    // merely quoted, whatever the live file happens to contain today.
+    const control = requests.find((r) => r.status === "pending")
+      ?? { id: "(synthetic)", status: "pending" };
 
     // Scope, in both directions. Pasteable copy must be caught; the surrounding
     // explanation must not be — these entries QUOTE the forbidden terms when
     // recording what was corrected, and a checker that counted those would force
     // the record to lie about its own history.
     const forbidden = repo.addressee_terms.forbidden[0];
-    const pending = requests.find((r) => r.status === "pending");
+    const pending = control;
     assert(checkRequestsAddressee(
       [{ ...pending, the_ask: { step_2: { body_to_paste: forbidden } } }],
       repo.addressee_terms,
