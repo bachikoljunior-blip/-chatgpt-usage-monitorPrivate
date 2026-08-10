@@ -280,10 +280,18 @@ jobs:
       # storefront was serving two files, one right and one stale.
       - name: Ship the corrected archive as the only attachment
         if: always() && inputs.deliver_archive
+        # Soft, and the reason is the whole point of the step. The script exits 1 when
+        # the storefront does not read back one correct file, and that refusal is the
+        # finding — it is how the no-op on 2026-08-10 was caught instead of reported as
+        # a shipment. A hard failure here aborts the job before the commit step, so the
+        # record of the failure is the one thing that never survives. The step still
+        # shows red; what changes is that state/product-delivery.json gets home.
+        continue-on-error: true
         env:
           GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
         run: |
-          node scripts/deliver-product-archive.mjs --yes-live
+          node scripts/deliver-product-archive.mjs --yes-live || rc=$?
+          cp state/product-delivery.json "$RUNNER_TEMP/product-delivery.json" 2>/dev/null || true
           node scripts/fetch-product-source.mjs state/product-source.json
           node scripts/promise-conformance.mjs --write
           node scripts/verify-sanitized-state.mjs state/product-source.json state/promise-conformance.json
@@ -334,6 +342,7 @@ jobs:
               gumroad-recurring \
               gumroad-file-replacement \
               gumroad-file-walk \
+              product-delivery \
               gumroad-presign \
               gumroad-rich-content \
               payload-listing \
