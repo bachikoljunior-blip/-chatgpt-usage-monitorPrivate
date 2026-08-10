@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T09:42:47.435Z",
+  "fetched_at": "2026-08-10T10:13:56.699Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -32,11 +32,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.63
+      "days_unchanged": 0.65
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 0.63
+      "days_unchanged": 0.65
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -176,17 +176,6 @@
       "owner_actions": 0,
       "note": "When the Claude weekly window runs out, every part of this system that DECIDES anything stops, and stays stopped until the window resets. The collectors keep collecting and the ChatGPT lane keeps answering, but neither chooses work: the lane only runs a task already written into its inbox, and nothing writes one without Claude. So the outage is not a slowdown — it is a period in which the loop cannot pick, gate, judge or hand off, and the hourly trigger keeps firing into a session that can only note it has no budget.",
       "measure_via": "here",
-      "actionable_now": true,
-      "eta_effect_days": null,
-      "eta_effect_basis": "no comparable estimate recorded"
-    },
-    {
-      "kind": "product_loop",
-      "id": "idle_clicker_kit.round_1",
-      "why": "the one thing on offer that CAN be measured has never been measured once",
-      "owner_actions": 0,
-      "measure_via": "codex_lane",
-      "note": "Next rung: promise_conformance. See state/product-loop.json for how, and for which rung is deliberately NOT next and why.",
       "actionable_now": true,
       "eta_effect_days": null,
       "eta_effect_basis": "no comparable estimate recorded"
@@ -443,7 +432,7 @@
         "published_count": 10,
         "pages_found_by_search": 0,
         "verdict": "published_but_not_findable",
-        "measured_at": "2026-08-10T09:15:39.152Z",
+        "measured_at": "2026-08-10T09:42:49.022Z",
         "what_it_settles": "Not a shortage of pages. Ten serve 200 and a search index returned none of them, so page COUNT is not the binding term — the missing step is an inbound path from a surface that is already crawled. Building more pages buys nothing until that step exists.",
         "inbound_surface": {
           "verdict": "no_crawled_surface_found",
