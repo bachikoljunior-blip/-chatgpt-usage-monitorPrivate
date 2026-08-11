@@ -67,6 +67,7 @@ import {
 import { artifactWasDriven } from "../scripts/play-artifact.mjs";
 import { checkGoal, GOAL, BEGIN as DIRECTIVE_BEGIN } from "../scripts/check-goal-intact.mjs";
 import { judge as judgeSpark, sparkModelCandidate, sparkWindow } from "../scripts/spark-model.mjs";
+import { laneIdleVerdict, laneCadenceMinutes, canFundALap } from "../scripts/check-lane-idle.mjs";
 import { judge as judgeProductLoop, MAX_ROUND_AGE_DAYS as PRODUCT_MAX_ROUND_AGE_DAYS, roundEngaged, playedEvidenceFor, roundHasReviewer } from "../scripts/product-loop.mjs";
 import { measurementIsEvidence, artifactThrew, findChromium, PROFILES, SHIPPED, navigationUrlFor, resolveServedPath } from "../scripts/play-artifact.mjs";
 import {
@@ -7483,4 +7484,72 @@ function assert(condition, message) {
     "a legacy union holding two digests was collapsed to a verdict it cannot support",
   );
   assert(classifyDelivered({}, "LICENSE.txt", NEW) === "unknown", "an absent manifest produced a verdict");
+}
+
+// --- the lane queue running dry while the other pool sits full ----------------
+//
+// The failure this pins is not "a task expired". It is that the ONLY thing that
+// writes a lane task is a Claude lap, so the queue empties exactly when the side
+// that refills it has no budget — and on 2026-08-11 that was measured, not
+// feared: run=false, queue_depth=31, all marked, Claude 3%, codex 80%, Spark
+// 100%. The two states that must never be confused are "empty" and "will run
+// dry": one is already costing firings, the other is still fixable, and a check
+// that reported them the same way would either cry wolf or arrive too late.
+{
+  // Empty is red regardless of what else is known. A queue with nothing in it
+  // wastes every firing until someone writes a task, and there is no reading of
+  // the pools that makes that acceptable.
+  const empty = laneIdleVerdict({ liveUnmarked: 0, firingsBeforeRefill: 60, lapCanBeFunded: false });
+  assert(empty.red && empty.state === "empty", "an empty lane queue was not red");
+  assert(empty.wasted_firings === 60, "the empty verdict did not carry the firings it costs");
+  // Even with a lap fundable and one firing to go, empty is still empty.
+  assert(
+    laneIdleVerdict({ liveUnmarked: 0, firingsBeforeRefill: 1, lapCanBeFunded: true }).red,
+    "an empty queue was excused because a lap could refill it soon",
+  );
+  // Unknown firing count must not turn the zero case green — the count is a
+  // severity, not the condition.
+  const emptyUnknown = laneIdleVerdict({ liveUnmarked: 0, firingsBeforeRefill: null, lapCanBeFunded: null });
+  assert(emptyUnknown.red && emptyUnknown.wasted_firings === null, "an empty queue with an unknown horizon was not red");
+
+  // The forward-looking half, and the reason it is split in two. Same shortfall,
+  // different verdict, because the difference is whether anything can still fix
+  // it. Reporting both as red is how a check becomes noise; reporting both as ok
+  // is how 2026-08-11 happened.
+  const fixable = laneIdleVerdict({ liveUnmarked: 3, firingsBeforeRefill: 6, lapCanBeFunded: true });
+  assert(!fixable.red && fixable.state === "will_run_dry_but_a_lap_can_refill", "a fixable shortfall was reported as a failure");
+  assert(fixable.wasted_firings === 3, "the fixable shortfall did not count the gap");
+  const certain = laneIdleVerdict({ liveUnmarked: 3, firingsBeforeRefill: 60, lapCanBeFunded: false });
+  assert(certain.red && certain.state === "will_run_dry_with_nobody_able_to_refill", "a certain shortfall was not red");
+  assert(certain.wasted_firings === 57, "the certain shortfall miscounted the wasted firings");
+
+  // null means "we do not know whether a lap can run" and must not be read as
+  // false. A missing usage file would otherwise fire the certain-shortfall rule
+  // on no evidence at all.
+  assert(
+    !laneIdleVerdict({ liveUnmarked: 1, firingsBeforeRefill: 60, lapCanBeFunded: null }).red,
+    "an unknown funding state was treated as proof that no lap can refill",
+  );
+
+  // Fed: more queued than firings before the refill.
+  const fed = laneIdleVerdict({ liveUnmarked: 9, firingsBeforeRefill: 6, lapCanBeFunded: false });
+  assert(!fed.red && fed.state === "fed" && fed.wasted_firings === 0, "a fed queue was not read as fed");
+
+  // The cadence is derived from the workflow's own cron because a number typed
+  // into prose has drifted from the schedule three times here.
+  assert(laneCadenceMinutes('    - cron: "41 * * * *"') === 60, "an hourly cron did not read as 60 minutes");
+  assert(laneCadenceMinutes('    - cron: "50 */6 * * *"') === 360, "a six-hourly cron did not read as 360 minutes");
+  assert(laneCadenceMinutes('    - cron: "*/15 * * * *"') === 15, "a quarter-hourly cron did not read as 15 minutes");
+  assert(laneCadenceMinutes('    - cron: "9 3 * * *"') === 1440, "a daily cron did not read as 1440 minutes");
+  // Unreadable must be null, not a guess: a made-up interval would silently set
+  // the severity of every verdict above.
+  assert(laneCadenceMinutes("no cron here") === null, "a missing cron produced a cadence");
+  assert(laneCadenceMinutes('    - cron: "0 0 * *"') === null, "a malformed cron produced a cadence");
+
+  // Funding is a comparison of two measured numbers, and both must be present.
+  assert(canFundALap(3, 0.5882) === true, "a fundable lap was reported unfundable");
+  assert(canFundALap(0, 0.5882) === false, "an unfundable lap was reported fundable");
+  assert(canFundALap(null, 0.5882) === null, "a missing meter reading produced a funding verdict");
+  assert(canFundALap(3, null) === null, "a missing per-lap cost produced a funding verdict");
+  assert(canFundALap(3, 0) === null, "a zero per-lap cost was treated as a real bound");
 }

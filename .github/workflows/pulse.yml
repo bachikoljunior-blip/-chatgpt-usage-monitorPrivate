@@ -192,6 +192,15 @@ jobs:
           # the Spark window still has capacity — i.e. when a whole quota silently
           # goes back to being counted as "spare" while nothing can spend it.
           node scripts/spark-model.mjs --check || rc=1
+          # The other way a whole quota goes unspent, and the one that had no
+          # instrument at all. spark-model catches "the firing does not name the
+          # pool"; this catches "the firing has nothing to ask". On 2026-08-11 the
+          # queue hit zero live tasks with the Claude pool at 3% and no reset for
+          # three days — an hourly lane firing resolving to no work about sixty
+          # times, because the only thing that writes a task is a lap and no lap
+          # could be funded. Red at zero, and red early when the queue will run dry
+          # before any lap can refill it.
+          node scripts/check-lane-idle.mjs || rc=1
           # The lane was asked to BUILD a deliverable rather than research one
           # (codex/INBOX.md 2026-08-10.payload-01), and the six terms of that ask
           # are a contract, not a preference. Silent while the artifact is absent —
