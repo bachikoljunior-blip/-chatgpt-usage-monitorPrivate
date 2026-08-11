@@ -2,8 +2,8 @@
   "schema_version": 1,
   "status": "ok",
   "source": "codex-app-server",
-  "fetched_at": "2026-08-11T15:11:18.883Z",
-  "fresh_until": "2026-08-11T17:11:18.883Z",
+  "fetched_at": "2026-08-11T16:06:03.735Z",
+  "fresh_until": "2026-08-11T18:06:03.735Z",
   "plan_type": "pro",
   "quota_windows": [
     {
@@ -13,16 +13,16 @@
       "used_percent": 0,
       "remaining_percent": 100,
       "window_duration_minutes": 10080,
-      "resets_at": 1787065879,
-      "resets_at_iso": "2026-08-18T15:11:19.000Z",
+      "resets_at": 1787069164,
+      "resets_at_iso": "2026-08-18T16:06:04.000Z",
       "reached_type": null
     },
     {
       "limit_id": "codex",
       "limit_name": null,
       "slot": "primary",
-      "used_percent": 22,
-      "remaining_percent": 78,
+      "used_percent": 23,
+      "remaining_percent": 77,
       "window_duration_minutes": 10080,
       "resets_at": 1787011158,
       "resets_at_iso": "2026-08-17T23:59:18.000Z",
@@ -36,17 +36,17 @@
     "used_percent": 0,
     "remaining_percent": 100,
     "window_duration_minutes": 10080,
-    "resets_at": 1787065879,
-    "resets_at_iso": "2026-08-18T15:11:19.000Z",
+    "resets_at": 1787069164,
+    "resets_at_iso": "2026-08-18T16:06:04.000Z",
     "reached_type": null
   },
   "available_reset_credits": 0,
   "token_usage_summary": {
-    "lifetime_tokens": 3196104530,
+    "lifetime_tokens": 3594357190,
     "peak_daily_tokens": 833349372,
     "longest_running_turn_seconds": 16405,
-    "current_streak_days": 5,
-    "longest_streak_days": 5
+    "current_streak_days": 6,
+    "longest_streak_days": 6
   },
   "daily_usage_buckets": [
     {
@@ -104,6 +104,10 @@
     {
       "start_date": "2026-08-10",
       "tokens": 183278916
+    },
+    {
+      "start_date": "2026-08-11",
+      "tokens": 398252660
     }
   ],
   "recommended_mode": "normal"
