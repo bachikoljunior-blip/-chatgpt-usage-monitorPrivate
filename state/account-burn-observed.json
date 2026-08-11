@@ -57,5 +57,38 @@
     "why_this_matters_more_than_the_number": "This file's central claim was 'rate = cost_per_lap x laps_per_hour, and the gate binds only the first term'. The gap is the first direct evidence for the SECOND term: with the same per-lap cap and the same siblings running, dropping the lap rate dropped the account rate by at least a third and possibly to a sixth. The owner's 6-hourly instruction is doing what the arithmetic said it would, which also means a chain that answers wait_for_next_firing by immediately spawning a successor would undo it.",
     "what_would_refute_it": "a seven_day reading below 4% before 2026-08-11T12:50Z that is NOT explained by a lap running, or a collector gap that hid a reading between 03:10Z and 06:06Z. The second is checkable: state/claude-usage.json is written hourly and its fetched_at is the only timestamp that counts.",
     "what_it_does_not_say": "that laps are the whole account. The siblings kept spending across the gap and the residual is theirs. It says the chain's own laps were the dominant term while it was running them."
+  },
+  "confirmation_2026_08_11_2130": {
+    "written_at": "2026-08-11T12:30:00Z",
+    "written_by": "youtube-loop child session_019UGRiVt3nz14fKgL3Z2Ztj",
+    "what_it_confirms": "The second term. gap_measurement_2026_08_11 said dropping lap frequency drops the account rate and called the residual a bound, not a number. Two more readings of the SAME seven_day window now put a number on it, and the direction holds across three consecutive segments.",
+    "segments_from_youtube_repo_data_usage_jsonl": [
+      {
+        "from": "2026-08-10T14:16:38+09:00 77%",
+        "to": "2026-08-11T01:03:04+09:00 88%",
+        "span_hours": 10.8,
+        "rate_percent_per_hour": 1.02,
+        "regime": "eta chain spawning immediate successors, 25-40 min apart"
+      },
+      {
+        "from": "2026-08-11T01:03:04+09:00 88%",
+        "to": "2026-08-11T09:17:18+09:00 94%",
+        "span_hours": 8.2,
+        "rate_percent_per_hour": 0.73,
+        "regime": "transition"
+      },
+      {
+        "from": "2026-08-11T09:17:18+09:00 94%",
+        "to": "2026-08-11T21:21:03+09:00 97%",
+        "span_hours": 12.1,
+        "rate_percent_per_hour": 0.25,
+        "regime": "continue.json decision = handoff_without_spawning_a_successor; eta trigger 50 */6, youtube trigger 9 */12, both verified in list_triggers"
+      }
+    ],
+    "the_number": "0.25 %/h = 42% of a weekly pool. Three loops at their current cadences FIT inside one week. They did not fit at 1.02 %/h (171%/week). The whole difference is the successor handoff, not per-lap cost: the per-lap cap never changed.",
+    "honest_about_the_refutation_condition": "This file's gap_measurement said it would be refuted by a seven_day reading below 4% before 2026-08-11T12:50Z not explained by a lap running. There IS such a reading: 3% at 2026-08-11T12:21Z. It does NOT refute, because laps were running — the youtube child that took it started at 12:09Z and eta's 06:50Z firing was in the same window. Stated rather than omitted, because it is one hair away from counting.",
+    "what_this_asks_of_the_next_eta_lap": "Nothing new. Keep decision = handoff_without_spawning_a_successor. The reversion is the failure mode: per-lap cost is capped, so a chain that resumes back-to-back laps returns the account to 1.02 %/h with no gate firing, exactly as the_defect_this_exposes describes.",
+    "cost_already_paid": "The weekly pool is at 97% with 82h to reset, so ALL loops on this account are expected to be unable to start between roughly 2026-08-12T00:30Z and the reset at 2026-08-14T22:00Z. That gap was bought on 08/10-08/11 and cannot be refunded by pacing now. It is not a broken chain and needs no repair action — cron keeps firing and the pool refills.",
+    "what_the_youtube_loop_did_on_its_own_side_this_round": "Left its interval at 12h instead of stretching further. Arithmetic: its only remaining firing this week is 2026-08-12T00:09Z, and 9 */24 fires at the same 00:09Z, so stretching removes zero laps. It also fixed its own burn readout, which was averaging across this regime change and reporting 0.64 %/h when the live rate was 0.25 %/h."
   }
 }
