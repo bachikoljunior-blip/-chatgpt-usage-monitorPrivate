@@ -1370,6 +1370,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-11T06:55:41.991Z",
+      "candidate": "idle_clicker_kit.promise_conformance",
+      "kind": "prerequisite",
+      "mechanism": "rung 1 keeps two fails because a superseded attachment is still on the product; measure on a throwaway in the live shape (two attachments, rich_content embedding one) whether a subtractive PUT files[] detaches the unembedded one. Detach yes means rung 1 closes with zero owner actions and the ladder can reach stranger_reaction, which is the only route to a first sale and therefore to any non-null idle_eta_days. Detach no means the owner request is measured irreducible instead of assumed.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-11T02:02:10.868Z",
-  "question": "The same replace route clears on a throwaway carrying ONE file and no-ops on the live listing carrying TWO. Is the file count the term that separates them, and — on the same product, with origin and publication held fixed — is rich_content?",
+  "fetched_at": "2026-08-11T07:00:58.863Z",
+  "question": "The same replace route clears on a throwaway carrying ONE file and no-ops on the live listing carrying TWO. Is the file count the term that separates them, and — on the same product, with origin and publication held fixed — is rich_content? And, since the live defect turned out to be subtractive: under a content page, can files[] REMOVE an attachment it does not name?",
   "walk": [
     {
       "rung": "upload_two",
@@ -58,6 +58,28 @@
       "files": "[\"probe-twofile-c.txt\"]"
     },
     {
+      "rung": "detach_arm",
+      "reached": false,
+      "attempts": [
+        {
+          "named_the_survivor_by": "upload_url",
+          "status": 200,
+          "file_count": 2,
+          "verdict": "no_op"
+        },
+        {
+          "named_the_survivor_by": "product_reported_url",
+          "status": 200,
+          "file_count": 2,
+          "verdict": "no_op"
+        }
+      ],
+      "file_count": 2,
+      "verdict": "no_op",
+      "why": "the PUT answered and both attachments still serve, so files[] cannot subtract under a content page either. The owner request stands and is now measured irreducible rather than assumed: no API route this repository can reach removes the superseded attachment.",
+      "files": "[\"probe-detach-keep.txt\",\"probe-detach-drop.txt\"]"
+    },
+    {
       "rung": "live_shape",
       "reached": true,
       "status": 200,
@@ -84,7 +106,7 @@
       "rung": "cleanup",
       "reached": true,
       "status": 200,
-      "why": "throwaway deleted and confirmed absent from the product collection"
+      "why": "2 throwaway(s) deleted and confirmed absent from the product collection"
     }
   ],
   "reached": [
@@ -121,6 +143,36 @@
     "why": "the same product answered 2xx and changed nothing once it carried a content page, having replaced cleanly minutes earlier without one. That reproduces the live listing's failure with origin and publication held fixed, so the buyer's download list comes from the embeds and PUT files[] writes to an index nobody serves. The fix to the priced product is a rich_content write and needs no owner upload.",
     "control": "the SAME product, the SAME PUT shape, minutes apart. The only thing that changed between the first files[] PUT and the second is that a content page exists. Origin and publication are identical across the pair by construction, which is what neither the live listing nor any earlier throwaway could offer."
   },
+  "detach_arm": {
+    "rich_content_pages_after_write": 1,
+    "served_before": [
+      "probe-detach-keep.txt",
+      "probe-detach-drop.txt"
+    ],
+    "served_after": [
+      "probe-detach-keep.txt",
+      "probe-detach-drop.txt"
+    ],
+    "attempts": [
+      {
+        "named_the_survivor_by": "upload_url",
+        "status": 200,
+        "file_count": 2,
+        "verdict": "no_op"
+      },
+      {
+        "named_the_survivor_by": "product_reported_url",
+        "status": 200,
+        "file_count": 2,
+        "verdict": "no_op"
+      }
+    ],
+    "verdict": "no_op",
+    "detach_works": false,
+    "why": "the PUT answered and both attachments still serve, so files[] cannot subtract under a content page either. The owner request stands and is now measured irreducible rather than assumed: no API route this repository can reach removes the superseded attachment.",
+    "shape": "a SEPARATE throwaway, built in the live listing's order: two attachments first, then a page embedding one of them. The rich arm's product cannot be reused — files[] is inert on it, so a second attachment can no longer be added, which is the finding that made this arm necessary.",
+    "what_it_does_not_settle": "whether the buyer's download list is the embeds or files[]. This arm reads the SELLER's surface. A `detached` verdict says the superseded attachment can be removed; it does not say a buyer was ever served it."
+  },
   "live_listing_shape": {
     "published": true,
     "file_count": 2,
@@ -139,10 +191,10 @@
     "surfaces_disagree": true
   },
   "next_term_to_test": {
-    "term": "apply_the_rich_content_write_to_the_live_listing",
-    "claim": "the same product answered 2xx and changed nothing once it carried a content page, having replaced cleanly minutes earlier without one. That reproduces the live listing's failure with origin and publication held fixed, so the buyer's download list comes from the embeds and PUT files[] writes to an index nobody serves. The fix to the priced product is a rich_content write and needs no owner upload.",
-    "how_to_test": "read the live listing's rich_content page, upload the corrected archive, and PUT a page whose fileEmbed names the NEW file id — then re-fetch the delivered digest (state/product-source.json) and see whether it moved. Save the original page verbatim first: it is the sales copy.",
-    "what_it_would_change": "the two FAILING promises in state/promise-conformance.json are both 'fixed in source, not yet delivered'. If the write lands, they are delivered, product-loop --check goes green on this offer, and the pending owner request 2026-08-10.gumroad-replace-the-kit-file can be withdrawn."
+    "term": "the_owner_request_is_the_route",
+    "claim": "the PUT answered and both attachments still serve, so files[] cannot subtract under a content page either. The owner request stands and is now measured irreducible rather than assumed: no API route this repository can reach removes the superseded attachment.",
+    "how_to_test": "nothing left to test from here on the delivery route; the remaining measurement is whether the owner's deletion actually moves state/product-source.json attachment_count to 1.",
+    "what_it_would_change": "the pending owner request stops being an assumption about irreducibility and becomes a measured one, which is what RUNBOOK 6 gate 5 asks for."
   },
   "what_this_settles": "the product carried two files and the PUT still replaced both with the one sent. The file count is NOT what separates this from the live listing — look at origin (dashboard vs API) or publication state.",
   "what_this_does_not_settle": "The other two terms. ORIGIN (the live listing was created in the dashboard, every throwaway here over the API) and PUBLICATION (the listing is published and purchasable, every throwaway is a draft) are both still live explanations, and this probe was built so that it changes neither. A clean 'replaced' here does not name which of those two it is — it only rules the count out.",

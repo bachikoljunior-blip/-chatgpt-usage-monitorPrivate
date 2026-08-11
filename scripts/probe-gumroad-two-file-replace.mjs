@@ -52,6 +52,12 @@ const THIRD = { name: "probe-twofile-c.txt", body: "probe payload C, the replace
 // after a content page has been written, so the two PUTs differ in exactly one thing:
 // whether the product had a rich_content page when files[] was sent.
 const FOURTH = { name: "probe-twofile-d.txt", body: "probe payload D, the replacement under rich_content. not a product.\n" };
+// The detach arm's pair. It needs its OWN product: once a content page exists, files[]
+// is inert (the rich arm measures that), so a second attachment can no longer be added
+// to the product the rich arm leaves behind. The live shape has to be built in order —
+// two attachments first, the page second — which is a fresh throwaway.
+const KEEP = { name: "probe-detach-keep.txt", body: "probe payload KEEP, the embedded one. not a product.\n" };
+const DROP = { name: "probe-detach-drop.txt", body: "probe payload DROP, the superseded one. not a product.\n" };
 
 const token = process.env.GUMROAD_TOKEN;
 const redact = (s) => (token ? String(s).split(token).join("[REDACTED]") : String(s));
@@ -244,6 +250,79 @@ export function classifyRichArm({ pagesAfterWrite, servedBefore, servedAfter }) 
 }
 
 /**
+ * Under a content page, can files[] SUBTRACT?
+ *
+ * Every files[] PUT this file has measured was additive in intent: it named a file the
+ * product did not have. The live listing's remaining defect is the other direction —
+ * two attachments, one of them superseded, the good one embedded — so the operation
+ * that fixes it is a PUT naming ONLY the attachment that should survive. That has never
+ * been sent. `no_op` on an additive PUT does not predict it: an API can ignore a name it
+ * does not know and still honour a set it does.
+ *
+ * The shape is built in the live order on a fresh throwaway: two attachments, then a
+ * page embedding one of them. `detached` is the only verdict that lets the priced
+ * product be fixed without the owner touching Gumroad.
+ *
+ * Exported for the same reason as the other classifiers: the interpretation is the
+ * finding, and a finding no test can reach is a claim.
+ *
+ * @param pagesAfterWrite content pages the throwaway reported after the page was written
+ * @param servedAfter     file urls/names it served after the subtractive PUT
+ */
+export function classifyDetach({ pagesAfterWrite, servedAfter }) {
+  if (!(Number(pagesAfterWrite) > 0)) {
+    return {
+      verdict: "not_reached",
+      detach_works: null,
+      why:
+        "the content page never landed on this throwaway, so the subtractive PUT was never sent to the " +
+        "shape the live listing is in. This arm measured nothing; it is not evidence that detach fails.",
+    };
+  }
+  const has = (needle) => servedAfter.some((u) => u.includes(needle));
+  const keep = has(KEEP.name);
+  const drop = has(DROP.name);
+
+  if (keep && !drop) {
+    return {
+      verdict: "detached",
+      detach_works: true,
+      why:
+        "a PUT naming only the embedded attachment removed the other one, on a product carrying a content " +
+        "page. files[] is not inert under rich_content — it ignores names it does not know and honours the " +
+        "set it does. The live listing's superseded attachment can be removed from here, so the pending " +
+        "owner request is withdrawable rather than merely smaller.",
+    };
+  }
+  if (keep && drop) {
+    return {
+      verdict: "no_op",
+      detach_works: false,
+      why:
+        "the PUT answered and both attachments still serve, so files[] cannot subtract under a content page " +
+        "either. The owner request stands and is now measured irreducible rather than assumed: no API route " +
+        "this repository can reach removes the superseded attachment.",
+    };
+  }
+  if (!keep && !drop) {
+    return {
+      verdict: "dropped_all",
+      detach_works: false,
+      why:
+        "the subtractive PUT removed BOTH attachments, including the one it named. This is the outcome that " +
+        "must never be tried on the live listing: it would leave a purchasable product with no download.",
+    };
+  }
+  return {
+    verdict: "unrecognised",
+    detach_works: null,
+    why:
+      "the product kept the attachment the PUT dropped and lost the one it named. Nothing predicts this; the " +
+      "raw names are recorded and no verdict should be folded out of them until a lap has read them.",
+  };
+}
+
+/**
  * What shape is the LIVE listing in, at the moment the throwaway was measured?
  *
  * Read-only, and it exists because the throwaway/listing comparison is worthless if
@@ -311,6 +390,12 @@ const run = async () => {
   let richArm = null;
   let richServedBefore = [];
   let richServedAfter = [];
+  let detachProductId = null;
+  let detachArm = null;
+  let detachPages = 0;
+  let detachServedBefore = [];
+  let detachServedAfter = [];
+  let detachAttempts = [];
 
   try {
     // 1 upload_two ----------------------------------------------------------------
@@ -476,6 +561,107 @@ const run = async () => {
       }
     }
   } finally {
+    // 8 detach_arm ----------------------------------------------------------------
+    // In the finally for the same reason live_shape is: the walk above returns early on
+    // any refusal, and this arm answers a different question on a different product, so
+    // letting an upload hiccup three rungs back silence it would lose the measurement
+    // that decides whether the owner has to touch Gumroad at all.
+    try {
+      const k = await uploadFile(KEEP.name, KEEP.body);
+      const d = k.ok ? await uploadFile(DROP.name, DROP.body) : { ok: false, why: "skipped" };
+      if (!k.ok || !d.ok) {
+        note("detach_arm", false, { why: `could not upload the detach pair: ${k.why ?? d.why}` });
+      } else {
+        const made = await call("products", "POST", {
+          name: `${PROBE_PREFIX}detach-${Date.now()}`,
+          price: 100,
+          files: [
+            { url: k.fileUrl, name: KEEP.name },
+            { url: d.fileUrl, name: DROP.name },
+          ],
+        });
+        detachProductId = made.json?.product?.id ?? null;
+        const readTwo = detachProductId ? await call(`products/${detachProductId}`, "GET") : null;
+        const twoServed = servedNames(readTwo?.json?.product);
+        // The id the page must embed is read off the product, never constructed. The
+        // live listing's embed id is opaque and this arm has to be like for like.
+        const keepFile = (readTwo?.json?.product?.files ?? []).find((f) =>
+          String(f.url ?? "").includes(KEEP.name),
+        );
+        const keepId = keepFile?.id ? String(keepFile.id) : null;
+
+        if (twoServed.length !== 2 || !keepId) {
+          note("detach_arm", false, {
+            status: made.status,
+            file_count: twoServed.length,
+            why:
+              twoServed.length !== 2
+                ? `the throwaway came back serving ${twoServed.length} file(s); the live shape needs two, so the subtractive PUT was not sent`
+                : "the read-back carried no id for the attachment to embed, and this arm will not invent one",
+          });
+        } else {
+          const page = {
+            title: "Downloads",
+            description: {
+              type: "doc",
+              content: [{ type: "fileEmbed", attrs: { id: keepId, uid: keepId, collapsed: false } }],
+            },
+          };
+          await call(`products/${detachProductId}`, "PUT", { rich_content: [page] });
+          const shaped = await call(`products/${detachProductId}`, "GET");
+          const shape = shaped.json?.product ? liveShape(shaped.json.product) : null;
+          detachPages = shape?.rich_content_pages ?? 0;
+          detachServedBefore = servedNames(shaped.json?.product).map(bareName);
+
+          if (detachPages > 0) {
+            // The arm is this one call: name ONLY the survivor. It is sent twice, and
+            // the second send is not a retry — it is a different identifier for the same
+            // file. The first names the survivor by the presigned URL the upload handed
+            // back; the second by the URL the PRODUCT reports for that attachment. A
+            // no_op under the first alone cannot tell "files[] cannot subtract" from
+            // "files[] did not recognise the name I used", and the whole weight of this
+            // arm is that it decides whether the owner is asked to do the work by hand.
+            const attempts = [];
+            let servedNow = [];
+            for (const form of [
+              { by: "upload_url", url: k.fileUrl },
+              { by: "product_reported_url", url: String(keepFile.url ?? "") },
+            ]) {
+              if (!form.url) continue;
+              const put = await call(`products/${detachProductId}`, "PUT", {
+                files: [{ url: form.url, name: KEEP.name }],
+              });
+              const after = await call(`products/${detachProductId}`, "GET");
+              servedNow = servedNames(after.json?.product);
+              const verdict = classifyDetach({ pagesAfterWrite: detachPages, servedAfter: servedNow });
+              attempts.push({
+                named_the_survivor_by: form.by,
+                status: put.status,
+                file_count: servedNow.length,
+                verdict: verdict.verdict,
+              });
+              detachArm = verdict;
+              if (verdict.verdict === "detached") break;
+            }
+            detachAttempts = attempts;
+            detachServedAfter = servedNow.map(bareName);
+            note("detach_arm", detachArm.verdict === "detached", {
+              attempts,
+              file_count: servedNow.length,
+              verdict: detachArm.verdict,
+              why: detachArm.why,
+              files: redact(JSON.stringify(detachServedAfter)).slice(0, 600),
+            });
+          } else {
+            detachArm = classifyDetach({ pagesAfterWrite: 0, servedAfter: [] });
+            note("detach_arm", false, { why: detachArm.why });
+          }
+        }
+      }
+    } catch (err) {
+      note("detach_arm", false, { why: `the detach arm threw: ${redact(err.message)}` });
+    }
+
     // 6 live_shape ----------------------------------------------------------------
     // Read-only, and it runs even when the walk above stopped early: a probe that
     // records the throwaway's behaviour without recording what it is being compared
@@ -506,21 +692,26 @@ const run = async () => {
     }
 
     // 7 cleanup -------------------------------------------------------------------
-    if (productId) {
-      const del = await call(`products/${productId}`, "DELETE");
+    const created = [productId, detachProductId].filter(Boolean);
+    if (created.length) {
+      let lastStatus = null;
+      for (const id of created) {
+        const del = await call(`products/${id}`, "DELETE");
+        lastStatus = del.status;
+      }
       // Absence is confirmed against the COLLECTION. After a successful DELETE the id
       // still answers 200 while the collection no longer lists it, so reading the id
       // alone reports a leak that is not there.
       const after = await call("products", "GET");
       const list = after.json?.products ?? null;
-      const gone = Array.isArray(list) ? !list.some((p) => p.id === productId) : null;
+      const gone = Array.isArray(list) ? !created.some((id) => list.some((p) => p.id === id)) : null;
       note("cleanup", gone === true, {
-        status: del.status,
+        status: lastStatus,
         why:
           gone === true
-            ? "throwaway deleted and confirmed absent from the product collection"
+            ? `${created.length} throwaway(s) deleted and confirmed absent from the product collection`
             : gone === false
-              ? "DELETE answered but the product is still listed — run scripts/sweep-gumroad-probe-products.mjs"
+              ? "DELETE answered but a throwaway is still listed — run scripts/sweep-gumroad-probe-products.mjs"
               : "could not re-read the collection, so absence is unconfirmed — run the sweeper",
       });
       if (gone !== true) stoppedAt = stoppedAt ?? "cleanup";
@@ -532,7 +723,7 @@ const run = async () => {
       status: "ok",
       fetched_at: new Date().toISOString(),
       question:
-        "The same replace route clears on a throwaway carrying ONE file and no-ops on the live listing carrying TWO. Is the file count the term that separates them, and — on the same product, with origin and publication held fixed — is rich_content?",
+        "The same replace route clears on a throwaway carrying ONE file and no-ops on the live listing carrying TWO. Is the file count the term that separates them, and — on the same product, with origin and publication held fixed — is rich_content? And, since the live defect turned out to be subtractive: under a content page, can files[] REMOVE an attachment it does not name?",
       walk: rungs,
       reached: walked,
       stopped_at: stoppedAt,
@@ -568,6 +759,35 @@ const run = async () => {
             rich_content_is_the_term: null,
             why: `the walk stopped at ${stoppedAt ?? "an earlier rung"} before the rich_content arm could run, so this is not evidence either way`,
           },
+      // The third arm. It is the one that decides whether the owner has to open Gumroad,
+      // and it is kept beside the other two rather than replacing `verdict` for the same
+      // reason the rich arm was: three questions, one verdict field, two answers lost.
+      detach_arm: detachArm
+        ? {
+            rich_content_pages_after_write: detachPages,
+            served_before: detachServedBefore,
+            served_after: detachServedAfter,
+            // Two sends, one file, two identifiers for it. A no_op that only ever named
+            // the survivor one way would be indistinguishable from an unrecognised name.
+            attempts: detachAttempts,
+            verdict: detachArm.verdict,
+            detach_works: detachArm.detach_works,
+            why: detachArm.why,
+            shape:
+              "a SEPARATE throwaway, built in the live listing's order: two attachments first, then a page " +
+              "embedding one of them. The rich arm's product cannot be reused — files[] is inert on it, so a " +
+              "second attachment can no longer be added, which is the finding that made this arm necessary.",
+            what_it_does_not_settle:
+              "whether the buyer's download list is the embeds or files[]. This arm reads the SELLER's surface. " +
+              "A `detached` verdict says the superseded attachment can be removed; it does not say a buyer was " +
+              "ever served it.",
+          }
+        : {
+            rich_content_pages_after_write: detachPages,
+            verdict: "not_reached",
+            detach_works: null,
+            why: "the detach arm did not run to a classification, so it is not evidence either way",
+          },
       live_listing_shape: live,
       // Named as a hypothesis, not a verdict. The probe measured the count term and
       // READ the listing; it did not test whether rich_content is what makes files[]
@@ -576,7 +796,30 @@ const run = async () => {
       next_term_to_test:
         live === null
           ? null
-          : richArm && richArm.rich_content_is_the_term === true
+          : // A measured term is no longer the next term, and the detach arm is measured
+            // last, so it speaks first. The rich arm's old answer — "write rich_content to
+            // the live listing" — was aimed at a file state/product-source.json has since
+            // shown is already correct, so leaving it on top would go on asking for a write
+            // that lands on the sales copy.
+            detachArm && detachArm.detach_works === true
+            ? {
+                term: "detach_the_superseded_attachment_on_the_live_listing",
+                claim: detachArm.why,
+                how_to_test:
+                  "read the live listing, take the file id the rich_content page embeds, and PUT files[] naming ONLY the attachment that carries it. Then re-run scripts/fetch-product-source.mjs and check attachment_count went 2 -> 1 and that the embed still resolves.",
+                what_it_would_change:
+                  "the two FAILING promises in state/promise-conformance.json are both a contradiction between two attachments. Removing the superseded one leaves a single answer, rung 1 can close, and the pending owner request 2026-08-10.gumroad-replace-the-kit-file is withdrawn rather than performed — zero owner actions.",
+              }
+            : detachArm && detachArm.detach_works === false
+              ? {
+                  term: "the_owner_request_is_the_route",
+                  claim: detachArm.why,
+                  how_to_test:
+                    "nothing left to test from here on the delivery route; the remaining measurement is whether the owner's deletion actually moves state/product-source.json attachment_count to 1.",
+                  what_it_would_change:
+                    "the pending owner request stops being an assumption about irreducibility and becomes a measured one, which is what RUNBOOK 6 gate 5 asks for.",
+                }
+              : richArm && richArm.rich_content_is_the_term === true
             ? {
                 // A term that has been measured is no longer the next term. Leaving the
                 // old text here would go on asking for work already done, which is the

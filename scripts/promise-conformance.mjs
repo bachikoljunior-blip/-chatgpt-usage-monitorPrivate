@@ -287,6 +287,24 @@ export function differenceClause(probe = readJsonOrNull(path.join(ROOT, "state/g
         ` (${arm.why})`,
     );
   }
+  // The detach arm answers the question the register is actually blocked on now. The
+  // rich arm asked whether files[] can INSTALL under a content page; the live defect is
+  // that a superseded attachment is still there, so what matters is whether files[] can
+  // REMOVE one. It comes last of the measurements and therefore first among them in
+  // recency, and it is what decides whether the pending owner request is withdrawable.
+  const detach = probe.detach_arm;
+  if (detach && detach.verdict !== "not_reached") {
+    parts.push(
+      `MEASURED ${probe.fetched_at}: a subtractive files[] PUT — naming only the embedded attachment, on a ` +
+        `throwaway built in the live shape — came back ${detach.verdict}, ` +
+        (detach.detach_works === true
+          ? "so the superseded attachment can be removed over the API and no owner action is needed"
+          : detach.detach_works === false
+            ? "so no API route here can remove the superseded attachment and the owner deletion is measured irreducible, not assumed"
+            : "so the arm reached no verdict on whether detach is possible") +
+        ` (${detach.why})`,
+    );
+  }
   const next = probe.next_term_to_test;
   if (next?.term) parts.push(`the next term to test is ${next.term}: ${next.claim}`);
   const shape = probe.live_listing_shape;

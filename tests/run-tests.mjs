@@ -7347,6 +7347,63 @@ function assert(condition, message) {
   assert(!/IS the term/.test(armedNotReached), "an arm that never ran was reported as having settled the term");
 }
 
+// --- can files[] SUBTRACT under a content page? -------------------------------
+//
+// 2026-08-11. The live defect stopped being "the fix has not been delivered" and
+// became "a superseded attachment is still attached beside the delivered one", so
+// the operation that closes rung 1 is a PUT naming only the survivor. Every earlier
+// measurement was of an ADDITIVE put, and an API that ignores a name it does not
+// know can still honour a set it does — so `no_op` on the rich arm does not predict
+// this one, and the classifier must not let it.
+//
+// The verdict that matters is `dropped_all`: it is the one that would leave a
+// purchasable product with no download, so it must never be reachable from the
+// same shape that says `detached`.
+{
+  const { classifyDetach } = await import("../scripts/probe-gumroad-two-file-replace.mjs");
+  const KEEP = "probe-detach-keep.txt";
+  const DROP = "probe-detach-drop.txt";
+
+  const detached = classifyDetach({ pagesAfterWrite: 1, servedAfter: [KEEP] });
+  assert(detached.verdict === "detached", "a PUT that removed the unnamed attachment was not read as a detach");
+  assert(detached.detach_works === true, "a detach was measured and the arm still would not say so");
+
+  const noOp = classifyDetach({ pagesAfterWrite: 1, servedAfter: [KEEP, DROP] });
+  assert(noOp.verdict === "no_op", "both attachments still serving was not read as a no-op");
+  assert(noOp.detach_works === false, "a no-op left detach_works open, which reads as 'maybe' to the next lap");
+
+  const wiped = classifyDetach({ pagesAfterWrite: 1, servedAfter: [] });
+  assert(wiped.verdict === "dropped_all", "losing every attachment was not distinguished from a clean detach");
+  assert(wiped.detach_works === false, "a PUT that wiped the product was reported as a working detach");
+
+  const inverted = classifyDetach({ pagesAfterWrite: 1, servedAfter: [DROP] });
+  assert(inverted.verdict === "unrecognised", "the arm invented a verdict for a shape nothing predicts");
+  assert(inverted.detach_works === null, "the arm claimed to know whether detach works from an unrecognised shape");
+
+  // The page never landing is not evidence that detach fails. This is the same
+  // distinction the rich arm draws, and it is the one a lap in a hurry collapses.
+  const noPage = classifyDetach({ pagesAfterWrite: 0, servedAfter: [] });
+  assert(noPage.verdict === "not_reached", "an arm that never reached the live shape reported a verdict about it");
+  assert(noPage.detach_works === null, "an unrun arm asserted that detach does not work");
+
+  // And the register a lap actually reads has to carry it. A measurement that stays in
+  // the probe's own output file is the failure this project is named after.
+  const { differenceClause: clause } = await import("../scripts/promise-conformance.mjs");
+  const base = {
+    fetched_at: "2026-08-11T07:00:00Z",
+    verdict: "replaced",
+    count_is_the_term: false,
+    rich_content_arm: { verdict: "no_op", rich_content_is_the_term: true, why: "reproduced" },
+    live_listing_shape: null,
+  };
+  const said = clause({ ...base, detach_arm: { verdict: "no_op", detach_works: false, why: "both still serve" } });
+  assert(/irreducible/.test(said), "a measured refusal to detach did not reach the register");
+  const canDetach = clause({ ...base, detach_arm: { verdict: "detached", detach_works: true, why: "gone" } });
+  assert(/no owner action is needed/.test(canDetach), "a working detach did not reach the register");
+  const unrun = clause({ ...base, detach_arm: { verdict: "not_reached", detach_works: null, why: "stopped" } });
+  assert(!/irreducible/.test(unrun), "an arm that never ran was reported as having settled the owner request");
+}
+
 // --- the union manifest could not name which attachment a digest came from ----
 //
 // 2026-08-11. The live listing carries TWO archives that unzip to the same paths:

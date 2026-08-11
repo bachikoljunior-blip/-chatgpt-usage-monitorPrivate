@@ -128,6 +128,23 @@
             "why_this_one": "It is the only change that could have been made without first spending an outward-facing write on the live listing, and it removes the need for that write entirely."
           },
           "next_change": "Measure whether PUT /v2/products/:id can DETACH one of two attachments. It is a different operation from the replace that state/gumroad-two-file-replace.json refuted, and it has never been tried. If it lands, owner request 2026-08-10.gumroad-replace-the-kit-file is withdrawn instead of performed."
+        },
+        {
+          "round": 6,
+          "rung": "promise_conformance",
+          "ran_at": "2026-08-11T07:00:00Z",
+          "verified_at": "2026-08-11T07:04:00Z",
+          "evidence": "state/gumroad-two-file-replace.json detach_arm, written by a live walk this round (two throwaways created, both deleted and confirmed absent from the product collection). Not replayed: attempts[] carries the two PUTs and their read-backs.",
+          "instrument": "scripts/probe-gumroad-two-file-replace.mjs, extended with a third arm and an exported classifyDetach(). The arm builds a SEPARATE throwaway in the live listing's order — two attachments first, then a rich_content page embedding one of them — and sends the subtractive PUT, files[] naming ONLY the attachment that should survive. Sent twice with two different identifiers for the same file (the presigned upload url, then the url the product itself reports), because a no_op under one name cannot be told from a name the API did not recognise.",
+          "changed": "ONE thing, and it is a measurement, not an edit: whether the remedy round 5 named can be carried out from here. Nothing was written to the live listing and nothing in product/brandable-idle-clicker was touched.",
+          "why_only_this_one": "Round 5 inverted the remedy from adding a file to removing one, and left the pending owner request open on the grounds that detach had never been tried. RUNBOOK 6 gate 5 forbids handing the owner work not shown to be irreducible AND forbids assuming it is. This is the measurement that settles which.",
+          "moved": "THE TALLY DID NOT MOVE — conforms 12 · blocked 1 · partial 1 · fails 2, identical to rounds 3, 4 and 5, and it could not have: this round changed nothing a buyer holds. WHAT MOVED is the status of the remedy. Measured: files[] under a rich_content page is inert in BOTH directions. It cannot install (round 5's rich arm, verdict no_op) and it cannot remove (this round, verdict no_op with 2 files before and 2 after, under both identifiers, HTTP 200 each time). So the deletion cannot be done from this repository, and owner request 2026-08-10.gumroad-replace-the-kit-file is measured irreducible rather than assumed irreducible. NOT MOVED and worth saying plainly: this arm reads the SELLER's surface. It proves the superseded archive cannot be detached from here; it does not prove a buyer is served it.",
+          "approach_changed": {
+            "approach_changed": false,
+            "what_changed": "Same approach as round 5 — test the claim the remedy rests on before acting on it — applied to the remedy itself rather than to the record behind it. Rounds 5 and 6 are one move in two halves: 5 found the real defect, 6 found out who can fix it.",
+            "why_this_one": "The alternative was to file or withdraw the owner request on a guess. Both cost the same lap and only one of them can be wrong in the direction that manufactures owner work."
+          },
+          "next_change": "The rung cannot close from this side. Two candidates and they are not the same size: (a) the owner's one-minute deletion, already prepared and now measured as the only route, which closes rung 1 and lets the ladder reach stranger_reaction; (b) meanwhile, the unmeasured question this arm names in what_it_does_not_settle — whether a buyer's download list is the embeds or files[] — which, if it is the embeds, would mean the two failing promises are about the seller's surface and not about anything a buyer holds. (b) needs a purchase to observe and no lap has costed that."
         }
       ],
       "what_this_costs_right_now": "Changed 2026-08-10: it can now be inspected, tested, corrected, rebuilt and re-delivered. What it still costs is that no rung has been COMPLETED, so a zero result on this offer remains unattributable — but that is now a round nobody has run, not a round nobody can run.",

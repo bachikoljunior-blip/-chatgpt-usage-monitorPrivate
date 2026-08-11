@@ -327,7 +327,7 @@
         "still_pending_until": "実際に差し替えて success_test_machine が真になるまで status は pending のままにします。「できると分かった」は「配った」ではありません。",
         "do_not_delete_this_request": "取り下げた依頼を消すと、なぜオーナーに頼まずに済むようになったのかが残りません。誤った実測と、その訂正が並んでいることに意味があります。"
       },
-      "what_this_lap_could_not_do_and_why": "Left the request open rather than withdrawn. The remedy is now correctly named and strictly smaller than before, but the detach-over-API question is untested and RUNBOOK 6 gate 5 forbids handing the owner work that has not been shown to be irreducible.",
+      "what_this_lap_could_not_do_and_why": "SETTLED 2026-08-11. The 03:05Z revision left this request open because the detach-over-API question was untested; the 07Z lap tested it and the answer is no. Nothing here was withdrawn and nothing grew: the ask is still the same single deletion, and it is now the measured remedy rather than the assumed one. The honest residue is that this arm read the SELLER's surface — it proves the superseded attachment cannot be removed from here, not that a buyer was ever served it.",
       "success_test": "state/product-source.json のマニフェストで LICENSE.txt か brand.config.json の sha256 が新しい値になる。これは毎時ひとりでに更新されます。",
       "success_test_machine": {
         "note": "2026-08-10 訂正。この検査には当初3本目として file_size_bytes = 32471 がありました。趣旨は「決定的な方（product-source）は手動起動でしか更新されないので、毎時集まる安い方も併せて見る」で、趣旨自体は正しい —— 決定的な方だけを見る検査は誰も起動しないまま期限を迎え、「オーナーが動かなかった」と記録されます（2026-08-09.gumroad-cover-upload で実際にそうなりかけた）。壊れていたのは実装です。Gumroad は file_info.Size を「31.7 KB」という人間向けの文字列で返すので、sizeInBytes は正しく null を返し、バイト数と比べる節は永久に真になりません。つまり安全弁のつもりで足した節が、そもそも真になれない節でした。しかも「まだ真でない」と「真になれない」はログ上で見分けがつきません。",
@@ -351,13 +351,13 @@
       "judge_by": "2026-08-17",
       "minimised": {
         "owner_actions": 1,
-        "could_it_be_zero": "いいえ。API の3方向すべてと、管理画面の非公開経路まで実測で塞がっています。",
+        "could_it_be_zero": "いいえ。API の3方向すべてと、管理画面の非公開経路が実測で塞がっており、2026-08-11 に最後に残っていた「削除だけならできるのでは」も実測で塞がりました。使い捨ての商品を本番と同じ形（添付2つ＋片方だけを表示するページ）に組み立てて、残すほうだけを指定して送ったところ、2つとも残りました。",
         "could_it_be_split": "分けるべきではありません。修正2件を1回のアップロードに載せてあります。分ければ手間が2倍になります。",
         "what_was_prepared_here": "ZIP そのもの（scripts/build-product-archive.mjs が生成し、いま販売中の添付との差分3件を印字して確認済み）、ダウンロードURL、商品URL、操作手順。あなたが決めることは1つもありません。",
         "typing": 0,
         "judgements": 0
       },
-      "automation_attempted": "INCOMPLETE FOR THIS NARROWED ASK. The earlier finding (PUT files[] cannot REPLACE an attachment on this product) is measured and stands — state/gumroad-two-file-replace.json. Whether the same endpoint can DETACH one of two attachments has never been tried, and it is a different operation. A lap must measure that before this request is treated as unautomatable; if it lands, withdraw this request instead of asking.",
+      "automation_attempted": "COMPLETE FOR THIS NARROWED ASK, MEASURED 2026-08-11T07Z. The detach question the previous revision left open has been walked: scripts/probe-gumroad-two-file-replace.mjs now builds a THIRD throwaway in the live listing's exact shape — two attachments first, then a rich_content page embedding one of them — and sends the subtractive PUT, files[] naming only the attachment that should survive. Verdict no_op: both attachments still serve (state/gumroad-two-file-replace.json, detach_arm). So files[] under a content page neither installs nor removes, and there is no API route this repository can reach that detaches the superseded archive. The request is therefore measured irreducible rather than assumed irreducible, which is what RUNBOOK 6 gate 5 asks for. What would overturn it: a Gumroad API surface nobody here has named — not another attempt at this one.",
       "automation_cost_exceeds_manual_cost": true,
       "paste_ready": true,
       "cannot_decompose_further": true,
