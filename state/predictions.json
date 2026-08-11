@@ -2428,7 +2428,7 @@
     {
       "id": "2026-08-11.b-the-answers-change-the-next-pick",
       "registered_at": "2026-08-11T19:25:00Z",
-      "registered_by": "eta-loop worker session_01Ng6Qzhr7RaQ21hKtn78Nrx",
+      "registered_by": "eta-loop worker session_01E1JHTNmv8ABb1ruj2jEGu6",
       "claim": "Folding a lane answer into the files the ranking reads is what makes it act. Concretely: the three answers that landed today changed two live premises — branch A of product_form_vs_addressed_buyer now has genre-scoped outside support, and the route_4 candidate's 'zero one-time developer downloads' is contradicted at that scope. If that folding does its job, no lap between now and 2026-08-18 elects a change of the product's offer FORM (one-time to recurring) citing 2026-08-10.a, and at least one lap cites the marketplace qualifier when ranking a venue candidate.",
       "mechanism": "A lap picks one 'here' candidate from state/eta.json, whose text is assembled from state/constraints.json and state/zerobase.json. An answer sitting in codex/outbox/ is read by nothing and therefore changes no pick — that is the same wiring failure this repository is named after. Writing the contradiction into the option itself puts it in front of the picker rather than behind a filename nobody opens.",
       "metric": "Read state/lap-claims.json for entries after 2026-08-11T19:25Z. Count (a) claims whose candidate is recurring_offer_on_the_rail_we_can_list_ourselves or whose mechanism argues for switching to a recurring form, and (b) claims whose mechanism mentions the marketplace/search/public-rating qualifier or the non-Unity marketplace answer.",
