@@ -2,8 +2,8 @@
   "schema_version": 1,
   "status": "ok",
   "source": "codex-app-server",
-  "fetched_at": "2026-08-11T16:06:03.735Z",
-  "fresh_until": "2026-08-11T18:06:03.735Z",
+  "fetched_at": "2026-08-11T19:02:28.998Z",
+  "fresh_until": "2026-08-11T21:02:28.998Z",
   "plan_type": "pro",
   "quota_windows": [
     {
@@ -13,8 +13,8 @@
       "used_percent": 0,
       "remaining_percent": 100,
       "window_duration_minutes": 10080,
-      "resets_at": 1787069164,
-      "resets_at_iso": "2026-08-18T16:06:04.000Z",
+      "resets_at": 1787079750,
+      "resets_at_iso": "2026-08-18T19:02:30.000Z",
       "reached_type": null
     },
     {
@@ -36,13 +36,13 @@
     "used_percent": 0,
     "remaining_percent": 100,
     "window_duration_minutes": 10080,
-    "resets_at": 1787069164,
-    "resets_at_iso": "2026-08-18T16:06:04.000Z",
+    "resets_at": 1787079750,
+    "resets_at_iso": "2026-08-18T19:02:30.000Z",
     "reached_type": null
   },
   "available_reset_credits": 0,
   "token_usage_summary": {
-    "lifetime_tokens": 3594357190,
+    "lifetime_tokens": 3634536587,
     "peak_daily_tokens": 833349372,
     "longest_running_turn_seconds": 16405,
     "current_streak_days": 6,
@@ -107,7 +107,7 @@
     },
     {
       "start_date": "2026-08-11",
-      "tokens": 398252660
+      "tokens": 438432057
     }
   ],
   "recommended_mode": "normal"
