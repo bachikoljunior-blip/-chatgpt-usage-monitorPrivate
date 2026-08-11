@@ -2,8 +2,8 @@
   "schema_version": 1,
   "status": "ok",
   "source": "codex-app-server",
-  "fetched_at": "2026-08-11T04:24:41.047Z",
-  "fresh_until": "2026-08-11T06:24:41.047Z",
+  "fetched_at": "2026-08-11T05:56:16.382Z",
+  "fresh_until": "2026-08-11T07:56:16.382Z",
   "plan_type": "pro",
   "quota_windows": [
     {
@@ -13,19 +13,19 @@
       "used_percent": 0,
       "remaining_percent": 100,
       "window_duration_minutes": 10080,
-      "resets_at": 1787027082,
-      "resets_at_iso": "2026-08-18T04:24:42.000Z",
+      "resets_at": 1787032579,
+      "resets_at_iso": "2026-08-18T05:56:19.000Z",
       "reached_type": null
     },
     {
       "limit_id": "codex",
       "limit_name": null,
       "slot": "primary",
-      "used_percent": 11,
-      "remaining_percent": 89,
+      "used_percent": 17,
+      "remaining_percent": 83,
       "window_duration_minutes": 10080,
-      "resets_at": 1787011158,
-      "resets_at_iso": "2026-08-17T23:59:18.000Z",
+      "resets_at": 1787011160,
+      "resets_at_iso": "2026-08-17T23:59:20.000Z",
       "reached_type": null
     }
   ],
@@ -36,8 +36,8 @@
     "used_percent": 0,
     "remaining_percent": 100,
     "window_duration_minutes": 10080,
-    "resets_at": 1787027082,
-    "resets_at_iso": "2026-08-18T04:24:42.000Z",
+    "resets_at": 1787032579,
+    "resets_at_iso": "2026-08-18T05:56:19.000Z",
     "reached_type": null
   },
   "available_reset_credits": 0,
