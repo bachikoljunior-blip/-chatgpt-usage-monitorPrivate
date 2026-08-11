@@ -32,7 +32,22 @@
         "The seeded baseline row was transcribed by hand from state/itch.json rather than produced by a collector run, because ITCH_API_KEY is not available to a lap. If reading 2 never appears, that hand-seeded row is indistinguishable from a working series of length 1 — which is exactly why (a) demands strictly more than one."
       ],
       "falsified_if": "state/itch-history.json still holds exactly the seeded reading at the judge date — then the append-and-commit path is broken and the channel still cannot represent revenue, whatever the code says. OR channels[itch].idle_eta_days is a number while the series is flat — then a level was read as a trajectory and the goal will misreport, which is worse than ∞. What this does NOT claim: that anything sells. It claims only that if something sells there, the number can move.",
-      "outcome": null,
+      "outcome": {
+        "judged_at": "2026-08-11T01:05:00Z",
+        "judged_by": "eta-loop",
+        "measured": {
+          "source": "origin/main at 399abdf: state/itch-history.json, state/eta.json channels[itch].",
+          "itch_history_readings": 4,
+          "itch_history_series": "2026-08-10T00:04:11Z / 06:56:36Z / 14:05:24Z / 20:25:11Z — sales 0 throughout, views 0 then 2,2,2.",
+          "itch_revenue_rate_derivable": true,
+          "itch_revenue_readings_on_channel": 4,
+          "itch_idle_eta_days": null,
+          "baseline_for_comparison": "1 seeded reading, revenue_rate_derivable false, no revenue_readings on the channel."
+        },
+        "verdict": "(a) HIT — 4 readings, strictly more than the 1 seeded row, and the appends are committed by itch-monitor[bot] (20:25:12Z commit touching state/lap-cost-derived.json in the same run). (b) HIT — the channel carries revenue_rate_derivable and revenue_readings instead of the constants. (c) HIT — idle_eta_days is null with a flat series, not 0.",
+        "what_is_separable": "All three halves are read from committed state and each was a distinct failure mode. (a) is the one the claim called the half that historically breaks, and it did not break: the append survives the workflow's git reset --hard because the collector stages it. (c) is the null-vs-zero distinction, and it holds: sales are 0 across all four rows and the ETA reports null rather than a number.",
+        "what_is_NOT_separable": "Nothing here says anything sells. The claim was explicit about this and it must stay explicit: views moved 0 -> 2 and stopped, sales are 0, and the channel's ETA is null because there is no trajectory to extrapolate. What was repaired is the channel's ability to represent revenue, not the revenue."
+      },
       "judging_note": {
         "added_at": "2026-08-10T01:07:00Z",
         "added_by": "a later lap, without touching claim, metric, baseline or dates",
@@ -228,7 +243,33 @@
       },
       "judge_on": "2026-08-11",
       "concurrent_changes": [],
-      "outcome": null
+      "outcome": {
+        "judged_at": "2026-08-11T01:05:00Z",
+        "judged_by": "eta-loop",
+        "measured": {
+          "source": "state/lap-claims.json on origin/main at 399abdf, all 83 claims recorded from 2026-08-09T12:27:16Z to 2026-08-10T23:56:38Z.",
+          "baseline_streak": 16,
+          "efficiency_or_machinery_claims_since": 9,
+          "of_83_claims": "11%",
+          "which_ones": [
+            "codex_lane_capability_range_unmapped",
+            "playwright_cannot_reach_external",
+            "codex_lane_latency",
+            "codex_lane_queue",
+            "chain_liveness_test_cannot_see_an_unrecorded_successor",
+            "the_loop_stops_thinking_when_the_claude_pool_empties",
+            "lane_allocation_is_the_binding_term",
+            "the_unattributed_path_consumes_the_task",
+            "an_independent_judge_is_the_binding_term"
+          ],
+          "longest_consecutive_run_of_them": 1,
+          "what_laps_chose_instead": "no_standing_where_buyers_gather 9, honest_post_where_buyers_gather 9, free_artifact_door 6, itch 4, point_the_reach_we_own_at_the_thing_we_sell 4 — distribution and product candidates.",
+          "channels_idle_eta_days": "all null, unchanged."
+        },
+        "verdict": "HIT. The 16-lap streak did not reach 17. Efficiency and machinery candidates fell to 9 of 83 laps and never ran two in a row.",
+        "what_is_separable": "The count is mechanical: candidate ids in a committed ledger, over a window that starts at the registration. The demotion rule is in the ranking and the ranking is what laps read, so the change in what gets picked is the thing the rule was for.",
+        "what_is_NOT_separable": "Whether the demotion caused it. The same window contains the route election machinery, the standing constraint, and the distribution class — three other things that all push the same direction, and two of them are predictions judged on this same date against an overlapping metric. Also, and this is the part worth carrying: the rule was justified by 'infinity at double speed is still infinity', and all channels are still at null. Choosing better candidates has not yet produced a finite ETA, so the demotion is vindicated as a ranking rule and is not yet vindicated as a route to revenue."
+      }
     },
     {
       "id": "2026-08-09.distribution-class-added",
@@ -248,7 +289,22 @@
       "concurrent_changes": [
         "codex INBOX task 2026-08-09.h aims the outside survey at the new candidate, so a refutation may arrive before the judge date and settle it the other way"
       ],
-      "outcome": null,
+      "outcome": {
+        "judged_at": "2026-08-11T01:05:00Z",
+        "judged_by": "eta-loop",
+        "measured": {
+          "source": "state/lap-claims.json and state/eta.json on origin/main at 399abdf.",
+          "first_lap_after_registration": "2026-08-09T13:13:29Z chose no_standing_where_buyers_gather — a distribution-class candidate, not a fifth build candidate.",
+          "findable_surface_at_scale_claims": 3,
+          "high_intent_tool_site_claims": 0,
+          "high_intent_tool_site_now": "still a candidate, listed under route_election.on_abandoned_route.",
+          "build_class_claims_since": "npm_pypi_cli_pro 0, wordpress_plugin_pro 0, vscode_extension_pro 0, maintained_data_or_api 0.",
+          "distribution_class_claims_since": "no_standing 9, honest_post 9, free_artifact_door 6, findable_surface_at_scale 3, point_the_reach 4."
+        },
+        "verdict": "HIT on the class, MISS on one of the two named candidates. No lap has taken a build candidate since the reranking; the top build candidate that prompted this entry (npm_pypi_cli_pro, 30d estimate) has zero claims. findable_surface_at_scale was taken three times. high_intent_tool_site has never been taken and is now on an abandoned route.",
+        "what_is_separable": "The build-candidate count is zero over 83 laps, which is the falsification clause read directly and it did not fire. That half needs no attribution argument.",
+        "what_is_NOT_separable": "Which of the three same-day entries moved it. This one, 2026-08-09.standing-recorded-as-the-real-constraint and 2026-08-09.owner-request-gets-a-home were registered together, judge together, and all read the same metric — what laps pick. Their own concurrent_changes say so. The reranking is credited with the direction and none of the three can be credited with the magnitude. The concurrent_changes also anticipated a refutation arriving from the lane before the judge date; none arrived for this candidate."
+      },
       "note": "The candidate deliberately carries no days-to-first-yen. Judging this on a day count would reproduce the exact error the change corrects, so it is judged on what gets executed."
     },
     {
@@ -348,7 +404,22 @@
         "2026-08-09.eta-becomes-observable landed in the same minute from another worker, adding state/eta-history.json. Two workers were still writing concurrently despite the 10:59 change that was meant to leave only one."
       ],
       "falsified_if": "laps keep selecting build candidates or machinery without addressing standing or breadth, or the entry is dropped/rewritten by a later recompute so the picker stops seeing it. Also falsified if it surfaces but sits unread the way the zerobase repricing did — presence in the file is not the claim, being acted on or refused on the record is.",
-      "outcome": null
+      "outcome": {
+        "judged_at": "2026-08-11T01:05:00Z",
+        "judged_by": "eta-loop",
+        "measured": {
+          "source": "state/lap-claims.json, state/eta.json, state/zerobase.json on origin/main at 399abdf.",
+          "no_standing_where_buyers_gather_claims": 9,
+          "first_at": "2026-08-09T13:13:29Z, 40 minutes after registration.",
+          "of_those_route_changes": 2,
+          "entry_survived_recomputes": "yes — the constraint is still read by the ranking; the route it names is now route_election.elected = route_1_post_where_buyers_gather with honest_post_where_buyers_gather aligned to it.",
+          "honest_post_where_buyers_gather_claims": 9,
+          "what_it_became": "the elected route. state/zerobase.json elected_distribution_route.elected_at 2026-08-10T19:05:00Z."
+        },
+        "verdict": "HIT. Standing was picked up 40 minutes after it was recorded, taken 9 times including twice as a route change, and it is the ancestor of the currently elected route. It did not sit unread the way the zerobase repricing did — which the claim named as the failure to avoid.",
+        "what_is_separable": "Being acted on rather than merely present is the claim, and the ledger of claims is exactly that record. Nine claims against the id, from multiple sessions, is not a single lap's account of itself.",
+        "what_is_NOT_separable": "Two things. First, the 10:59 trigger change that made the parent a spawner is in this window and changes who runs laps — the entry's own concurrent_changes names it. Second, and larger: standing was recorded as the real constraint and acted on for 9 laps, and standing is still unmeasured in the sense that matters. No post has been made anywhere. The constraint moved the ranking; it has not yet moved the world."
+      }
     },
     {
       "id": "2026-08-09.buyer-question-aimed-at-the-priced-artifact",
@@ -370,7 +441,20 @@
         "2026-08-09.standing-recorded-as-the-real-constraint and 2026-08-09.distribution-class-added judge on the same date and overlap on what laps pick."
       ],
       "falsified_if": "the answer comes back with venue names but no quoted rules or posting preconditions, which is the failure the task text names explicitly and would mean the instruction did not bind. Also falsified if the lane does not run at all by the judge date, or if the answer never mentions the priced product and answers about the free game instead — that would mean attaching the files did not redirect the question.",
-      "outcome": null
+      "outcome": {
+        "judged_at": "2026-08-11T01:05:00Z",
+        "judged_by": "eta-loop",
+        "measured": {
+          "source": "codex/outbox/2026-08-09.k.md on origin/main at 399abdf, 10785 bytes, five sections ending in ## 判定.",
+          "a_venue_named_with_quoted_rule_and_precondition": "YES. itch.io Release announcements, rule quoted verbatim in English ('The Release announcements board is our designated place for creators to announce and show off their own work.') with a link to the quality guidelines, plus the countervailing rule from the community rules, plus the stated precondition that a first paid product enters moderator review and indexing takes several business days while the page itself is purchasable immediately.",
+          "b_buyer_class_returned_ari_with_sources": "YES. 判定 line 1 reads あり, and section 1 carries source links.",
+          "c_named_places_or_a_shape": "Named places. Section 2 names itch.io Game Assets/Clicker and itch.io Release announcements with per-venue account-age, karma, participation and approval conditions each answered individually.",
+          "surveys_before_this_one": "7 completed, 7 returning refuted, 0 that had ever named a venue with a quoted rule."
+        },
+        "verdict": "HIT on all three readings. This is the first outward survey in eight that came back with a venue, its rule quoted rather than asserted, and its posting precondition stated. The falsification clause named the opposite outcome — names without rules — and it did not fire. It also did not answer about the free game instead of the priced product: 判定 line 1 is about buyers of source code around $25.",
+        "what_is_separable": "The instruction bound. The task text demanded quoted rules and preconditions and got them, in a lane whose previous seven answers were prose refutations.",
+        "what_is_NOT_separable": "The wording from the attachments. The same commit added state/portfolio.json and state/gumroad.json to the lane's attachment set, and the entry's own concurrent_changes says the question is unanswerable without them. A better answer cannot be attributed to the wording alone. Separately: 判定 line 4 says no material to drop the route emerged, and explicitly adds that same-day multi-venue posting has failed for others too, so this is not evidence the route works — only that it is not yet refuted."
+      }
     },
     {
       "id": "2026-08-09.owner-request-gets-a-home",
@@ -393,7 +477,25 @@
         "2026-08-09.buyer-question-aimed-at-the-priced-artifact judges on the same date and reads the same .k answer."
       ],
       "falsified_if": "a later lap prepares an itch request again, or defers itch on the ground that nothing is prepared, or the owner_request annotation is dropped by a bot recompute so the picker stops seeing it. Presence in the file is not the claim — being seen by the side that picks work is.",
-      "outcome": null
+      "outcome": {
+        "judged_at": "2026-08-11T01:05:00Z",
+        "judged_by": "eta-loop",
+        "measured": {
+          "source": "state/eta.json, state/owner-requests.json, state/lap-claims.json, scripts/compute-eta.mjs on origin/main at 399abdf.",
+          "owner_requests_pending_top_level": 1,
+          "pending_request": "2026-08-10.gumroad-replace-the-kit-file, candidate_id idle_clicker_kit.deliver_both_rung_one_fixes, judge_by 2026-08-17.",
+          "candidates_carrying_owner_request_annotation": 0,
+          "why_zero": "the annotation is attached at scripts/compute-eta.mjs:574 and printed at :1102, and the mechanism is intact — but the candidate the pending request names, idle_clicker_kit.deliver_both_rung_one_fixes, is not in the 21 candidates eta.json currently emits. The request has nothing to attach to.",
+          "requests_ever_recorded": 5,
+          "of_those_done": 4,
+          "laps_that_re_prepared_an_itch_request_or_deferred_itch_for_want_of_preparation": 0,
+          "baseline": "0 owner requests ever recorded in a file, RUNBOOK 6 gate 4 unsatisfiable, at least 2 laps had deferred itch for want of preparation."
+        },
+        "verdict": "MIXED, and the miss is live. HIT on the behavioural half: five requests have been recorded where there had been none, four are done, and no lap since has re-prepared an itch request or deferred itch for want of preparation. MISS on the metric as written: candidates[].owner_request is present on zero candidates. Not because a bot recompute stripped it — the code path is intact — but because the one pending request points at a candidate id the ranking no longer emits. The falsification clause said 'presence in the file is not the claim, being seen by the side that picks work is', and by that standard the currently pending request is not being seen.",
+        "what_is_separable": "The orphaning is mechanical and reproducible: owner_requests_pending carries the request at the top level, compute-eta only prints OWNER REQUEST PENDING beside a candidate, and no candidate matches. A lap reading the ranking to choose work sees no sign that an owner action is outstanding. This is the same shape as the defect the entry was written to fix, one level along: the record exists, the picker does not read it.",
+        "what_is_NOT_separable": "Whether the file mechanism or the corrected buyer class is why the four earlier requests were actionable — the entry's own concurrent_changes says the request text was built from a Gumroad description read for the first time in the same lap. The four completed requests cannot be credited to the mechanism alone.",
+        "follow_up": "A pending request whose candidate has left the ranking should not go silent. Either the top-level owner_requests_pending needs its own line in what the picker reads, or a pending request should hold its candidate in the ranking until it clears. Recorded here rather than fixed, because RUNBOOK 4 allows one change per lap and this lap's change is the backlog itself."
+      }
     },
     {
       "id": "2026-08-09.buyer-class-corrected-outward",
@@ -475,7 +577,23 @@
         "No other lap ran between this record and its judge date unless the chain continues, and the chain is expected to continue, so later laps may also touch compute-eta.mjs."
       ],
       "falsified_if": "state/gumroad-history.json on origin/main still carries exactly one reading at the judge date, which would mean the hourly workflow appends and discards and the rate can never be derived — the same write-it-where-nobody-reads-it failure this repository keeps rediscovering, in its most expensive form yet, because it would look repaired while remaining pinned at ∞. Also falsified if a later lap finds another constant pinning the portfolio ETA, since the portfolio takes the minimum across channels and itch's idle_eta_days is still an unconditional null.",
-      "outcome": null
+      "outcome": {
+        "judged_at": "2026-08-11T01:05:00Z",
+        "judged_by": "eta-loop",
+        "measured": {
+          "source": "state/gumroad-history.json and state/eta.json channels[gumroad] on origin/main at 399abdf.",
+          "gumroad_history_readings": 6,
+          "baseline_readings": 1,
+          "gumroad_revenue_rate_derivable": true,
+          "gumroad_revenue_readings_on_channel": 6,
+          "gumroad_monthly_yen_now": 0,
+          "gumroad_idle_eta_days": null,
+          "lifetime_sales": 0
+        },
+        "verdict": "HIT on both halves. (a) The series carries 6 readings, not the 1 it was seeded with, so gumroad-monitor.yml commits the append rather than discarding it in its git reset — which the claim named as the half that historically breaks. (b) The channel carries revenue_rate_derivable true and a real readings array where it carried a hardcoded zero and an `sales === 0 ? null : null` whose branches were the same value.",
+        "what_is_separable": "The conditional with identical branches is gone and the number now comes from a dated series. That was demonstrated before shipping by writing 500 sales into state/gumroad.json and getting infinity anyway; the same probe now moves.",
+        "what_is_NOT_separable": "The second falsification clause deserves an honest answer rather than a pass. It said this would also be falsified if a later lap found another constant pinning the portfolio ETA, and named itch's unconditional null as the suspect. A later lap found exactly that and fixed it — 2026-08-10.itch-channel-can-represent-its-own-revenue, judged HIT on this same date. So the clause fired and was repaired rather than never firing. Reading it as a clean hit would hide that the author of this entry correctly predicted where the next constant was and it still took another lap to remove it. And the ETA remains null on every channel, because no channel has a non-flat series: the number can move now, and nothing has moved it."
+      }
     },
     {
       "id": "2026-08-09.listing-addresses-the-form-s-buyers",
@@ -701,7 +819,21 @@
         "The prerequisite counter reached 3/3 on this lap. The successor therefore has route_change admitted, and posting a free artifact is a route change. The two are related on purpose but judged separately: this prediction is about the artifact existing, not about it being posted."
       ],
       "falsified_if": "The answer arrives truncated, or arrives as a description of how to write the demo instead of the demo. Either would mean the lane production range stops short of an artifact big enough to matter, and the repair is to split the artifact across tasks rather than to ask again. It is ALSO falsified, differently, if the 判定 claims the file is complete and the file in the outbox is not — that would repeat the .p failure exactly, and would mean self-report is unreliable for size as well as for images.",
-      "outcome": null
+      "outcome": {
+        "judged_at": "2026-08-11T01:05:00Z",
+        "judged_by": "eta-loop",
+        "measured": {
+          "source": "codex/outbox/2026-08-09.q.md on origin/main at 399abdf, 14615 bytes.",
+          "a_hantei_heading_present": true,
+          "b_html_complete": "yes — the fence opens at the ## デモ本体 section and </html> closes at line 233, inside the fence. The answer's own last line states the artifact arrived whole; the file confirms it independently, which is the check the claim demanded because self-report had already failed once on images.",
+          "c_six_conditions_each_answered": "yes — all six numbered 満たした with the mechanism named for each, not prose.",
+          "d_codex_window_after_the_run": "94% remaining at 2026-08-10T01:05:38Z, the next committed usage reading after the run. Above the 80% the claim set.",
+          "lane_measured_unable_to_return_before_this": "a raster image (task .p)."
+        },
+        "verdict": "HIT on all four. The transport carried a complete single-file playable HTML document, which is the thing it had just been measured unable to do for a raster image. Both falsification clauses were checked and neither fired: the answer is not truncated, it is not a description of how to write the demo, and the 判定's completeness claim matches the file rather than contradicting it.",
+        "what_is_separable": "Lane production range: the pool that is not scarce can return an artifact of this size and kind. That is a capability measurement and it is what the entry was for.",
+        "what_is_NOT_separable": "Whether the door gets used. The entry itself split this off and said so: the artifact existing is not the artifact being posted. free_artifact_door has been claimed 6 times since, so the ranking did pick it up — but the demo has not been posted anywhere, and the two stranger readings taken on it since both said 払わない. The artifact exists; nobody outside has been shown it."
+      }
     },
     {
       "id": "2026-08-09.stated-unlock-now-actually-evaluated",
@@ -1096,7 +1228,29 @@
         "Not this change and running anyway: codex/INBOX.md carries task 2026-08-10.a, written by another lap. The task text is untouched here; only which model receives it changes. That is what makes the measurement clean — same prompt, different pool."
       ],
       "falsified_if": "The lane reports the model was refused and fell back, or a named run still moves only the codex window. Either outcome means the slug is wrong, NOT that the rule is wrong — the rule is the owner's statement plus a 100% window, and neither depends on the slug. The repair in that case is to ask the lane itself what model names it accepts, which costs one INBOX task on the pool we are trying to reach. Also falsified, more quietly, if no codex-inbox run happens before the judge date: an unfired lane proves nothing, and reading it as confirmation would be the stale-measurement failure this project has already made twice.",
-      "outcome": null
+      "outcome": {
+        "judged_at": "2026-08-11T01:05:00Z",
+        "judged_by": "eta-loop",
+        "measured": {
+          "source": "state/codex-lane.json runs ledger (14 rows) and state/usage.json on origin/main at 399abdf; plus the dated Spark movement recorded in the baseline of 2026-08-10.an-independent-judge-is-the-binding-term.",
+          "runs_carrying_model_gpt_5_3_codex_spark": 7,
+          "runs_that_asked_for_spark_and_landed_on_default": 4,
+          "which_fell_back": [
+            "2026-08-10.u",
+            "2026-08-10.payload-01",
+            "2026-08-10.incremental-eligibility",
+            "2026-08-11.incremental-kit-precedent"
+          ],
+          "runs_deliberately_on_account_default": 1,
+          "spark_window_movement": "codex_bengalfox went 0% used to 1% across readings 2026-08-10T04:51:54Z and 05:06:57Z, an interval containing exactly one lane run whose transport-recorded model was gpt-5.3-codex-spark, while codex held at 7%.",
+          "usage_json_now": "codex 100% remaining, codex_bengalfox 100% remaining, fetched 2026-08-11T00:06:31Z — both weekly windows have since reset, so the current file cannot re-show the movement.",
+          "latest_answer_model_field": "default"
+        },
+        "verdict": "HIT on the derivation, with a defect the claim's own falsification clause anticipated. (c) HIT — the ledger records model gpt-5.3-codex-spark on 7 of 14 runs, so the CLI accepts the derived slug rather than refusing it. (a)+(b) HIT but no longer re-readable in the current file: the Spark window moved 0% to 1% while the default window held, across an interval containing exactly one named run. Both windows have since reset to 100%, so this verdict rests on the dated reading rather than on today's. (d) MISS — state/answers/latest.json still reads model: default, because the most recent run is one of the four that fell back.",
+        "what_is_separable": "The slug is right. That was the whole hypothesis and it is settled by a window that moved under a named run and held under an unnamed one.",
+        "what_is_NOT_separable": "The clause said a wrong slug would fail silently into the fallback, producing a healthy-looking lane and a Spark window at 100%. The slug is not wrong and the silent fallback happens anyway — 4 of 14 runs, including the most recent (2026-08-11.incremental-kit-precedent, the answer this repository's last lap admitted as its first real measurement in ten). scripts/lane-authorship.mjs reports each one and correctly says no review pairing was broken, but the pool arithmetic is affected: those four spent the scarce default window while the abundant one sat. The failure mode the entry was written to catch is live under a different cause, and no instrument currently reports HOW OFTEN it fires.",
+        "follow_up": "The fallback rate is 29% of ledger runs and nothing surfaces it as a number. scripts/spark-model.mjs --check gates on whether the dispatch passes --model, not on whether the model arrived. Recorded, not fixed."
+      }
     },
     {
       "id": "2026-08-10.refuted-elected-candidate-forces-a-route-decision",
@@ -1126,7 +1280,29 @@
         "Not this change and running anyway: the Spark model routing (2026-08-10.spark-is-reached-by-naming-it) changes which pool answers INBOX tasks. It does not touch the ranking, but a later reader comparing lane behaviour across this date should know both landed within the same hour."
       ],
       "falsified_if": "Three or more laps run past the judge date with elected_route_has_no_unrefuted_candidate still true and no route decision recorded. That would mean the flag is decoration — the same defect one layer up, since this change's whole justification is that a refutation the picker cannot see changes nothing. Also falsified, differently and worse: a lap records a claim against the refuted candidate, meaning the 'elected' label beat the refutation in a real decision. NOT falsified if a lap resolves it by re-aiming the candidate and removing the refuted block — that is a resolution, and the constraints->zerobase test forces it to be deliberate.",
-      "outcome": null
+      "outcome": {
+        "judged_at": "2026-08-11T01:05:00Z",
+        "judged_by": "eta-loop",
+        "measured": {
+          "source": "state/eta.json route_election, state/lap-claims.json, state/zerobase.json on origin/main at 399abdf.",
+          "a_elected_route_has_no_unrefuted_candidate": false,
+          "elected_route_now": "route_1_post_where_buyers_gather, aligned: honest_post_where_buyers_gather.",
+          "elected_route_status": null,
+          "b_claims_against_the_refuted_candidate_after_2026_08_10T01_26Z": 0,
+          "all_four_point_the_reach_claims": [
+            "2026-08-09T23:25:15Z",
+            "2026-08-09T23:34:21Z",
+            "2026-08-10T00:03:51Z",
+            "2026-08-10T01:25:22Z"
+          ],
+          "c_zerobase_elected_at": "2026-08-10T19:05:00Z, moved from the baseline election.",
+          "where_the_refuted_candidate_sits_now": "route_election.on_abandoned_route.",
+          "laps_between_registration_and_judgement": "~40."
+        },
+        "verdict": "HIT on all three readings, and on the clause that mattered most. (a) The flag reads false again because the route was re-elected onto route_1 with an unrefuted candidate attached. (b) is moot but was checked anyway: the last claim against the refuted candidate is at 01:25:22Z, one minute before the baseline was taken, and none after — no lap took the refuted candidate on its 'elected' label. (c) The zerobase election timestamp moved to 19:05Z.",
+        "what_is_separable": "The failure mode named was silence — a contradiction that costs nothing per lap and persists. It did not persist. Roughly forty laps ran, and the contradiction was resolved rather than outlived, by a route election that named which of three options it took and why it did not take the other two.",
+        "what_is_NOT_separable": "Whether the flag is why. The resolution arrived on the lap that also received the outside measurement it had been waiting for (codex/outbox/incremental-kit-precedent.md), so 'the picker saw the contradiction' and 'the missing fact finally arrived' land together. The honest reading is that the flag kept the question open across forty laps until the fact arrived, which is what a flag can do and is less than causing the decision. Also unchanged: all channels still report idle_eta_days null. A route was elected; no route has yet produced anything."
+      }
     },
     {
       "id": "2026-08-10.the-listing-rail-is-priced-at-zero",
@@ -1316,7 +1492,26 @@
         "Earlier this session, different subsystem, no shared reader: the codex INBOX queue."
       ],
       "falsified_if": "state/lap-cost-derived.json fetched_at is still 2026-08-09T09:00Z after several pulse runs, meaning the workflow line does not execute or its output is not staged. Also falsified in the direction that matters more: if the file refreshes but pacing still reports the old bound, the gate is reading something other than what pulse writes.",
-      "outcome": null
+      "outcome": {
+        "judged_at": "2026-08-11T01:05:00Z",
+        "judged_by": "eta-loop",
+        "measured": {
+          "source": "state/lap-cost-derived.json and its commit authors on origin/main at 399abdf, plus this lap's own scripts/pacing.mjs output.",
+          "a_fetched_at": "2026-08-10T22:22:43Z, committed by pulse[bot] in 'chore: refresh ETA and heartbeat state'. The two most recent commits touching the file are both pulse[bot], 21:28:43Z and 22:22:44Z. No lap in between.",
+          "a_age_when_read": "2.49 hours.",
+          "b_pacing_line": "'per-lap cost bound: 0.5882% (derived_upper_bound) · derived 2.49h ago' — under 6h, no STALE marker.",
+          "c_reserved_per_unmeasured_automation": "0.5882%, up from the 0.2857% the gate was stuck on. The gate reads the fresh file.",
+          "d_discretionary_now": 1.8,
+          "d_reserved_for_others_now": 4.2,
+          "d_reserved_uncapped_now": 118.23,
+          "d_baseline": "discretionary 7.80%, reserved_for_others 18.20%, uncapped 131.42%.",
+          "weekly_remaining_now": 6,
+          "max_reserved_fraction": 0.7
+        },
+        "verdict": "HIT on (a), (b) and (c). (d) needs care and does not falsify. The file refreshes on the hourly pulse with no lap touching it, its age is visible where every lap already looks, and the reserved figure moved to the current bound. On (d): discretionary DID move, from 7.80% to 1.80%, which the clause called the signal that the cap stopped binding. It did not stop binding — 4.20% is exactly 0.7 x the 6% weekly remaining, so the cap is binding as designed. Discretionary fell because the pool fell, not because the arithmetic underneath went live.",
+        "what_is_separable": "Staleness is fixed and the fix is machine-visible: a bot author on the refresh commit, an age printed by the gate, and a reserved figure that tracks the file. The second falsification clause — file refreshes but pacing reports the old bound — was checked directly and did not fire.",
+        "what_is_NOT_separable": "Credit for the cost figure behaving. The entry's own concurrent_changes says 2026-08-09.derived-lap-cost had its min_observations corrected in the same commit, both changes are about the same instrument, and the credit is shared. And the instrument still has not produced the thing it exists for: state/laps.json remains at 0 usable readings, the bound is a derived upper bound rather than a measurement, and pacing still reserves for other automations at that upper bound and reports the reservation as 'mostly unmeasured guesses'. A current guess is better than a stale guess and is not a measurement."
+      }
     },
     {
       "id": "2026-08-10.the-registry-was-wrong-in-both-directions",
@@ -1455,7 +1650,25 @@
       ],
       "what_would_make_this_wrong_in_a_way_worth_recording": "The most likely failure is not that the lane cannot build — it is that the TRANSPLANT costs a Claude lap every time. .q was moved into place once and nobody timed it. If moving a returned file into the repository reliably costs scarce-pool work, then the abundant pool is not as abundant as this route assumes and the reallocation buys less than claimed. Nobody has measured that step and this prediction does not pretend to.",
       "judge_on_why": "The lane runs hourly and .g is ahead of .h in the queue, so two lane runs settle metric (a). A day is generous; the deadline at 08-17 is the backstop if the lane stalls.",
-      "outcome": null,
+      "outcome": {
+        "judged_at": "2026-08-11T01:05:00Z",
+        "judged_by": "eta-loop",
+        "measured": {
+          "source": "codex/outbox/2026-08-10.h.md, scripts/lane-allocation.mjs, state/lane-allocation.json on origin/main at 399abdf.",
+          "a_payload_returned": "HIT. 21274 bytes, a single ```html fence from line 8 to line 674 holding a whole file with a closing </html>. Not a diff, not an excerpt.",
+          "b_lane_allocation_exit_code": 1,
+          "b_problem_line": "PROBLEM live task 2026-08-10.payload-01 declares produces: artifact, which is not a kind.",
+          "b_trailing_window": "last 8: 0 payload.",
+          "b_queued_payload": "(none).",
+          "allocation_now": "49 completed tasks — payload 4, surface 2, measurement 7, research 20, review 5, unclassified 11. Payload share 8.2%.",
+          "d_legacy_rows": 22,
+          "baseline": "22 completed tasks, payload share 4.5%, 0 payload in the trailing window of 8, none of these instruments existed."
+        },
+        "verdict": "MIXED. (a) HIT — the lane returned a whole file on demand, which is the central claim and the one the entry said would refute route 5 if it failed. (d) HIT — legacy holds exactly 22 rows, so the baseline share is still a fixed denominator rather than something later laps can append to. (b) MISS on both halves: lane-allocation.mjs exits 1, and the trailing window of 8 is back to 0 payload with nothing queued. (c) was not separately re-run this lap; tests/run-tests.mjs passes as a suite, which does not by itself demonstrate the five mutations still go red.",
+        "what_is_separable": "Payload production is a capacity this account has: n is now 4 rather than 1, and the share moved 4.5% -> 8.2% over 27 more tasks. The claim was narrow on purpose — that the lane CAN produce a payload — and that half is settled.",
+        "what_is_NOT_separable": "The route's larger proposition. Route 5 said the binding term is what the abundant pool is spent on, and the measured behaviour is that the pool drifted back: 20 of 49 tasks are research, 11 are unclassified, and the trailing window has no payload in it at all. The instrument that was supposed to hold the allocation is red for an unrelated schema reason (a live task declaring an invalid produces: value), which means the check that would have flagged the drift is being read as noise. Nothing here says a payload sells: the two stranger readings on the one artifact both said 払わない, exactly as the entry refused to claim otherwise.",
+        "follow_up": "state/lane-allocation.json legacy is correctly frozen at 22, and the live measurement is the part that regressed. The exit-1 has a specific cause worth fixing on its own: produces: artifact on 2026-08-10.payload-01 is not one of the recognised kinds, so a live payload task is being counted as a schema error rather than as payload. Recorded, not fixed."
+      },
       "interim_observations": [
         {
           "at": "2026-08-10T05:20:00Z",
@@ -1498,7 +1711,21 @@
         "the runs ledger and the model_key/model fields were added to state/codex-lane.json in the same commit, so the first ledger rows and the first paired reviews arrive together"
       ],
       "what_would_make_this_wrong_in_a_way_worth_recording": "The likely failure is that MODEL IDENTITY IS THE WRONG PROXY. These two models share a provider, an account, and probably most of their training; \"did not generate this text\" is not the same as \"has no familiarity with it\", and the .i control only established that the lane can report ない for a game written by a stranger on itch — not that it would report ない for a sibling model output in the same house style. If .k comes back ある, that is the finding, and it forces the judge outside the account entirely, which costs either the scarce Claude pool, an owner action, or a venue this project has already measured as unpostable. The second failure mode is subtler and this prediction cannot detect it: a judge that reports ない honestly and still reviews charitably because the artifact reads like its own output.",
-      "outcome": null,
+      "outcome": {
+        "judged_at": "2026-08-11T01:05:00Z",
+        "judged_by": "eta-loop",
+        "measured": {
+          "source": "codex/outbox/2026-08-10.k.md and .l.md, state/codex-lane.json runs, scripts/lane-authorship.mjs on origin/main at 399abdf.",
+          "a_k_mioboe": "ない. 3665 bytes, five sections, the 見覚え section opens with ない and gives its reason — that the implementation cannot be pinned to a known published work from the text alone.",
+          "b_l_mioboe": "ない. 2603 bytes, five sections, opposite pairing.",
+          "c_ledger": "2026-08-10.k model_key spark / model gpt-5.3-codex-spark; 2026-08-10.l model_key account_default / model default. Disjoint, and neither silently fell back.",
+          "c_lane_authorship_check": "exit 0. 25 review pairings checked over 14 ledger runs. It reports .k as reviewed by spark on an artifact authored by account_default, and .l as reviewed by account_default on an artifact authored by spark.",
+          "baseline": "two rung-2 rounds run, ZERO usable — round 1 the reviewer never played, round 2 answered 見覚えある."
+        },
+        "verdict": "HIT on (a), (b) and (c). Two rung-2 rounds ran on opposite pairings, both non-author reviewers reported no recognition, and the ledger shows the models were actually disjoint rather than assumed to be. This is the first pair of usable rung-2 rounds this project has had, and the second is a replication on the reverse pairing rather than a second sample of the same direction. (d) was not separately re-run: the suite passes, which does not itself show the five mutations still go red.",
+        "what_is_separable": "Model identity works as a proxy for authorship at the hour boundary the claim named, and lane-authorship.mjs makes it a lookup rather than an argument. The mechanism's own limit is reported by the check rather than hidden: it flags 2026-08-10.l as reviewing an artifact 98% verbatim from a file whose author is UNESTABLISHED, so that one pairing cannot be fully verified and says so.",
+        "what_is_NOT_separable": "Anything about whether the product sells, which the entry explicitly refused to claim and which the readings bear out — both 払う sections say no. And the route's proposition (who judges is the binding term) is not settled by two usable rounds; what is settled is that usable rounds are now obtainable. Concurrent and named in the entry: 2026-08-10.j was in flight and rebuilds the same demo, so movement in stranger_reaction this week is not attributable to the judge mechanism alone."
+      },
       "interim_observations": [
         {
           "at": "2026-08-10T06:30:00Z",
