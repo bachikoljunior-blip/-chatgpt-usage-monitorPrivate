@@ -1,7 +1,7 @@
 # Claude subscription usage
 
 - Status: **ok**
-- Updated: `2026-08-11T11:06:53.057Z`
+- Updated: `2026-08-11T11:59:38.365Z`
 - Recommended mode: **reserve**
 
 | Limit | Window | Used | Remaining | Reset (UTC) |
