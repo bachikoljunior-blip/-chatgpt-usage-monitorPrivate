@@ -2356,6 +2356,22 @@
       "what_would_refute_it": "A later lap citing this candidate as unrefuted without the narrowing — or the post being made and removed, which would mean the mechanism was present and unpublished and the scoping was wrong at the one venue it claimed.",
       "judge_on": "2026-08-14",
       "outcome": null
+    },
+    {
+      "id": "2026-08-11.rich-content-is-the-delivery-route",
+      "registered_at": "2026-08-11T02:10:00Z",
+      "registered_by": "eta-loop worker session_01MAq7T4t9RSUWxQxvhnKTTQ",
+      "claim": "The two FAILING promises on idle_clicker_kit are undeliverable for one reason and it is now measured: the live listing carries a rich_content page, and a product carrying one ignores product-level files[]. So a PUT of rich_content whose fileEmbed names a NEWLY uploaded archive will move what a buyer downloads, where three files[] PUTs answered 2xx and moved nothing. If that lands, balance_is_pre_tuned and license_tier_is_determinate go from FAILS to conforms with zero owner actions, and owner request 2026-08-10.gumroad-replace-the-kit-file can be withdrawn.",
+      "mechanism": "Measured on ONE throwaway with origin and publication held fixed: files[] REPLACED cleanly with no content page, and NO-OPPED minutes later once a page embedding the attachment existed. That is the live listing failure reproduced with the only varying term being rich_content. See state/gumroad-two-file-replace.json rich_content_arm.",
+      "metric": "state/product-source.json manifest digests for the fetched Gumroad attachment: brand.config.json and LICENSE.txt must match the digests of product/brandable-idle-clicker, i.e. state/promise-conformance.json tally.fails goes 2 -> 0.",
+      "baseline": "2026-08-11T02:02Z: tally conforms 12 / blocked 1 / partial 1 / fails 2. Both fails read FIXED IN SOURCE, NOT YET DELIVERED, with the delivered digest differing from the source digest.",
+      "judge_on": "2026-08-14",
+      "falsified_if": "a rich_content PUT naming a new file id answers 2xx on the LIVE listing and the re-fetched digest still does not move. Then the embed index is not what the buyer reads either, and the only remaining terms are origin (dashboard-created, untestable from here) and publication — which makes the owner upload request the route after all, and it should be re-filed rather than withdrawn.",
+      "also_falsified_if": "the write damages the listing. The rich_content page IS the sales copy. Any lap applying this must read the live page and store it verbatim before writing, and must re-read after. A prediction that ignores that failure mode is a prediction that recommends breaking the only thing being sold.",
+      "concurrent_changes": [
+        "scripts/verify-sanitized-state.mjs gained a probe-walk branch in the same lap. It is unrelated to delivery — it only makes the state file this measurement lives in credential-scannable at all — but it is recorded here because the rule is to record them, not to judge which ones matter."
+      ],
+      "outcome": null
     }
   ]
 }

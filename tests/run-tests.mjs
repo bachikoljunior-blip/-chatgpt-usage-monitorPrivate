@@ -2752,6 +2752,68 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   run(process.execPath, [join(root, "scripts/verify-sanitized-state.mjs"), readable]);
 }
 
+// --- a probe walk is credential-scanned like everything else under state/ ------
+//
+// This is the regression for a defect that was invisible in the worst direction. A
+// state shape with no branch in the sanitizer does not get scanned LENIENTLY — it
+// reaches the usage-state check at the bottom and throws about recommended_mode, so
+// the file is never scanned at all AND the step that runs the sanitizer fails on a
+// clean run. gumroad-monitor.yml runs it on state/gumroad-two-file-replace.json one
+// line after writing it, and that pair had been true since the file first existed.
+// A shape whose rungs are unlabelled must still be refused, or "has a branch" would
+// come to mean "is waved through".
+{
+  const walkFile = join(temporary, "probe-walk.json");
+  await writeFile(
+    walkFile,
+    JSON.stringify({
+      schema_version: 1,
+      fetched_at: "2026-08-11T02:00:00Z",
+      walk: [{ rung: "upload", reached: true }, { rung: "attach", reached: false }],
+    }),
+  );
+  run(process.execPath, [join(root, "scripts/verify-sanitized-state.mjs"), walkFile]);
+
+  const unlabelled = join(temporary, "probe-walk-unlabelled.json");
+  await writeFile(
+    unlabelled,
+    JSON.stringify({
+      schema_version: 1,
+      fetched_at: "2026-08-11T02:00:00Z",
+      walk: [{ reached: true }],
+    }),
+  );
+  assert(
+    run(process.execPath, [join(root, "scripts/verify-sanitized-state.mjs"), unlabelled], {}, {
+      allowFailure: true,
+    }).status !== 0,
+    "the sanitizer accepted a probe walk whose rungs have no names",
+  );
+
+  const unreached = join(temporary, "probe-walk-unreached.json");
+  await writeFile(
+    unreached,
+    JSON.stringify({
+      schema_version: 1,
+      fetched_at: "2026-08-11T02:00:00Z",
+      walk: [{ rung: "upload" }],
+    }),
+  );
+  assert(
+    run(process.execPath, [join(root, "scripts/verify-sanitized-state.mjs"), unreached], {}, {
+      allowFailure: true,
+    }).status !== 0,
+    "the sanitizer accepted a probe walk rung that never says whether it was reached",
+  );
+
+  // And the real file the workflow guards must pass, so this cannot rot into a test
+  // that only ever sees fixtures.
+  run(process.execPath, [
+    join(root, "scripts/verify-sanitized-state.mjs"),
+    join(root, "state/gumroad-two-file-replace.json"),
+  ]);
+}
+
 // --- the free artifact stays the thing the venue permits ----------------------
 //
 // The door r/gamedev leaves open is conditional and the condition is in the same
@@ -7243,4 +7305,44 @@ function assert(condition, message) {
   });
   assert(!/unmeasured/.test(clause), "a measured term was still reported as unmeasured");
   assert(/rich_content/.test(clause), "the clause dropped the term the probe handed to the next lap");
+
+  // The rich_content ARM. Its whole value is that the control is inside one product:
+  // the same PUT, minutes apart, differing only in whether a content page exists. So
+  // a no_op here must name rich_content as the term and a replacement must refute it,
+  // and neither may be reported when the page never landed — that third case is a
+  // statement about the UPDATE verb, and folding it into either verdict would claim a
+  // measurement the probe did not make.
+  const { classifyRichArm } = await import("../scripts/probe-gumroad-two-file-replace.mjs");
+  const D = "probe-twofile-d.txt";
+  const armNoOp = classifyRichArm({ pagesAfterWrite: 1, servedBefore: [C], servedAfter: [C] });
+  assert(armNoOp.verdict === "no_op", "an unchanged file list under a content page was not read as a no-op");
+  assert(armNoOp.rich_content_is_the_term === true, "a reproduced no-op did not name rich_content as the term");
+  const armReplaced = classifyRichArm({ pagesAfterWrite: 1, servedBefore: [C], servedAfter: [D] });
+  assert(armReplaced.rich_content_is_the_term === false, "a clean replacement under a content page still blamed rich_content");
+  const armAppend = classifyRichArm({ pagesAfterWrite: 1, servedBefore: [C], servedAfter: [C, D] });
+  assert(armAppend.verdict === "appended", "an additive PUT under a content page was reported as a replacement");
+  assert(classifyRichArm({ pagesAfterWrite: 1, servedBefore: [C], servedAfter: [] }).verdict === "dropped", "files vanishing under a content page was not flagged");
+  const armNoPage = classifyRichArm({ pagesAfterWrite: 0, servedBefore: [], servedAfter: [] });
+  assert(armNoPage.verdict === "rich_content_did_not_land", "a content page that never landed was folded into a term verdict");
+  assert(armNoPage.rich_content_is_the_term === null, "the arm claimed to know the term without ever varying it");
+
+  // And the register must carry the arm's verdict, not only the question it replaced.
+  const armed = differenceClause({
+    fetched_at: "2026-08-11T02:00:00Z",
+    verdict: "replaced",
+    count_is_the_term: false,
+    rich_content_arm: armNoOp,
+    next_term_to_test: { term: "apply_the_rich_content_write_to_the_live_listing", claim: armNoOp.why },
+    live_listing_shape: twoSurfaces,
+  });
+  assert(/rich_content IS the term/.test(armed), "the register dropped the arm's verdict");
+  const armedNotReached = differenceClause({
+    fetched_at: "2026-08-11T02:00:00Z",
+    verdict: "replaced",
+    count_is_the_term: false,
+    rich_content_arm: { verdict: "not_reached", rich_content_is_the_term: null, why: "stopped early" },
+    next_term_to_test: { term: "rich_content", claim: "untested" },
+    live_listing_shape: twoSurfaces,
+  });
+  assert(!/IS the term/.test(armedNotReached), "an arm that never ran was reported as having settled the term");
 }

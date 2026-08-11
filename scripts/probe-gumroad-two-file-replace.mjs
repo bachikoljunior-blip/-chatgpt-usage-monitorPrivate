@@ -48,6 +48,10 @@ const PROBE_PREFIX = "zzz-probe-twofile-";
 const FIRST = { name: "probe-twofile-a.txt", body: "probe payload A. not a product.\n" };
 const SECOND = { name: "probe-twofile-b.txt", body: "probe payload B. not a product.\n" };
 const THIRD = { name: "probe-twofile-c.txt", body: "probe payload C, the replacement. not a product.\n" };
+// The fourth exists for the rich_content arm only. It is a SECOND replacement, sent
+// after a content page has been written, so the two PUTs differ in exactly one thing:
+// whether the product had a rich_content page when files[] was sent.
+const FOURTH = { name: "probe-twofile-d.txt", body: "probe payload D, the replacement under rich_content. not a product.\n" };
 
 const token = process.env.GUMROAD_TOKEN;
 const redact = (s) => (token ? String(s).split(token).join("[REDACTED]") : String(s));
@@ -154,6 +158,92 @@ export function classifyReplace(served, before) {
 }
 
 /**
+ * Once a product carries a rich_content page, does product-level files[] still bite?
+ *
+ * This is the arm the previous run of this probe named as `next_term_to_test` and did
+ * not walk. The live listing and every throwaway here differ in three things at once
+ * — file count (refuted), origin, publication — and rich_content is a fourth that was
+ * only READ, never varied. Varying it is what turns "the listing has a content page"
+ * from a coincidence into a cause or rules it out.
+ *
+ * The control is inside the same product: rung 4/5 already sent files[] to this exact
+ * product BEFORE any page existed and observed `replaced`. So a `no_op` here cannot be
+ * blamed on origin or on publication — neither changed between the two PUTs.
+ *
+ * Exported for the reason the other two classifiers are: the interpretation is the
+ * finding, and a finding no test can reach is a claim.
+ *
+ * @param pagesAfterWrite how many content pages the product reported after the write
+ * @param servedBefore    file urls/names it served before the second files[] PUT
+ * @param servedAfter     file urls/names it served after it
+ */
+export function classifyRichArm({ pagesAfterWrite, servedBefore, servedAfter }) {
+  if (!(Number(pagesAfterWrite) > 0)) {
+    return {
+      verdict: "rich_content_did_not_land",
+      rich_content_is_the_term: null,
+      why:
+        "the PUT that was supposed to install a content page did not produce one on read-back, so " +
+        "files[] was never sent to a product carrying rich_content and this arm measured nothing. " +
+        "That is a finding about the UPDATE verb, not about the term: it says this code cannot put a " +
+        "content page on an existing product, which is also the route the live fix would have used.",
+    };
+  }
+  const has = (needle) => servedAfter.some((u) => u.includes(needle));
+  const newOne = has(FOURTH.name);
+  const oldOne = has(THIRD.name);
+
+  if (newOne && !oldOne) {
+    return {
+      verdict: "replaced",
+      rich_content_is_the_term: false,
+      why:
+        "files[] still replaced the attachment with a content page present, so rich_content is NOT " +
+        "what makes the live PUT inert. Three of the four candidate terms are now refuted on the same " +
+        "throwaway; what is left is ORIGIN (dashboard vs API) and PUBLICATION.",
+    };
+  }
+  if (!newOne && oldOne && servedAfter.length === servedBefore.length) {
+    return {
+      verdict: "no_op",
+      rich_content_is_the_term: true,
+      why:
+        "the same product answered 2xx and changed nothing once it carried a content page, having " +
+        "replaced cleanly minutes earlier without one. That reproduces the live listing's failure with " +
+        "origin and publication held fixed, so the buyer's download list comes from the embeds and " +
+        "PUT files[] writes to an index nobody serves. The fix to the priced product is a rich_content " +
+        "write and needs no owner upload.",
+    };
+  }
+  if (newOne && oldOne) {
+    return {
+      verdict: "appended",
+      rich_content_is_the_term: true,
+      why:
+        "the PUT added the new file and kept the old one, so a buyer sees both and cannot tell which is " +
+        "the product. rich_content changed the behaviour, which is what this arm was testing, but not " +
+        "into replacement — the embeds and files[] are now two lists that both serve.",
+    };
+  }
+  if (!newOne && !oldOne) {
+    return {
+      verdict: "dropped",
+      rich_content_is_the_term: true,
+      why:
+        "the PUT removed the attachment without installing the one sent. This is the outcome that must " +
+        "never be tried on the live listing first: it can leave a purchasable product with no download.",
+    };
+  }
+  return {
+    verdict: "unrecognised",
+    rich_content_is_the_term: null,
+    why:
+      "the served set matches none of the shapes this arm predicts. The raw names are recorded; do not " +
+      "fold this into a verdict until a lap has read them.",
+  };
+}
+
+/**
  * What shape is the LIVE listing in, at the moment the throwaway was measured?
  *
  * Read-only, and it exists because the throwaway/listing comparison is worthless if
@@ -217,6 +307,10 @@ const run = async () => {
   let live = null;
   let servedBefore = [];
   let servedAfter = [];
+  let richPages = 0;
+  let richArm = null;
+  let richServedBefore = [];
+  let richServedAfter = [];
 
   try {
     // 1 upload_two ----------------------------------------------------------------
@@ -304,6 +398,83 @@ const run = async () => {
       files: redact(JSON.stringify(servedAfter.map(bareName))).slice(0, 600),
     });
     if (classification.verdict !== "replaced") stoppedAt = "readback_after";
+
+    // 6 write_rich_content --------------------------------------------------------
+    // From here the probe stops testing the count and starts testing rich_content, on
+    // the SAME product, so that origin and publication are held fixed. It only runs
+    // when rung 5 said `replaced`: without that control a no_op below would be
+    // indistinguishable from "this throwaway never replaced anything".
+    if (classification.verdict === "replaced") {
+      const attached = (reread.json?.product?.files ?? []).find((f) =>
+        String(f.url ?? "").includes(THIRD.name),
+      );
+      const embedId = attached?.id ? String(attached.id) : null;
+      if (!embedId) {
+        note("write_rich_content", false, {
+          why:
+            "the read-back carried no id for the attachment, so there is nothing for a fileEmbed to " +
+            "name. The arm needs the id and will not invent one.",
+        });
+        stoppedAt = stoppedAt ?? "write_rich_content";
+      } else {
+        // The shape is the one state/gumroad-rich-content.json measured the validator
+        // accepting: an array of pages, each a title plus a ProseMirror `description`.
+        // The node type and the attrs key are the ones liveShape() already reads off
+        // the live listing, so the write and the read agree by construction.
+        const page = {
+          title: "Downloads",
+          description: {
+            type: "doc",
+            content: [{ type: "fileEmbed", attrs: { id: embedId, uid: embedId, collapsed: false } }],
+          },
+        };
+        const wrote = await call(`products/${productId}`, "PUT", { rich_content: [page] });
+        const richRead = await call(`products/${productId}`, "GET");
+        const richShape = richRead.json?.product ? liveShape(richRead.json.product) : null;
+        richPages = richShape?.rich_content_pages ?? 0;
+        note("write_rich_content", richPages > 0, {
+          status: wrote.status,
+          rich_content_pages: richPages,
+          why:
+            richPages > 0
+              ? `a content page embedding the attachment landed on the throwaway (${richShape.file_embed_ids.length} embed(s)), so the next PUT is sent to the same shape the live listing is in`
+              : `PUT answered ${wrote.status} and the read-back carried no content page — the UPDATE verb does not install rich_content here, which is itself the answer to how the live fix would be applied`,
+          body: richPages > 0 ? null : wrote.json ? redact(JSON.stringify(wrote.json)).slice(0, 400) : wrote.text,
+        });
+
+        // 7 put_under_rich --------------------------------------------------------
+        if (richPages > 0) {
+          const richBefore = servedNames(richRead.json?.product);
+          const d = await uploadFile(FOURTH.name, FOURTH.body);
+          if (!d.ok) {
+            note("put_under_rich", false, { why: `could not upload the second replacement: ${d.why}` });
+            stoppedAt = stoppedAt ?? "put_under_rich";
+          } else {
+            const put2 = await call(`products/${productId}`, "PUT", {
+              files: [{ url: d.fileUrl, name: FOURTH.name }],
+            });
+            const after2 = await call(`products/${productId}`, "GET");
+            const richAfter = servedNames(after2.json?.product);
+            richArm = classifyRichArm({
+              pagesAfterWrite: richPages,
+              servedBefore: richBefore,
+              servedAfter: richAfter,
+            });
+            richServedBefore = richBefore.map(bareName);
+            richServedAfter = richAfter.map(bareName);
+            note("put_under_rich", richArm.verdict !== "unrecognised", {
+              status: put2.status,
+              file_count: richAfter.length,
+              verdict: richArm.verdict,
+              why: richArm.why,
+              files: redact(JSON.stringify(richServedAfter)).slice(0, 600),
+            });
+          }
+        } else {
+          richArm = classifyRichArm({ pagesAfterWrite: 0, servedBefore: [], servedAfter: [] });
+        }
+      }
+    }
   } finally {
     // 6 live_shape ----------------------------------------------------------------
     // Read-only, and it runs even when the walk above stopped early: a probe that
@@ -361,7 +532,7 @@ const run = async () => {
       status: "ok",
       fetched_at: new Date().toISOString(),
       question:
-        "The same replace route clears on a throwaway carrying ONE file and no-ops on the live listing carrying TWO. Is the file count the term that separates them?",
+        "The same replace route clears on a throwaway carrying ONE file and no-ops on the live listing carrying TWO. Is the file count the term that separates them, and — on the same product, with origin and publication held fixed — is rich_content?",
       walk: rungs,
       reached: walked,
       stopped_at: stoppedAt,
@@ -373,6 +544,30 @@ const run = async () => {
       served_after: servedAfter.map(bareName),
       verdict: classification?.verdict ?? "not_reached",
       count_is_the_term: classification?.count_is_the_term ?? null,
+      // The second arm, and the one that can move the priced product. Kept as its own
+      // object rather than folded into `verdict`, because the two arms answer different
+      // questions and a single verdict field would make one of them invisible — which
+      // is the failure this probe's own next_term_to_test was written to avoid.
+      rich_content_arm: richArm
+        ? {
+            rich_content_pages_after_write: richPages,
+            served_before: richServedBefore,
+            served_after: richServedAfter,
+            verdict: richArm.verdict,
+            rich_content_is_the_term: richArm.rich_content_is_the_term,
+            why: richArm.why,
+            control:
+              "the SAME product, the SAME PUT shape, minutes apart. The only thing that changed between " +
+              "the first files[] PUT and the second is that a content page exists. Origin and publication " +
+              "are identical across the pair by construction, which is what neither the live listing nor " +
+              "any earlier throwaway could offer.",
+          }
+        : {
+            rich_content_pages_after_write: 0,
+            verdict: "not_reached",
+            rich_content_is_the_term: null,
+            why: `the walk stopped at ${stoppedAt ?? "an earlier rung"} before the rich_content arm could run, so this is not evidence either way`,
+          },
       live_listing_shape: live,
       // Named as a hypothesis, not a verdict. The probe measured the count term and
       // READ the listing; it did not test whether rich_content is what makes files[]
@@ -381,7 +576,29 @@ const run = async () => {
       next_term_to_test:
         live === null
           ? null
-          : live.rich_content_pages > 0
+          : richArm && richArm.rich_content_is_the_term === true
+            ? {
+                // A term that has been measured is no longer the next term. Leaving the
+                // old text here would go on asking for work already done, which is the
+                // exact stale-instruction failure differenceClause() was rewritten for.
+                term: "apply_the_rich_content_write_to_the_live_listing",
+                claim: richArm.why,
+                how_to_test:
+                  "read the live listing's rich_content page, upload the corrected archive, and PUT a page whose fileEmbed names the NEW file id — then re-fetch the delivered digest (state/product-source.json) and see whether it moved. Save the original page verbatim first: it is the sales copy.",
+                what_it_would_change:
+                  "the two FAILING promises in state/promise-conformance.json are both 'fixed in source, not yet delivered'. If the write lands, they are delivered, product-loop --check goes green on this offer, and the pending owner request 2026-08-10.gumroad-replace-the-kit-file can be withdrawn.",
+              }
+            : richArm && richArm.rich_content_is_the_term === false
+              ? {
+                  term: "origin_or_publication",
+                  claim:
+                    "rich_content is refuted on the same product that replaced cleanly without it, so the count and the content page are both out. What is left is that the live listing was created in the dashboard and that it is published.",
+                  how_to_test:
+                    "publication is testable only by publishing a probe product, which this probe refuses to do; see why_publication_is_not_tested_here. Origin is not testable at all from here — no API call creates a dashboard-origin product.",
+                  what_it_would_change:
+                    "if publication is the term, the fix is unpublish, replace, republish — all API routes, still zero owner actions. If origin is the term, the owner upload request stands and is the only route.",
+                }
+              : live.rich_content_pages > 0
             ? {
                 term: "rich_content",
                 claim:

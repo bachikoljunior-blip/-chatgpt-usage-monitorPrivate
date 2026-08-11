@@ -129,6 +129,28 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
   if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at)) {
     throw new Error("probe state has no valid fetched_at timestamp");
   }
+} else if (Array.isArray(state.walk)) {
+  // Probe WALKS — a probe that reports rung by rung instead of under a single `probe`
+  // string. Exactly the same defect as the branch above, one shape along: this one had
+  // no branch either, so it reached the usage-state check at the bottom, threw
+  // "usage state has no valid recommended_mode", and was therefore NEVER
+  // credential-scanned. Two things were wrong at once and only one was visible. The
+  // invisible one is worse: .github/workflows/gumroad-monitor.yml runs the sanitizer on
+  // state/gumroad-two-file-replace.json immediately after writing it, so the step was
+  // set up to fail on a clean run, while the file it was guarding carried unscanned API
+  // output. Measured 2026-08-11 by running the sanitizer on the copy already committed
+  // to main — it failed there too, so this is not a defect the new arm introduced.
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(state.fetched_at)) {
+    throw new Error("probe walk state has no valid fetched_at timestamp");
+  }
+  for (const rung of state.walk) {
+    if (typeof rung?.rung !== "string" || !rung.rung) {
+      throw new Error("a probe walk rung records no name");
+    }
+    if (typeof rung.reached !== "boolean") {
+      throw new Error(`probe walk rung ${rung.rung} does not say whether it was reached`);
+    }
+  }
 } else if (state.results !== undefined && state.rung !== undefined) {
   // Rung 1 promise conformance. Its own branch for the reason the probe and play
   // branches above already record: a shape with no branch reaches the usage-state

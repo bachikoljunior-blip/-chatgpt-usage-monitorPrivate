@@ -1338,6 +1338,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-11T01:57:15.429Z",
+      "candidate": "idle_clicker_kit.promise_conformance",
+      "kind": "route_change",
+      "mechanism": "Abandon route 1 (get the artifact SHOWN) as this lap's work and drop to rung 1 of the product ladder, which is red. state/promise-conformance.json measures 2 of 16 listing promises FAILING for one reason: the source fix exists in product/brandable-idle-clicker but the file a buyer downloads is stale — two uploads answered 2xx and the served file list did not move. RUNBOOK 5.4 says a rung above a red rung 1 is uninterpretable, so writing the reddit post now would spend that venue's one-per-30-days slot pointing English readers at a product whose delivered LICENSE.txt contradicts its own listing. The named untested term is concrete: the live listing carries a rich_content page whose fileEmbed names ONE file while product-level files[] carries two, so PUT files[] may be writing to an index nobody serves. Reading which id the embed names either explains every 2xx no-op on record or refutes the hypothesis. If it lands, the pending owner upload request becomes unnecessary and a product-loop round exists, which is also what refills the groundwork lane the post body needs.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T18:01:31.261Z",
-  "question": "The same replace route clears on a throwaway carrying ONE file and no-ops on the live listing carrying TWO. Is the file count the term that separates them?",
+  "fetched_at": "2026-08-11T02:02:10.868Z",
+  "question": "The same replace route clears on a throwaway carrying ONE file and no-ops on the live listing carrying TWO. Is the file count the term that separates them, and — on the same product, with origin and publication held fixed — is rich_content?",
   "walk": [
     {
       "rung": "upload_two",
@@ -41,6 +41,23 @@
       "files": "[\"probe-twofile-c.txt\"]"
     },
     {
+      "rung": "write_rich_content",
+      "reached": true,
+      "status": 200,
+      "rich_content_pages": 1,
+      "why": "a content page embedding the attachment landed on the throwaway (1 embed(s)), so the next PUT is sent to the same shape the live listing is in",
+      "body": null
+    },
+    {
+      "rung": "put_under_rich",
+      "reached": true,
+      "status": 200,
+      "file_count": 1,
+      "verdict": "no_op",
+      "why": "the same product answered 2xx and changed nothing once it carried a content page, having replaced cleanly minutes earlier without one. That reproduces the live listing's failure with origin and publication held fixed, so the buyer's download list comes from the embeds and PUT files[] writes to an index nobody serves. The fix to the priced product is a rich_content write and needs no owner upload.",
+      "files": "[\"probe-twofile-c.txt\"]"
+    },
+    {
       "rung": "live_shape",
       "reached": true,
       "status": 200,
@@ -76,6 +93,8 @@
     "readback_two",
     "put_one",
     "readback_after",
+    "write_rich_content",
+    "put_under_rich",
     "live_shape",
     "cleanup"
   ],
@@ -89,6 +108,19 @@
   ],
   "verdict": "replaced",
   "count_is_the_term": false,
+  "rich_content_arm": {
+    "rich_content_pages_after_write": 1,
+    "served_before": [
+      "probe-twofile-c.txt"
+    ],
+    "served_after": [
+      "probe-twofile-c.txt"
+    ],
+    "verdict": "no_op",
+    "rich_content_is_the_term": true,
+    "why": "the same product answered 2xx and changed nothing once it carried a content page, having replaced cleanly minutes earlier without one. That reproduces the live listing's failure with origin and publication held fixed, so the buyer's download list comes from the embeds and PUT files[] writes to an index nobody serves. The fix to the priced product is a rich_content write and needs no owner upload.",
+    "control": "the SAME product, the SAME PUT shape, minutes apart. The only thing that changed between the first files[] PUT and the second is that a content page exists. Origin and publication are identical across the pair by construction, which is what neither the live listing nor any earlier throwaway could offer."
+  },
   "live_listing_shape": {
     "published": true,
     "file_count": 2,
@@ -107,10 +139,10 @@
     "surfaces_disagree": true
   },
   "next_term_to_test": {
-    "term": "rich_content",
-    "claim": "the live listing carries a rich_content page whose fileEmbed names ONE file, while product-level files[] carries more. If the buyer's download list comes from the embeds, then PUT files[] writes to an index nobody serves — which is exactly what a 2xx that changes nothing looks like.",
-    "how_to_test": "on a throwaway: attach a file, PUT a rich_content page embedding it, then PUT files[] with a different file and read back both surfaces. state/payload-listing.json already measured that rich_content is writable over this API, so this is a walk and not a new route.",
-    "what_it_would_change": "if true, the fix to the priced product needs no owner upload and no deletion — it is a rich_content write, which this code can already do."
+    "term": "apply_the_rich_content_write_to_the_live_listing",
+    "claim": "the same product answered 2xx and changed nothing once it carried a content page, having replaced cleanly minutes earlier without one. That reproduces the live listing's failure with origin and publication held fixed, so the buyer's download list comes from the embeds and PUT files[] writes to an index nobody serves. The fix to the priced product is a rich_content write and needs no owner upload.",
+    "how_to_test": "read the live listing's rich_content page, upload the corrected archive, and PUT a page whose fileEmbed names the NEW file id — then re-fetch the delivered digest (state/product-source.json) and see whether it moved. Save the original page verbatim first: it is the sales copy.",
+    "what_it_would_change": "the two FAILING promises in state/promise-conformance.json are both 'fixed in source, not yet delivered'. If the write lands, they are delivered, product-loop --check goes green on this offer, and the pending owner request 2026-08-10.gumroad-replace-the-kit-file can be withdrawn."
   },
   "what_this_settles": "the product carried two files and the PUT still replaced both with the one sent. The file count is NOT what separates this from the live listing — look at origin (dashboard vs API) or publication state.",
   "what_this_does_not_settle": "The other two terms. ORIGIN (the live listing was created in the dashboard, every throwaway here over the API) and PUBLICATION (the listing is published and purchasable, every throwaway is a draft) are both still live explanations, and this probe was built so that it changes neither. A clean 'replaced' here does not name which of those two it is — it only rules the count out.",

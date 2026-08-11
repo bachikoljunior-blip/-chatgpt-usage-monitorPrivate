@@ -234,6 +234,23 @@ export function differenceClause(probe = readJsonOrNull(path.join(ROOT, "state/g
       `MEASURED ${probe.fetched_at}: the FILE COUNT reproduces the failure on a throwaway (${probe.verdict}), so it is the term`,
     );
   }
+  // The rich_content arm comes BEFORE next_term_to_test on purpose. When the arm has a
+  // verdict it is the newest measurement in the file, and next_term_to_test is derived
+  // from it — printing the question ahead of its own answer is how a register ends up
+  // reading as though nothing has been settled.
+  const arm = probe.rich_content_arm;
+  if (arm && arm.verdict !== "not_reached") {
+    parts.push(
+      `MEASURED ${probe.fetched_at}: rich_content was varied on ONE product with origin and publication ` +
+        `held fixed and files[] came back ${arm.verdict} — ` +
+        (arm.rich_content_is_the_term === true
+          ? "so rich_content IS the term, and the fix is a content-page write rather than an owner upload"
+          : arm.rich_content_is_the_term === false
+            ? "so rich_content is NOT the term either; only origin and publication remain"
+            : "so the arm reached no verdict on the term") +
+        ` (${arm.why})`,
+    );
+  }
   const next = probe.next_term_to_test;
   if (next?.term) parts.push(`the next term to test is ${next.term}: ${next.claim}`);
   const shape = probe.live_listing_shape;
