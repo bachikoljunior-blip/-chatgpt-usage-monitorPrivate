@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T23:10:03.461Z",
+  "fetched_at": "2026-08-11T00:04:21.414Z",
   "probe": "POST /v2/products with a malformed rich_content to see whether the validator exists, then — only if it does — a throwaway created WITH a one-page ProseMirror document, read back, and deleted",
   "question": "Can a TEXT offer be delivered over the API with no file upload? prompt_pack is a document and its source is in this repository; the file walk may still need a seller web session and this branch cannot.",
   "steps": [
