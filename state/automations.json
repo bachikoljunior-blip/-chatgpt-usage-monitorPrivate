@@ -11,15 +11,15 @@
       "label": "ETA改善ループ",
       "kind": "claude-trigger",
       "trigger_id": "trig_01HKmX99VZRkuBjMbjqdqHE3",
-      "cron": "50 * * * *",
+      "cron": "50 */6 * * *",
       "pool": "claude_week",
-      "cadence_minutes": 60,
+      "cadence_minutes": 360,
       "enabled": true,
-      "note": "Hourly. The pacing gate is what stops it, so a shorter cadence only shortens the dead time after a stop. Cost is recorded on every fire including the ones that stop at the gate, so the average reflects mostly-cheap reality rather than only the laps that did work.",
+      "note": "Every 6 hours since 2026-08-11T03:11Z, by owner instruction (「6時間に一回の実行にして」). Was hourly. THE CADENCE IS NOW LOAD-BEARING IN A WAY IT WAS NOT: laps do not spawn their own successors — pacing.mjs prints handoff: wait_for_next_firing and the chain relies on this trigger to start the next lap. At 60 minutes that cost an hour of idle; at 360 it costs six. A lap that wants to keep the old lap rate has to earn it inside its own session or by spawning a successor, and either choice is now a real decision rather than a formality. Cost is recorded on every fire including the ones that stop at the gate.",
       "avg_cost_percent": null,
       "samples": 0,
       "last_seen": null,
-      "observed_at": "2026-08-10T21:12:00Z",
+      "observed_at": "2026-08-11T03:11:47Z",
       "observed_from": "list_sessions — session_01AUbmmD7DCcF3mPUFBb2ACs 'eta-loop worker (spawned by hourly parent 20:50)', tags [eta-loop, worker], created 2026-08-10T20:51:41.771925Z, RUNNING. The session the firing produced, which is stronger evidence than the trigger's own last_fired_at.",
       "last_fired_at": "2026-08-10T20:51:41.771925Z",
       "liveness": {
@@ -27,9 +27,9 @@
         "stamp_field": "fetched_at",
         "note": "Every lap writes its continuation decision here, so this dates the loop actually deciding rather than the trigger merely firing. Added 2026-08-09 because check-wiring found continue.json was written by laps and read by nothing — the exact failure this project is named after, sitting in the file that records whether the loop is still choosing. A lap that stops recording now shows up as overdue instead of as silence."
       },
-      "scheduler_updated_at": "2026-08-09T10:58:21Z",
-      "next_run_at": "2026-08-10T09:50:00Z",
-      "observed_via": "list_triggers: trig_01HKmX99VZRkuBjMbjqdqHE3, enabled true, cron 50 * * * *, next_run_at 2026-08-10T12:50:00Z"
+      "scheduler_updated_at": "2026-08-11T03:11:47Z",
+      "next_run_at": "2026-08-11T06:50:00Z",
+      "observed_via": "update_trigger response 2026-08-11T03:11:47Z: trig_01HKmX99VZRkuBjMbjqdqHE3, enabled true, cron 50 */6 * * *, next_run_at 2026-08-11T06:50:00Z. Read from the write's own return value, which is the scheduler answering rather than this file asserting."
     },
     {
       "id": "revenue-loop",
