@@ -4254,6 +4254,77 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
         "measurement the picker cannot see is the failure RUNBOOK 5 names.",
     );
   }
+
+  // --- narrowing a refutation is not the same edit as deleting one -------------
+  //
+  // 2026-08-11. A route stops owing a decision when the candidate under it stops
+  // being refuted, and there is exactly one edit that does that: `refuted` goes
+  // null. That is also, byte for byte, what talking a refutation away looks like.
+  // The ranking cannot tell them apart, and the ranking is what a lap reads.
+  //
+  // So a candidate that went unrefuted while carrying `refutation_scoped_out` has to
+  // say what it did NOT reach. still_unrefuted is the load-bearing field: without it
+  // the block is a paragraph explaining why the inconvenient finding no longer
+  // applies, which is the thing this check exists to make impossible to write.
+  //
+  // Checked on the real file, not only on fixtures, because the failure is a future
+  // lap quietly nulling a second one.
+  const scopedCheck = (option) => {
+    const s = option?.refutation_scoped_out;
+    if (!s) return { checked: false, ok: true, problem: null };
+    const missing = ["original", "scope", "where_the_mechanism_is_measured_absent", "what_would_re_refute_it"].filter(
+      (f) => !s[f],
+    );
+    if (missing.length) return { checked: true, ok: false, problem: `missing ${missing.join(", ")}` };
+    if (!Array.isArray(s.still_unrefuted) || s.still_unrefuted.length === 0) {
+      return {
+        checked: true,
+        ok: false,
+        problem:
+          "still_unrefuted is empty. A refutation narrowed to nothing is a refutation withdrawn, and withdrawing " +
+          "one needs the measurement that contradicts it, not the measurement that misses it.",
+      };
+    }
+    if (option.refuted) {
+      return { checked: true, ok: false, problem: "carries both `refuted` and `refutation_scoped_out`" };
+    }
+    return { checked: true, ok: true, problem: null };
+  };
+
+  assert(scopedCheck({ id: "x" }).checked === false, "an option with no scoping was checked");
+  assert(
+    scopedCheck({ id: "x", refutation_scoped_out: { original: {}, scope: "s", where_the_mechanism_is_measured_absent: {}, what_would_re_refute_it: ["r"], still_unrefuted: [] } }).ok === false,
+    "a scoped refutation with an empty still_unrefuted was accepted — that is a withdrawal wearing a narrowing's name",
+  );
+  assert(
+    scopedCheck({ id: "x", refutation_scoped_out: { original: {}, scope: "s", still_unrefuted: ["t"], what_would_re_refute_it: ["r"] } }).ok === false,
+    "a scoped refutation that never names where the mechanism is absent was accepted",
+  );
+  assert(
+    scopedCheck({ id: "x", refuted: { verdict: "falls" }, refutation_scoped_out: { original: {}, scope: "s", where_the_mechanism_is_measured_absent: {}, what_would_re_refute_it: ["r"], still_unrefuted: ["t"] } }).ok === false,
+    "an option claiming to be both refuted and scoped-out was accepted",
+  );
+
+  for (const option of zb.options ?? []) {
+    const verdict = scopedCheck(option);
+    assert(verdict.ok, `state/zerobase.json ${option.id} scoped its refutation badly: ${verdict.problem}`);
+  }
+
+  // And it has to arrive on the candidate, not just sit in zerobase.json — same
+  // direction of failure as the constraints -> zerobase link above.
+  const scopedOptions = (zb.options ?? []).filter((o) => o.refutation_scoped_out);
+  if (scopedOptions.length) {
+    const aligned = applyRouteElection(
+      scopedOptions.map((o) => ({ id: o.id, serves_route: o.serves_route, refutation_scoped_out: o.refutation_scoped_out })),
+      { route: scopedOptions[0].serves_route },
+    );
+    assert(aligned.aligned.includes(scopedOptions[0].id), "the scoped option did not align to its own route");
+  }
+  assert(
+    applyRouteElection([{ id: "x", serves_route: "r", refutation_scoped_out: { still_unrefuted: ["t"] } }], { route: "r" })
+      .aligned.length === 1,
+    "applyRouteElection dropped a scoped candidate",
+  );
 }
 
 // --- the itch channel can represent its own revenue ---------------------------

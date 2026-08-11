@@ -594,7 +594,7 @@
       },
       "prerequisite_none": "This route waits on nothing outside this repository: no venue, no stranger, no buyer, no owner action. The pool that builds is idle and the instruction that starts it is a file in this repository. That is the whole reason it was elected while every venue-shaped route was blocked on something we do not control."
     },
-    "prerequisite_term": "venue_unsettled",
+    "prerequisite_term": "venue_rule",
     "prerequisite_measured_by": {
       "script": "scripts/venue-readiness.mjs",
       "field": "rows[].binding",
@@ -613,7 +613,25 @@
         "RE-POINT to the one venue where the refutation's mechanism is measured absent. r/incremental_games permits paid links by its own rule, matches the product's genre exactly, publishes no eligibility threshold, and is now blocked on a repo file rather than on an unknown. Its cost is one 30-day own-content slot and one owner action.",
         "NEITHER — elect off the venue board entirely. state/eta.json's top-ranked unrefuted candidate is recurring_offer_on_the_rail_we_can_list_ourselves, which is about the offer's FORM and is indifferent to standing."
       ],
-      "the_term_this_election_names_is_now_stale_and_is_left_stale_on_purpose": "prerequisite_term is venue_unsettled. Before this lap two venues bound on it; after it, one — GameDev.net, which publishes no eligibility threshold at all and whose unknown six surveys established is a property of the instrument. So the elected route is now waiting on the single row that cannot be settled by any reading, while the row that CAN be acted on moved to venue_rule. Editing the term here would be electing a new waiting-point without passing the gate that exists to price exactly that. It is recorded instead, so the next lap sees an owed decision with a named absurdity in it rather than a term that quietly still looks live."
+      "the_term_this_election_names_is_now_stale_and_is_left_stale_on_purpose": "prerequisite_term is venue_unsettled. Before this lap two venues bound on it; after it, one — GameDev.net, which publishes no eligibility threshold at all and whose unknown six surveys established is a property of the instrument. So the elected route is now waiting on the single row that cannot be settled by any reading, while the row that CAN be acted on moved to venue_rule. Editing the term here would be electing a new waiting-point without passing the gate that exists to price exactly that. It is recorded instead, so the next lap sees an owed decision with a named absurdity in it rather than a term that quietly still looks live.",
+      "decision_taken": {
+        "at": "2026-08-11T00:15:00Z",
+        "gate": "scripts/eta-gate.mjs --id=honest_post_where_buyers_gather --kind=route_change → go, recorded in state/lap-claims.json",
+        "chose": "option 2 — RE-POINT route_1 onto r/incremental_games",
+        "not_chosen": {
+          "option_1_abandon": "The undertaking said abandon if standing measures zero, and it does. What the undertaking did not anticipate is a venue where the removal mechanism that makes zero standing fatal is measured absent — stated in its own sidebar and observed across three separate crawls. Abandoning on the strength of a mechanism that has been looked for and not found would be keeping the refutation's word against its own reason.",
+          "option_3_elect_off_the_venue_board": "recurring_offer_on_the_rail_we_can_list_ourselves is about the offer's FORM. It is indifferent to standing, which is why it survives, but it is also indifferent to whether anyone arrives — and eight months at zero sales on a live purchasable page is the measurement that nobody arrives. Changing the form of an offer nobody sees does not get seen."
+        },
+        "what_it_changes_mechanically": "honest_post_where_buyers_gather.refuted goes null with refutation_scoped_out beside it, so elected_route_has_no_unrefuted_candidate goes false and eta.json stops printing ROUTE OWES A DECISION. prerequisite_term moves from venue_unsettled to venue_rule, off GameDev.net's unresolvable unknown and onto the row whose only blocker is a file in this repository.",
+        "what_the_next_lap_does": "Write assets/announce/reddit-incremental-post.en.md. It is the single remaining member of the r/incremental_games row's postable_when, it needs no owner action and no venue permission, and the 30-day own-content rule means it has to be right the first time. Its required shape is measured: a section labelled 'AI Disclosure' in the body (spelling is matched loosely), and a link to something playable that does not have to be free.",
+        "what_it_does_not_license": "Posting. The election settles which route is worked on, not that the post is ready. still_unrefuted on the candidate lists four terms this measurement does not reach, and the language mismatch is one of them."
+      }
+    },
+    "prerequisite_term_changed_at": "2026-08-11T00:15:00Z",
+    "prerequisite_term_was": {
+      "term": "venue_unsettled",
+      "why_it_was_left_stale": "The previous lap recorded it as knowingly stale — after r/incremental_games moved to venue_rule it bound on GameDev.net alone, an unknown that is a property of the instrument and cannot be settled by any reading. Editing it then would have been electing a new waiting-point without passing the gate that prices exactly that.",
+      "why_it_moves_now": "the gate was passed. state/lap-claims.json carries the route_change claim that admitted it."
     }
   },
   "route": "chatgpt-ask.yml with danger-full-access; the account cannot read our private repos (measured 404), so it is blind to the portfolio while still able to research",
@@ -833,15 +851,56 @@
       "blocked_on": "there is nothing to post about yet. This route reaches buyers for something that exists; it does not create it. Whether any of the 28 existing artifacts qualifies has never been examined.",
       "must_face_the_same_gauntlet": "This was proposed from inside the loop, like findable_surface_at_scale, and that one fell. It gets the same outside survey, aimed at breaking it: how often a single honest post into a buyer community produced a first sale, and what the accounts that tried it and failed had in common.",
       "known_failure_mode": "posting widely, or posting promotionally, produced one to six months at zero on record. The one case that worked posted about the outcome and the product's limits honestly, in one relevant community, and answered comments for hours.",
-      "refuted": {
-        "at": "2026-08-09T10:52:00Z",
-        "by": "codex-loop (codex/outbox/2026-08-09.i.md)",
-        "claim_tested": "from zero existing readers, ONE honest post into the community the buyers are in, with the poster answering replies that day, reaches a first sale — with publish date and first-sale date both confirmable as calendar days",
-        "finding": "No case was found meeting the whole chain. The near cases all break the 'one post' term, and they break it in the same direction. TypeGenie: Product Hunt 2023-04-13, Hacker News 2023-04-14, first sale 2023-04-14 — at least two venues. Invoker: published 2020-06-30, USD 90 the same day, and the author records having had no audience at all — but posted to Product Hunt, Reddit and their own Twitter, at least three venues, and the buyer cannot be attributed to any one of them. Hacker News Front Page Explorer: published and first sale both 2020-12-29, with Product Hunt sending 1,000+ people, plus r/SideProject the same day. Optiwing is the closest in posting STYLE — starting a conversation about the problem in r/SEO and naming the tool in passing — but the author cannot attribute the buyer, and used multiple subreddits, Facebook and LinkedIn groups, Indie Hackers, Capterra and ads. Pinger is the closest to a single post, and it converted through a free trial plus ongoing dialogue and feature additions over about a month, with no confirmable dates. Two counter-cases hit the premise head-on, and both are about STANDING rather than frequency: an r/Entrepreneur post removed 2026-02-19 under Rule 2 'No Promotion' — being honest that it is your own work is not an exemption when the post's purpose is promotion — and a post auto-removed 2026-03-20 for the author having under 10 comment karma in that community, i.e. the single post from a standing start was never shown to anyone. A third case (SaaS published 2026-04-24) was banned from Reddit and reached zero sales across Reddit, LinkedIn, cold email and Product Hunt combined.",
-        "verdict": "falls as stated: zero audience plus exactly one post is not supported by any case on record",
-        "sources_in": "codex/outbox/2026-08-09.i.md",
-        "not_refuted": "that posting into a buyer community reaches a first buyer — it does, and it is by far the fastest route on record here: three of the cases reached first revenue within 0-1 days of publishing. What fell is this candidate's specific shape, and the survey also returned two positive findings the candidate did not contain. First, what the fast cases posted was a finished artifact the reader could try immediately (a working Zendesk tool, a desktop app, a searchable database of real data) — no case was found where a bare 'I built a thing' announcement sufficed. Second, no evidence either way on price: nothing showed that being free, or under some price, makes one post enough.",
-        "what_it_leaves": "Five of the seven checked options are now refuted, and the term that keeps failing has moved. It is no longer 'unattended discovery does not work' (that was 2026-08-09.h) but 'a standing start does not work'. The blocker the evidence actually names is STANDING, not recurring posting: prior participation in the community, or several venues hit at once, or an existing following. That distinction matters because the constraint this loop excluded route 1 on was 'recurring owner actions', and standing is not a recurring action — it is a prerequisite that accrues before the post. Invoker is the one case with zero audience, both dates, and a first sale on day zero, and it substituted breadth (three venues at once) for standing. Recording this is not a proposal: per 2026-08-09.h, a lap should take this deliberately rather than fill the gap with an eighth candidate."
+      "refuted": null,
+      "refutation_scoped_out": {
+        "scoped_out_at": "2026-08-11T00:15:00Z",
+        "scoped_out_by": "eta-loop lap, session_015gYTFhg6nBBXCW9vP8BKK5, after scripts/eta-gate.mjs --kind=route_change returned go",
+        "what_this_is": "NOT a withdrawal of the refutation. The refutation is carried verbatim in `original` and still holds everywhere except the one venue where the mechanism it rests on is measured absent. `refuted` is null so the candidate stops sinking below every unrefuted option and so route_1 stops printing an owed decision — that is the whole effect. It does not make this a good candidate; it makes it the one that can be worked on.",
+        "original": {
+          "at": "2026-08-09T10:52:00Z",
+          "by": "codex-loop (codex/outbox/2026-08-09.i.md)",
+          "claim_tested": "from zero existing readers, ONE honest post into the community the buyers are in, with the poster answering replies that day, reaches a first sale — with publish date and first-sale date both confirmable as calendar days",
+          "finding": "No case was found meeting the whole chain. The near cases all break the 'one post' term, and they break it in the same direction. TypeGenie: Product Hunt 2023-04-13, Hacker News 2023-04-14, first sale 2023-04-14 — at least two venues. Invoker: published 2020-06-30, USD 90 the same day, and the author records having had no audience at all — but posted to Product Hunt, Reddit and their own Twitter, at least three venues, and the buyer cannot be attributed to any one of them. Hacker News Front Page Explorer: published and first sale both 2020-12-29, with Product Hunt sending 1,000+ people, plus r/SideProject the same day. Optiwing is the closest in posting STYLE — starting a conversation about the problem in r/SEO and naming the tool in passing — but the author cannot attribute the buyer, and used multiple subreddits, Facebook and LinkedIn groups, Indie Hackers, Capterra and ads. Pinger is the closest to a single post, and it converted through a free trial plus ongoing dialogue and feature additions over about a month, with no confirmable dates. Two counter-cases hit the premise head-on, and both are about STANDING rather than frequency: an r/Entrepreneur post removed 2026-02-19 under Rule 2 'No Promotion' — being honest that it is your own work is not an exemption when the post's purpose is promotion — and a post auto-removed 2026-03-20 for the author having under 10 comment karma in that community, i.e. the single post from a standing start was never shown to anyone. A third case (SaaS published 2026-04-24) was banned from Reddit and reached zero sales across Reddit, LinkedIn, cold email and Product Hunt combined.",
+          "verdict": "falls as stated: zero audience plus exactly one post is not supported by any case on record",
+          "sources_in": "codex/outbox/2026-08-09.i.md",
+          "not_refuted": "that posting into a buyer community reaches a first buyer — it does, and it is by far the fastest route on record here: three of the cases reached first revenue within 0-1 days of publishing. What fell is this candidate's specific shape, and the survey also returned two positive findings the candidate did not contain. First, what the fast cases posted was a finished artifact the reader could try immediately (a working Zendesk tool, a desktop app, a searchable database of real data) — no case was found where a bare 'I built a thing' announcement sufficed. Second, no evidence either way on price: nothing showed that being free, or under some price, makes one post enough.",
+          "what_it_leaves": "Five of the seven checked options are now refuted, and the term that keeps failing has moved. It is no longer 'unattended discovery does not work' (that was 2026-08-09.h) but 'a standing start does not work'. The blocker the evidence actually names is STANDING, not recurring posting: prior participation in the community, or several venues hit at once, or an existing following. That distinction matters because the constraint this loop excluded route 1 on was 'recurring owner actions', and standing is not a recurring action — it is a prerequisite that accrues before the post. Invoker is the one case with zero audience, both dates, and a first sale on day zero, and it substituted breadth (three venues at once) for standing. Recording this is not a proposal: per 2026-08-09.h, a lap should take this deliberately rather than fill the gap with an eighth candidate."
+        },
+        "what_the_refutation_rests_on": "Two counter-cases, and both are REMOVALS driven by a venue threshold: an r/Entrepreneur post removed 2026-02-19 under Rule 2 'No Promotion', and a post auto-removed 2026-03-20 for the author holding under 10 comment karma. Both say the post from a standing start was never SHOWN to anyone. That is the mechanism, and it is a property of a venue rather than of the shape of the post.",
+        "where_the_mechanism_is_measured_absent": {
+          "venue": "r/incremental_games",
+          "row": "state/constraints.json → no_standing_where_buyers_gather.venue_survey.per_venue[r/incremental_games]",
+          "measurements": [
+            {
+              "what": "no published eligibility threshold of any kind; sidebar reads 'Public / Anyone can view, post, and comment to this community'; three paid developer posts standing days after posting",
+              "source": "codex/outbox/incremental-eligibility.md",
+              "lane_run": "2026-08-10.incremental-eligibility, ledger row present in state/codex-lane.json"
+            },
+            {
+              "what": "the mandatory 'AI Disclosure' label is matched loosely — three spellings all surviving; five posts naming itch.io as the playable, none removed",
+              "source": "codex/outbox/incremental-post-shape.md",
+              "lane_run": "NONE — filed as a LEAD, state/codex-lane.json answers_with_no_ledger_run. Not cited here as the venue having been observed."
+            },
+            {
+              "what": "six creation-kit / engine / template posts 2019-2024, zero removed, comments positive; one post linking a priced itch.io page, not removed",
+              "source": "codex/outbox/incremental-kit-precedent.md",
+              "lane_run": "2026-08-11.incremental-kit-precedent, ledger row present in state/codex-lane.json runs, committed by the workflow bot in 86754e8. FIRST attributed lane answer after nine unattributed ones, which is why this one is admitted as a measurement rather than a lead."
+            }
+          ],
+          "what_it_settles": "The class of post this account would make is not removed here. The previous lap's open question — ten of ten top posts offer a game and zero offer a creation kit — counted RANKING, and this counts REMOVAL. Kits are posted here and they survive. Absence from a top-ten snapshot was never prohibition, and it is now measured not to be."
+        },
+        "scope": "ONE VENUE. Every other row on the venue survey keeps the refutation unweakened — r/gamedev forbids paid assets in the same sentence that permits the post, and GameDev.net publishes no threshold that any reading can settle. This is not a finding about posting-from-a-standing-start in general.",
+        "still_unrefuted": [
+          "THE SALE TERM IS UNTOUCHED. All three measurements are about the post being SHOWN. The refuted claim was that one honest post from a standing start reaches a first SALE, and no case on record supports it. Nothing here converts anybody; this lap does not claim it does.",
+          "PAID + OWN WORK + KIT TOGETHER IS STILL OBSERVED NOWHERE. All six surviving kit posts are free and open-source. The one surviving priced itch.io post is a 900-game charity bundle, not the poster's own priced work. Each half of what this account would post survives; the combination has no precedent either way.",
+          "'ZERO REMOVED' IS A FLOOR, NOT A VERIFIED ZERO. The answer states Reddit's .json endpoints returned 403 to the lane, so removed_by_category was never read. Removal was judged by the body not reading [removed] in the page or the search cache. A post removed and re-cached before the crawl would not show.",
+          "THE LANGUAGE MISMATCH STANDS. Rule 4 requires a link to something playable and the only playable artifact this project serves declares lang=\"ja\" against an English readership, with zero Japanese-language precedent found in the subreddit under four searches."
+        ],
+        "what_would_re_refute_it": [
+          "the post is made and removed — the mechanism was present and unpublished after all",
+          "the post stands its 30 days, is shown, and produces no sale — then the term that falls is conversion, which is the term the original refutation actually named and which no measurement here reaches"
+        ],
+        "read_by": "scripts/repricing.mjs applyRouteElection, which carries it onto the candidate the ranking prints"
       }
     },
     {

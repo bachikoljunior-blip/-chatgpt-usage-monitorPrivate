@@ -516,6 +516,30 @@
                 "checked_before_filing": true,
                 "why_recorded": "tests/run-tests.mjs was RED on origin/main for this exact answer when this lap started — the ledger check firing before any lap read the numbers and acted on them, which is the behaviour it was built for."
               }
+            },
+            "kit_precedent_measured": {
+              "measured_at": "2026-08-11T00:15:00Z",
+              "source": "codex/outbox/incremental-kit-precedent.md",
+              "lane_run": {
+                "task_id": "2026-08-11.incremental-kit-precedent",
+                "ledger": "state/codex-lane.json",
+                "row": "runs",
+                "commit": "86754e8",
+                "checked_before_filing": true,
+                "why_it_matters": "The nine answers before this one had no ledger row and were filed as leads. This one has a run recorded by the workflow itself, so it is admitted as a measurement. Note for whoever reads the pool figures: the run is model_key spark with model 'default' — the Spark slug fell back, so this answer spent the codex window and not the Spark one."
+              },
+              "answers": "post_shape_lead.what_it_opens_and_is_the_reason_this_is_filed_in_the_row.no_post_in_the_top_ten_offers_a_tool",
+              "kit_posts_found": 6,
+              "kit_posts_removed": 0,
+              "kit_posts_note": "2019-2024: a Svelte/TS starter template, Incremental Game Template, The Modding Tree (twice), Profectus, and a long how-to-make-an-incremental-game tutorial. None reads [removed] or [deleted]; comments quoted are positive or ask for a non-programmer version. ALL SIX ARE FREE AND OPEN-SOURCE — the precedent is for the CLASS of post, not for a priced one.",
+              "priced_itch_posts_found": 1,
+              "priced_itch_posts_removed": 0,
+              "priced_itch_posts_note": "The itch.io Bundle for Ukraine, USD 10, 310 upvotes, not removed. It is a bundle rather than the poster's own priced work, so it settles that a priced itch.io link survives here and does not settle that a self-promoted priced page does.",
+              "removal_detection_limit": "STATED BY THE ANSWER ITSELF: Reddit .json URLs returned 403 or an error to the lane, so removed_by_category was never read. Every 'not removed' rests on the body and comments still rendering without a removal notice. Zero is a floor on survival, not a verified zero.",
+              "search_terms_recorded": 16,
+              "search_terms_note": "The task asked for the terms tried so that not-found and not-there stay separable. Sixteen are listed, one run each. The answer declines to claim the single priced itch.io post is the only one — 'the search index could not find more' is what it says instead.",
+              "what_it_does_not_change": "postable_when, blocked_on and postable_today are untouched. The blocker is still that assets/announce/reddit-incremental-post.en.md does not exist.",
+              "what_it_did_change": "The route decision. state/zerobase.json elected_distribution_route.prerequisite_answered.decision_taken elects option 2 on this measurement, and honest_post_where_buyers_gather.refuted goes null with refutation_scoped_out carrying the refutation verbatim."
             }
           }
         ],

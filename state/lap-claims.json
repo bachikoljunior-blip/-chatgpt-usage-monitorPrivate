@@ -1322,6 +1322,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-10T23:56:38.467Z",
+      "candidate": "honest_post_where_buyers_gather",
+      "kind": "route_change",
+      "mechanism": "Settle the owed route decision with the measurement that arrived for it. state/zerobase.json elected_distribution_route.prerequisite_answered listed three options and named the missing fact: whether r/incremental_games refuses the CLASS of post this account would make. codex/outbox/incremental-kit-precedent.md answers it and is the FIRST lane answer in ten with a ledger row (state/codex-lane.json runs, task 2026-08-11.incremental-kit-precedent, commit 86754e8 by the workflow bot) so it is a measurement and not a lead. Six creation-kit posts 2019-2024, zero removed, comments positive; one paid itch.io link post, not removed. The route's 2026-08-09 refutation rests on removal-by-threshold and that mechanism is now measured absent at this venue for this post class. Electing option 2 re-points route_1 onto the one row whose only blocker is a repo file, which is what turns the next lap's work from choosing into writing.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

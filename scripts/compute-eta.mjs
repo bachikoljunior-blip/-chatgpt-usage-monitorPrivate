@@ -408,6 +408,13 @@ if (zerobase?.verdict === "adopt_for_next_test") {
       // because the side that picks work reads this file — a refutation the
       // picker never sees is a refutation that changes nothing.
       refuted: o.refuted ?? null,
+      // Travels for the same reason `refuted` does, one step later. When a lap
+      // narrows a refutation to the venue where its mechanism was measured absent,
+      // `refuted` goes null and the candidate rises out of the basement — and from
+      // the ranking alone that is indistinguishable from the refutation having been
+      // talked away. This is the field that makes the two distinguishable to a
+      // reader who opens nothing else.
+      refutation_scoped_out: o.refutation_scoped_out ?? null,
       // The route says "many individually findable pages". Ten already exist and
       // are live. Whether any of them is FINDABLE is a measurement, and until
       // 2026-08-09 nobody had taken it — the candidate was ranked on the word,
@@ -1028,6 +1035,18 @@ for (const c of candidates) {
         "      ELECTED BUT REFUTED — the label above and the refutation below are both current. " +
           "See refuted.verdict; do not take this candidate on the strength of 'elected'.",
       );
+    }
+    // Before the prose too, and for the mirror-image reason. The prose under an
+    // unrefuted elected candidate reads as a clean endorsement; if the candidate is
+    // only unrefuted because a lap narrowed the refutation, the terms that were never
+    // reached have to arrive before the sentence that sells it.
+    const scoped = c.route_alignment.refutation_scoped_out;
+    if (c.route_alignment.status === "elected" && scoped) {
+      console.log(
+        `      REFUTATION SCOPED, NOT WITHDRAWN (${scoped.scoped_out_at}) — it still holds outside ` +
+          `${scoped.where_the_mechanism_is_measured_absent?.venue ?? "the named venue"}. Terms it never reached:`,
+      );
+      for (const term of scoped.still_unrefuted ?? []) console.log(`        · ${term}`);
     }
     console.log(`      ${c.route_alignment.why}`);
     if (c.route_alignment.prerequisite) {

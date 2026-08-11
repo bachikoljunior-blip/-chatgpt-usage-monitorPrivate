@@ -111,6 +111,14 @@ export function applyRouteElection(candidates, election, prerequisiteMeasured = 
       // from the other. Naming it does not resolve it — resolving it is a route
       // decision — but it stops the contradiction from being invisible.
       elected_but_refuted: isElected ? Boolean(c.refuted) : false,
+      // A candidate whose refutation was narrowed rather than withdrawn. Nulling
+      // `refuted` is how a route stops owing a decision, and it is also exactly what
+      // arguing a refutation away looks like from the outside — the two are the same
+      // edit. So the narrowing has to travel with the candidate: whoever reads
+      // "unrefuted" in the ranking reads, in the same block, which terms were never
+      // reached. still_unrefuted is the load-bearing field; carrying it here is the
+      // difference between scoping a refutation and deleting one.
+      refutation_scoped_out: c.refutation_scoped_out ?? null,
     };
     if (isElected) aligned.push(c.id);
     if (isAbandoned) onAbandoned.push(c.id);

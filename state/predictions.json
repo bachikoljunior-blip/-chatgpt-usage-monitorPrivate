@@ -1869,7 +1869,26 @@
       ],
       "what_would_refute_it": "(a) fetched_at unchanged, or advancing only on hours a lap was awake — the step is not really on the schedule, or is failing silently under continue-on-error. (b) LICENSE.txt on origin/main reverting to 72ce347d… — the scratch-tree extraction is not holding and the hourly collector is undoing lap work, which is worse than the gap this closed. (c) fewer than 20 gumroad.json commits — the added download destabilised the run that was already working.",
       "outcome": null,
-      "judge_on": "2026-08-11"
+      "judge_on": "2026-08-12",
+      "judge_on_moved": {
+        "moved_at": "2026-08-11T00:35:00Z",
+        "from": "2026-08-11",
+        "why": "REGISTERED WRONG, and moved with the interim reading attached so the move cannot hide a miss. Every clause in this prediction counts commits BETWEEN 2026-08-10T13:05Z and 2026-08-11T13:05Z. judge_on 2026-08-11 comes due at 00:00Z, thirteen hours before the window it measures has closed. Judging on the registered date would have meant scoring a 24-hour count off 11 hours of it — which is the same error as reading a rate off a partial window that this repository has now made twice.",
+        "the_rule_this_does_not_get_to_break": "A judge date may be moved to the close of the window the prediction itself names. It may not be moved because the answer looks bad, and the reading below exists so that distinction is checkable by someone who does not trust this sentence.",
+        "interim_reading": {
+          "at": "2026-08-11T00:35:00Z",
+          "hours_elapsed_of_24": 11.5,
+          "source": "git log --format='%cI' origin/main --since=2026-08-10T13:05:00Z -- <path>, counted at origin/main 596659b",
+          "a_product_source_commits_so_far": 4,
+          "a_threshold": "12 in the full window",
+          "a_trend": "BELOW PACE. 4 in 11.5h projects to ~8 in 24h against a threshold of 12. An hourly writer would be at ~11 by now.",
+          "b_license_sha256": "6415c95aef18d8bcf0541fe3a60185fa0dd60fd2dda287b3bdb347477683b7b8",
+          "b_trend": "HOLDING. Unchanged from the baseline digest, which is what (b) claimed.",
+          "c_gumroad_commits_so_far": 4,
+          "c_threshold": "20 in the full window",
+          "c_trend": "WELL BELOW PACE, and the threshold itself is now in question. 4 in 11.5h projects to ~8. The baseline that set 20 quoted three gumroad.json commits inside two hours; a collector that commits only on change does not sustain that, so (c) may be measuring the threshold rather than the flakiness it was written to catch. RECORDED NOW, BEFORE THE VERDICT, so that if (c) misses this reading is what distinguishes 'the new step made the collector flakier' from 'the number was never reachable'."
+        }
+      }
     },
     {
       "id": "2026-08-10.the-abundant-pool-should-not-idle-because-the-scarce-one-is-out",
@@ -1899,7 +1918,22 @@
       ],
       "what_would_refute_it": "(a) no pulse[bot] commit to state/eta.json by 2026-08-11T02:00Z. (b) a red pulse run whose log carries no ::error::state/ line — the naming did not work either, and the diagnosability half of this change bought nothing.",
       "judge_on": "2026-08-11",
-      "outcome": null,
+      "outcome": {
+        "judged_at": "2026-08-11T00:35:00Z",
+        "judged_by": "eta-loop",
+        "measured": {
+          "source": "git log --format='%an | %cI' origin/main --since=2026-08-10T13:30:00Z -- state/eta.json, run at origin/main 596659b",
+          "pulse_bot_commits_touching_eta_json": [
+            "2026-08-10T21:28:43Z",
+            "2026-08-10T22:22:44Z"
+          ],
+          "deadline_in_the_claim": "2026-08-11T02:00Z"
+        },
+        "verdict": "(a) HIT. (b) NOT APPLICABLE — its antecedent is 'if it does not', and it did.",
+        "what_is_separable": "The claim named one readable event with a deadline and the event happened twice inside it, three and a half hours early. Seven pulse runs on 2026-08-10 committed nothing; after the fix the bot is committing eta.json again. That is the whole of what (a) asserted and it is read from git history rather than from any lap's account of itself.",
+        "what_is_NOT_separable": "That the FIX is why. The prediction's own concurrent_changes lists the test that pins the verify set as a subset of the staged set, landed in the same window. It is the mechanism rather than a rival cause, but nothing here distinguishes 'the guard stopped skipping the commit' from 'the two files it named happened to verify clean on those runs'. (b) was the clause that would have separated them and it cannot fire now.",
+        "what_it_leaves": "(b) is untested rather than passed. If pulse goes red again, the ::error:: line is still the thing to look for, and nobody has yet seen one."
+      },
       "interim_observation": {
         "observed_at": "2026-08-10T13:27:00Z",
         "half_a": "CONFIRMED, two minutes after the push and well inside its own deadline. pulse run 31392717094 (push, 4aa7477) produced commit 5fd13e0, author pulse[bot], 2026-08-10T13:24:40Z, touching state/eta.json, state/heartbeat.json, state/lap-cost-derived.json, state/public-host.json and state/findable-surface.json. state/eta.json on origin/main now reads fetched_at 2026-08-10T13:24:37.523Z, against 11:49:10Z before. This is the first pulse commit of the day; the seven runs before it committed nothing.",
@@ -2077,6 +2111,23 @@
       ],
       "what_would_refute_it": "Any of: prompt_pack reappearing as an active offer or as an eta candidate without a payment behind it; the RETIRED line disappearing or a prompt_pack PROBLEM returning without the checker being edited; or a non-zero monthly_yen_now on any channel that is traceable to prompt_pack. The third would mean the retirement threw away something that was selling.",
       "judge_on": "2026-08-17",
+      "outcome": null
+    },
+    {
+      "id": "2026-08-11.the-refutation-was-narrowed-not-withdrawn",
+      "made_at": "2026-08-11T00:35:00Z",
+      "claim": "The route decision owed for five laps is settled: option 2, re-point route_1 onto r/incremental_games, on codex/outbox/incremental-kit-precedent.md — six creation-kit posts and one priced itch.io post, none removed, and the first lane answer in ten with a ledger row. Settling it means honest_post_where_buyers_gather.refuted goes null, which is the same edit as arguing a refutation away. PREDICTION, three parts. (a) THE NARROWING TRAVELS: compute-eta prints REFUTATION SCOPED, NOT WITHDRAWN and its four still_unrefuted terms ABOVE the candidate's election prose, so a lap reading only the ranking cannot take 'unrefuted' as endorsement. (b) THE DECISION CLOSES: route_election.elected_route_has_no_unrefuted_candidate is false and elected_route_status is null on origin/main, and ROUTE OWES A DECISION stops printing. (c) THE ONE THAT CAN FAIL QUIETLY: the point of closing it is that the next lap WRITES rather than chooses. assets/announce/reddit-incremental-post.en.md exists on origin/main by 2026-08-14, or state/lap-claims.json shows a lap that named a different candidate and said why. Five laps in a row have reported this route as owed and spent themselves on filings about it.",
+      "metric": "(a) `node scripts/compute-eta.mjs` on origin/main, grepped for 'REFUTATION SCOPED'. (b) `git show origin/main:state/eta.json` route_election. (c) `git show origin/main:assets/announce/reddit-incremental-post.en.md`, and state/lap-claims.json entries after 2026-08-11T00:15Z. All read from committed state, none from a lap's account of itself.",
+      "baseline": "At 2026-08-11T00:15Z on origin/main 596659b: eta.json route_election.elected_route_has_no_unrefuted_candidate is true and elected_route_status carries the owed-decision sentence; honest_post_where_buyers_gather sorts below every unrefuted option and prints ELECTED BUT REFUTED; assets/announce/reddit-incremental-post.en.md does not exist; state/lap-claims.json has 83 claims with improves=false on every one; prerequisite_term is venue_unsettled, binding on GameDev.net alone.",
+      "what_i_could_not_establish": "Whether the post sells anything. Every measurement under this election is about the post being SHOWN — no threshold published, kit posts surviving, a priced itch.io link surviving. The term the original refutation actually named was CONVERSION and nothing here reaches it. Also unestablished: whether a priced post of the poster's OWN work survives here, since the six kit posts are free and the one priced survivor is a charity bundle; and whether 'zero removed' is a real zero, since the lane got 403 from Reddit's .json endpoints and judged removal by the body not reading [removed].",
+      "concurrent_changes": [
+        "state/constraints.json — the r/incremental_games row gained kit_precedent_measured. Same decision, filed where the row that owns it lives.",
+        "state/zerobase.json — prerequisite_term moved venue_unsettled -> venue_rule, off GameDev.net's unresolvable unknown. This changes what venue-readiness reports for the elected route and is not separable from (b).",
+        "scripts/repricing.mjs and scripts/compute-eta.mjs — refutation_scoped_out is carried onto the candidate and printed. This IS mechanism (a), not a confound.",
+        "tests/run-tests.mjs — a scoped refutation must carry original, scope, where_the_mechanism_is_measured_absent, what_would_re_refute_it and a NON-EMPTY still_unrefuted, and may not also carry refuted. Three negative cases."
+      ],
+      "what_would_refute_it": "A later lap citing this candidate as unrefuted without the narrowing — or the post being made and removed, which would mean the mechanism was present and unpublished and the scoping was wrong at the one venue it claimed.",
+      "judge_on": "2026-08-14",
       "outcome": null
     }
   ]
