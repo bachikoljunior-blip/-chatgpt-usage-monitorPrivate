@@ -138,6 +138,16 @@
       },
       "what_must_not_be_done_because_of_it": "Do not spend the one 30-day own-content slot on the strength of these counts. Do not record 0-of-10 as the venue REFUSING kit posts: it is a ranking snapshot off a 5-day-stale crawl and it counts what was posted and ranked, not what was removed. Absence of precedent and evidence of prohibition are different findings, and the row this feeds already carries a rule (\"Does not have to be free\", \"a link to something that is playable\") that a kit post linking the free demo satisfies as written.",
       "how_to_establish_it_if_it_matters": "It matters for whether option 2 of the owed route decision is worth its slot, and re-asking settles nothing — a second unattributed answer agreeing is the same problem one layer down (the .v finding). What settles the two that matter is narrow and outward-facing: search this subreddit history for posts offering an asset pack or kit and report removals rather than rankings, and find any post linking a PAID itch.io page. Both are lane work on the abundant pool. What settles NEITHER is one more survey of what is currently on the front page."
+    },
+    {
+      "task_id": "2026-08-11.incremental-paid-offer-forms",
+      "acknowledged_at": "2026-08-11T19:30:00Z",
+      "author": null,
+      "why_no_run": "codex/outbox/2026-08-11.incremental-paid-offer-forms.md arrived as commit 6f73e70, authored and committed by bachikoljunior-blip at 2026-08-12T01:12:35+09:00 with the message 'Add incremental paid offer forms research'. No ledger row, and .github/workflows/codex-inbox.yml writes one on every run that produces an answer. Same signature as the six from 2026-08-10 (.n .o .r .t .v .w) that where_the_unledgered_answers_come_from already characterised: a JST-stamped human-style commit under the owner's own identity, which no workflow in this repository can produce.",
+      "what_is_therefore_unknown": "Which model wrote it, and therefore which weekly window it spent — or whether it spent one of ours at all. It cannot be paired against a lane run for the Spark question.",
+      "what_is_newly_visible_here": "AN OUTSIDE COMMIT THAT PLACES A done_marker SILENTLY CANCELS THE QUEUED LANE TASK. scripts/inbox-task.mjs selects the first live task with no marker; the marker is a file path and it does not care who wrote it. So this answer did not merely arrive unledgered — it consumed the queue slot the lap had written, and the lane never ran that task. The three unledgered answers on 2026-08-10 were read as an extra source of answers. This one shows the same path is also a consumer of queue depth, which is the resource check-lane-idle.mjs exists to protect.",
+      "what_it_does_not_mean": "That the answer is worth less. It is the most decision-relevant of the three and is folded into state/constraints.json product_form_vs_addressed_buyer and state/zerobase.json. Provenance is a separate question from content, and merging them is how a good answer gets discarded or a bad one gets trusted.",
+      "committed_by": "bachikoljunior-blip (the git identity on commit 6f73e70; the authoring MODEL is what author records, and it is not established)"
     }
   ],
   "derived_artifacts": [

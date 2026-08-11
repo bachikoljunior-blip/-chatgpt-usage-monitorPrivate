@@ -364,7 +364,26 @@
       "source": "state/gumroad-file-replacement.json（差し替え不可の実測）、codex/outbox/2026-08-10.u.md（非v2経路の否定・Gumroad 公開ソース引用）、state/promise-conformance.json（失敗している2行）、state/product-source.json（買った人がいま受け取る中身）、dist/brandable-idle-clicker.zip（渡すもの）。",
       "performed_evidence": null,
       "revised_at": "2026-08-11T03:05:00Z",
-      "revision_reason": "HALF OF THIS ASK WAS ALREADY DONE AND NOBODY KNEW. Measured 2026-08-11 by scripts/fetch-product-source.mjs, which now attributes each digest to the attachment it came from instead of merging every attachment into one list. The live product carries TWO archives: the corrected one (named brandable-idle-clicker, the one the download page embeds, carrying the fixed LICENSE.txt 6415c95a and brand.config.json 2f319226) and the superseded Brandable_Idle_Clicker_Kit_v1.0 (72ce347d / 0186af34), which no fileEmbed names. So step_1 and the ADD half of step_3 are complete. What is left is the DELETE half — and step_3 of the original ask predicted this exact state in its own words: 2つ並んだままだと、買った人にどちらが正しいのか分かりません."
+      "revision_reason": "HALF OF THIS ASK WAS ALREADY DONE AND NOBODY KNEW. Measured 2026-08-11 by scripts/fetch-product-source.mjs, which now attributes each digest to the attachment it came from instead of merging every attachment into one list. The live product carries TWO archives: the corrected one (named brandable-idle-clicker, the one the download page embeds, carrying the fixed LICENSE.txt 6415c95a and brand.config.json 2f319226) and the superseded Brandable_Idle_Clicker_Kit_v1.0 (72ce347d / 0186af34), which no fileEmbed names. So step_1 and the ADD half of step_3 are complete. What is left is the DELETE half — and step_3 of the original ask predicted this exact state in its own words: 2つ並んだままだと、買った人にどちらが正しいのか分かりません.",
+      "bearing_of_the_two_lane_answers_2026_08_11": {
+        "status_after_reading_them": "STANDS, UNCHANGED. the_ask is not edited and the request is not withdrawn.",
+        "why_it_was_queued": "The previous lap queued both answers to test whether this request could be withdrawn rather than left standing: if a buyer is served only what the content page embeds, the stale attachment is invisible and there is nothing to delete.",
+        "answer_1": {
+          "marker": "codex/outbox/2026-08-11.gumroad-file-removal-surface.md",
+          "asked": "Is there any surface outside the browser that detaches a file from a Gumroad product?",
+          "found": "YES, one, and it does not reach this file. The official Gumroad CLI documents whole-document replacement of rich_content via PUT /v2/products/:id — you GET the content, drop the file-embed node, and PUT the rest back. Deletion happens as a consequence of omission.",
+          "why_it_does_not_apply": "state/gumroad-two-file-replace.json live_shape measured this listing: files[] carries 2, the rich_content page embeds 1, and attached_but_not_embedded is exactly ['Brandable_Idle_Clicker_Kit_v1.0'] — the file the owner is asked to delete. It is not a node in rich_content, so removing nodes from rich_content cannot remove it. The answer names this case itself and returns 分からない for it.",
+          "also_found": "No per-file DELETE endpoint in any public material, and no official statement that deletion is impossible either. Zapier and Make expose no Gumroad file-deletion action. So the 2026-08-11T07:00Z detach_arm measurement (files[] cannot subtract under a content page) is now corroborated from outside rather than resting on one probe."
+        },
+        "answer_2": {
+          "marker": "codex/outbox/2026-08-11.gumroad-buyer-file-visibility.md",
+          "asked": "Is a buyer served one file or two?",
+          "found": "SPLIT, and only half of it resolves. Gumroad's own help says buyers see the content 'just as you see it in the editor', which makes the visible screen and the per-file download button the embedded file only — the corrected archive. What is NOT resolved is whether the 'Download all' ZIP is assembled from rich_content embeds or from every file attached to the product record. No help page, API document or user report settles it, and no report was found from anyone in this exact configuration.",
+          "so_the_harm_is_narrower_than_stated": "The request's `why` says a buyer cannot tell which of two licences applies. On the evidence, that is now specific to the Download all ZIP and not to the page a buyer looks at. The request is NOT rewritten to say so — it is with the owner, and rewriting a request in flight is the failure this file's how_to_use_this warns about. This note carries the narrowing instead."
+        },
+        "what_would_settle_it_without_the_owner": "Two routes, neither taken this lap. (1) Gumroad's own free test purchase — the seller buys their own product with a test card and reads the buyer view; free, official, but it is a browser session on the owner's account, so it costs the owner more than the deletion it would avoid. (2) Reading the open source at antiwork/gumroad for whether the download page and the bulk ZIP enumerate product files or rich_content embeds. Cheap, costs no owner action, and needs no login. Queued as 2026-08-11.gumroad-download-all-source.",
+        "read_at": "2026-08-11T19:20:00Z"
+      }
     }
   ]
 }

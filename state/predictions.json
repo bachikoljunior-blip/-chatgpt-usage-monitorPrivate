@@ -2403,7 +2403,18 @@
       "baseline": "2026-08-11T13:10Z: 0 of 3 present. Queue reads 3 live unmarked of 34 (scripts/check-lane-idle.mjs).",
       "judge_on": "2026-08-15",
       "judge_deadline": "2026-08-16",
-      "outcome": null,
+      "outcome": {
+        "judged_at": "2026-08-11T19:25:00Z",
+        "judged_by": "eta-loop worker (the next lap)",
+        "judged_early_because": "The metric is a count of files that, once written, cannot be unwritten. All three markers were present at 2026-08-11T18:52Z, well inside the judge window, and the threshold was 'at least 2 of 3'. Waiting until 2026-08-15 could not change the reading, and leaving a satisfied prediction open is how a judgement gets forgotten.",
+        "measured": "3 of 3 markers present in codex/outbox/, measured the same way the baseline was (scripts/inbox-task.mjs: every task done, queue_depth 34; each file reads back from origin/main). Baseline was 0 of 3 at 13:10Z. BUT ONLY 2 OF THE 3 WERE PRODUCED BY THE LANE: state/codex-lane.json carries runs for 2026-08-11.gumroad-buyer-file-visibility (14:08Z, spark) and 2026-08-11.gumroad-file-removal-surface (15:37Z, spark), both committed by chatgpt-usage-monitor[bot]. The third arrived as commit 6f73e70 authored by bachikoljunior-blip with no ledger row — the unledgered path this repository has seen six times before. The threshold was 'at least 2 of 3', so the claim clears on the lane's own output and does not need the third; recorded this way because counting the file would have credited the lane with an answer it did not write.",
+        "verdict": "RIGHT ON THE MECHANISM, UNTESTED ON THE OUTAGE, and the two must not be merged.",
+        "what_is_confirmed": "The lane runs with no lap involved. The previous lap ended at about 13:20Z and no lap ran again until 18:51Z; in that gap the hourly firing selected, ran and committed three tasks. The only Claude-side input was the task text, written before the gap.",
+        "what_is_NOT_confirmed": "That it survives an OUTAGE. The claim's precondition was the Claude weekly pool emptying, and it did not empty — pacing read 3% at 18:52Z, the same figure as at 13:20Z, and the projected dry-out at 1.02%/h did not arrive because no lap was running to spend it. So this is evidence for 'the lane runs unattended', which is the mechanism, and no evidence at all for 'the lane runs while Claude is at zero', which is the claim as written. The distinction survives because the second is what the constraint the_loop_stops_thinking_when_the_claude_pool_empties is actually about.",
+        "falsification_arm_2_partially_hit": "The second falsification said markers could appear while the answers refuse the question. Half of that happened and it is worth more than the count. 2026-08-11.gumroad-buyer-file-visibility returned 分からない overall — it settled the visible screen from official wording and could not settle the Download all ZIP from any public source. That is a correct answer to a question the lane could not close, not a failure of the lane, but it is the shape the arm warned about: a pre-written task cannot be narrowed once the first reading shows where the evidence stops. A lap would have re-aimed it at the open source immediately; instead the re-aim waited five hours for this lap. Queued now as 2026-08-11.gumroad-download-all-source.",
+        "concurrent_changes_at_judgement": "Unchanged from registration. check-lane-idle.mjs observes and does not run tasks. The 6-hourly cadence is what created the 5.5-hour gap this was measured across, so it is the enabling condition of the measurement rather than a confound to it.",
+        "what_the_third_answer_changed_about_the_claim": "It flipped a supporting detail into a defect. A marker written by anyone at all makes scripts/inbox-task.mjs skip that task, so the outside commit did not add a fourth answer — it consumed a queue slot the lap had bought. The prediction assumed queue depth is spent only by lane firings. Written into state/codex-lane.json answers_with_no_ledger_run rather than left here, because the picker reads that file and this one is only read at judgement."
+      },
       "falsification": [
         "0 or 1 markers present on 2026-08-15 while the codex and Spark pools still show capacity — the lane does not in fact run unattended, and the constraint understates the outage rather than overstating it.",
         "Markers present but the answers are empty or refuse the question — the lane runs but a task written without a lap to adjust it is not worth queueing, which would make the whole approach of pre-loading the queue wrong even though the mechanism works.",
@@ -2412,6 +2423,27 @@
       "concurrent_changes": [
         "Same lap: scripts/check-lane-idle.mjs added and wired into pulse.yml. It observes the queue and does not run tasks, so it cannot move this metric — but it is the only other change and is recorded rather than assumed harmless.",
         "Not this lap, and it dominates the burn: the owner moved the eta-loop trigger from hourly to 6-hourly at 2026-08-11T03:11Z. Any reading of Claude-side quota across this window is a reading of that change, not of anything a lap did."
+      ]
+    },
+    {
+      "id": "2026-08-11.b-the-answers-change-the-next-pick",
+      "registered_at": "2026-08-11T19:25:00Z",
+      "registered_by": "eta-loop worker session_01Ng6Qzhr7RaQ21hKtn78Nrx",
+      "claim": "Folding a lane answer into the files the ranking reads is what makes it act. Concretely: the three answers that landed today changed two live premises — branch A of product_form_vs_addressed_buyer now has genre-scoped outside support, and the route_4 candidate's 'zero one-time developer downloads' is contradicted at that scope. If that folding does its job, no lap between now and 2026-08-18 elects a change of the product's offer FORM (one-time to recurring) citing 2026-08-10.a, and at least one lap cites the marketplace qualifier when ranking a venue candidate.",
+      "mechanism": "A lap picks one 'here' candidate from state/eta.json, whose text is assembled from state/constraints.json and state/zerobase.json. An answer sitting in codex/outbox/ is read by nothing and therefore changes no pick — that is the same wiring failure this repository is named after. Writing the contradiction into the option itself puts it in front of the picker rather than behind a filename nobody opens.",
+      "metric": "Read state/lap-claims.json for entries after 2026-08-11T19:25Z. Count (a) claims whose candidate is recurring_offer_on_the_rail_we_can_list_ourselves or whose mechanism argues for switching to a recurring form, and (b) claims whose mechanism mentions the marketplace/search/public-rating qualifier or the non-Unity marketplace answer.",
+      "baseline": "2026-08-11T19:25Z: 82 claims on record, 0 citing the marketplace qualifier (it did not exist until today), and the route_4 option carried the uncontradicted premise since 2026-08-10T02:25Z.",
+      "judge_on": "2026-08-18",
+      "judge_deadline": "2026-08-20",
+      "outcome": null,
+      "falsification": [
+        "A lap after this one elects the recurring form citing 2026-08-10.a without mentioning the genre-scoped contradiction — then folding an answer into the option text is not sufficient to reach the picker, and the wiring needs a machine rather than a paragraph.",
+        "No lap runs at all before 2026-08-18 — the metric is unreadable rather than false, and this is the likely world given 3% remaining and a reset on 2026-08-14T22:00Z. Say so rather than scoring it.",
+        "A lap cites the qualifier and picks a venue that the non-Unity marketplace answer has not yet shown exists — then the qualifier was folded in as a slogan rather than as a constraint, which is worse than not folding it in."
+      ],
+      "concurrent_changes": [
+        "Same lap: three tasks appended to codex/INBOX.md. Their answers land inside this prediction's window and will themselves change what a lap can cite, so a citation of the marketplace qualifier after 2026-08-15 may be caused by the new answer rather than by this folding. Recorded because it cannot be separated afterwards.",
+        "Same lap: the prerequisite counter reached 3/3, so the next lap can only pass the gate as route_change. That constrains what the next pick can be independently of anything folded in here."
       ]
     }
   ]

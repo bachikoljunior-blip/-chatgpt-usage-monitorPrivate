@@ -1402,6 +1402,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-11T18:55:17.359Z",
+      "candidate": "product_form_vs_addressed_buyer",
+      "kind": "prerequisite",
+      "mechanism": "Three lane answers landed in codex/outbox and nothing in the ranking has read them. 2026-08-11.incremental-paid-offer-forms is the first outside evidence FOR branch A of product_form_vs_addressed_buyer scoped to this genre: 13 offers with public paid evidence, 10 buy-once, and 3 of those creator-facing kits at USD 4.99-49.95 - our form, our price band, buyers confirmed. It also contradicts the premise the route_4 candidate recurring_offer_on_the_rail_we_can_list_ourselves is ranked on (zero one-time developer downloads), and it adds a qualifier neither had: all 3 kit precedents sit inside a marketplace supplying search, checkout and public ratings, where Gumroad supplies checkout only. The two Gumroad answers settle the pending owner request the opposite way from the hoped one: the removal surface that exists replaces rich_content, and the stale attachment is attached_but_not_embedded, so it is out of that route reach, while buyer visibility resolves only for the visible screen and not for Download all. How the number moves: the ranking picks the one here candidate per lap from these files, so an unread answer changes no pick. Folding them in makes the next pick read evidence that exists rather than premises two laps old. No ETA improvement is claimed and none is pretended - inf before, inf after, revenue 0 and this lap sells nothing.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }
