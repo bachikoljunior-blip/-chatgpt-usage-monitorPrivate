@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-11T00:06:50.364Z",
+  "fetched_at": "2026-08-11T13:13:57.718Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -28,7 +28,7 @@
       "candidate_id": "idle_clicker_kit.deliver_both_rung_one_fixes",
       "created_at": "2026-08-10T12:45:00Z",
       "judge_by": "2026-08-17",
-      "one_line": "Gumroad の商品に添付してあるファイルを、こちらで用意した新しい ZIP に差し替えてください。ZIP は作ってあります。落として、上げるだけです。"
+      "one_line": "Gumroad の商品に古いファイルがもう1つ残っています。新しい方は既に付いています。古い方を削除するだけです。"
     }
   ],
   "target_yen_per_month": 200000,
@@ -40,11 +40,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 1.23
+      "days_unchanged": 1.78
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 1.23
+      "days_unchanged": 1.78
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -65,11 +65,11 @@
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-11T00:04:21.969Z",
+      "measured_at": "2026-08-11T12:27:04.507Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
-      "revenue_window_days": 1.386,
-      "revenue_readings": 6,
+      "revenue_window_days": 1.971,
+      "revenue_readings": 8,
       "fx_usd_jpy_assumed": 150,
       "lifetime_sales": 0,
       "lifetime_usd_cents": 0,
@@ -82,11 +82,11 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-11T00:05:52.428Z",
+      "measured_at": "2026-08-11T12:28:49.058Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
-      "revenue_window_days": 0.848,
-      "revenue_readings": 4,
+      "revenue_window_days": 1.401,
+      "revenue_readings": 6,
       "revenue_is_a_lower_bound": true,
       "games": 1,
       "total_views": 2,
@@ -106,7 +106,7 @@
       "idle_eta_reason": "measured, not unreadable: 1208.75/day views and 394.75/day engaged over 4 days (2026-08-04..2026-08-07), zero owner actions. Ad revenue is not the path — at this rate the YouTube Partner gate is 4000 days away on subscribers, and the sibling loop prices the far side of it in the ¥1,000s/month against a ¥200,000 target. What the ranking may use is the ADDRESSABLE reach and not this one: 2 of 4851 playbacks over 28d. No threshold is applied here — the two numbers are printed because a route was elected on the larger one while the smaller existed and had never been read. DELIVERY CEILING FIRST: 2 of 4851 playbacks over 28d reach a surface that renders the description (0.04%), so the ceiling on clicks to ANY url placed here is 2 per 28 days — independent of which url and of who the audience is. Everything below is about a link nobody arrives at. The surface PERMITS the paid product's link and FORBIDS the free demo's (github) — so route 1's entire payload cannot go here as hosted. That is the exact INVERSE of r/gamedev, which permits the free artifact and forbids being paid. A lap may NOT perform the edit; it is the sibling loop's act.",
       "owner_actions_required": 0,
       "stale": false,
-      "stale_days": 1.1,
+      "stale_days": 1.6,
       "reach": {
         "usable": true,
         "window_days": 4,
@@ -176,26 +176,15 @@
       "eta_effect_basis": "no comparable estimate recorded"
     },
     {
-      "kind": "constraint_recheck",
-      "id": "the_loop_stops_thinking_when_the_claude_pool_empties",
-      "why": "Direct and large. Permanent instruction A10 is that automation must never stop; the honest reading of today is that it stops for most of every week and only the measuring half survives. Anything that keeps the deciding half alive through the empty days converts dead time into laps, and laps are the only thing that has ever moved anything here.",
-      "owner_actions": 0,
-      "note": "When the Claude weekly window runs out, every part of this system that DECIDES anything stops, and stays stopped until the window resets. The collectors keep collecting and the ChatGPT lane keeps answering, but neither chooses work: the lane only runs a task already written into its inbox, and nothing writes one without Claude. So the outage is not a slowdown — it is a period in which the loop cannot pick, gate, judge or hand off, and the hourly trigger keeps firing into a session that can only note it has no budget.",
-      "measure_via": "here",
-      "actionable_now": true,
-      "eta_effect_days": null,
-      "eta_effect_basis": "no comparable estimate recorded"
-    },
-    {
       "kind": "product_loop",
       "id": "idle_clicker_kit.promise_conformance",
       "why": "the offer is loopable and its own measurement says it is failing — a round that clears a named failure is the one kind of work that is about the thing being sold",
       "owner_actions": 0,
       "measure_via": "here",
-      "note": "Next rung: promise_conformance. 2 finding(s): idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: FIXED IN SOURCE, NOT YET DELIVERED. The shipped tree now measures 6 taps to the first purchase, then 100s idle to a second kind of producer (browser run: 6 taps to the first purchase, opening rate \"毎秒 0円 ／ 1タップ 1円\"). Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so a buyer still downloads the config that needs 15 taps and then 600 seconds of nothing new. MEASURED 2026-08-10T17:43:01.962Z ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, both calls answered 2xx, and the served file list did not move (no_op). state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. MEASURED 2026-08-10T18:01:31.261Z: the FILE COUNT is not the term — a throwaway carrying two attachments had both replaced by a single-entry files[] PUT; the next term to test is rich_content: the live listing carries a rich_content page whose fileEmbed names ONE file, while product-level files[] carries more. If the buyer's download list comes from the embeds, then PUT files[] writes to an index nobody serves — which is exactly what a 2xx that changes nothing looks like.; and the listing names files in two places that disagree — files[] carries 2 (Brandable_Idle_Clicker_Kit_v1.0, brandable-idle-clicker) while its rich_content page embeds 1. Until it is closed no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it. The promise stays failed until a re-fetch shows the delivered digest moved. | idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 MEASURED 2026-08-10T17:43:01.962Z ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, both calls answered 2xx, and the served file list did not move (no_op). state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. MEASURED 2026-08-10T18:01:31.261Z: the FILE COUNT is not the term — a throwaway carrying two attachments had both replaced by a single-entry files[] PUT; the next term to test is rich_content: the live listing carries a rich_content page whose fileEmbed names ONE file, while product-level files[] carries more. If the buyer's download list comes from the embeds, then PUT files[] writes to an index nobody serves — which is exactly what a 2xx that changes nothing looks like.; and the listing names files in two places that disagree — files[] carries 2 (Brandable_Idle_Clicker_Kit_v1.0, brandable-idle-clicker) while its rich_content page embeds 1. Until it is closed no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it. The promise stays failed until a re-fetch shows the delivered digest moved.",
+      "note": "Next rung: promise_conformance. 2 finding(s): idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: TUNED IN THE TREE AND SHIPPED TWICE. The shipped tree measures 6 taps to the first purchase, then 100s idle to a second kind of producer (browser run: 6 taps to the first purchase, opening rate \"毎秒 0円 ／ 1タップ 1円\"), and the attachment the download page embeds carries that same config — but the product ALSO still carries the superseded archive, whose brand.config.json is the untuned one. state/product-source.json attachments[] holds both digests. Which numbers a buyer opens with depends on which archive they unzip, so the promise is not kept by the fix being present; it is broken by the old file still being attached. The fix is removal, not another upload. | idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: TWO LICENCES ARE ATTACHED TO ONE PRODUCT. product/brandable-idle-clicker/LICENSE.txt is determinate and it IS the copy inside the archive the rich_content page embeds — that half is delivered, contrary to what this row said for eight handoffs. But state/product-source.json attachments[] shows the superseded archive is still attached, carrying the 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 opening. Determinacy is a property of what the buyer holds, not of the best file among several. The remedy is to detach the superseded archive; no upload and no edit to the sales page is involved.",
       "product_loop_problems": [
-        "idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: FIXED IN SOURCE, NOT YET DELIVERED. The shipped tree now measures 6 taps to the first purchase, then 100s idle to a second kind of producer (browser run: 6 taps to the first purchase, opening rate \"毎秒 0円 ／ 1タップ 1円\"). Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so a buyer still downloads the config that needs 15 taps and then 600 seconds of nothing new. MEASURED 2026-08-10T17:43:01.962Z ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, both calls answered 2xx, and the served file list did not move (no_op). state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. MEASURED 2026-08-10T18:01:31.261Z: the FILE COUNT is not the term — a throwaway carrying two attachments had both replaced by a single-entry files[] PUT; the next term to test is rich_content: the live listing carries a rich_content page whose fileEmbed names ONE file, while product-level files[] carries more. If the buyer's download list comes from the embeds, then PUT files[] writes to an index nobody serves — which is exactly what a 2xx that changes nothing looks like.; and the listing names files in two places that disagree — files[] carries 2 (Brandable_Idle_Clicker_Kit_v1.0, brandable-idle-clicker) while its rich_content page embeds 1. Until it is closed no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it. The promise stays failed until a re-fetch shows the delivered digest moved.",
-        "idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 MEASURED 2026-08-10T17:43:01.962Z ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, both calls answered 2xx, and the served file list did not move (no_op). state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. MEASURED 2026-08-10T18:01:31.261Z: the FILE COUNT is not the term — a throwaway carrying two attachments had both replaced by a single-entry files[] PUT; the next term to test is rich_content: the live listing carries a rich_content page whose fileEmbed names ONE file, while product-level files[] carries more. If the buyer's download list comes from the embeds, then PUT files[] writes to an index nobody serves — which is exactly what a 2xx that changes nothing looks like.; and the listing names files in two places that disagree — files[] carries 2 (Brandable_Idle_Clicker_Kit_v1.0, brandable-idle-clicker) while its rich_content page embeds 1. Until it is closed no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it. The promise stays failed until a re-fetch shows the delivered digest moved."
+        "idle_clicker_kit fails a promise its live listing makes — balance_is_pre_tuned: TUNED IN THE TREE AND SHIPPED TWICE. The shipped tree measures 6 taps to the first purchase, then 100s idle to a second kind of producer (browser run: 6 taps to the first purchase, opening rate \"毎秒 0円 ／ 1タップ 1円\"), and the attachment the download page embeds carries that same config — but the product ALSO still carries the superseded archive, whose brand.config.json is the untuned one. state/product-source.json attachments[] holds both digests. Which numbers a buyer opens with depends on which archive they unzip, so the promise is not kept by the fix being present; it is broken by the old file still being attached. The fix is removal, not another upload.",
+        "idle_clicker_kit fails a promise its live listing makes — license_tier_is_determinate: TWO LICENCES ARE ATTACHED TO ONE PRODUCT. product/brandable-idle-clicker/LICENSE.txt is determinate and it IS the copy inside the archive the rich_content page embeds — that half is delivered, contrary to what this row said for eight handoffs. But state/product-source.json attachments[] shows the superseded archive is still attached, carrying the 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 opening. Determinacy is a property of what the buyer holds, not of the best file among several. The remedy is to detach the superseded archive; no upload and no edit to the sales page is involved."
       ],
       "actionable_now": true,
       "eta_effect_days": null,
@@ -506,14 +495,14 @@
         "file_route": {
           "upload_route_exists": true,
           "verdict": "the earlier absence was measured on the wrong paths",
-          "measured_at": "2026-08-11T00:04:20.992Z",
+          "measured_at": "2026-08-11T12:27:03.722Z",
           "source": "state/gumroad-presign.json"
         },
         "text_route": {
           "parameter_recognised": true,
           "content_landed": false,
           "verdict": "recognised_passage_untried",
-          "measured_at": "2026-08-11T00:04:21.414Z",
+          "measured_at": "2026-08-11T12:27:03.987Z",
           "source": "state/gumroad-rich-content.json"
         },
         "payload_walk": {

@@ -1131,8 +1131,8 @@
       "id": "the_loop_stops_thinking_when_the_claude_pool_empties",
       "claim": "When the Claude weekly window runs out, every part of this system that DECIDES anything stops, and stays stopped until the window resets. The collectors keep collecting and the ChatGPT lane keeps answering, but neither chooses work: the lane only runs a task already written into its inbox, and nothing writes one without Claude. So the outage is not a slowdown — it is a period in which the loop cannot pick, gate, judge or hand off, and the hourly trigger keeps firing into a session that can only note it has no budget.",
       "evidence": "scripts/pacing.mjs on origin/main at 2026-08-10T08:55Z: weekly remaining 19%, 4.54 days to reset, observed burn 32.92%/day against a flat-rate 14.29%/day. At the observed rate the pool empties in roughly 14 hours and the reset is 4.5 days out, leaving about 3.9 days with no Claude at all. This is not a hypothetical outage; it is the current trajectory. state/laps.json also shows the shape of it: exit code 10 ends a lap and the lap records nothing but the stop.",
-      "measured_at": null,
-      "recheck_after": "2026-08-11",
+      "measured_at": "2026-08-11T13:00:00Z",
+      "recheck_after": "2026-08-15",
       "measure_via": "here",
       "eta_effect_if_lifted": "Direct and large. Permanent instruction A10 is that automation must never stop; the honest reading of today is that it stops for most of every week and only the measuring half survives. Anything that keeps the deciding half alive through the empty days converts dead time into laps, and laps are the only thing that has ever moved anything here.",
       "how_to_measure": "Do not design first. Establish what actually survives an empty window, by looking at what ran during the last one rather than by reasoning about it: which workflows fired, which lane tasks completed, what changed on main. Then the question is what work can be moved onto the surfaces that survive.",
@@ -1142,7 +1142,18 @@
         "actions_do_not_spend_claude_at_all": "The hourly pulse already computes the target, the candidate list and the stop-detector with no Claude involved. What it does not do is CHOOSE. How much of choosing can be expressed as a computation is the open question, and the honest answer may be 'not much' — say so with evidence rather than assuming either way."
       },
       "what_this_is_not": "A request to spend less so the pool lasts. That is the efficiency candidate and it is ranked last while the ETA is infinite, for the reason RUNBOOK 3 gives: going twice as fast toward infinity buys zero days. This is about what happens during the empty period, not about postponing it.",
-      "the_trap_to_avoid": "Deciding during the outage is not the same as deciding well. A cheaper model or a computation that picks work badly, unattended, for four days, can spend the next window undoing itself. Whatever survives has to be judgeable afterwards — it should leave a record a returning lap can check, not a pile of changes nobody chose."
+      "the_trap_to_avoid": "Deciding during the outage is not the same as deciding well. A cheaper model or a computation that picks work badly, unattended, for four days, can spend the next window undoing itself. Whatever survives has to be judgeable afterwards — it should leave a record a returning lap can check, not a pile of changes nobody chose.",
+      "measured": {
+        "at": "2026-08-11T13:00:00Z",
+        "by": "eta-loop worker session_011bckY5N2Pidfjo6Nr4eRbt",
+        "what_was_read": "scripts/inbox-task.mjs printed run=false, queue_depth=31, reason \"no live unmarked task in the queue\" with all 31 skipped as already done. scripts/show-usage.mjs on origin/main at the same minute: Claude weekly 3% remaining resetting 2026-08-14T22:00:00Z, codex 80% resetting 2026-08-17, Spark 100% resetting 2026-08-18. codex-inbox.yml cron \"41 * * * *\".",
+        "the_finding": "THE CLAIM WAS ALREADY TRUE AND NOBODY HAD LOOKED. The constraint said the lane only runs a task already written into its inbox and nothing writes one without Claude. That was written as a forecast about the outage. It was measured today as the CURRENT state, three hours before the pool was projected to empty: the queue was already at zero live tasks, so the lane was already idle while holding 80% and 100% of two weekly pools. The outage was not going to cause the silence. The silence was in place and the outage was going to make it unfixable.",
+        "what_was_not_measured": "Whether the lane, given tasks, actually answers through an outage. The three tasks queued this lap and their markers in codex/outbox/ settle it by 2026-08-15 and are registered as a prediction. Nothing here claims it in advance.",
+        "the_arithmetic": "Lane cadence 60 minutes, reset 2026-08-14T22:00Z, so about 81 firings between the measurement and the refill. Each resolves to no work on an empty queue. The cost of being empty is not the queue; it is the firings."
+      },
+      "now_read_by": "scripts/check-lane-idle.mjs (pulse.yml, hourly)",
+      "what_changed_this_lap": "Both halves per RUNBOOK 8. The file: codex/INBOX.md gained three tasks (2026-08-11.gumroad-buyer-file-visibility, .gumroad-file-removal-surface, .incremental-paid-offer-forms), and inbox-task.mjs re-read run=true with the first routed to Spark. The machine: scripts/check-lane-idle.mjs goes red at zero live tasks, and red early when the queue will run dry before any lap can fund a refill. The second state is the one that matters — red at zero is a post-mortem, because by then the firings are already being spent on nothing.",
+      "what_this_does_not_lift": "The constraint itself. Claude still cannot DECIDE during an outage, and a queue drawn up before the dark days is a fixed list, not a loop: the lane cannot read its own answers and choose what to ask next. This lap converts a fixed number of dead firings into a fixed number of answered questions. It does not make the deciding half survive."
     },
     {
       "id": "codex_lane_can_drive_a_browser",
