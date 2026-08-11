@@ -293,9 +293,9 @@
       "status": "pending",
       "candidate_id": "idle_clicker_kit.deliver_both_rung_one_fixes",
       "owner_actions": 1,
-      "estimated_owner_minutes": 3,
-      "one_line": "Gumroad の商品に添付してあるファイルを、こちらで用意した新しい ZIP に差し替えてください。ZIP は作ってあります。落として、上げるだけです。",
-      "owner_typing_and_judgement_count": "打ち込む文字：0。判断する箇所：0。操作：下のURLを開いて ZIP を保存 → Gumroad で該当商品の Content を開く → 古いファイルを削除 → 保存した ZIP を追加 → Save。",
+      "estimated_owner_minutes": 1,
+      "one_line": "Gumroad の商品に古いファイルがもう1つ残っています。新しい方は既に付いています。古い方を削除するだけです。",
+      "owner_typing_and_judgement_count": "打ち込む文字：0。判断する箇所：0。操作：Gumroad で該当商品の Content を開く → Brandable_Idle_Clicker_Kit_v1.0 を削除 → Save。ダウンロードもアップロードも要りません。",
       "why_now_and_not_before": {
         "what_changed": "販売ページが約束していることのうち、守れていなかった2件が両方とも直った。ライセンスの記述（8/10 前半の周）と、遊びの数値の初期設定（同 後半の周）。片方だけの時点では出さなかった。1件でも2件でも、あなたの手間は同じ1回だからです。",
         "why_it_cannot_be_automated": "商品に添付されたファイルは、こちらの持っているアクセストークンでは差し替えられない。3方向すべて実測で塞がっている：既存商品の差し替え、新規作成時の添付、外部URLの指定。さらに codex/outbox/2026-08-10.u.md が最後の可能性（管理画面が使っている非公開の口）を潰した —— Gumroad 自身の公開ソースに「ログイン済みブラウザのセッションを使うものであり、OAuth クライアントからは到達できない」と書いてある。つまり調べていないのではなく、調べた結果できません。",
@@ -307,21 +307,15 @@
       },
       "the_ask": {
         "step_1": {
-          "what": "この URL を開いて、ZIP を保存する（GitHub にログインした状態で開いてください）",
-          "url": "https://github.com/bachikoljunior-blip/-chatgpt-usage-monitorPrivate/raw/main/dist/brandable-idle-clicker.zip",
-          "file_bytes": 32471,
-          "file_sha256": "e08de1bd905870bc1346f38a8fa202df38d4a7d1b7ec60fa3cbd839e1f835daf",
-          "note": "中身は12ファイル。いま販売ページに付いているものと同じ構成で、上の3ファイルだけが新しくなっています。"
-        },
-        "step_2": {
           "what": "Gumroad にログインし、Products → 該当商品 → Edit → Content を開く",
           "url": "https://bachiko4.gumroad.com/l/fbozt",
           "product_name": "放置クリッカー制作キット 商用ライセンス｜設定ファイル1枚でリスキンできる HTML/CSS/JS 一式"
         },
-        "step_3": {
-          "what": "いま付いているファイルを削除し、保存した ZIP を追加して Save",
-          "why_delete_first": "Gumroad には「差し替え」という操作がありません。追加してから古い方を消す形になります。2つ並んだままだと、買った人にどちらが正しいのか分かりません。",
-          "nothing_to_decide": "ファイル名も、説明文も、価格も、タグも、画像も変更しません。添付ファイル1つだけです。"
+        "step_2": {
+          "what": "Brandable_Idle_Clicker_Kit_v1.0 という添付ファイルを削除して Save",
+          "keep": "brandable-idle-clicker のほうは残してください。こちらが新しく、ダウンロード欄に表示されているのもこちらです。",
+          "why": "同じ中身の古い版で、ライセンスの文面が「2種類あります・購入時に選んだ種別」のままです。新しい方は1種類に確定しています。2つ並んでいると、買った人がどちらに従えばよいか決まりません。",
+          "nothing_to_decide": "ファイルの追加もダウンロードもありません。説明文・価格・タグ・画像は一切変更しません。"
         }
       },
       "superseded_by_measurement": {
@@ -333,10 +327,7 @@
         "still_pending_until": "実際に差し替えて success_test_machine が真になるまで status は pending のままにします。「できると分かった」は「配った」ではありません。",
         "do_not_delete_this_request": "取り下げた依頼を消すと、なぜオーナーに頼まずに済むようになったのかが残りません。誤った実測と、その訂正が並んでいることに意味があります。"
       },
-      "what_this_lap_could_not_do_and_why": {
-        "the_upload": "【2026-08-10T16:34Z に反証。上の superseded_by_measurement を読んでください。】アップロードだけは、こちらからはできません。上の why_it_cannot_be_automated が実測の内容です。",
-        "notifying_existing_buyers": "購入者への通知は不要です。売上は0件なので、通知すべき相手がまだいません。今回の差し替えは「これから買う人が受け取るもの」を直すためのものです。"
-      },
+      "what_this_lap_could_not_do_and_why": "Left the request open rather than withdrawn. The remedy is now correctly named and strictly smaller than before, but the detach-over-API question is untested and RUNBOOK 6 gate 5 forbids handing the owner work that has not been shown to be irreducible.",
       "success_test": "state/product-source.json のマニフェストで LICENSE.txt か brand.config.json の sha256 が新しい値になる。これは毎時ひとりでに更新されます。",
       "success_test_machine": {
         "note": "2026-08-10 訂正。この検査には当初3本目として file_size_bytes = 32471 がありました。趣旨は「決定的な方（product-source）は手動起動でしか更新されないので、毎時集まる安い方も併せて見る」で、趣旨自体は正しい —— 決定的な方だけを見る検査は誰も起動しないまま期限を迎え、「オーナーが動かなかった」と記録されます（2026-08-09.gumroad-cover-upload で実際にそうなりかけた）。壊れていたのは実装です。Gumroad は file_info.Size を「31.7 KB」という人間向けの文字列で返すので、sizeInBytes は正しく null を返し、バイト数と比べる節は永久に真になりません。つまり安全弁のつもりで足した節が、そもそも真になれない節でした。しかも「まだ真でない」と「真になれない」はログ上で見分けがつきません。",
@@ -366,12 +357,14 @@
         "typing": 0,
         "judgements": 0
       },
-      "automation_attempted": true,
+      "automation_attempted": "INCOMPLETE FOR THIS NARROWED ASK. The earlier finding (PUT files[] cannot REPLACE an attachment on this product) is measured and stands — state/gumroad-two-file-replace.json. Whether the same endpoint can DETACH one of two attachments has never been tried, and it is a different operation. A lap must measure that before this request is treated as unautomatable; if it lands, withdraw this request instead of asking.",
       "automation_cost_exceeds_manual_cost": true,
       "paste_ready": true,
       "cannot_decompose_further": true,
       "source": "state/gumroad-file-replacement.json（差し替え不可の実測）、codex/outbox/2026-08-10.u.md（非v2経路の否定・Gumroad 公開ソース引用）、state/promise-conformance.json（失敗している2行）、state/product-source.json（買った人がいま受け取る中身）、dist/brandable-idle-clicker.zip（渡すもの）。",
-      "performed_evidence": null
+      "performed_evidence": null,
+      "revised_at": "2026-08-11T03:05:00Z",
+      "revision_reason": "HALF OF THIS ASK WAS ALREADY DONE AND NOBODY KNEW. Measured 2026-08-11 by scripts/fetch-product-source.mjs, which now attributes each digest to the attachment it came from instead of merging every attachment into one list. The live product carries TWO archives: the corrected one (named brandable-idle-clicker, the one the download page embeds, carrying the fixed LICENSE.txt 6415c95a and brand.config.json 2f319226) and the superseded Brandable_Idle_Clicker_Kit_v1.0 (72ce347d / 0186af34), which no fileEmbed names. So step_1 and the ADD half of step_3 are complete. What is left is the DELETE half — and step_3 of the original ask predicted this exact state in its own words: 2つ並んだままだと、買った人にどちらが正しいのか分かりません."
     }
   ]
 }

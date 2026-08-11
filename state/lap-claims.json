@@ -1354,6 +1354,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-11T03:05:09.677Z",
+      "candidate": "idle_clicker_kit.promise_conformance",
+      "kind": "route_change",
+      "mechanism": "Rung 1 was read as a DELIVERY problem for eight handoffs and it is not one. The delivered-file comparison called manifest.find() on a flat union of two attachments that unzip to identical paths, so it compared against whichever sorted first — the superseded archive. Measured this lap with per-attachment attribution: the archive the rich_content page embeds already carries the corrected LICENSE.txt and brand.config.json. The route changes from adding bytes (an owner re-upload, or a rich_content PUT against the live sales copy) to removing the stale attachment. It does not move idle_eta_days: the measured revenue rate is 0 and this lap sells nothing.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

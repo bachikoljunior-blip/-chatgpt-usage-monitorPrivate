@@ -2369,8 +2369,28 @@
       "falsified_if": "a rich_content PUT naming a new file id answers 2xx on the LIVE listing and the re-fetched digest still does not move. Then the embed index is not what the buyer reads either, and the only remaining terms are origin (dashboard-created, untestable from here) and publication — which makes the owner upload request the route after all, and it should be re-filed rather than withdrawn.",
       "also_falsified_if": "the write damages the listing. The rich_content page IS the sales copy. Any lap applying this must read the live page and store it verbatim before writing, and must re-read after. A prediction that ignores that failure mode is a prediction that recommends breaking the only thing being sold.",
       "concurrent_changes": [
-        "scripts/verify-sanitized-state.mjs gained a probe-walk branch in the same lap. It is unrelated to delivery — it only makes the state file this measurement lives in credential-scannable at all — but it is recorded here because the rule is to record them, not to judge which ones matter."
+        "scripts/verify-sanitized-state.mjs gained a probe-walk branch in the same lap. It is unrelated to delivery — it only makes the state file this measurement lives in credential-scannable at all — but it is recorded here because the rule is to record them, not to judge which ones matter.",
+        "2026-08-11T03:0xZ, eta-loop session_01R7dpY1q1RxqSr3WUc7YbJq: scripts/fetch-product-source.mjs now attributes each digest to its attachment, and scripts/promise-conformance.mjs compares against that instead of the first row of a union. This prediction is NOT judged early — but the judge must know that its premise (the corrected archive is not on the product) was measured false the round after it was registered, so a tally that stays at 2 is not evidence about the rich_content route at all. It was never walked."
       ],
+      "outcome": null
+    },
+    {
+      "id": "2026-08-11.the-remaining-defect-is-subtractive",
+      "registered_at": "2026-08-11T03:06:00Z",
+      "registered_by": "eta-loop worker session_01R7dpY1q1RxqSr3WUc7YbJq",
+      "claim": "idle_clicker_kit rung 1 does not need anything ADDED. The corrected archive is already attached to the live product and is the one its rich_content page embeds; the superseded Brandable_Idle_Clicker_Kit_v1.0 is also still attached and embedded by nothing. Detaching that one archive — by API if PUT can detach, otherwise by the narrowed owner request — takes tally.fails from 2 to 0 with no upload, no edit to the product source, and no write to the live sales copy.",
+      "mechanism": "Measured 2026-08-11T02:5xZ by scripts/fetch-product-source.mjs --write with per-attachment attribution: embed ids [oDGDSIBw4Fnqo5UqC-jVDQ==]; attachment brandable-idle-clicker (that id) carries LICENSE.txt 6415c95aef18d8bc/3401 and brand.config.json 2f3192262584cc71, both identical to product/brandable-idle-clicker; attachment Brandable_Idle_Clicker_Kit_v1.0 carries 72ce347d472081f9/3151 and 0186af34572fc45d, embedded by nothing. Both failing promises are about a property of what the buyer holds (which balance opens, which licence governs), and both are decided by removing the disagreeing copy.",
+      "metric": "state/promise-conformance.json tally.fails, re-derived with --write (not --check) after the detach, and state/product-source.json attachment_count.",
+      "baseline": "2026-08-11T03:02Z: tally conforms 12 / blocked 1 / partial 1 / fails 2, attachment_count 2, rich_content_embed_ids length 1.",
+      "judge_deadline": "2026-08-17",
+      "falsification": [
+        "attachment_count goes to 1 and tally.fails does NOT go to 0 — then the two-archive disagreement was not what those rows were measuring, and this lap swapped one wrong cause for another.",
+        "the detach lands and the download page loses its embed or its copy — the same failure clause the rich_content prediction carried, and it applies here for the same reason: the page is the sales copy."
+      ],
+      "concurrent_changes": [
+        "Same lap: owner request 2026-08-10.gumroad-replace-the-kit-file narrowed from replace (download, delete, upload, save) to delete-one-attachment. If the OWNER performs it before a lap measures the API detach, the metric moves without settling whether the detach was automatable — record which one happened."
+      ],
+      "judge_on": "2026-08-15",
       "outcome": null
     }
   ]

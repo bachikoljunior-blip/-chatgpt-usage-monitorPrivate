@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-11T02:37:41.170Z",
+  "fetched_at": "2026-08-11T02:59:20.379Z",
   "source": "GET /v2/products/:id files[].url — the seller's own attachment, no owner action",
   "note": "The signed download URL is deliberately absent: it carries a verify token and an expiry. The manifest is what a later run compares against.",
   "product_id_shape": "string",
@@ -129,6 +129,148 @@
       "path": "brandable-idle-clicker/validate_config.py",
       "bytes": 6114,
       "sha256": "94c5b177f1a4951b1206dd9127bd373826c4a61772c531893f99ce226510f3b4"
+    }
+  ],
+  "attachment_count": 2,
+  "rich_content_embed_ids": [
+    "oDGDSIBw4Fnqo5UqC-jVDQ=="
+  ],
+  "attachments": [
+    {
+      "id": "m1ytUCFUjeH_G4mQIFHOMA==",
+      "name": "Brandable_Idle_Clicker_Kit_v1.0",
+      "embedded_in_rich_content": false,
+      "file_count": 12,
+      "manifest": [
+        {
+          "path": "brandable-idle-clicker/assets/engine.js",
+          "bytes": 16479,
+          "sha256": "952bc554692b2f268a148223f8e112e2e12aab217fe9a06d5203c2e2c20a3ce2"
+        },
+        {
+          "path": "brandable-idle-clicker/assets/style.css",
+          "bytes": 5214,
+          "sha256": "9cac1bebdc1ba744274caeadc96fb603cff8758e64dbcf1a68c554f70837d515"
+        },
+        {
+          "path": "brandable-idle-clicker/brand.config.json",
+          "bytes": 4385,
+          "sha256": "0186af34572fc45dae7e6c3cd3f95042c4598f287e5d15b997908d8406e3ca71"
+        },
+        {
+          "path": "brandable-idle-clicker/examples/cafe.json",
+          "bytes": 4799,
+          "sha256": "1bcb3b1f3709969ce555d6d48b112b16c27ecf77a8b7e3c24e59cf6de2b4f87f"
+        },
+        {
+          "path": "brandable-idle-clicker/examples/creator.json",
+          "bytes": 4917,
+          "sha256": "4aa1f0462d9ff4687cc6762fdd0e5e4e65be584a02744ad20561b237b78aa7ff"
+        },
+        {
+          "path": "brandable-idle-clicker/examples/salon.json",
+          "bytes": 4858,
+          "sha256": "da01f63418bf3ef3043b3c09d8e70b05bad54986c83444a5a06cd3744e970471"
+        },
+        {
+          "path": "brandable-idle-clicker/generator.html",
+          "bytes": 15143,
+          "sha256": "02355c2a587d6ecdf8e3200973a806b900c5922bfa91cda6b5dc6454b68df1f4"
+        },
+        {
+          "path": "brandable-idle-clicker/index.html",
+          "bytes": 1746,
+          "sha256": "d92a1d9359ff203d865af989fe52ddbf426bba54a1ccade4ad2ec62f4abff43c"
+        },
+        {
+          "path": "brandable-idle-clicker/LICENSE.txt",
+          "bytes": 3151,
+          "sha256": "72ce347d472081f92b45969c57acc43aef0145e2d9cd8dfca9fe16dc5943cb00"
+        },
+        {
+          "path": "brandable-idle-clicker/README.md",
+          "bytes": 6623,
+          "sha256": "e3bdcb788b23d0593087a11c0b2b8760f2e0aef1be88ad7b57dc6d8d214bcfe5"
+        },
+        {
+          "path": "brandable-idle-clicker/test_engine.py",
+          "bytes": 9296,
+          "sha256": "9f4c33436c9cb8cc5738a1d57800dad81b3bd83551f408c8ccc6a92336188059"
+        },
+        {
+          "path": "brandable-idle-clicker/validate_config.py",
+          "bytes": 6114,
+          "sha256": "94c5b177f1a4951b1206dd9127bd373826c4a61772c531893f99ce226510f3b4"
+        }
+      ]
+    },
+    {
+      "id": "oDGDSIBw4Fnqo5UqC-jVDQ==",
+      "name": "brandable-idle-clicker",
+      "embedded_in_rich_content": true,
+      "file_count": 12,
+      "manifest": [
+        {
+          "path": "brandable-idle-clicker/assets/engine.js",
+          "bytes": 16479,
+          "sha256": "952bc554692b2f268a148223f8e112e2e12aab217fe9a06d5203c2e2c20a3ce2"
+        },
+        {
+          "path": "brandable-idle-clicker/assets/style.css",
+          "bytes": 5214,
+          "sha256": "9cac1bebdc1ba744274caeadc96fb603cff8758e64dbcf1a68c554f70837d515"
+        },
+        {
+          "path": "brandable-idle-clicker/brand.config.json",
+          "bytes": 4385,
+          "sha256": "2f3192262584cc71685f25386c38662a0a94b07a122b3079eac4fd85b4262b18"
+        },
+        {
+          "path": "brandable-idle-clicker/examples/cafe.json",
+          "bytes": 4799,
+          "sha256": "1bcb3b1f3709969ce555d6d48b112b16c27ecf77a8b7e3c24e59cf6de2b4f87f"
+        },
+        {
+          "path": "brandable-idle-clicker/examples/creator.json",
+          "bytes": 4917,
+          "sha256": "4aa1f0462d9ff4687cc6762fdd0e5e4e65be584a02744ad20561b237b78aa7ff"
+        },
+        {
+          "path": "brandable-idle-clicker/examples/salon.json",
+          "bytes": 4858,
+          "sha256": "da01f63418bf3ef3043b3c09d8e70b05bad54986c83444a5a06cd3744e970471"
+        },
+        {
+          "path": "brandable-idle-clicker/generator.html",
+          "bytes": 15143,
+          "sha256": "02355c2a587d6ecdf8e3200973a806b900c5922bfa91cda6b5dc6454b68df1f4"
+        },
+        {
+          "path": "brandable-idle-clicker/index.html",
+          "bytes": 1746,
+          "sha256": "d92a1d9359ff203d865af989fe52ddbf426bba54a1ccade4ad2ec62f4abff43c"
+        },
+        {
+          "path": "brandable-idle-clicker/LICENSE.txt",
+          "bytes": 3401,
+          "sha256": "6415c95aef18d8bcf0541fe3a60185fa0dd60fd2dda287b3bdb347477683b7b8"
+        },
+        {
+          "path": "brandable-idle-clicker/README.md",
+          "bytes": 6548,
+          "sha256": "353ad8b330ec5678fef1e940c52436c6f2409281288bfcfd340dc0c9bbb0a376"
+        },
+        {
+          "path": "brandable-idle-clicker/test_engine.py",
+          "bytes": 9296,
+          "sha256": "9f4c33436c9cb8cc5738a1d57800dad81b3bd83551f408c8ccc6a92336188059"
+        },
+        {
+          "path": "brandable-idle-clicker/validate_config.py",
+          "bytes": 6114,
+          "sha256": "94c5b177f1a4951b1206dd9127bd373826c4a61772c531893f99ce226510f3b4"
+        }
+      ]
     }
   ]
 }

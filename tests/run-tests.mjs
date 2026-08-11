@@ -7346,3 +7346,84 @@ function assert(condition, message) {
   });
   assert(!/IS the term/.test(armedNotReached), "an arm that never ran was reported as having settled the term");
 }
+
+// --- the union manifest could not name which attachment a digest came from ----
+//
+// 2026-08-11. The live listing carries TWO archives that unzip to the same paths:
+// the corrected one, embedded by the rich_content page, and a superseded one that
+// no fileEmbed names. state/product-source.json held a flat union, so each path
+// appeared twice with two digests and deliveredMatches() took whichever sorted
+// first — the stale one. Two promises read FIXED IN SOURCE, NOT YET DELIVERED for
+// eight handoffs while the embedded copy already matched, and the remedy built on
+// that reading was an owner request to re-upload a file that was already up.
+//
+// These pin the two halves: the walk that finds the embeds, and the classifier
+// that must NOT collapse a two-attachment disagreement into a winner.
+{
+  const { embeddedFileIds } = await import("../scripts/fetch-product-source.mjs");
+  const embed = (id) => ({ type: "fileEmbed", attrs: { id, uid: id, collapsed: false } });
+
+  assert(embeddedFileIds({}).length === 0, "a product with no rich_content produced embed ids from nowhere");
+  assert(
+    embeddedFileIds({ rich_content: [{ title: "Downloads", description: { type: "doc", content: [embed("oDG==")] } }] })
+      .join() === "oDG==",
+    "the embed id was not found inside the page's description document",
+  );
+  // Nested: Gumroad wraps embeds in layout nodes, and a walk that only looks one
+  // level down reports "nothing is embedded" for a page that embeds everything —
+  // which would mark the delivered archive as unserved and invert the finding.
+  assert(
+    embeddedFileIds({
+      rich_content: [{ description: { content: [{ type: "div", content: [embed("a==")] }, embed("b==")] } }],
+    }).join() === "a==,b==",
+    "a nested fileEmbed was missed by the walk",
+  );
+
+  const { classifyDelivered } = await import("../scripts/promise-conformance.mjs");
+  const att = (name, sha, embedded) => ({
+    id: `${name}-id`,
+    name,
+    embedded_in_rich_content: embedded,
+    manifest: [{ path: `brandable-idle-clicker/LICENSE.txt`, bytes: 1, sha256: sha }],
+  });
+  const NEW = "6415c9";
+  const OLD = "72ce34";
+
+  // The regression itself. Two attachments disagree; the local tree matches the
+  // embedded one. "same" here is the bug — it buys a green by looking away from
+  // an attachment that is still on the product.
+  assert(
+    classifyDelivered({ attachments: [att("stale", OLD, false), att("live", NEW, true)] }, "LICENSE.txt", NEW) ===
+      "split_across_attachments",
+    "a product shipping two different LICENSE.txt files was reported as delivering one",
+  );
+  // Order must not matter: the union bug was an ordering accident.
+  assert(
+    classifyDelivered({ attachments: [att("live", NEW, true), att("stale", OLD, false)] }, "LICENSE.txt", NEW) ===
+      "split_across_attachments",
+    "the disagreement was visible in only one attachment order",
+  );
+  // One attachment, agreeing: the ordinary delivered case still reads same.
+  assert(
+    classifyDelivered({ attachments: [att("live", NEW, true)] }, "LICENSE.txt", NEW) === "same",
+    "a single matching attachment was not read as delivered",
+  );
+  assert(
+    classifyDelivered({ attachments: [att("live", OLD, true)] }, "LICENSE.txt", NEW) === "diverged",
+    "a single stale attachment was not read as diverged",
+  );
+  // A manifest written before the attribution existed must not be silently
+  // treated as agreement — the union genuinely cannot tell, and saying "same"
+  // there is the original defect wearing the new field's name.
+  const legacy = {
+    manifest: [
+      { path: "brandable-idle-clicker/LICENSE.txt", bytes: 1, sha256: OLD },
+      { path: "brandable-idle-clicker/LICENSE.txt", bytes: 1, sha256: NEW },
+    ],
+  };
+  assert(
+    classifyDelivered(legacy, "LICENSE.txt", NEW) === "split_across_attachments",
+    "a legacy union holding two digests was collapsed to a verdict it cannot support",
+  );
+  assert(classifyDelivered({}, "LICENSE.txt", NEW) === "unknown", "an absent manifest produced a verdict");
+}

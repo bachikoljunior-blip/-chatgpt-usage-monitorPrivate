@@ -130,22 +130,58 @@ function loadArtifact() {
  * world) and it would be a worse one, because here the green would be produced
  * BY the fix.
  *
- * @returns {"same"|"diverged"|"unknown"} whether the delivered file still matches
+ * 2026-08-11. This read `manifest.find(...)` on the flat union of every
+ * attachment. The live listing carries TWO ZIPs — the corrected one, which the
+ * rich_content page embeds, and a stale `Brandable_Idle_Clicker_Kit_v1.0` that
+ * no fileEmbed names. Both unzip to the same paths, so the union held each path
+ * twice with two digests and `find` returned whichever sorted first: the stale
+ * one. Two promises were therefore reported FIXED IN SOURCE, NOT YET DELIVERED
+ * for eight handoffs while the file the download page embeds already matched,
+ * and the answer built on top of that reading was an owner request to re-upload
+ * a ZIP that was already up, plus a planned write to the live sales copy.
+ *
+ * So the comparison now names its attachment. And when a second attachment
+ * disagrees on the same path it says so rather than picking a winner: a product
+ * shipping two different LICENSE.txt files has an indeterminate licence whatever
+ * the embedded copy says, and collapsing that to "same" would buy a green by
+ * looking away from the defect the promise is about.
+ *
+ * @returns {"same"|"diverged"|"split_across_attachments"|"unknown"}
  */
+export function classifyDelivered(source, relPath, localSha) {
+  const attachments = Array.isArray(source?.attachments) ? source.attachments : null;
+  const rowIn = (att) => (att.manifest || []).find((m) => String(m.path || "").endsWith(relPath));
+  if (attachments && attachments.length) {
+    const carrying = attachments.filter((a) => rowIn(a)?.sha256);
+    if (!carrying.length) return "unknown";
+    const digests = new Set(carrying.map((a) => rowIn(a).sha256));
+    if (digests.size > 1) return "split_across_attachments";
+    // One digest across every attachment that carries the path: which one is
+    // embedded no longer changes the answer.
+    return digests.has(localSha) ? "same" : "diverged";
+  }
+  // Attribution absent (a manifest written before 2026-08-11). The union is all
+  // there is, and it cannot separate the two cases — so it must not pretend to.
+  const manifest = source?.manifest;
+  if (!Array.isArray(manifest)) return "unknown";
+  const rows = manifest.filter((m) => String(m.path || "").endsWith(relPath) && m.sha256);
+  if (!rows.length) return "unknown";
+  if (new Set(rows.map((r) => r.sha256)).size > 1) return "split_across_attachments";
+  return rows[0].sha256 === localSha ? "same" : "diverged";
+}
+
 function deliveredMatches(relPath) {
   const f = path.join(ROOT, "state", "product-source.json");
   if (!existsSync(f)) return "unknown";
-  let manifest;
+  let source;
   try {
-    manifest = JSON.parse(readFileSync(f, "utf8"))?.manifest;
+    source = JSON.parse(readFileSync(f, "utf8"));
   } catch {
     return "unknown";
   }
-  if (!Array.isArray(manifest)) return "unknown";
-  const row = manifest.find((m) => String(m.path || "").endsWith(relPath));
   const local = path.join(PRODUCT_DIR, relPath);
-  if (!row?.sha256 || !existsSync(local)) return "unknown";
-  return sha(readFileSync(local, "utf8")) === row.sha256 ? "same" : "diverged";
+  if (!existsSync(local)) return "unknown";
+  return classifyDelivered(source, relPath, sha(readFileSync(local, "utf8")));
 }
 
 /**
@@ -653,7 +689,15 @@ const PROMISES = [
       // edits brand.config.json, this row turns green, and the archive Gumroad
       // serves still opens with the old numbers. The green would be produced BY
       // the fix.
-      if (deliveredMatches("brand.config.json") === "diverged") {
+      const deliveredConfig = deliveredMatches("brand.config.json");
+      if (deliveredConfig === "split_across_attachments") {
+        return {
+          verdict: FAILS,
+          observation:
+            `TUNED IN THE TREE AND SHIPPED TWICE. The shipped tree measures ${tuned.reason} (browser run: ${taps} taps to the first purchase, opening rate "${rate}"), and the attachment the download page embeds carries that same config — but the product ALSO still carries the superseded archive, whose brand.config.json is the untuned one. state/product-source.json attachments[] holds both digests. Which numbers a buyer opens with depends on which archive they unzip, so the promise is not kept by the fix being present; it is broken by the old file still being attached. The fix is removal, not another upload.`,
+        };
+      }
+      if (deliveredConfig === "diverged") {
         return {
           verdict: FAILS,
           observation:
@@ -696,6 +740,20 @@ const PROMISES = [
       }
       const variants = listing?.variants?.length ?? 0;
       const delivered = deliveredMatches("LICENSE.txt");
+      if (!twoTiers && !chooseAtPurchase && delivered === "split_across_attachments") {
+        // The strongest form of this promise failing, and the one the union
+        // manifest could never state. Both LICENCES are attached to the product:
+        // the corrected single-tier one that the download page embeds, and the
+        // superseded two-tier one on an attachment no fileEmbed names. A buyer
+        // holding two documents that disagree about what governs them has an
+        // indeterminate licence by definition — this row is not made green by
+        // the corrected file existing, only by the other one being gone.
+        return {
+          verdict: FAILS,
+          observation:
+            "TWO LICENCES ARE ATTACHED TO ONE PRODUCT. product/brandable-idle-clicker/LICENSE.txt is determinate and it IS the copy inside the archive the rich_content page embeds — that half is delivered, contrary to what this row said for eight handoffs. But state/product-source.json attachments[] shows the superseded archive is still attached, carrying the 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 opening. Determinacy is a property of what the buyer holds, not of the best file among several. The remedy is to detach the superseded archive; no upload and no edit to the sales page is involved.",
+        };
+      }
       if (!twoTiers && !chooseAtPurchase && delivered === "diverged") {
         // The source is fixed and the attachment is not. Still FAILS, and the
         // observation has to say which half moved, or the next lap reads a green

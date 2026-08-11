@@ -65,6 +65,46 @@ export function promisesPresent(paths) {
 }
 
 /**
+ * Which attachment ids does the product's rich_content page actually embed?
+ *
+ * 2026-08-11. The manifest this script writes was a flat UNION of every
+ * attachment, and the live listing carries two ZIPs whose LICENSE.txt and
+ * brand.config.json differ. So state/product-source.json listed every path
+ * TWICE with two different digests, and promise_conformance read that union and
+ * reported two promises FAILING. Nothing in the file said which attachment a
+ * digest came from, so "the delivered file is stale" and "one of two attached
+ * files is stale" were indistinguishable in the only record either claim had.
+ *
+ * This walks the ProseMirror document Gumroad returns and collects the ids named
+ * by fileEmbed nodes. It does NOT decide what a buyer receives — whether an
+ * attached-but-unembedded file is downloadable is unmeasured here, and writing
+ * that guess into the manifest is exactly the substitution that produced the
+ * ambiguity above. It records the mapping; a reader with a measurement decides.
+ *
+ * @param product the product object from GET /v2/products/:id
+ * @returns lowercase-free list of embed ids, in document order, deduplicated
+ */
+export function embeddedFileIds(product) {
+  const pages = Array.isArray(product?.rich_content) ? product.rich_content : [];
+  const found = [];
+  const walk = (node) => {
+    if (!node || typeof node !== "object") return;
+    if (Array.isArray(node)) {
+      for (const child of node) walk(child);
+      return;
+    }
+    if (node.type === "fileEmbed") {
+      const id = node.attrs?.id ?? node.attrs?.uid;
+      if (id != null && !found.includes(String(id))) found.push(String(id));
+    }
+    walk(node.content);
+    walk(node.description);
+  };
+  for (const page of pages) walk(page);
+  return found;
+}
+
+/**
  * Where to unzip the recovered attachment.
  *
  * 2026-08-10. This script extracts what a BUYER currently downloads. product/ is
@@ -113,11 +153,14 @@ async function main() {
     process.exit(1);
   }
 
+  const embedded = embeddedFileIds(json?.product);
   const dest = resolve(REPO, extractionDir(process.argv, DEST));
   await mkdir(dest, { recursive: true });
   const entries = [];
+  const attachments = [];
   for (const f of files) {
     if (!f?.url) continue;
+    const own = [];
     const bin = Buffer.from(await (await fetch(f.url, { signal: AbortSignal.timeout(60_000) })).arrayBuffer());
     const zip = join(dest, `${f.name ?? "attachment"}.zip`);
     await writeFile(zip, bin);
@@ -132,9 +175,21 @@ async function main() {
       const abs = join(dest, rel);
       if (!existsSync(abs)) continue;
       const buf = await readFile(abs);
-      entries.push({ path: rel, bytes: buf.length, sha256: createHash("sha256").update(buf).digest("hex") });
+      const entry = { path: rel, bytes: buf.length, sha256: createHash("sha256").update(buf).digest("hex") };
+      entries.push(entry);
+      own.push(entry);
     }
     execFileSync("rm", ["-f", zip]);
+    attachments.push({
+      id: f.id == null ? null : String(f.id),
+      name: f.name ?? null,
+      // The one thing the union could not say. An attachment named by no
+      // fileEmbed is not on the page the buyer is shown; whether it is
+      // nonetheless downloadable is a separate, unmeasured question.
+      embedded_in_rich_content: f.id == null ? null : embedded.includes(String(f.id)),
+      file_count: own.length,
+      manifest: manifestOf(own),
+    });
   }
 
   const promised = promisesPresent(entries.map((e) => e.path));
@@ -153,7 +208,15 @@ async function main() {
     file_count: entries.length,
     promised_artifacts_present: promised.all_present,
     promised_artifacts_missing: promised.missing,
+    // Unchanged and deliberately still the union: promise_conformance reads it,
+    // and redefining what it means in the same lap that first measures the
+    // attribution would move the number and the definition together.
     manifest: manifestOf(entries),
+    // The attribution. `manifest` above cannot tell "the delivered file is
+    // stale" from "one of two attached files is stale"; this can.
+    attachment_count: attachments.length,
+    rich_content_embed_ids: embedded,
+    attachments,
   };
 
   if (write) {
