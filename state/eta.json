@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T22:22:43.131Z",
+  "fetched_at": "2026-08-11T00:06:50.364Z",
   "ranking": "actionable first; refuted last; efficiency last while every path is infinite. Among zero-base options whose round was discredited, the days estimate does not rank — they are ordered by recurring owner actions per month, which is measured. Everything else falls back to the days estimate, then to owner actions.",
   "repricings_with_no_candidate": [
     "itch"
@@ -40,11 +40,11 @@
   "movement": {
     "idle": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 1.16
+      "days_unchanged": 1.23
     },
     "planned": {
       "unchanged_since": "2026-08-09T18:34:13.562Z",
-      "days_unchanged": 1.16
+      "days_unchanged": 1.23
     },
     "note": "days_unchanged is measured from the oldest consecutive row carrying the same value. Three rounds without movement is the signal to change the route rather than the parameter."
   },
@@ -59,13 +59,13 @@
       "findable_surface_at_scale",
       "point_the_reach_we_own_at_the_thing_we_sell"
     ],
-    "elected_route_has_no_unrefuted_candidate": true,
-    "elected_route_status": "every candidate serving the elected route (route_1_post_where_buyers_gather) is refuted. The route is still elected and there is nothing under it to take. This is a route decision owed to the next lap: either give the route an unrefuted candidate, or elect a different route. Do not read the surviving 'elected' label as an instruction to take the refuted candidate anyway."
+    "elected_route_has_no_unrefuted_candidate": false,
+    "elected_route_status": null
   },
   "channels": [
     {
       "id": "gumroad",
-      "measured_at": "2026-08-10T22:17:15.383Z",
+      "measured_at": "2026-08-11T00:04:21.969Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
       "revenue_window_days": 1.386,
@@ -82,7 +82,7 @@
     },
     {
       "id": "itch",
-      "measured_at": "2026-08-10T22:19:27.393Z",
+      "measured_at": "2026-08-11T00:05:52.428Z",
       "monthly_yen_now": 0,
       "revenue_rate_derivable": true,
       "revenue_window_days": 0.848,
@@ -106,7 +106,7 @@
       "idle_eta_reason": "measured, not unreadable: 1208.75/day views and 394.75/day engaged over 4 days (2026-08-04..2026-08-07), zero owner actions. Ad revenue is not the path — at this rate the YouTube Partner gate is 4000 days away on subscribers, and the sibling loop prices the far side of it in the ¥1,000s/month against a ¥200,000 target. What the ranking may use is the ADDRESSABLE reach and not this one: 2 of 4851 playbacks over 28d. No threshold is applied here — the two numbers are printed because a route was elected on the larger one while the smaller existed and had never been read. DELIVERY CEILING FIRST: 2 of 4851 playbacks over 28d reach a surface that renders the description (0.04%), so the ceiling on clicks to ANY url placed here is 2 per 28 days — independent of which url and of who the audience is. Everything below is about a link nobody arrives at. The surface PERMITS the paid product's link and FORBIDS the free demo's (github) — so route 1's entire payload cannot go here as hosted. That is the exact INVERSE of r/gamedev, which permits the free artifact and forbids being paid. A lap may NOT perform the edit; it is the sibling loop's act.",
       "owner_actions_required": 0,
       "stale": false,
-      "stale_days": 1,
+      "stale_days": 1.1,
       "reach": {
         "usable": true,
         "window_days": 4,
@@ -155,6 +155,17 @@
     },
     {
       "kind": "constraint_recheck",
+      "id": "free_artifact_door",
+      "why": "unknown effect",
+      "owner_actions": 0,
+      "note": "SCOPED FOR THE FIRST TIME, NOT YET MEASURED: there is exactly one venue on record whose door opens with NO owner action, and it opens to a different PRODUCT FORM rather than to a better account. r/gamedev forbids promoting paid assets and permits free ones not locked behind a signup, in the same sentence. Six venue surveys never counted this as a candidate because the recorded blocker was that the kit source is not in this repository, so there is nothing here to make free. That is a fact about the KIT, not about the DOOR. A small original demo written from scratch opens it just as well, needs no owner, no browser, and no external site.",
+      "measure_via": "codex_lane",
+      "actionable_now": true,
+      "eta_effect_days": null,
+      "eta_effect_basis": "no comparable estimate recorded"
+    },
+    {
+      "kind": "constraint_recheck",
       "id": "lap_cost_is_below_the_meter_resolution",
       "why": "It is what makes the reservation cap stop hiding things. Right now the estimate says the other automations need 240% of a week while 20% remains — a twelvefold overshoot — and the cap absorbs it, so the gate output looks the same whether the registry is right or wrong. With a real per-run cost the raw number becomes a claim that can be wrong out loud, and the two YouTube rows that fail every run stop being priced identically to the loop that does the work.",
       "owner_actions": 0,
@@ -192,6 +203,184 @@
     },
     {
       "kind": "zero_base_option",
+      "id": "honest_post_where_buyers_gather",
+      "why": "the one route in the evidence where a first buyer actually arrived from something we could do: a single honest post into the specific community the buyers are in, with the poster answering replies that day",
+      "serves_route": "route_1_post_where_buyers_gather",
+      "owner_actions": "1 initial + several hours of replies the same day, per attempt, not recurring",
+      "days_to_first_yen_estimate": "unmeasured",
+      "estimate_not_measurement": true,
+      "owner_actions_to_list_measured": null,
+      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
+      "refuted": null,
+      "refutation_scoped_out": {
+        "scoped_out_at": "2026-08-11T00:15:00Z",
+        "scoped_out_by": "eta-loop lap, session_015gYTFhg6nBBXCW9vP8BKK5, after scripts/eta-gate.mjs --kind=route_change returned go",
+        "what_this_is": "NOT a withdrawal of the refutation. The refutation is carried verbatim in `original` and still holds everywhere except the one venue where the mechanism it rests on is measured absent. `refuted` is null so the candidate stops sinking below every unrefuted option and so route_1 stops printing an owed decision — that is the whole effect. It does not make this a good candidate; it makes it the one that can be worked on.",
+        "original": {
+          "at": "2026-08-09T10:52:00Z",
+          "by": "codex-loop (codex/outbox/2026-08-09.i.md)",
+          "claim_tested": "from zero existing readers, ONE honest post into the community the buyers are in, with the poster answering replies that day, reaches a first sale — with publish date and first-sale date both confirmable as calendar days",
+          "finding": "No case was found meeting the whole chain. The near cases all break the 'one post' term, and they break it in the same direction. TypeGenie: Product Hunt 2023-04-13, Hacker News 2023-04-14, first sale 2023-04-14 — at least two venues. Invoker: published 2020-06-30, USD 90 the same day, and the author records having had no audience at all — but posted to Product Hunt, Reddit and their own Twitter, at least three venues, and the buyer cannot be attributed to any one of them. Hacker News Front Page Explorer: published and first sale both 2020-12-29, with Product Hunt sending 1,000+ people, plus r/SideProject the same day. Optiwing is the closest in posting STYLE — starting a conversation about the problem in r/SEO and naming the tool in passing — but the author cannot attribute the buyer, and used multiple subreddits, Facebook and LinkedIn groups, Indie Hackers, Capterra and ads. Pinger is the closest to a single post, and it converted through a free trial plus ongoing dialogue and feature additions over about a month, with no confirmable dates. Two counter-cases hit the premise head-on, and both are about STANDING rather than frequency: an r/Entrepreneur post removed 2026-02-19 under Rule 2 'No Promotion' — being honest that it is your own work is not an exemption when the post's purpose is promotion — and a post auto-removed 2026-03-20 for the author having under 10 comment karma in that community, i.e. the single post from a standing start was never shown to anyone. A third case (SaaS published 2026-04-24) was banned from Reddit and reached zero sales across Reddit, LinkedIn, cold email and Product Hunt combined.",
+          "verdict": "falls as stated: zero audience plus exactly one post is not supported by any case on record",
+          "sources_in": "codex/outbox/2026-08-09.i.md",
+          "not_refuted": "that posting into a buyer community reaches a first buyer — it does, and it is by far the fastest route on record here: three of the cases reached first revenue within 0-1 days of publishing. What fell is this candidate's specific shape, and the survey also returned two positive findings the candidate did not contain. First, what the fast cases posted was a finished artifact the reader could try immediately (a working Zendesk tool, a desktop app, a searchable database of real data) — no case was found where a bare 'I built a thing' announcement sufficed. Second, no evidence either way on price: nothing showed that being free, or under some price, makes one post enough.",
+          "what_it_leaves": "Five of the seven checked options are now refuted, and the term that keeps failing has moved. It is no longer 'unattended discovery does not work' (that was 2026-08-09.h) but 'a standing start does not work'. The blocker the evidence actually names is STANDING, not recurring posting: prior participation in the community, or several venues hit at once, or an existing following. That distinction matters because the constraint this loop excluded route 1 on was 'recurring owner actions', and standing is not a recurring action — it is a prerequisite that accrues before the post. Invoker is the one case with zero audience, both dates, and a first sale on day zero, and it substituted breadth (three venues at once) for standing. Recording this is not a proposal: per 2026-08-09.h, a lap should take this deliberately rather than fill the gap with an eighth candidate."
+        },
+        "what_the_refutation_rests_on": "Two counter-cases, and both are REMOVALS driven by a venue threshold: an r/Entrepreneur post removed 2026-02-19 under Rule 2 'No Promotion', and a post auto-removed 2026-03-20 for the author holding under 10 comment karma. Both say the post from a standing start was never SHOWN to anyone. That is the mechanism, and it is a property of a venue rather than of the shape of the post.",
+        "where_the_mechanism_is_measured_absent": {
+          "venue": "r/incremental_games",
+          "row": "state/constraints.json → no_standing_where_buyers_gather.venue_survey.per_venue[r/incremental_games]",
+          "measurements": [
+            {
+              "what": "no published eligibility threshold of any kind; sidebar reads 'Public / Anyone can view, post, and comment to this community'; three paid developer posts standing days after posting",
+              "source": "codex/outbox/incremental-eligibility.md",
+              "lane_run": "2026-08-10.incremental-eligibility, ledger row present in state/codex-lane.json"
+            },
+            {
+              "what": "the mandatory 'AI Disclosure' label is matched loosely — three spellings all surviving; five posts naming itch.io as the playable, none removed",
+              "source": "codex/outbox/incremental-post-shape.md",
+              "lane_run": "NONE — filed as a LEAD, state/codex-lane.json answers_with_no_ledger_run. Not cited here as the venue having been observed."
+            },
+            {
+              "what": "six creation-kit / engine / template posts 2019-2024, zero removed, comments positive; one post linking a priced itch.io page, not removed",
+              "source": "codex/outbox/incremental-kit-precedent.md",
+              "lane_run": "2026-08-11.incremental-kit-precedent, ledger row present in state/codex-lane.json runs, committed by the workflow bot in 86754e8. FIRST attributed lane answer after nine unattributed ones, which is why this one is admitted as a measurement rather than a lead."
+            }
+          ],
+          "what_it_settles": "The class of post this account would make is not removed here. The previous lap's open question — ten of ten top posts offer a game and zero offer a creation kit — counted RANKING, and this counts REMOVAL. Kits are posted here and they survive. Absence from a top-ten snapshot was never prohibition, and it is now measured not to be."
+        },
+        "scope": "ONE VENUE. Every other row on the venue survey keeps the refutation unweakened — r/gamedev forbids paid assets in the same sentence that permits the post, and GameDev.net publishes no threshold that any reading can settle. This is not a finding about posting-from-a-standing-start in general.",
+        "still_unrefuted": [
+          "THE SALE TERM IS UNTOUCHED. All three measurements are about the post being SHOWN. The refuted claim was that one honest post from a standing start reaches a first SALE, and no case on record supports it. Nothing here converts anybody; this lap does not claim it does.",
+          "PAID + OWN WORK + KIT TOGETHER IS STILL OBSERVED NOWHERE. All six surviving kit posts are free and open-source. The one surviving priced itch.io post is a 900-game charity bundle, not the poster's own priced work. Each half of what this account would post survives; the combination has no precedent either way.",
+          "'ZERO REMOVED' IS A FLOOR, NOT A VERIFIED ZERO. The answer states Reddit's .json endpoints returned 403 to the lane, so removed_by_category was never read. Removal was judged by the body not reading [removed] in the page or the search cache. A post removed and re-cached before the crawl would not show.",
+          "THE LANGUAGE MISMATCH STANDS. Rule 4 requires a link to something playable and the only playable artifact this project serves declares lang=\"ja\" against an English readership, with zero Japanese-language precedent found in the subreddit under four searches."
+        ],
+        "what_would_re_refute_it": [
+          "the post is made and removed — the mechanism was present and unpublished after all",
+          "the post stands its 30 days, is shown, and produces no sale — then the term that falls is conversion, which is the term the original refutation actually named and which no measurement here reaches"
+        ],
+        "read_by": "scripts/repricing.mjs applyRouteElection, which carries it onto the candidate the ranking prints"
+      },
+      "measured_surface": null,
+      "measured_delivery": null,
+      "actionable_now": true,
+      "eta_effect_days": null,
+      "recurring_owner_actions_per_month": 0,
+      "estimate_reliability": "discredited_by_siblings",
+      "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "eta_effect_basis": "no comparable estimate recorded",
+      "success_test": "A post exists in a venue whose self-promotion rules permit it as quoted, made from an account that met that venue eligibility threshold stated as a number or an explicit none, linking an artifact the reader can try without paying and without signing up. Measured from the post URL and the venue rule text, not from the pack being prepared.",
+      "not_success": "A paste-ready venue pack sitting in state/owner-requests.json. That is preparation, and this candidate has been blocked on execution rather than preparation since it was written. Also not success: a post into GameDev.net, whose eligibility could not be established — posting there tests nothing, because a removal would be indistinguishable from the auto-removals already on record.",
+      "repriced_by": "state/constraints.json no_standing_where_buyers_gather.venue_survey (codex/outbox/2026-08-09.o.md)",
+      "repriced_because": "The candidate was carrying the route adopted at 3555e97 with no test of whether the act it names can be performed. It can not, today: 0 of 3 surveyed venues are postable from a standing start, and neither of the two hard refusals is about standing. Recorded on the candidate rather than in the constraint alone because the constraint is not what a lap picks from.",
+      "route_alignment": {
+        "serves_route": "route_1_post_where_buyers_gather",
+        "elected_route": "route_1_post_where_buyers_gather",
+        "status": "elected",
+        "elected_at": "2026-08-10T19:05:00Z",
+        "why": "Route 7 was elected on the sentence 'nothing built here reaches a buyer'. That sentence is false about the priced kit and always was: state/gumroad.json shows the listing live, published and purchasable, and state/eta.json's gumroad channel reports lifetime_sales 0 over eight months. A product that can be bought and is not bought is not blocked on the quality of its download. Three prerequisite laps went into the file-replacement mechanism (state/gumroad-file-walk.json, state/product-delivery.json, state/gumroad-two-file-replace.json) and each produced a real measurement about Gumroad's API and nothing about the number: eta-history is five rows of null/null and lap-claims is 79 claims with improves=false on every one. Relieving a term that is not binding cannot move an ETA, which is the definition of the wrong route.",
+        "prerequisite": "STANDING, MEASURED ON THIS ACCOUNT. Named as the route's prerequisite because the refutation named it, not because it is convenient: does the owner hold prior participation, karma, or a following in any community where buyers of a brandable idle-clicker kit gather, sufficient that a single honest post would be SHOWN rather than auto-removed?",
+        "prerequisite_measured": {
+          "term": "venue_rule",
+          "instrument": {
+            "script": "scripts/venue-readiness.mjs",
+            "field": "rows[].binding",
+            "note": "loadVenueRows reads the venue rows in state/constraints.json and reports one binding cause per venue. prerequisiteCheck fails in pulse.yml if this election names a term that instrument cannot report."
+          },
+          "counts": {
+            "delivery_unmeasured": 0,
+            "postable": 1,
+            "venue_rule": 1,
+            "venue_unsettled": 1,
+            "account": 0,
+            "account_too_new": 1
+          },
+          "venues_on_the_named_term": 1,
+          "language_mismatches": [
+            "r/gamedev",
+            "r/incremental_games"
+          ],
+          "venues_with_a_revenue_path": [
+            "itch.io — Release Announcements",
+            "GameDev.net — Your Announcements",
+            "r/incremental_games"
+          ],
+          "binding_venues_without_a_revenue_path": [],
+          "owner_requests_clearing_the_term": [],
+          "ok": true,
+          "problem": null,
+          "revenue_path_exception": null
+        },
+        "language_mismatches": [
+          "r/gamedev",
+          "r/incremental_games"
+        ],
+        "binding_venues_without_a_revenue_path": [],
+        "owner_requests_clearing_the_prerequisite": [],
+        "elected_but_refuted": false,
+        "refutation_scoped_out": {
+          "scoped_out_at": "2026-08-11T00:15:00Z",
+          "scoped_out_by": "eta-loop lap, session_015gYTFhg6nBBXCW9vP8BKK5, after scripts/eta-gate.mjs --kind=route_change returned go",
+          "what_this_is": "NOT a withdrawal of the refutation. The refutation is carried verbatim in `original` and still holds everywhere except the one venue where the mechanism it rests on is measured absent. `refuted` is null so the candidate stops sinking below every unrefuted option and so route_1 stops printing an owed decision — that is the whole effect. It does not make this a good candidate; it makes it the one that can be worked on.",
+          "original": {
+            "at": "2026-08-09T10:52:00Z",
+            "by": "codex-loop (codex/outbox/2026-08-09.i.md)",
+            "claim_tested": "from zero existing readers, ONE honest post into the community the buyers are in, with the poster answering replies that day, reaches a first sale — with publish date and first-sale date both confirmable as calendar days",
+            "finding": "No case was found meeting the whole chain. The near cases all break the 'one post' term, and they break it in the same direction. TypeGenie: Product Hunt 2023-04-13, Hacker News 2023-04-14, first sale 2023-04-14 — at least two venues. Invoker: published 2020-06-30, USD 90 the same day, and the author records having had no audience at all — but posted to Product Hunt, Reddit and their own Twitter, at least three venues, and the buyer cannot be attributed to any one of them. Hacker News Front Page Explorer: published and first sale both 2020-12-29, with Product Hunt sending 1,000+ people, plus r/SideProject the same day. Optiwing is the closest in posting STYLE — starting a conversation about the problem in r/SEO and naming the tool in passing — but the author cannot attribute the buyer, and used multiple subreddits, Facebook and LinkedIn groups, Indie Hackers, Capterra and ads. Pinger is the closest to a single post, and it converted through a free trial plus ongoing dialogue and feature additions over about a month, with no confirmable dates. Two counter-cases hit the premise head-on, and both are about STANDING rather than frequency: an r/Entrepreneur post removed 2026-02-19 under Rule 2 'No Promotion' — being honest that it is your own work is not an exemption when the post's purpose is promotion — and a post auto-removed 2026-03-20 for the author having under 10 comment karma in that community, i.e. the single post from a standing start was never shown to anyone. A third case (SaaS published 2026-04-24) was banned from Reddit and reached zero sales across Reddit, LinkedIn, cold email and Product Hunt combined.",
+            "verdict": "falls as stated: zero audience plus exactly one post is not supported by any case on record",
+            "sources_in": "codex/outbox/2026-08-09.i.md",
+            "not_refuted": "that posting into a buyer community reaches a first buyer — it does, and it is by far the fastest route on record here: three of the cases reached first revenue within 0-1 days of publishing. What fell is this candidate's specific shape, and the survey also returned two positive findings the candidate did not contain. First, what the fast cases posted was a finished artifact the reader could try immediately (a working Zendesk tool, a desktop app, a searchable database of real data) — no case was found where a bare 'I built a thing' announcement sufficed. Second, no evidence either way on price: nothing showed that being free, or under some price, makes one post enough.",
+            "what_it_leaves": "Five of the seven checked options are now refuted, and the term that keeps failing has moved. It is no longer 'unattended discovery does not work' (that was 2026-08-09.h) but 'a standing start does not work'. The blocker the evidence actually names is STANDING, not recurring posting: prior participation in the community, or several venues hit at once, or an existing following. That distinction matters because the constraint this loop excluded route 1 on was 'recurring owner actions', and standing is not a recurring action — it is a prerequisite that accrues before the post. Invoker is the one case with zero audience, both dates, and a first sale on day zero, and it substituted breadth (three venues at once) for standing. Recording this is not a proposal: per 2026-08-09.h, a lap should take this deliberately rather than fill the gap with an eighth candidate."
+          },
+          "what_the_refutation_rests_on": "Two counter-cases, and both are REMOVALS driven by a venue threshold: an r/Entrepreneur post removed 2026-02-19 under Rule 2 'No Promotion', and a post auto-removed 2026-03-20 for the author holding under 10 comment karma. Both say the post from a standing start was never SHOWN to anyone. That is the mechanism, and it is a property of a venue rather than of the shape of the post.",
+          "where_the_mechanism_is_measured_absent": {
+            "venue": "r/incremental_games",
+            "row": "state/constraints.json → no_standing_where_buyers_gather.venue_survey.per_venue[r/incremental_games]",
+            "measurements": [
+              {
+                "what": "no published eligibility threshold of any kind; sidebar reads 'Public / Anyone can view, post, and comment to this community'; three paid developer posts standing days after posting",
+                "source": "codex/outbox/incremental-eligibility.md",
+                "lane_run": "2026-08-10.incremental-eligibility, ledger row present in state/codex-lane.json"
+              },
+              {
+                "what": "the mandatory 'AI Disclosure' label is matched loosely — three spellings all surviving; five posts naming itch.io as the playable, none removed",
+                "source": "codex/outbox/incremental-post-shape.md",
+                "lane_run": "NONE — filed as a LEAD, state/codex-lane.json answers_with_no_ledger_run. Not cited here as the venue having been observed."
+              },
+              {
+                "what": "six creation-kit / engine / template posts 2019-2024, zero removed, comments positive; one post linking a priced itch.io page, not removed",
+                "source": "codex/outbox/incremental-kit-precedent.md",
+                "lane_run": "2026-08-11.incremental-kit-precedent, ledger row present in state/codex-lane.json runs, committed by the workflow bot in 86754e8. FIRST attributed lane answer after nine unattributed ones, which is why this one is admitted as a measurement rather than a lead."
+              }
+            ],
+            "what_it_settles": "The class of post this account would make is not removed here. The previous lap's open question — ten of ten top posts offer a game and zero offer a creation kit — counted RANKING, and this counts REMOVAL. Kits are posted here and they survive. Absence from a top-ten snapshot was never prohibition, and it is now measured not to be."
+          },
+          "scope": "ONE VENUE. Every other row on the venue survey keeps the refutation unweakened — r/gamedev forbids paid assets in the same sentence that permits the post, and GameDev.net publishes no threshold that any reading can settle. This is not a finding about posting-from-a-standing-start in general.",
+          "still_unrefuted": [
+            "THE SALE TERM IS UNTOUCHED. All three measurements are about the post being SHOWN. The refuted claim was that one honest post from a standing start reaches a first SALE, and no case on record supports it. Nothing here converts anybody; this lap does not claim it does.",
+            "PAID + OWN WORK + KIT TOGETHER IS STILL OBSERVED NOWHERE. All six surviving kit posts are free and open-source. The one surviving priced itch.io post is a 900-game charity bundle, not the poster's own priced work. Each half of what this account would post survives; the combination has no precedent either way.",
+            "'ZERO REMOVED' IS A FLOOR, NOT A VERIFIED ZERO. The answer states Reddit's .json endpoints returned 403 to the lane, so removed_by_category was never read. Removal was judged by the body not reading [removed] in the page or the search cache. A post removed and re-cached before the crawl would not show.",
+            "THE LANGUAGE MISMATCH STANDS. Rule 4 requires a link to something playable and the only playable artifact this project serves declares lang=\"ja\" against an English readership, with zero Japanese-language precedent found in the subreddit under four searches."
+          ],
+          "what_would_re_refute_it": [
+            "the post is made and removed — the mechanism was present and unpublished after all",
+            "the post stands its 30 days, is shown, and produces no sale — then the term that falls is conversion, which is the term the original refutation actually named and which no measurement here reaches"
+          ],
+          "read_by": "scripts/repricing.mjs applyRouteElection, which carries it onto the candidate the ranking prints"
+        }
+      },
+      "blocked_on_rechecked": {
+        "at": "2026-08-09T11:28:00.123Z",
+        "was": "there is nothing to post about yet",
+        "found": "Yes, at least one. The cookie-clicker idle game is free, browser-playable and corroborated by a second source. Two more artifacts are games and are probably tryable, though neither page was opened.",
+        "still_blocked_on": "honest_post_where_buyers_gather was not blocked on having something to post. That half is answered and it was cheap — one tool call. What it is actually blocked on is the other half, which is still untouched: whether any of these reaches a community that contains BUYERS. A free browser idle game has players, and players are not the same as buyers. Do not read this entry as saying the route is now open.",
+        "do_not_overclaim": "Nobody has established that any of these five is worth posting. Established: something postable exists. Those are different sentences and the difference is the whole remaining question.",
+        "source": "state/portfolio.json"
+      }
+    },
+    {
+      "kind": "zero_base_option",
       "id": "recurring_offer_on_the_rail_we_can_list_ourselves",
       "why": "Both external sweeps returned the same shape from different directions: 2026-08-10.a found this audience buying recurring memberships at 540-5,980 JPY a month and zero one-time developer downloads; 2026-08-10.b found conversion happening at and below our reach, in five cases, all high-ticket or recurring. The arithmetic is the point rather than the sentiment: 200,000 JPY a month needs roughly 54 buyers at the current 3,700 JPY one-time price, EVERY month, forever, from a channel whose strongest measured conversion event is 1 in 4,835. At 2,590 JPY a month recurring — the median .a read off the page — it needs 78 subscribers ONCE, and they carry over. The one-time form asks the funnel to do the whole job again every month.",
       "serves_route": "route_4_the_offer_form_is_the_binding_term",
@@ -206,13 +395,14 @@
       },
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
       "refuted": null,
+      "refutation_scoped_out": null,
       "measured_surface": null,
       "measured_delivery": null,
       "actionable_now": true,
       "eta_effect_days": null,
       "recurring_owner_actions_per_month": 1,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_4_the_offer_form_is_the_binding_term",
@@ -225,7 +415,8 @@
         "language_mismatches": null,
         "binding_venues_without_a_revenue_path": null,
         "owner_requests_clearing_the_prerequisite": null,
-        "elected_but_refuted": false
+        "elected_but_refuted": false,
+        "refutation_scoped_out": null
       }
     },
     {
@@ -239,13 +430,14 @@
       "owner_actions_to_list_measured": null,
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
       "refuted": null,
+      "refutation_scoped_out": null,
       "measured_surface": null,
       "measured_delivery": null,
       "actionable_now": true,
       "eta_effect_days": null,
       "recurring_owner_actions_per_month": 1,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_5_lane_allocation_is_the_binding_term",
@@ -258,7 +450,8 @@
         "language_mismatches": null,
         "binding_venues_without_a_revenue_path": null,
         "owner_requests_clearing_the_prerequisite": null,
-        "elected_but_refuted": false
+        "elected_but_refuted": false,
+        "refutation_scoped_out": null
       }
     },
     {
@@ -272,13 +465,14 @@
       "owner_actions_to_list_measured": null,
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
       "refuted": null,
+      "refutation_scoped_out": null,
       "measured_surface": null,
       "measured_delivery": null,
       "actionable_now": true,
       "eta_effect_days": null,
       "recurring_owner_actions_per_month": 1,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_6_an_independent_judge_is_the_binding_term",
@@ -291,7 +485,8 @@
         "language_mismatches": null,
         "binding_venues_without_a_revenue_path": null,
         "owner_requests_clearing_the_prerequisite": null,
-        "elected_but_refuted": false
+        "elected_but_refuted": false,
+        "refutation_scoped_out": null
       }
     },
     {
@@ -305,19 +500,20 @@
       "owner_actions_to_list_measured": null,
       "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
       "refuted": null,
+      "refutation_scoped_out": null,
       "measured_surface": null,
       "measured_delivery": {
         "file_route": {
           "upload_route_exists": true,
           "verdict": "the earlier absence was measured on the wrong paths",
-          "measured_at": "2026-08-10T22:17:14.192Z",
+          "measured_at": "2026-08-11T00:04:20.992Z",
           "source": "state/gumroad-presign.json"
         },
         "text_route": {
           "parameter_recognised": true,
           "content_landed": false,
           "verdict": "recognised_passage_untried",
-          "measured_at": "2026-08-10T22:17:14.494Z",
+          "measured_at": "2026-08-11T00:04:21.414Z",
           "source": "state/gumroad-rich-content.json"
         },
         "payload_walk": {
@@ -334,7 +530,7 @@
       "eta_effect_days": null,
       "recurring_owner_actions_per_month": 1,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_7_delivery_is_the_binding_term",
@@ -347,7 +543,8 @@
         "language_mismatches": null,
         "binding_venues_without_a_revenue_path": null,
         "owner_requests_clearing_the_prerequisite": null,
-        "elected_but_refuted": false
+        "elected_but_refuted": false,
+        "refutation_scoped_out": null
       }
     },
     {
@@ -395,13 +592,14 @@
         "sources_in": "codex/outbox/2026-08-09.f.md",
         "not_refuted": "that maintained data feeds can be sold. Only this candidate's speed from a standing start with no audience — and note nobody has yet shown paid demand for this particular feed at all, which is weaker than the other two, where monetisation was confirmed."
       },
+      "refutation_scoped_out": null,
       "measured_surface": null,
       "measured_delivery": null,
       "actionable_now": true,
       "eta_effect_days": 21,
       "recurring_owner_actions_per_month": 0,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 21 days at the conservative end (estimate, not measured)"
     },
     {
@@ -424,13 +622,14 @@
         "first_buyer_arrived_from_search_unattended": "なし",
         "not_refuted": "that free tools can funnel to a paid version, or that search can carry revenue over years. Only this candidate speed from a standing start on a new domain with no links. The survey also notes it could not judge occupancy per query, because the candidate never named which validator or converter it would build — an unspecified candidate cannot be checked for competition."
       },
+      "refutation_scoped_out": null,
       "measured_surface": null,
       "measured_delivery": null,
       "actionable_now": true,
       "eta_effect_days": 60,
       "recurring_owner_actions_per_month": 0,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 60 days at the conservative end (estimate, not measured)",
       "route_alignment": {
         "serves_route": "route_2_unattended_findable_pages",
@@ -443,7 +642,8 @@
         "language_mismatches": null,
         "binding_venues_without_a_revenue_path": null,
         "owner_requests_clearing_the_prerequisite": null,
-        "elected_but_refuted": false
+        "elected_but_refuted": false,
+        "refutation_scoped_out": null
       }
     },
     {
@@ -466,11 +666,12 @@
         "not_refuted": "that many search surfaces can work as a long-term acquisition play, and that per-page substance matters. What was refuted is this candidate's role: a route that reaches a FIRST buyer unattended. Note the survey answered the sub-question too — no case supports 'one computed value per page is enough'. The near-successes carried a page that could be acted on by itself (BuiltWith's technology list, IPinfo's IP metadata, Tunebat's key/BPM), and even those cannot be attributed to search for the first sale.",
         "what_it_leaves": "Four candidates have now been refuted by outside evidence and every one of them failed on the same term. In each near-success the first buyer arrived through a third party with reach posting about the thing — an X account, Hacker News, Product Hunt, Stack Overflow answers — and never through discovery working unattended. distribution_answer already elected route 2 (findable surfaces) over route 1 (post where the buyers already gather) not on evidence but on our own constraint that recurring owner actions are excluded; it said so plainly. This survey removes the evidence route 2 was resting on, so what remains is a constraint with no surviving route under it. That is a decision for a lap to take deliberately, not a gap to fill by proposing a sixth build candidate."
       },
+      "refutation_scoped_out": null,
       "measured_surface": {
         "published_count": 10,
         "pages_found_by_search": 0,
         "verdict": "published_but_not_findable",
-        "measured_at": "2026-08-10T21:28:42.164Z",
+        "measured_at": "2026-08-10T22:22:44.331Z",
         "what_it_settles": "Not a shortage of pages. Ten serve 200 and a search index returned none of them, so page COUNT is not the binding term — the missing step is an inbound path from a surface that is already crawled. Building more pages buys nothing until that step exists.",
         "inbound_surface": {
           "verdict": "no_crawled_surface_found",
@@ -486,7 +687,7 @@
       "eta_effect_days": null,
       "recurring_owner_actions_per_month": 0,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_2_unattended_findable_pages",
@@ -499,94 +700,8 @@
         "language_mismatches": null,
         "binding_venues_without_a_revenue_path": null,
         "owner_requests_clearing_the_prerequisite": null,
-        "elected_but_refuted": false
-      }
-    },
-    {
-      "kind": "zero_base_option",
-      "id": "honest_post_where_buyers_gather",
-      "why": "the one route in the evidence where a first buyer actually arrived from something we could do: a single honest post into the specific community the buyers are in, with the poster answering replies that day",
-      "serves_route": "route_1_post_where_buyers_gather",
-      "owner_actions": "1 initial + several hours of replies the same day, per attempt, not recurring",
-      "days_to_first_yen_estimate": "unmeasured",
-      "estimate_not_measurement": true,
-      "owner_actions_to_list_measured": null,
-      "note": "Days-to-first-yen is the falsifiable part; measure that. The month-count figures in the round are the model's estimates and must not be carried forward as observations.",
-      "refuted": {
-        "at": "2026-08-09T10:52:00Z",
-        "by": "codex-loop (codex/outbox/2026-08-09.i.md)",
-        "claim_tested": "from zero existing readers, ONE honest post into the community the buyers are in, with the poster answering replies that day, reaches a first sale — with publish date and first-sale date both confirmable as calendar days",
-        "finding": "No case was found meeting the whole chain. The near cases all break the 'one post' term, and they break it in the same direction. TypeGenie: Product Hunt 2023-04-13, Hacker News 2023-04-14, first sale 2023-04-14 — at least two venues. Invoker: published 2020-06-30, USD 90 the same day, and the author records having had no audience at all — but posted to Product Hunt, Reddit and their own Twitter, at least three venues, and the buyer cannot be attributed to any one of them. Hacker News Front Page Explorer: published and first sale both 2020-12-29, with Product Hunt sending 1,000+ people, plus r/SideProject the same day. Optiwing is the closest in posting STYLE — starting a conversation about the problem in r/SEO and naming the tool in passing — but the author cannot attribute the buyer, and used multiple subreddits, Facebook and LinkedIn groups, Indie Hackers, Capterra and ads. Pinger is the closest to a single post, and it converted through a free trial plus ongoing dialogue and feature additions over about a month, with no confirmable dates. Two counter-cases hit the premise head-on, and both are about STANDING rather than frequency: an r/Entrepreneur post removed 2026-02-19 under Rule 2 'No Promotion' — being honest that it is your own work is not an exemption when the post's purpose is promotion — and a post auto-removed 2026-03-20 for the author having under 10 comment karma in that community, i.e. the single post from a standing start was never shown to anyone. A third case (SaaS published 2026-04-24) was banned from Reddit and reached zero sales across Reddit, LinkedIn, cold email and Product Hunt combined.",
-        "verdict": "falls as stated: zero audience plus exactly one post is not supported by any case on record",
-        "sources_in": "codex/outbox/2026-08-09.i.md",
-        "not_refuted": "that posting into a buyer community reaches a first buyer — it does, and it is by far the fastest route on record here: three of the cases reached first revenue within 0-1 days of publishing. What fell is this candidate's specific shape, and the survey also returned two positive findings the candidate did not contain. First, what the fast cases posted was a finished artifact the reader could try immediately (a working Zendesk tool, a desktop app, a searchable database of real data) — no case was found where a bare 'I built a thing' announcement sufficed. Second, no evidence either way on price: nothing showed that being free, or under some price, makes one post enough.",
-        "what_it_leaves": "Five of the seven checked options are now refuted, and the term that keeps failing has moved. It is no longer 'unattended discovery does not work' (that was 2026-08-09.h) but 'a standing start does not work'. The blocker the evidence actually names is STANDING, not recurring posting: prior participation in the community, or several venues hit at once, or an existing following. That distinction matters because the constraint this loop excluded route 1 on was 'recurring owner actions', and standing is not a recurring action — it is a prerequisite that accrues before the post. Invoker is the one case with zero audience, both dates, and a first sale on day zero, and it substituted breadth (three venues at once) for standing. Recording this is not a proposal: per 2026-08-09.h, a lap should take this deliberately rather than fill the gap with an eighth candidate."
-      },
-      "measured_surface": null,
-      "measured_delivery": null,
-      "actionable_now": true,
-      "eta_effect_days": null,
-      "recurring_owner_actions_per_month": 0,
-      "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
-      "eta_effect_basis": "no comparable estimate recorded",
-      "success_test": "A post exists in a venue whose self-promotion rules permit it as quoted, made from an account that met that venue eligibility threshold stated as a number or an explicit none, linking an artifact the reader can try without paying and without signing up. Measured from the post URL and the venue rule text, not from the pack being prepared.",
-      "not_success": "A paste-ready venue pack sitting in state/owner-requests.json. That is preparation, and this candidate has been blocked on execution rather than preparation since it was written. Also not success: a post into GameDev.net, whose eligibility could not be established — posting there tests nothing, because a removal would be indistinguishable from the auto-removals already on record.",
-      "repriced_by": "state/constraints.json no_standing_where_buyers_gather.venue_survey (codex/outbox/2026-08-09.o.md)",
-      "repriced_because": "The candidate was carrying the route adopted at 3555e97 with no test of whether the act it names can be performed. It can not, today: 0 of 3 surveyed venues are postable from a standing start, and neither of the two hard refusals is about standing. Recorded on the candidate rather than in the constraint alone because the constraint is not what a lap picks from.",
-      "route_alignment": {
-        "serves_route": "route_1_post_where_buyers_gather",
-        "elected_route": "route_1_post_where_buyers_gather",
-        "status": "elected",
-        "elected_at": "2026-08-10T19:05:00Z",
-        "why": "Route 7 was elected on the sentence 'nothing built here reaches a buyer'. That sentence is false about the priced kit and always was: state/gumroad.json shows the listing live, published and purchasable, and state/eta.json's gumroad channel reports lifetime_sales 0 over eight months. A product that can be bought and is not bought is not blocked on the quality of its download. Three prerequisite laps went into the file-replacement mechanism (state/gumroad-file-walk.json, state/product-delivery.json, state/gumroad-two-file-replace.json) and each produced a real measurement about Gumroad's API and nothing about the number: eta-history is five rows of null/null and lap-claims is 79 claims with improves=false on every one. Relieving a term that is not binding cannot move an ETA, which is the definition of the wrong route.",
-        "prerequisite": "STANDING, MEASURED ON THIS ACCOUNT. Named as the route's prerequisite because the refutation named it, not because it is convenient: does the owner hold prior participation, karma, or a following in any community where buyers of a brandable idle-clicker kit gather, sufficient that a single honest post would be SHOWN rather than auto-removed?",
-        "prerequisite_measured": {
-          "term": "venue_unsettled",
-          "instrument": {
-            "script": "scripts/venue-readiness.mjs",
-            "field": "rows[].binding",
-            "note": "loadVenueRows reads the venue rows in state/constraints.json and reports one binding cause per venue. prerequisiteCheck fails in pulse.yml if this election names a term that instrument cannot report."
-          },
-          "counts": {
-            "delivery_unmeasured": 0,
-            "postable": 1,
-            "venue_rule": 1,
-            "venue_unsettled": 1,
-            "account": 0,
-            "account_too_new": 1
-          },
-          "venues_on_the_named_term": 1,
-          "language_mismatches": [
-            "r/gamedev",
-            "r/incremental_games"
-          ],
-          "venues_with_a_revenue_path": [
-            "itch.io — Release Announcements",
-            "GameDev.net — Your Announcements",
-            "r/incremental_games"
-          ],
-          "binding_venues_without_a_revenue_path": [],
-          "owner_requests_clearing_the_term": [],
-          "ok": true,
-          "problem": null,
-          "revenue_path_exception": null
-        },
-        "language_mismatches": [
-          "r/gamedev",
-          "r/incremental_games"
-        ],
-        "binding_venues_without_a_revenue_path": [],
-        "owner_requests_clearing_the_prerequisite": [],
-        "elected_but_refuted": true
-      },
-      "blocked_on_rechecked": {
-        "at": "2026-08-09T11:28:00.123Z",
-        "was": "there is nothing to post about yet",
-        "found": "Yes, at least one. The cookie-clicker idle game is free, browser-playable and corroborated by a second source. Two more artifacts are games and are probably tryable, though neither page was opened.",
-        "still_blocked_on": "honest_post_where_buyers_gather was not blocked on having something to post. That half is answered and it was cheap — one tool call. What it is actually blocked on is the other half, which is still untouched: whether any of these reaches a community that contains BUYERS. A free browser idle game has players, and players are not the same as buyers. Do not read this entry as saying the route is now open.",
-        "do_not_overclaim": "Nobody has established that any of these five is worth posting. Established: something postable exists. Those are different sentences and the difference is the whole remaining question.",
-        "source": "state/portfolio.json"
+        "elected_but_refuted": false,
+        "refutation_scoped_out": null
       }
     },
     {
@@ -608,13 +723,14 @@
         "sources_in": "codex/outbox/2026-08-09.e.md",
         "not_refuted": "that WordPress plugins can be sold, or that this complaint exists. Only this candidate's speed from a standing start with no list."
       },
+      "refutation_scoped_out": null,
       "measured_surface": null,
       "measured_delivery": null,
       "actionable_now": true,
       "eta_effect_days": 21,
       "recurring_owner_actions_per_month": 1,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 21 days at the conservative end (estimate, not measured)"
     },
     {
@@ -636,13 +752,14 @@
         "sources_in": "codex/outbox/2026-08-09.c.md",
         "not_refuted": "that VS Code extensions can be sold at all. Only this candidate's speed."
       },
+      "refutation_scoped_out": null,
       "measured_surface": null,
       "measured_delivery": null,
       "actionable_now": true,
       "eta_effect_days": 14,
       "recurring_owner_actions_per_month": 1,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 14 days at the conservative end (estimate, not measured)"
     },
     {
@@ -665,13 +782,14 @@
         "first_buyer_arrived_from_listing_unattended": "なし",
         "not_refuted": "that a free CLI can convert to a paid licence. What is missing is any recorded instance of it happening from npm/PyPI discovery at all, which is weaker ground than the candidates whose monetisation was at least confirmed elsewhere."
       },
+      "refutation_scoped_out": null,
       "measured_surface": null,
       "measured_delivery": null,
       "actionable_now": true,
       "eta_effect_days": 30,
       "recurring_owner_actions_per_month": 1,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "portfolio idle ETA is infinite; this claims first yen within 30 days at the conservative end (estimate, not measured)"
     },
     {
@@ -695,13 +813,14 @@
         "not_refuted": "The ACT, which is the part with the standing value: config/channel.yaml publish.footer is still one config edit that reaches every video including the back catalogue, and the sibling repo's upload guard still permits a Gumroad link (it forbids github, リポジトリ, ソースコード — none of which the link contains). Also not refuted: that the kit sells to DEVELOPERS elsewhere, which is what product_form_vs_addressed_buyer branch A rests on. What died is the overlap between the audience we HAVE and the buyer we ADDRESS — so a successor may re-propose this option with a different payload, and should not read it as 'the reach is worthless'.",
         "what_it_saved": "This option was ELECTED and one config edit from shipping, with the edit waiting only on coordination with the sibling loop. The objection it fell to was written in its own text from the start, under the_honest_objection_to_it, with the note that a candidate whose weakest point lives only in the successor's notes gets picked on its strongest point forever. It was picked on its strongest point for three laps. The measurement is what stopped it."
       },
+      "refutation_scoped_out": null,
       "measured_surface": null,
       "measured_delivery": null,
       "actionable_now": true,
       "eta_effect_days": null,
       "recurring_owner_actions_per_month": 1,
       "estimate_reliability": "discredited_by_siblings",
-      "estimate_reliability_note": "8 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
+      "estimate_reliability_note": "7 options from this same round were checked against outside evidence and refuted on exactly this number. It is still shown, but it no longer outranks an option that records no estimate at all.",
       "eta_effect_basis": "no comparable estimate recorded",
       "route_alignment": {
         "serves_route": "route_3_use_the_reach_already_owned",
@@ -714,7 +833,8 @@
         "language_mismatches": null,
         "binding_venues_without_a_revenue_path": null,
         "owner_requests_clearing_the_prerequisite": null,
-        "elected_but_refuted": false
+        "elected_but_refuted": false,
+        "refutation_scoped_out": null
       }
     },
     {
