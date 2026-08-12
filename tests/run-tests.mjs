@@ -5786,7 +5786,8 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
 // The fallback must keep the loop alive WITHOUT ever licensing more spending:
 // list_sessions rate_limit_info carries no percentage. These assert both halves.
 {
-  const { backupMeterVerdict, isPermitted, buildRecord } = await import("../scripts/record-rate-limit.mjs");
+  const { backupMeterVerdict, isPermitted, buildRecord, floorEligible, FLOOR_ELIGIBLE_PRIMARY_FAILURES } =
+    await import("../scripts/record-rate-limit.mjs");
 
   const now = Date.parse("2026-08-15T00:00:00Z");
   const fresh = {
@@ -5795,7 +5796,12 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     scheduler_status: "allowed_warning",
     permitted: true,
   };
-  const base = { nowMs: now, staleHours: 6, primaryResetsAtIso: "2026-08-14T22:00:00.000Z" };
+  const base = {
+    nowMs: now,
+    staleHours: 6,
+    primaryReason: "window_expired",
+    primaryDetail: "weekly window reset at 2026-08-14T22:00:00.000Z",
+  };
 
   assert(
     backupMeterVerdict({ ...base, backup: fresh }).ok,
@@ -5804,6 +5810,37 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(
     backupMeterVerdict({ ...base, backup: null }).reason === "window_expired",
     "with no backup reading at all the gate must keep its original refusal",
+  );
+  // THE DOORWAY THE FIRST VERSION MISSED. It guarded only the expired-window
+  // branch. The next firing after it shipped (2026-08-12T12:55Z) met a collector
+  // that RAN and returned reauthentication_required with quota_windows: [], so
+  // the gate stopped at `usage_error` well before the fallback and would have
+  // done so on every 6-hourly firing until a human re-authenticated.
+  assert(
+    floorEligible("usage_error"),
+    "usage_error no longer reaches the floor, so a dead credential stops the whole loop until a human notices",
+  );
+  assert(
+    ["no_usage", "no_window", "no_reset", "window_expired"].every(floorEligible),
+    "a way for the primary meter to yield no window has stopped reaching the floor",
+  );
+  // Not everything may. unverified_usage means origin/main could not be read at
+  // all; the next fetch usually fixes it, and RUNBOOK 0.5's 33-point misread is
+  // attached to pacing on working-tree numbers.
+  assert(
+    !floorEligible("unverified_usage") && !floorEligible("backup_meter_stale"),
+    "a failure the loop CAN recover from by retrying is being handed the floor, which turns the floor into the normal path",
+  );
+  // The refusal must name the failure it actually met, not the one the only
+  // caller happened to have when this was written.
+  assert(
+    backupMeterVerdict({ ...base, primaryReason: "usage_error", primaryDetail: "reauthentication_required", backup: null })
+      .reason === "usage_error",
+    "a stop is reported under the wrong reason, which sends the next reader looking at the wrong meter",
+  );
+  assert(
+    FLOOR_ELIGIBLE_PRIMARY_FAILURES.length === 5,
+    "the floor-eligible list changed size — every member widens what runs without a percentage, so it is pinned deliberately",
   );
   assert(
     backupMeterVerdict({ ...base, backup: { ...fresh, permitted: false, scheduler_status: "rejected" } })
@@ -5848,6 +5885,12 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   assert(
     pacing.includes("backupMeterVerdict"),
     "pacing.mjs no longer consults the backup meter, so an expired primary window is a total stop again",
+  );
+  // And it has to consult it from fail() rather than from one branch, or the
+  // next failure mode discovered will need this whole fix made again.
+  assert(
+    /function fail\([^)]*\)\s*\{[\s\S]*?floorEligible\(/.test(pacing),
+    "the floor is back behind a single branch instead of fail(), so the next way the primary meter dies stops the loop outright",
   );
 }
 

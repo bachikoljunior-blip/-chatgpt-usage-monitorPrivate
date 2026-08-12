@@ -80,25 +80,64 @@ export function buildRecord({ type, resetsAtEpoch, status, observedBy, seenOn, o
     what_this_cannot_answer:
       "How much of the window is left. There is no percentage in this source and none must be invented from the status word.",
     how_it_is_read:
-      "scripts/pacing.mjs, and only when state/claude-usage.json reports a window that has already reset. It never overrides a live collector reading.",
+      "scripts/pacing.mjs, and only when state/claude-usage.json yields no usable weekly window at all — missing, erroring, windowless, or already reset (FLOOR_ELIGIBLE_PRIMARY_FAILURES). It never overrides a live collector reading.",
   };
 }
 
 
-// The decision pacing.mjs makes when the PRIMARY window has expired. Pure, so
-// the four cases can be asserted without a clone and a fake clock — the first
-// attempt at testing this went through a scratch git clone and silently read a
-// different file than the one it had edited, which is exactly the sort of
-// evidence that proves nothing while looking thorough.
+// WHICH PRIMARY FAILURES THE FLOOR IS ALLOWED TO STAND IN FOR.
+//
+// The first version of this fallback sat behind ONE branch — the primary window
+// having already reset — and the very next firing after it shipped hit a
+// different doorway to the same room. On 2026-08-12T12:55Z the collector was
+// running again but returned `reauthentication_required` with quota_windows: [],
+// so pacing.mjs stopped at `usage_error` and never reached the fallback. That
+// error needs the OWNER to re-authenticate (SETUP_CLAUDE_USAGE.ja.md), so every
+// 6-hourly firing until a human acted would have exited 10 doing nothing. Same
+// A10 break, same cause: a safety check refusing correctly and then having no
+// second move.
+//
+// The members of this list share one property, and it is the property that
+// justifies the floor: THE PRIMARY METER YIELDS NO USABLE WINDOW, AND NO LAP CAN
+// MAKE IT YIELD ONE. Waiting does not help, so waiting is not conservative — it
+// is just stopping.
+//
+// `unverified_usage` is deliberately NOT here. That one means origin/main could
+// not be read and the numbers on hand are working-tree numbers; it is an
+// environment failure that the next fetch usually fixes, and the 33-point misread
+// recorded in RUNBOOK 0.5 is attached to exactly that situation. Keep it a stop.
+export const FLOOR_ELIGIBLE_PRIMARY_FAILURES = [
+  "no_usage", // the file is not there at all
+  "usage_error", // the collector ran and reported an error instead of windows
+  "no_window", // it reported windows, but no weekly one
+  "no_reset", // the weekly window carries no parseable reset time
+  "window_expired", // the window it describes has already reset
+];
+
+export function floorEligible(reason) {
+  return FLOOR_ELIGIBLE_PRIMARY_FAILURES.includes(String(reason ?? ""));
+}
+
+// The decision pacing.mjs makes when the PRIMARY meter cannot answer. Pure, so
+// the cases can be asserted without a clone and a fake clock — the first attempt
+// at testing this went through a scratch git clone and silently read a different
+// file than the one it had edited, which is exactly the sort of evidence that
+// proves nothing while looking thorough.
+//
+// `primaryReason` / `primaryDetail` are what the gate WOULD have stopped with.
+// They are carried through rather than restated, because with no backup reading
+// the honest answer is the gate's original refusal — not a guess at which one it
+// was. The earlier version hard-coded "window_expired" here, which was true of
+// the only caller then and would have mislabelled every caller added since.
 //
 // Returns {ok:false, reason, detail} to stop, or {ok:true, ...} to run at the floor.
-export function backupMeterVerdict({ backup, nowMs, staleHours, primaryResetsAtIso }) {
+export function backupMeterVerdict({ backup, nowMs, staleHours, primaryReason, primaryDetail }) {
   const resetsAt = Date.parse(backup?.resets_at_iso ?? "");
   if (!backup || !Number.isFinite(resetsAt)) {
     return {
       ok: false,
-      reason: "window_expired",
-      detail: `weekly window reset at ${primaryResetsAtIso}; refresh before pacing`,
+      reason: primaryReason,
+      detail: `${primaryDetail}; no usable backup reading either, so the gate keeps its original refusal`,
     };
   }
   if (!backup.permitted) {

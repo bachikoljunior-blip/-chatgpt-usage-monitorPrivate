@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-12T01:35:00Z",
+  "fetched_at": "2026-08-12T13:10:00Z",
   "why_this_file_exists": "RUNBOOK 6 gates an owner request on five conditions, and the fourth is that the request is prepared to the point where the owner only has to paste. Until now there was nowhere to put that. So the gate could never be satisfied, only asserted — which is the same failure this project keeps finding: a rule written in prose with no file under it and no machine reading it. compute-eta.mjs reads this file and attaches a pending request to the candidate it unblocks, so the picker sees that the preparation is already done instead of preparing it again.",
   "how_to_use_this": "One entry per request. status pending means it is prepared and waiting on the owner. Nothing here should ever say 'please investigate' or 'please decide' — if a lap could not finish the preparation, the entry does not belong here yet.",
   "requests": [
@@ -398,7 +398,7 @@
     {
       "id": "2026-08-12.github-actions-stopped-running",
       "created_at": "2026-08-12T01:35:00Z",
-      "status": "pending",
+      "status": "done",
       "candidate_id": null,
       "owner_actions": 1,
       "estimated_owner_minutes": 2,
@@ -497,7 +497,14 @@
       },
       "what_the_lap_did_without_waiting": "Cut this repository's scheduled Actions runs from 144 a day to 24 (state/actions-budget.json, scripts/check-actions-budget.mjs, asserted in tests/run-tests.mjs), and fixed the total stop the frozen meter would have caused at 2026-08-14T22:00Z (scripts/record-rate-limit.mjs plus the pacing fallback). The cut is this repository's share and is stated as such: at ~22% of account usage, zeroing it would move exhaustion from day 12 to day 15.",
       "why_still_pending_after_the_owner_answered": "The owner did the ask and the ask was useful. This stays pending because its success_test is 'a workflow completes with a log and a usage fetched_at advances past 2026-08-12T00:39Z', and that has not happened. Marking it done on the strength of a reading would be marking a request satisfied by being answered rather than by working, which is the exact false green success_test_machine exists to stop.",
-      "what_is_left_for_the_owner_and_it_is_a_money_question": "Whether to raise the Actions budget. At the account's current 167 minutes a day that is about 5,000 minutes a month, 3,000 of them billable, roughly $24 a month at Linux 2-core rates. The free alternative is public repositories, where Actions minutes are not metered — THIS repository cannot be public because state/auth.vault holds the encrypted Codex credential, but survival and Gptgame are each larger consumers and this repository cannot see whether they could be. Not filed as a request: it is a standing decision about money, not a task."
+      "what_is_left_for_the_owner_and_it_is_a_money_question": "Whether to raise the Actions budget. At the account's current 167 minutes a day that is about 5,000 minutes a month, 3,000 of them billable, roughly $24 a month at Linux 2-core rates. The free alternative is public repositories, where Actions minutes are not metered — THIS repository cannot be public because state/auth.vault holds the encrypted Codex credential, but survival and Gptgame are each larger consumers and this repository cannot see whether they could be. Not filed as a request: it is a standing decision about money, not a task.",
+      "closed_at": "2026-08-12T13:10:00Z",
+      "outcome": {
+        "what_happened": "Actions came back on its own. The first successful run after the outage committed at 2026-08-12T09:07:34Z, and by 12:55:56Z five collector commits had landed (09:07:34, 09:07:39, 10:24:07, 10:28:18, 11:20:52, 12:55:56Z). success_test_machine is satisfied by both clauses, not one.",
+        "the_owner_did_what_was_asked_and_it_paid_for_itself": "The billing page reading (2,000/2,000 used, GitHub Free, $0 billable) is what turned a mystery into a measured cause and produced the cadence cut in state/actions-budget.json. That work stands whatever brought the runners back.",
+        "the_prediction_this_chain_made_and_got_wrong": "The handoff concluded from the Free plan that the allowance 'does not refill until the next billing month' and put the return at about 2026-09-01. Workflows ran roughly two hours later. THIS WAS OUR INFERENCE, NOT THE OWNER'S REPORT — the owner reported a full bar, and the chain supplied the refill date from a plan name. Candidates that fit and are NOT separated by anything on hand: the owner raised the limit, the meter was read at a moment that did not mean what it looked like, the reset is not aligned to the calendar month, or GitHub restored capacity for another reason. Nobody guesses which; what is settled is that GitHub-side allowance is a thing to MEASURE and this chain does not currently measure it.",
+        "what_must_not_be_concluded": "That the cadence cut was unnecessary. 144 scheduled runs a day against a 2,000-minute allowance exhausts it before month end at any reset date; the cut is right on the arithmetic, independent of why the outage ended."
+      }
     },
     {
       "id": "2026-08-12.email-scirra-about-plain-html-js",
@@ -545,6 +552,52 @@
         "what_it_cost": "One owner minute and one email."
       },
       "what_follows": "All three venues that met the qualifier are now closed (CodeCanyon shut to new authors, itch.io publishes no per-product sales proof, Construct refused). That is a route-level result. The next thing is not another venue: it is codex/INBOX.md 2026-08-12.who-asks-for-a-brandable-clicker-kit, still in flight, which asks whether buyers for this product form exist anywhere at all."
+    },
+    {
+      "id": "2026-08-12.claude-token-reauthentication",
+      "created_at": "2026-08-12T13:10:00Z",
+      "status": "pending",
+      "candidate_id": null,
+      "owner_actions": 1,
+      "estimated_owner_minutes": 2,
+      "owner_typing_and_judgement_count": "0 typing (one copy-paste of a code the screen shows you). 0 judgement — there is nothing to decide, and no setting to change.",
+      "one_line": "Claude の使用量が読めなくなりました（トークンの期限切れ）。スマホのブラウザだけで直せます。SETUP_CLAUDE_USAGE.ja.md の「スマホしか無い場合はこちら」の通りに、https://github.com/codespaces/new?repo=bachikoljunior-blip/-chatgpt-usage-monitorPrivate を開いて Create codespace を押し、出てきた承認リンクを別タブで開いて承認し、表示されたコードをターミナルに貼るだけです。",
+      "why_now_and_not_before": "It could not be seen before. The collector that reports it is a GitHub Actions workflow and Actions was dead from 2026-08-12T00:39Z. The moment runners came back, three consecutive runs (09:07:34Z, 10:28:18Z, 12:55:56Z) all returned error reauthentication_required with quota_windows: []. The last healthy reading was 2026-08-11T19:02:37Z. Three in a row across three hours is not a transient failure.",
+      "the_ask": {
+        "step_1": {
+          "what": "https://github.com/codespaces/new?repo=bachikoljunior-blip/-chatgpt-usage-monitorPrivate を開いて Create codespace を押す（起動に1〜2分）",
+          "look_for": "下のターミナルで設定スクリプトが自動で始まります。始まらなければ node scripts/setup-claude-token.mjs と打ってください。"
+        },
+        "step_2": {
+          "what": "表示された https://claude.ai/oauth/authorize?... を長押しコピーして別タブで開き、承認する。出てきたコードをコピーして、ターミナルの code: に貼って Enter。",
+          "why": "スクリプトが使用量APIで動作確認し、そのまま GitHub のシークレットに登録します。トークンはファイルにもログにも残りません。",
+          "nothing_to_decide": "設定を選ぶ場面はありません。終わったら Codespace は削除してかまいません。"
+        },
+        "if_it_fails": "権限不足で登録できなかったときだけ、画面に出るリンクを開いて手で貼る形になります。その文言をそのまま教えてください。"
+      },
+      "what_this_lap_could_not_do_and_why": "The token is an interactive OAuth credential. Creating one requires approving a browser prompt as the human account holder; a session token cannot do it at any price. What a lap CAN do was already done: scripts/setup-claude-token.mjs exists precisely so this costs two phone minutes instead of a laptop, and SETUP_CLAUDE_USAGE.ja.md leads with that path.",
+      "what_it_costs_to_leave_it": "Not a stop — this lap made sure of that before filing this. scripts/pacing.mjs now falls through to the scheduler's own rate_limit_info and runs at a FLOOR of one lap per firing. But the floor carries no percentage, so while it is in force the loop cannot answer 'how much is left', cannot spend more than one lap even when the pool is full, and cannot measure lap cost at all (record-lap needs two collector readings). At four firings a day that is the entire throughput of this project.",
+      "the_number_that_is_not_reassuring": "The last real reading was 3% remaining with the window resetting 2026-08-14T22:00Z. The floor is 0.5882% per lap and there are about 4 firings a day, so the floor is NOT proven to fit inside 3%. What stands between the loop and an overspend is the scheduler's own status word, which still reads allowed_warning and which the gate stops on the moment it stops saying so. That is a real backstop and it is a cruder one than a percentage.",
+      "success_test": "state/claude-usage.json comes back with status ok and a seven_day window, so pacing.mjs divides a live number again instead of running at the backup floor.",
+      "success_test_machine": {
+        "note": "eq on status, not non_null on the file. The file exists right now and carries a fetched_at that updates hourly while still reporting the error — non_null or newer_than would both read satisfied while nothing was fixed.",
+        "any_of": [
+          {
+            "state_file": "state/claude-usage.json",
+            "path": "status",
+            "predicate": "eq",
+            "value": "ok"
+          }
+        ]
+      },
+      "not_success": "A newer fetched_at on state/claude-usage.json. The collector is already running and already writing; it is the credential that is dead.",
+      "judge_by": "2026-08-15",
+      "minimised": "One link, one approval, one paste. The alternative paths (install the CLI, run claude setup-token on a computer, paste into the secrets page) are all longer and this owner is on a phone.",
+      "automation_attempted": "Not attemptable, and that is a property of OAuth rather than of this repository. No token can mint its successor; that is what the design is for.",
+      "automation_cost_exceeds_manual_cost": "There is no automation to cost. The one-time script that makes the manual path two minutes is already written and already the documented route.",
+      "paste_ready": true,
+      "cannot_decompose_further": true,
+      "source": "eta-loop worker session_01H2477LCU2T1DfDZi8xWM23, 2026-08-12T13:10Z"
     }
   ]
 }

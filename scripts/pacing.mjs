@@ -40,7 +40,7 @@
 
 import { readStateJson } from "./state-source.mjs";
 import { unverifiedReservations } from "./check-heartbeats.mjs";
-import { backupMeterVerdict } from "./record-rate-limit.mjs";
+import { backupMeterVerdict, floorEligible } from "./record-rate-limit.mjs";
 
 const flags = new Map(
   process.argv
@@ -99,15 +99,78 @@ const derivedCostAgeHours = derivedCost?.fetched_at
 const derivedCostStale =
   derivedCostAgeHours === null || derivedCostAgeHours > DERIVED_COST_STALE_HOURS;
 
+// Read once, up here, because EVERY primary-meter failure below has to be able
+// to consult it and process.exit() does not wait for a promise.
+const backupMeter = (await readStateJson("state/rate-limit-observed.json")).value;
+
+// Keep the loop alive at a floor when the primary meter is dead. The backup
+// source (scripts/record-rate-limit.mjs) is the scheduler's own rate_limit_info,
+// which rides on session rows rather than on a workflow. It carries NO
+// percentage, so it is never allowed to license more spending. All it can do is
+// permit one lap per firing while the collector cannot answer.
+function runAtFloor(primaryReason, primaryDetail, backupAgeHours) {
+  const out = {
+    decision: "continue",
+    reason: "backup_meter_floor",
+    detail:
+      `The primary meter cannot answer (${primaryReason}: ${primaryDetail}). ` +
+      `The scheduler reports ${backupMeter.scheduler_status} with the current window resetting ${backupMeter.resets_at_iso}. ` +
+      `There is no percentage in that source, so this lap is capped at one derived lap cost (${fallbackPerRun.toFixed(4)}%) ` +
+      `and NOT at anything the unusable file says. Refresh the collector as soon as it can run.`,
+    checked_at: now.toISOString(),
+    source: usageVia,
+    primary_failure: { reason: primaryReason, detail: primaryDetail },
+    lap_budget_percent: fallbackPerRun,
+    backup_meter: {
+      observed_at: backupMeter.observed_at,
+      observed_by: backupMeter.observed_by,
+      scheduler_status: backupMeter.scheduler_status,
+      resets_at: backupMeter.resets_at_iso,
+      carries_a_percentage: false,
+    },
+    handoff: "wait_for_next_firing",
+    why_no_successor:
+      "One lap per firing IS the cap while the primary meter is dead. Spawning a successor removes the interval and the floor with it.",
+  };
+  console.log(
+    asJson
+      ? JSON.stringify(out, null, 2)
+      : `decision: continue (backup_meter_floor)\n` +
+          `  PRIMARY METER DEAD — ${primaryReason}: ${primaryDetail}\n` +
+          `  backup: scheduler says ${backupMeter.scheduler_status}, current window resets ${backupMeter.resets_at_iso} (observed ${backupAgeHours.toFixed(1)}h ago by ${backupMeter.observed_by})\n` +
+          `  NO PERCENTAGE EXISTS IN THE BACKUP SOURCE. this lap may spend: ${fallbackPerRun.toFixed(4)}% (one derived lap cost, floor only)\n` +
+          `  handoff: wait_for_next_firing · do not spawn a successor — one lap per firing is the entire cap`,
+  );
+  process.exit(0);
+}
+
 function fail(reason, detail) {
+  // A refusal the loop cannot recover from on its own is not caution, it is a
+  // stop with no end date. Where the primary meter is dead and no lap can revive
+  // it, fall through to the floor instead (FLOOR_ELIGIBLE_PRIMARY_FAILURES).
+  let stopReason = reason;
+  let stopDetail = detail;
+  if (floorEligible(reason)) {
+    const bv = backupMeterVerdict({
+      backup: backupMeter,
+      nowMs: now.getTime(),
+      staleHours: BACKUP_METER_STALE_HOURS,
+      primaryReason: reason,
+      primaryDetail: detail,
+    });
+    if (bv.ok) runAtFloor(reason, detail, bv.ageHours);
+    stopReason = bv.reason;
+    stopDetail = bv.detail;
+  }
+
   const out = {
     decision: "stop",
-    reason,
-    detail,
+    reason: stopReason,
+    detail: stopDetail,
     checked_at: now.toISOString(),
     source: usageVia,
   };
-  console.log(asJson ? JSON.stringify(out, null, 2) : `stop: ${reason} — ${detail}`);
+  console.log(asJson ? JSON.stringify(out, null, 2) : `stop: ${stopReason} — ${stopDetail}`);
   process.exit(10);
 }
 
@@ -128,63 +191,9 @@ if (!Number.isFinite(resetsAt)) fail("no_reset", "weekly window has no parseable
 if (resetsAt <= now.getTime()) {
   // THE COLLECTOR'S WINDOW HAS ALREADY RESET, so its used_percent describes a
   // window nobody is in any more. Refusing to divide it is right. Exiting 10 is
-  // NOT, when nothing in reach can refresh the file.
-  //
-  // Measured 2026-08-12: GitHub Actions stopped executing account-wide, the only
-  // writer of state/claude-usage.json is a workflow, and the owner's billing page
-  // shows a GitHub Free plan whose allowance does not refill until the next
-  // billing month. The frozen file reports a window resetting 2026-08-14T22:00Z.
-  // Without the branch below, every firing from that instant onward would have
-  // exited 10 on the fossil and done nothing — for as long as Actions stayed
-  // down, and starting at the exact moment the weekly pool refilled to 100%.
-  //
-  // The backup meter is the scheduler's own rate_limit_info, which rides on
-  // session rows rather than on a workflow (scripts/record-rate-limit.mjs). It
-  // carries no percentage, so it is NEVER allowed to license more spending. All
-  // it can do is keep the loop alive at a floor of one lap per firing while the
-  // primary meter is unreachable.
-  const backup = (await readStateJson("state/rate-limit-observed.json")).value;
-  const bv = backupMeterVerdict({
-    backup,
-    nowMs: now.getTime(),
-    staleHours: BACKUP_METER_STALE_HOURS,
-    primaryResetsAtIso: week.resets_at_iso,
-  });
-  if (!bv.ok) fail(bv.reason, bv.detail);
-  const backupAgeHours = bv.ageHours;
-
-  const out = {
-    decision: "continue",
-    reason: "backup_meter_floor",
-    detail:
-      `state/claude-usage.json describes a window that reset at ${week.resets_at_iso}. ` +
-      `The scheduler reports ${backup.scheduler_status} with the current window resetting ${backup.resets_at_iso}. ` +
-      `There is no percentage in that source, so this lap is capped at one derived lap cost (${fallbackPerRun.toFixed(4)}%) ` +
-      `and NOT at anything the expired file says. Refresh the collector as soon as it can run.`,
-    checked_at: now.toISOString(),
-    source: usageVia,
-    lap_budget_percent: fallbackPerRun,
-    backup_meter: {
-      observed_at: backup.observed_at,
-      observed_by: backup.observed_by,
-      scheduler_status: backup.scheduler_status,
-      resets_at: backup.resets_at_iso,
-      carries_a_percentage: false,
-    },
-    handoff: "wait_for_next_firing",
-    why_no_successor:
-      "One lap per firing IS the cap while the primary meter is dead. Spawning a successor removes the interval and the floor with it.",
-  };
-  console.log(
-    asJson
-      ? JSON.stringify(out, null, 2)
-      : `decision: continue (backup_meter_floor)\n` +
-          `  PRIMARY METER EXPIRED — state/claude-usage.json describes a window that reset at ${week.resets_at_iso}\n` +
-          `  backup: scheduler says ${backup.scheduler_status}, current window resets ${backup.resets_at_iso} (observed ${backupAgeHours.toFixed(1)}h ago by ${backup.observed_by})\n` +
-          `  NO PERCENTAGE EXISTS IN THE BACKUP SOURCE. this lap may spend: ${fallbackPerRun.toFixed(4)}% (one derived lap cost, floor only)\n` +
-          `  handoff: wait_for_next_firing · do not spawn a successor — one lap per firing is the entire cap`,
-  );
-  process.exit(0);
+  // NOT, when nothing in reach can refresh the file — so fail() routes this, and
+  // every other dead-primary reason, through the backup-meter floor above.
+  fail("window_expired", `state/claude-usage.json describes a window that reset at ${week.resets_at_iso}`);
 }
 
 const remaining = Number(week.remaining_percent);
