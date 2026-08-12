@@ -34,7 +34,12 @@ jobs:
         with:
           node-version: "22"
 
+      # Reported, not gating — same fault as claude-usage-monitor.yml, same six-hour
+      # blackout on 2026-08-11: a red assertion about codex/outbox skipped every step
+      # below this one, so state/usage.json froze at 19:10Z. The job still goes red.
       - name: Test collector and encrypted vault
+        id: tests
+        continue-on-error: true
         run: node tests/run-tests.mjs
 
       - name: Require encrypted bootstrap secret
@@ -83,6 +88,8 @@ jobs:
           git pull --rebase origin "$TARGET_BRANCH"
           git push origin HEAD:"$TARGET_BRANCH"
 
-      - name: Propagate collection failure
-        if: steps.collect.outcome != 'success'
-        run: exit 1
+      - name: Propagate collection or test failure
+        if: steps.collect.outcome != 'success' || steps.tests.outcome != 'success'
+        run: |
+          echo "tests=${{ steps.tests.outcome }} collect=${{ steps.collect.outcome }}"
+          exit 1

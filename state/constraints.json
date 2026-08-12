@@ -209,7 +209,9 @@
       "venue_survey": {
         "measured_at": "2026-08-09T15:07:00Z",
         "source": "codex/outbox/2026-08-09.o.md — three venues, promotion rules QUOTED rather than summarised, eligibility asked for as a number or an explicit none, and a live dated slot asked for as evidence the venue is not dormant.",
-        "venues_postable_today_from_a_standing_start": 1,
+        "venues_postable_today_from_a_standing_start": 2,
+        "venues_postable_today_changed_at": "2026-08-12T01:20:00Z",
+        "venues_postable_today_changed_because": "r/gamedev's 48-hour account-age clock ran out. This field is hand-written and scripts/venue-readiness.mjs derives the same number from the rows; it derived 2 while this said 1, which is the check doing the job it was added for on 2026-08-10.",
         "venues_surveyed": 4,
         "the_count_was_corrected_by_the_check_that_was_built_for_exactly_this": {
           "at": "2026-08-10T00:2xZ",
@@ -285,7 +287,14 @@
             "paid_promotion_note": "Settled by this row's own rule_quoted, first clause, with nothing added: 'promoting paid assets (even on sale or in a giveaway) is forbidden on r/gamedev'. The only thing this account is paid for is the USD 25 kit (state/gumroad.json, product_count 1). So the act that would turn a successful post here into revenue is forbidden in the same sentence that permits the post. The row was never wrong — it was asked whether we may post, and we may. Found 2026-08-09 by asking what column the row lacks, the same way audience_language was found one lap earlier, and the answer was sitting inside rule_quoted the whole time: six sessions read that sentence for what it permits and none read it for what it forbids us to do afterwards. NOTE WHAT THIS DOES NOT SAY. It does not refute the venue and must not shut this row: a free unwalled post here is still permitted, still cheap, and still the only door whose blocker is one owner action. What it settles is that clearing that blocker buys a post and not a buyer, so it cannot be the route's revenue step and must stop being ranked as though it were.",
             "audience_language_note": "r/gamedev is an English-language subreddit: its rules, its sidebar and its posts are in English. The artifact this route would post declares lang=\"ja\" and its entire UI is Japanese. That breaks no rule here — the rule is about payment and signup walls — so it does not shut this row. It decides whether the one post this route exists to make lands on readers who can read it. Found by opening assets/free-demo/index.html on 2026-08-09; four laps had treated the artifact as satisfying this venue without anyone checking what language it was in.",
             "live_slot_evidence": null,
-            "postable_today": false,
+            "postable_today": true,
+            "postable_today_changed_from_false_to_true": {
+              "at": "2026-08-12T01:20:00Z",
+              "what_moved": "Nothing was done. The clock this row wrote down ran out. account.created_on is 2026-08-10, eligibility_threshold is 48 hours, and account.earliest_post_attempt already read 2026-08-12 — the row's own recorded terms turned it postable at the date rollover.",
+              "who_said_so": "scripts/venue-readiness.mjs, before any reader: 'postable_today says false but the evidence says true', and 'venues_postable_today_from_a_standing_start says 1, but the rows derive 2'. The stored value was the stale one.",
+              "what_it_cost_before_anyone_read_it": "SIX HOURS OF BLIND METERS, jointly with the unledgered-answer red. Both usage workflows ran tests/run-tests.mjs as a hard step above their collect step, so this calendar boundary alone would have skipped collection from 00:00Z onward even with codex/outbox clean. Fixed the same lap in .github/workflows/claude-usage-monitor.yml and usage-monitor.yml: the suite is now reported, not gating.",
+              "what_this_does_not_mean": "That a post is ready. The two prices venue-readiness prints are unchanged and are not blockers: this venue's quoted rule forbids showing the paid kit, so a post here cannot be paid for; and assets/free-demo/index.html declares lang=ja against an en readership. postable means the venue would not remove the account for posting — not that anything worth posting exists in the right language."
+            },
             "postable_today_corrected_2026-08-09T21:40Z": "The owner-answer commit 1846cfc set account.exists to false and said in its own message that the row becomes FALSE, but left this field at null. The mismatch check caught it — 'postable_today says null but the evidence says false' — so venue-readiness.mjs and therefore tests/run-tests.mjs and pulse.yml were red on origin/main between 21:18Z and this fix. Worth recording rather than quietly correcting: that commit reported verifying the CLI output, and the label did change from [UNKNOWN/unknown] to [none/shut] exactly as it says. What it did not read was the PROBLEM line underneath and the exit code. A verification that stops at the line you expected to change is not a verification; the whole reason this check exists is that hand-written verdicts drift from the evidence beneath them, and it drifted inside the same commit that supplied the evidence.",
             "postable_when": [
               {
@@ -298,7 +307,9 @@
               }
             ],
             "postable_when_note": "The venue's rule forbids the paid kit and permits a free unwalled artifact in the same sentence, so what decides this row is whether such an artifact exists. It does not: task .q commissioned one from the codex lane and codex/outbox/2026-08-09.q.md has not arrived. False beats unknown in the AND, so this row reads shut on the artifact even though the account answer is unknown — which is correct, and also why the account question is not yet the binding blocker here. WHEN THE ARTIFACT LANDS THIS ROW TURNS unknown, NOT postable, and scripts/venue-readiness.mjs will fail until somebody answers the account question or records that it cannot be answered. That failure is the feature: it is the loop refusing to carry r/gamedev as an open route on an account nobody has established.",
-            "blocked_on": "the 48-hour account-age clock, which runs out 2026-08-12. No owner action clears it.",
+            "blocked_on": null,
+            "blocked_on_was": "the 48-hour account-age clock, which runs out 2026-08-12. No owner action clears it.",
+            "blocked_on_cleared_at": "2026-08-12T01:20:00Z",
             "owner_request_id": "2026-08-09.reddit-account-create",
             "owner_request_id_note": "Still pending and still worth making — for READERSHIP. This row's paid_promotion_permitted is false, so the request behind it cannot be the route's revenue step, which is why the election was re-pointed off this row at 22:3xZ rather than this request being withdrawn.",
             "what_it_opens_instead": "A free artifact with no signup wall is explicitly permitted by the same sentence. This is the one venue whose door is open to a different product form rather than to a better-standing account.",

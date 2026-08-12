@@ -1194,6 +1194,58 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     "pulse.yml derives the lap cost after compute-eta reads it",
   );
 
+  // --- A red suite may not blind the meter the gate divides -------------------
+  // 2026-08-12. Both usage workflows ran `node tests/run-tests.mjs` as a hard step
+  // ABOVE their collect step. On 2026-08-11T19:11Z an unledgered answer landed in
+  // codex/outbox, this suite went red on an assertion about codex-lane.json, and
+  // the collect steps were SKIPPED on every scheduled run from then until a lap
+  // noticed at 00:54Z. state/claude-usage.json froze at 19:02Z, state/usage.json at
+  // 19:10Z, and scripts/pacing.mjs — the one branch point in the whole loop — spent
+  // six hours dividing a frozen number while printing `continue`.
+  //
+  // The previous handoff had read the same red as self-correcting: "it went red
+  // first on the unledgered answer and that is how the answer got registered."
+  // That is true only while a lap is running. The owner moved the spawner to six
+  // hours on 2026-08-11, and the same red is now a six-hour blackout.
+  //
+  // Two failures were live that morning, not one, and the second is the reason this
+  // check asserts the WIRING and not the greenness: the r/gamedev row's 48-hour
+  // account-age clock ran out at the 2026-08-12 date rollover, so the suite would
+  // have gone red on a calendar boundary with no commit involved. A meter that can
+  // be switched off by the date is not a meter.
+  //
+  // What must hold: the suite is REPORTED (the job still fails) and not GATING (the
+  // collector runs anyway). Deleting the continue-on-error is what this catches.
+  for (const wfName of ["claude-usage-monitor.yml", "usage-monitor.yml"]) {
+    const wf = await readFile(join(root, ".github/workflows", wfName), "utf8");
+    const lines = wf.split("\n");
+    const runIdx = lines.findIndex((l) => /^\s*run:\s*node tests\/run-tests\.mjs\s*$/.test(l));
+    assert(runIdx !== -1, `${wfName} no longer runs tests/run-tests.mjs — this check has lost its subject`);
+    // The step's own body: walk back to the `- name:` that opens it.
+    let openIdx = runIdx;
+    while (openIdx > 0 && !/^\s*-\s+name:/.test(lines[openIdx])) openIdx -= 1;
+    const step = lines.slice(openIdx, runIdx + 1).join("\n");
+    assert(
+      /^\s*continue-on-error:\s*true\s*$/m.test(step),
+      `${wfName} runs the whole suite as a blocking step above its collector: one red content assertion` +
+        " anywhere in state/ skips collection and freezes the number the pacing gate divides",
+    );
+    assert(
+      /^\s*id:\s*tests\s*$/m.test(step),
+      `${wfName} makes the suite non-blocking without an id, so nothing downstream can turn its failure back into a red job`,
+    );
+    assert(
+      /if:[^\n]*steps\.tests\.outcome\s*!=\s*'success'/.test(wf),
+      `${wfName} swallows a failing suite entirely — continue-on-error without a step that propagates it is not "reported", it is hidden`,
+    );
+    // And the collector must still be below it, or the decoupling protects nothing.
+    const collectIdx = lines.findIndex((l) => /^\s*id:\s*collect\s*$/.test(l));
+    assert(
+      collectIdx > runIdx,
+      `${wfName} has no collect step after the suite — the thing this decoupling exists to keep running is gone`,
+    );
+  }
+
   // --- The pre-commit gate may only guard what the commit actually stages -----
   // 2026-08-10. The "Verify no credentials entered committed state" step listed
   // seven files; the commit stages six, and two of the seven — youtube-scan.json

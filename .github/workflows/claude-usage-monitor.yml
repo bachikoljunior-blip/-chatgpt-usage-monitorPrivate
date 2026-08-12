@@ -35,7 +35,16 @@ jobs:
         with:
           node-version: "22"
 
+      # Reported, not gating. 2026-08-11T19:11Z an unledgered answer landed in
+      # codex/outbox and turned this suite red; the step had no continue-on-error,
+      # so "Collect sanitized Claude quota state" was SKIPPED on every run for the
+      # next six hours and state/claude-usage.json froze at 19:02Z. The pacing gate
+      # is the only branch point in the loop and it divides the frozen number.
+      # A content assertion about a different file must not be able to stop the
+      # meter that feeds the gate. The job still goes red — see the last step.
       - name: Test collectors
+        id: tests
+        continue-on-error: true
         run: node tests/run-tests.mjs
 
       - name: Warn when the subscription token is not configured yet
@@ -74,6 +83,8 @@ jobs:
           git pull --rebase origin "$TARGET_BRANCH"
           git push origin HEAD:"$TARGET_BRANCH"
 
-      - name: Propagate collection failure
-        if: steps.collect.outcome != 'success'
-        run: exit 1
+      - name: Propagate collection or test failure
+        if: steps.collect.outcome != 'success' || steps.tests.outcome != 'success'
+        run: |
+          echo "tests=${{ steps.tests.outcome }} collect=${{ steps.collect.outcome }}"
+          exit 1
