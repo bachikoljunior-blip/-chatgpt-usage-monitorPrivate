@@ -290,9 +290,19 @@
     {
       "id": "2026-08-10.gumroad-replace-the-kit-file",
       "created_at": "2026-08-10T12:45:00Z",
-      "status": "pending",
+      "status": "withdrawn",
+      "withdrawn_at": "2026-08-12T01:35:00Z",
+      "withdrawn_because": {
+        "the_test_the_previous_lap_set": "The 2026-08-11 handoff wrote the condition in advance: 'If embeds, the pending owner request can be WITHDRAWN with zero owner actions and rung 1 closes. If product files, it is confirmed necessary.' The answer landed as codex/outbox/2026-08-11.gumroad-download-all-source.md and it reads embeds. Withdrawing is the test firing, not a lap changing its mind.",
+        "what_the_answer_established": "A source read of antiwork/gumroad at commit 5af71646, with file-and-line links rather than prose. UrlRedirect#alive_product_files returns only the files whose ids appear as fileEmbed/fileEmbedGroup nodes in rich_content whenever at least one embed exists; the all-attachments fallback is the no-embed branch and this product is not in it. The buyer's content screen and the group 'Download all' ZIP are both built from that same list. So a file that is attached but not embedded reaches NO buyer surface — which is the shape state/gumroad-two-file-replace.json live_shape already measured this product to be in.",
+        "why_the_request_therefore_falls": "Its `why` is that a buyer sees two license texts and cannot tell which binds them. That harm needs the stale file to be visible to a buyer. It is not. The defect is real on the seller's attachment list and reaches nobody.",
+        "the_owner_screenshot_agrees_and_is_not_the_reason": "The Content tab image relayed at ~2026-08-11T23:30 JST shows one file. It is consistent, and it is a photograph through two hands of one tab at one moment, so it corroborates and does not decide.",
+        "what_would_re_open_it": "A buyer-side observation contradicting the source read — a test purchase whose download screen or ZIP contains Brandable_Idle_Clicker_Kit_v1.0. Nobody has made one; it costs more than the deletion it would avoid, which is why this was settled from the code instead.",
+        "what_this_does_not_settle": "Whether the deployed gumroad.com matches the public repository at that commit. It is an inference from published source, not an observation of the running service, and it is recorded as that."
+      },
       "candidate_id": "idle_clicker_kit.deliver_both_rung_one_fixes",
-      "owner_actions": 1,
+      "owner_actions": 0,
+      "owner_actions_was": 1,
       "estimated_owner_minutes": 1,
       "one_line": "Gumroad の商品に古いファイルがもう1つ残っています。新しい方は既に付いています。古い方を削除するだけです。",
       "owner_typing_and_judgement_count": "打ち込む文字：0。判断する箇所：0。操作：Gumroad で該当商品の Content を開く → Brandable_Idle_Clicker_Kit_v1.0 を削除 → Save。ダウンロードもアップロードも要りません。",

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-10T09:25:00Z",
+  "fetched_at": "2026-08-12T01:45:00Z",
   "note": "Every change made because it was claimed to shorten the ETA. judge_on is set when the change lands, not when it is convenient. concurrent_changes is what else was in flight, so a later reader can tell a clean attribution from a confounded one.",
   "predictions": [
     {
@@ -936,7 +936,16 @@
         "Same session lineage, commit b1f0224 (a previous lap): unlock conditions became machine-evaluated. Same defect class — a decision living only on a surface nothing reads. If both hold, that is one finding twice, not two findings, and the sweep recorded here is the reason to stop calling it a coincidence."
       ],
       "falsified_if": "state/itch.json game_count goes above zero and no lap corrects the row — that would mean the check exists and is not in the path that matters. OR a lap silences a failing check by rewriting postable_today to match the prose instead of the evidence. OR the sweep missed a gate: if any later lap finds a second substantive condition in state/ that nothing evaluates, the 'substantive_gates_among_them: 1' figure above was wrong and the sweep's generosity was insufficient. Note what this does NOT claim: that any venue becomes postable, that anything is posted, or that anything sells. Every venue is still shut or unknown, and this only guarantees the loop finds out when that stops being true.",
-      "outcome": null
+      "outcome": {
+        "judged_at": "2026-08-12T01:45:00Z",
+        "judged_by": "eta-loop worker session_015wghe9PXBjBFcFVygpsXEA",
+        "verdict": "RIGHT ON THE CORE CLAIM, AND THE EVIDENCE ARRIVED FROM A ROW THE PREDICTION DID NOT NAME.",
+        "what_was_measured": "The claim is that a hand-written postable_today drifts from the evidence beneath it, and that deriving it makes the correction arrive by itself instead of waiting for a human to re-read a sentence. That is exactly what happened at the 2026-08-12 date rollover: r/gamedev's row carried postable_today false with blocked_on 'the 48-hour account-age clock, which runs out 2026-08-12'. The clock ran out, nobody did anything, and scripts/venue-readiness.mjs exited 1 with 'postable_today says false but the evidence says true' and 'venues_postable_today_from_a_standing_start says 1, but the rows derive 2'. No reader noticed first; the check did. This lap corrected the row and the count citing the check, which is the behaviour the metric asked for.",
+        "the_row_it_came_from": "NOT itch.io. The prediction argued itch.io was 'the one that costs' because its blocker was a pending owner action. That specific mechanism is untested here — the itch row already reads postable_today true and this lap did not establish which lap set it or whether the check drove it. The correction came instead from a row whose blocker was a CLOCK, which the prediction did not anticipate as a source of drift at all. Right about the failure mode, wrong about where it would first appear.",
+        "the_second_and_separable_claim": "Three-valued shape: still standing. GameDev.net remains null with postable_not_evaluable rather than being coerced to false, and the count counts settled yeses only, so the null row moved nothing when the r/gamedev row moved.",
+        "what_it_cost_that_the_prediction_did_not_foresee": "The check being right was not free. Both usage workflows ran tests/run-tests.mjs as a hard step above their collect step, so this correct red — arriving at a calendar boundary with no commit involved — would have skipped usage collection on every scheduled run from 00:00Z. It did not act alone; an unledgered answer had already turned the suite red at 2026-08-11T19:11Z and the meters were frozen for six hours. A reader that is right and that switches off the meter feeding the only gate is a net loss until the coupling is removed, which this lap removed.",
+        "concurrent_changes_at_judging": "Same lap and same commit as the workflow decoupling and the codex-lane registration. The verdict above rests on the check's own printed output at 01:0xZ, which predates all three edits, so the judgement is not reading its own repair."
+      }
     },
     {
       "id": "2026-08-09.the-demo-got-a-public-home-for-free",
@@ -2444,6 +2453,23 @@
       "concurrent_changes": [
         "Same lap: three tasks appended to codex/INBOX.md. Their answers land inside this prediction's window and will themselves change what a lap can cite, so a citation of the marketplace qualifier after 2026-08-15 may be caused by the new answer rather than by this folding. Recorded because it cannot be separated afterwards.",
         "Same lap: the prerequisite counter reached 3/3, so the next lap can only pass the gate as route_change. That constrains what the next pick can be independently of anything folded in here."
+      ]
+    },
+    {
+      "id": "2026-08-12.a-a-red-suite-no-longer-freezes-the-meters",
+      "registered_at": "2026-08-12T01:40:00Z",
+      "registered_by": "eta-loop worker session_015wghe9PXBjBFcFVygpsXEA",
+      "claim": "Making tests/run-tests.mjs reported-rather-than-gating in the two usage workflows means the usage meters keep advancing through a red suite. Concretely: between now and 2026-08-19 there will be at least one scheduled run of claude-usage-monitor.yml or usage-monitor.yml that CONCLUDES FAILURE while the state file it collects still advances its fetched_at in the same run. If instead every failing run again leaves fetched_at untouched, the decoupling did not take.",
+      "mechanism": "The collect step sat below an un-guarded `run: node tests/run-tests.mjs`. A non-zero exit there aborts the job, so every step without `if: always()` is skipped — including collection. Adding continue-on-error with an id moves the suite's verdict out of the control flow and into the final propagate step, so the job still reports red while the collector runs. Nothing about what the suite asserts changed.",
+      "metric": "For each run of the two workflows in the window: conclusion (from the Actions API) paired with whether that run produced a commit advancing state/claude-usage.json or state/usage.json fetched_at. A confirming observation is one run with conclusion=failure AND fetched_at advanced. A refuting observation is a run with conclusion=failure AND fetched_at unchanged while the collect step shows as skipped.",
+      "baseline": "2026-08-11T19:27Z through 2026-08-12T00:54Z: 6 runs of claude-usage-monitor.yml, all failure, all with the collect step skipped, state/claude-usage.json frozen at 19:02:36Z and state/usage.json at 19:10:10Z. 0 of 6 advanced. That is the number to beat and it is 0.",
+      "judge_on": "2026-08-19",
+      "judge_deadline": "2026-08-21",
+      "outcome": null,
+      "falsification": "A failing run whose collect step is skipped. Also refuting in a weaker sense: no failing run occurs at all in the window, in which case the claim is untested rather than wrong and must be recorded as untested — a green week is not evidence for a change that only acts when things are red.",
+      "concurrent_changes": [
+        "Same lap, same commit: state/codex-lane.json registered the two unledgered answers and state/constraints.json corrected the r/gamedev row. Both of those clear the two reds that were live, so the suite is green as of this commit. That makes the window LESS likely to contain a failing run, which biases this prediction toward 'untested', not toward 'confirmed'.",
+        "Same lap: owner request 2026-08-10.gumroad-replace-the-kit-file withdrawn. Unrelated to this metric."
       ]
     }
   ]
