@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-12T10:24:04.628Z",
+  "fetched_at": "2026-08-12T13:12:33.433Z",
   "source": "GET /v2/products/:id files[].url — the seller's own attachment, no owner action",
   "note": "The signed download URL is deliberately absent: it carries a verify token and an expiry. The manifest is what a later run compares against.",
   "product_id_shape": "string",
   "extracted_into_repo_tree": false,
-  "file_count": 13,
+  "file_count": 6,
   "promised_artifacts_present": false,
   "promised_artifacts_missing": [
     "brand.config.json",
@@ -16,146 +16,76 @@
   ],
   "manifest": [
     {
-      "path": "Assistants_API_Sunset_Migration_Kit_v1.zip",
-      "bytes": 8611,
-      "sha256": "4023a637828ddc07faac4ab615fd7e19dc80ec4c1e5f0d036b6454954776d049"
+      "path": "codemod.py",
+      "bytes": 4925,
+      "sha256": "5f61e7b6f7449742dfb00b6c5aef018399fb96190e27676238c1664641b5710c"
     },
     {
-      "path": "brandable/extended_version.txt",
-      "bytes": 503,
-      "sha256": "259e0735ffc415d444d34f05f9fa06231e2da2279730a2ec09b9dec5ae07edbd"
+      "path": "LICENSE.txt",
+      "bytes": 981,
+      "sha256": "feb8d8b1108830cd2db585a595326b6a47e5a8eb43579656d8023e381e0209e7"
     },
     {
-      "path": "brandable/standard_version.txt",
-      "bytes": 301,
-      "sha256": "6e5aaaa5873a9e001dd546d70b3ead86b2659af2813fe1c387f48e9ead70f27f"
+      "path": "MIGRATION.md",
+      "bytes": 1266,
+      "sha256": "ef9b262f620bcc12f4b364ffb749cf28a8829086b9f0007f90535d845fb48b03"
     },
     {
-      "path": "brandable/unit_economics.txt",
-      "bytes": 596,
-      "sha256": "a6f54cc89553c3640d19e16c9012eeabcc4a0a38fbd591c7009b4e68535b5797"
+      "path": "README.md",
+      "bytes": 1532,
+      "sha256": "af2ffcf978e180d6478f96c942333c742499e75b34637dc625f2c5ce54e2f502"
     },
     {
-      "path": "copy/description.md",
-      "bytes": 923,
-      "sha256": "4dd7915c60c0b3c6d1be002e44ce83156c3893322dae4c6592eb8674b8fd5a38"
+      "path": "scan.py",
+      "bytes": 6696,
+      "sha256": "a320cf466c1f03962969aa77d18a210baae802800aefa48f299af9e3fa9422d1"
     },
     {
-      "path": "copy/refund_fine_print.txt",
-      "bytes": 200,
-      "sha256": "631f9b22143f515abadff2fb7678a03b0832a9b168303ae1b02a23a3231ad2ae"
-    },
-    {
-      "path": "copy/summary.txt",
-      "bytes": 147,
-      "sha256": "743145c16ef93700ff7e44d999f992e181f84b656258dafbaeda5961bd7acbed"
-    },
-    {
-      "path": "copy/tags.txt",
-      "bytes": 74,
-      "sha256": "d578901b498c34b92cbec51831052f49d59478196d8163bbe8566f475edce6c7"
-    },
-    {
-      "path": "copy/title.txt",
-      "bytes": 36,
-      "sha256": "3f0d9bed5355c189e069f60a52a90d6ee3b96d2a5a53600ea149936179ac57bc"
-    },
-    {
-      "path": "cover/cover.svg",
-      "bytes": 1752,
-      "sha256": "253d6a9cf72b0665448592eab26d2366ea00895ff5a488087cc6802453ea29bb"
-    },
-    {
-      "path": "manifest.json",
-      "bytes": 2680,
-      "sha256": "3b7d5463c47e4eafced30a1d2a6266e1e8037d1bf31df1ae572ae6e0e580757f"
-    },
-    {
-      "path": "README_iPhone.txt",
-      "bytes": 567,
-      "sha256": "8657e72d671b6fc56a8ce5b6a75405da525f2782a78351e03e1fe8fb97bd8952"
-    },
-    {
-      "path": "START_HERE.html",
-      "bytes": 5230,
-      "sha256": "dd10f23d03dc2c78ee22c8d9163e38c5a61b49eb432a04509c646aeb7bed6b06"
+      "path": "test_scan.py",
+      "bytes": 3132,
+      "sha256": "d2735079f8c38cfad4494e7dd05ebcfadbfca4baa5500facd7a5dc319f9103e6"
     }
   ],
   "attachment_count": 1,
   "rich_content_embed_ids": [
-    "C9zbmjys2VtiNXi8aypzbw=="
+    "KeF26YdLdgY3empKSCuw_g=="
   ],
   "attachments": [
     {
-      "id": "C9zbmjys2VtiNXi8aypzbw==",
-      "name": "Assistants_API_Sunset_Gumroad_iPhone_Pack_v1",
+      "id": "KeF26YdLdgY3empKSCuw_g==",
+      "name": "Assistants_API_Sunset_Migration_Kit_v1.zip",
       "embedded_in_rich_content": true,
-      "file_count": 13,
+      "file_count": 6,
       "manifest": [
         {
-          "path": "Assistants_API_Sunset_Migration_Kit_v1.zip",
-          "bytes": 8611,
-          "sha256": "4023a637828ddc07faac4ab615fd7e19dc80ec4c1e5f0d036b6454954776d049"
+          "path": "codemod.py",
+          "bytes": 4925,
+          "sha256": "5f61e7b6f7449742dfb00b6c5aef018399fb96190e27676238c1664641b5710c"
         },
         {
-          "path": "brandable/extended_version.txt",
-          "bytes": 503,
-          "sha256": "259e0735ffc415d444d34f05f9fa06231e2da2279730a2ec09b9dec5ae07edbd"
+          "path": "LICENSE.txt",
+          "bytes": 981,
+          "sha256": "feb8d8b1108830cd2db585a595326b6a47e5a8eb43579656d8023e381e0209e7"
         },
         {
-          "path": "brandable/standard_version.txt",
-          "bytes": 301,
-          "sha256": "6e5aaaa5873a9e001dd546d70b3ead86b2659af2813fe1c387f48e9ead70f27f"
+          "path": "MIGRATION.md",
+          "bytes": 1266,
+          "sha256": "ef9b262f620bcc12f4b364ffb749cf28a8829086b9f0007f90535d845fb48b03"
         },
         {
-          "path": "brandable/unit_economics.txt",
-          "bytes": 596,
-          "sha256": "a6f54cc89553c3640d19e16c9012eeabcc4a0a38fbd591c7009b4e68535b5797"
+          "path": "README.md",
+          "bytes": 1532,
+          "sha256": "af2ffcf978e180d6478f96c942333c742499e75b34637dc625f2c5ce54e2f502"
         },
         {
-          "path": "copy/description.md",
-          "bytes": 923,
-          "sha256": "4dd7915c60c0b3c6d1be002e44ce83156c3893322dae4c6592eb8674b8fd5a38"
+          "path": "scan.py",
+          "bytes": 6696,
+          "sha256": "a320cf466c1f03962969aa77d18a210baae802800aefa48f299af9e3fa9422d1"
         },
         {
-          "path": "copy/refund_fine_print.txt",
-          "bytes": 200,
-          "sha256": "631f9b22143f515abadff2fb7678a03b0832a9b168303ae1b02a23a3231ad2ae"
-        },
-        {
-          "path": "copy/summary.txt",
-          "bytes": 147,
-          "sha256": "743145c16ef93700ff7e44d999f992e181f84b656258dafbaeda5961bd7acbed"
-        },
-        {
-          "path": "copy/tags.txt",
-          "bytes": 74,
-          "sha256": "d578901b498c34b92cbec51831052f49d59478196d8163bbe8566f475edce6c7"
-        },
-        {
-          "path": "copy/title.txt",
-          "bytes": 36,
-          "sha256": "3f0d9bed5355c189e069f60a52a90d6ee3b96d2a5a53600ea149936179ac57bc"
-        },
-        {
-          "path": "cover/cover.svg",
-          "bytes": 1752,
-          "sha256": "253d6a9cf72b0665448592eab26d2366ea00895ff5a488087cc6802453ea29bb"
-        },
-        {
-          "path": "manifest.json",
-          "bytes": 2680,
-          "sha256": "3b7d5463c47e4eafced30a1d2a6266e1e8037d1bf31df1ae572ae6e0e580757f"
-        },
-        {
-          "path": "README_iPhone.txt",
-          "bytes": 567,
-          "sha256": "8657e72d671b6fc56a8ce5b6a75405da525f2782a78351e03e1fe8fb97bd8952"
-        },
-        {
-          "path": "START_HERE.html",
-          "bytes": 5230,
-          "sha256": "dd10f23d03dc2c78ee22c8d9163e38c5a61b49eb432a04509c646aeb7bed6b06"
+          "path": "test_scan.py",
+          "bytes": 3132,
+          "sha256": "d2735079f8c38cfad4494e7dd05ebcfadbfca4baa5500facd7a5dc319f9103e6"
         }
       ]
     }

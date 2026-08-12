@@ -1,12 +1,33 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-12T10:24:06.554Z",
+  "fetched_at": "2026-08-12T13:12:34.835Z",
   "total_sales_count": 0,
   "total_sales_usd_cents": 0,
-  "product_count": 2,
-  "published_count": 2,
+  "product_count": 3,
+  "published_count": 3,
   "products": [
+    {
+      "id": "q5LG9u2sys7AXmHNw740JQ==",
+      "name": "Assistants API Sunset Migration Kit",
+      "short_url": "https://bachiko4.gumroad.com/l/assistants-api-sunset-migration-kit-licenses",
+      "published": true,
+      "price_cents": 2900,
+      "currency": "usd",
+      "sales_count": 0,
+      "sales_usd_cents": 0,
+      "file_info_shape": "object",
+      "file_count": null,
+      "file_info_keys": [
+        "Size"
+      ],
+      "file_size_bytes": null,
+      "file_size_value_shape": "string",
+      "cover_count": 1,
+      "thumbnail_url_present": false,
+      "main_cover_id_present": true,
+      "covers_field_shape": "array"
+    },
     {
       "id": "A-SuiZVy7ldVaB-0t5AzEA==",
       "name": "Assistants API Sunset Migration Kit",

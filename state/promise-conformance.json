@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-12T10:24:07.265Z",
+  "fetched_at": "2026-08-12T13:12:36.320Z",
   "rung": "promise_conformance",
   "offer_id": "idle_clicker_kit",
   "listing": {
@@ -39,9 +39,10 @@
   "play_measured_at": "2026-08-10T11:30:11.907Z",
   "promises_checked": 16,
   "tally": {
-    "conforms": 14,
+    "conforms": 13,
     "blocked": 1,
-    "partial": 1
+    "partial": 1,
+    "fails": 1
   },
   "results": [
     {
@@ -139,8 +140,8 @@
       "id": "license_tier_is_determinate",
       "quote": "あなたの作品・自社サイトなど、公開先1つで使えます。商用可・改変自由 / クライアントの案件へ納品する場合は、別途ご相談ください",
       "still_on_page": true,
-      "verdict": "conforms",
-      "observation": "LICENSE.txt tiers: 1, listing variants: 1"
+      "verdict": "fails",
+      "observation": "FIXED IN SOURCE, NOT YET DELIVERED. product/brandable-idle-clicker/LICENSE.txt is now determinate: one tier, no choice at purchase, client delivery named as outside it. Its sha256 no longer matches the manifest in state/product-source.json, which digests what was actually fetched from the Gumroad attachment — so the file a buyer downloads still opens with 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 MEASURED 2026-08-10T17:43:01.962Z ON THE LIVE LISTING: a fresh archive was uploaded and PUT as the product's only file, both calls answered 2xx, and the served file list did not move (no_op). state/gumroad-file-walk.json DOES show an attachment being replaced — on a throwaway product that same code created — so the route exists and does not reach this listing. MEASURED 2026-08-11T07:00:58.863Z: the FILE COUNT is not the term — a throwaway carrying two attachments had both replaced by a single-entry files[] PUT; MEASURED 2026-08-11T07:00:58.863Z: rich_content was varied on ONE product with origin and publication held fixed and files[] came back no_op — so rich_content IS the term, and the fix is a content-page write rather than an owner upload (the same product answered 2xx and changed nothing once it carried a content page, having replaced cleanly minutes earlier without one. That reproduces the live listing's failure with origin and publication held fixed, so the buyer's download list comes from the embeds and PUT files[] writes to an index nobody serves. The fix to the priced product is a rich_content write and needs no owner upload.); MEASURED 2026-08-11T07:00:58.863Z: a subtractive files[] PUT — naming only the embedded attachment, on a throwaway built in the live shape — came back no_op, so no API route here can remove the superseded attachment and the owner deletion is measured irreducible, not assumed (the PUT answered and both attachments still serve, so files[] cannot subtract under a content page either. The owner request stands and is now measured irreducible rather than assumed: no API route this repository can reach removes the superseded attachment.); the next term to test is the_owner_request_is_the_route: the PUT answered and both attachments still serve, so files[] cannot subtract under a content page either. The owner request stands and is now measured irreducible rather than assumed: no API route this repository can reach removes the superseded attachment.; and the listing names files in two places that disagree — files[] carries 2 (Brandable_Idle_Clicker_Kit_v1.0, brandable-idle-clicker) while its rich_content page embeds 1. Until it is closed no source fix is deliverable in place here, and neither an owner upload nor an automated one has been shown to work on it. The promise stays failed until a re-fetch shows the delivered digest moved."
     },
     {
       "id": "japanese_readme_and_license",
