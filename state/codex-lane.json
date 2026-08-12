@@ -208,6 +208,16 @@
       "what_it_establishes_and_what_it_only_leads_to": "ESTABLISHED, because it is a negative about page structure rather than a number: none of the three paid HTML5/JS template pages displays view, download or sale counts, and the only public figures found anywhere were self-reported by authors of FREE assets in their own devlog text. That is a second, independent path to the same conclusion the venue ranking already reached — itch.io publishes no purchase proof — and it now rests on pages opened rather than on inference. LEAD ONLY: the prices ($3.29, $12.99, GBP1.29) and the update timestamps. Same bar as .v and .w — a price copied out of an unattributed answer is not a measurement.",
       "the_thing_a_lap_should_not_skip_past": "Two of the three are OUR EXACT FORM, sold today. mtw1man2's Bit Miner is a plain HTML/CSS/vanilla-JS idle clicker starter at $3.29 that states outright it is not Unity, Godot, Phaser or RPG Maker; the same seller's 26-in-1 pack is GBP1.29 and its slug literally ends `rebrand-resell`. The demand sweep found zero public BUYERS asking for this form and this answer finds SELLERS shipping it at ~$1 to $3. Those two are consistent, and together they price the form rather than close it. Do not resolve that in passing — RUNBOOK 5's zero-base round is the place, and it is due.",
       "why_this_one_is_not_reopened": "produces: research, and its done_marker legitimately closes it. Re-asking cannot settle authorship: two unattributed answers agreeing proves nothing about either."
+    },
+    {
+      "task_id": "2026-08-12.who-pays-for-customisation",
+      "acknowledged_at": "2026-08-12T17:26:00Z",
+      "author": null,
+      "why_no_run": "codex/outbox/2026-08-12.who-pays-for-customisation.md arrived as commit e8a5945 at 2026-08-12T13:14:48Z, authored and committed by bachikoljunior-blip, touching only the outbox file. state/codex-lane.json has no run for it, and .github/workflows/codex-inbox.yml writes a ledger row whenever that transport produces an answer.",
+      "what_is_therefore_unknown": "Which model wrote it and which usage pool, if any, it spent. The requested model in codex/INBOX.md is not evidence of the model that actually authored the answer.",
+      "what_it_can_and_cannot_establish": "It is decision-relevant research but its authorship and live-fetch provenance are unestablished. Treat the listed buyer posts as leads unless independently fetched; do not record them as realized revenue, contracts, or proof that this self-serve offer converted.",
+      "why_acknowledging_is_required": "The usage collector deliberately continues after the accounting test so quota state stays fresh, then reports the unregistered answer as a failure. Registering the known provenance gap restores a green test without weakening the assertion or changing collector behavior.",
+      "committed_by": "bachikoljunior-blip (git identity on commit e8a5945; the authoring MODEL is not established)"
     }
   ],
   "derived_artifacts": [
