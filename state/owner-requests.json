@@ -502,7 +502,7 @@
     {
       "id": "2026-08-12.email-scirra-about-plain-html-js",
       "created_at": "2026-08-12T07:45:00Z",
-      "status": "pending",
+      "status": "done",
       "candidate_id": null,
       "owner_actions": 1,
       "estimated_owner_minutes": 1,
@@ -534,7 +534,17 @@
         ]
       },
       "not_success": "An auto-acknowledgement from a ticket system. That is receipt, not an answer, and recording it as one would put a false 'measured' on the row that decides whether to spend the $20.",
-      "judge_by": "2026-08-26"
+      "judge_by": "2026-08-26",
+      "completed_at": "2026-08-12T08:15:00Z",
+      "outcome": {
+        "reply": "Tom Gullen, Founder, Construct, 2026-08-12 16:57 JST: \"Sorry the store is for Construct 3 projects not projects like you propose.\"",
+        "verdict": "NO. First-party, unambiguous, and against this product's actual form — the question named plain HTML/CSS/JS with no .c3p, .c3addon or .capx and said outright it cannot be opened in Construct 3.",
+        "turnaround": "The request was filed at 07:45Z and answered by 07:57Z. Roughly ten minutes of owner time-to-send and a same-hour reply.",
+        "recorded_where": "state/constraints.json construct_store_accepts_engine_agnostic, measured_at 2026-08-12. The success_test_machine predicate on that path is now satisfied.",
+        "what_it_bought": "$20 not spent, and the days of listing work behind it not spent. That is the entire value of having asked before paying, and it came from the lane recommending the question rather than the answer.",
+        "what_it_cost": "One owner minute and one email."
+      },
+      "what_follows": "All three venues that met the qualifier are now closed (CodeCanyon shut to new authors, itch.io publishes no per-product sales proof, Construct refused). That is a route-level result. The next thing is not another venue: it is codex/INBOX.md 2026-08-12.who-asks-for-a-brandable-clicker-kit, still in flight, which asks whether buyers for this product form exist anywhere at all."
     }
   ]
 }

@@ -1489,6 +1489,15 @@
       "observed_delta_percent": 0,
       "usable": false,
       "reason": "no_new_usage_reading"
+    },
+    {
+      "id": "eta-loop",
+      "started_at": "2026-08-12T08:15:17.747Z",
+      "ended_at": "2026-08-12T08:17:55.428Z",
+      "cost_percent": null,
+      "observed_delta_percent": 0,
+      "usable": false,
+      "reason": "no_new_usage_reading"
     }
   ],
   "pending_verification": {

@@ -188,6 +188,16 @@
       "what_is_newly_visible_here": "THIS IS THE PREDICTION CONFIRMING INSIDE ONE LAP. 2026-08-12.b was registered at 07:10Z claiming at least one of the three tasks queued this lap would be answered before the Claude window resets on 2026-08-14T22:00Z with zero successful codex-inbox.yml runs. The task was queued at 07:07Z and answered at 07:14Z — SEVEN MINUTES — which also narrows delivery_path_independence's open question: a 7-minute turnaround is too fast for a daily or hourly poll, so the direct path is reacting to the commit, not sweeping on a timer. It is not yet judged; the judge date stands.",
       "what_it_does_not_mean": "That three tasks will all come back this fast, or that the ledger has stopped mattering. When Actions returns, a ledgered run is still the only thing that can settle which pool a named run spends.",
       "committed_by": "bachikoljunior-blip (git identity on commit 2d8a059; the authoring MODEL is not established)"
+    },
+    {
+      "task_id": "2026-08-12.who-asks-for-a-brandable-clicker-kit",
+      "acknowledged_at": "2026-08-12T08:20:00Z",
+      "author": null,
+      "why_no_run": "Arrived by the direct path at 2026-08-12T17:08:56+09:00 (08:08:56Z), one hour after being queued. No ledger row and there cannot be one: Actions minutes are exhausted, 2,000 of 2,000, until roughly 2026-09-01.",
+      "what_is_therefore_unknown": "Which model wrote it, and which weekly window it spent.",
+      "what_is_newly_visible_here": "THIS IS THE ANSWER THAT ENDS A ROUTE, AND IT IS A ZERO THAT WAS ASKED FOR HONESTLY. The task said in writing that 0 was a correct answer and that padding by loosening the condition would cost months. It returned 0 and said so: 'ブランド差し替え可能なHTML5クリッカーテンプレートの販売ページは複数ありました。しかし、それらは「売りたい人」の広告であり、「欲しい・買いたいと公に書いた人」の証拠ではありません' — it found sellers, refused to count them as buyers, and listed where it looked (Reddit incl. r/gamedev and r/incremental_games, itch.io product pages and comments and communities and bundles, GitHub issues and discussions).",
+      "what_it_does_not_mean": "That the search was exhaustive. It means twelve months of public buyer-side asks, across those surfaces, produced nothing for this product form — which is evidence, not proof.",
+      "committed_by": "bachikoljunior-blip (direct path; the authoring MODEL is not established)"
     }
   ],
   "derived_artifacts": [

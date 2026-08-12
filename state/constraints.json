@@ -1226,6 +1226,46 @@
       "eta_effect_if_lifted": "Large, and it is the only item on the board that removes an owner action rather than adding one. While it stood, every fix to the priced product was priced as needing a human upload, and the newest offer carried an exit clause for having no delivery route at all. If the walk-through succeeds, rung 1 becomes clearable unattended on a product that already has buyers' promises to conform to, and prompt_pack becomes listable. Days are not claimed: no channel has a derivable rate, so the honest statement is that this removes the reason the ladder stops, not that it produces revenue.",
       "what_is_not_known": "THE WALK THROUGH. Existence of a door is not passage. presign must return real S3 part URLs, parts must be pushed, complete must return a canonical url, and that url must survive validate_file_urls on a PUT. Any one of those can require a seller web session — app/controllers/s3_utility_controller.rb is Sellers::BaseController with authenticate_user!, which is the dashboard path and NOT OAuth, so the possibility the earlier reading raised is still live. It must be probed on a THROWAWAY product; the live listing is not a test surface. Also unprobed and cheaper: rich_content on PUT /v2/products/:id, which delivers a text offer with no bytes at all.",
       "note": "The shape of this failure is the one this repository names most often and caught here on itself: a search that returned nothing was recorded as an absence, and the absence was then read by a script as a ceiling. Twelve probes with a control looked like rigour. The control was sound and the path list was a guess, and nothing downstream could tell those apart. The correction cost three requests, and it was available the whole time in a public repository this session can read."
+    },
+    {
+      "id": "construct_store_accepts_engine_agnostic",
+      "claim": "REFUSED, FIRST-PARTY AND IN WRITING. The Construct Asset Store does not accept a plain HTML/CSS/JavaScript product. Tom Gullen, Founder of Construct, replying to support@construct.net on 2026-08-12: \"Sorry the store is for Construct 3 projects not projects like you propose.\"",
+      "evidence": "The question was asked verbatim as the lane drafted it — a brandable idle clicker kit supplied as original HTML, CSS and JavaScript with no .c3p, .c3addon or .capx, stated outright as not openable in Construct 3 — so the refusal is against this product's actual form and not against a paraphrase. Reply received 2026-08-12 16:57 JST, subject Re: Asset Store eligibility for an HTML/CSS/JavaScript clicker kit. The owner supplied the message; no automated path was involved.",
+      "measured_at": "2026-08-12",
+      "recheck_after": "2027-02-12",
+      "blocks": [
+        "construct_store_listing",
+        "venues_that_meet_the_qualifier"
+      ],
+      "eta_effect_if_lifted": "None to claim. This is the constraint being CONFIRMED rather than lifted, and it removes a route rather than opening one.",
+      "what_it_cost_to_learn": "$0 and one owner minute. The $20 seller fee was not spent, which is the whole reason the lane was asked to draft the question before anyone paid — its own recommendation was 'do not pay yet, ask this first', and that recommendation was worth exactly $20 plus the days of listing work behind it.",
+      "what_it_closes": "ALL THREE VENUES THAT MET THE QUALIFIER ARE NOW CLOSED. The qualifier was: buyers search there, they can check out there, and a purchase leaves public proof. codex/outbox/2026-08-11.non-unity-kit-marketplaces.md found exactly three. CodeCanyon has our exact product form selling with public sales counts and its new-author door is shut. itch.io publishes no per-product sales count or buyer reviews, so it fails the proof half. Construct is now refused in writing by its founder. The candidate list for this route is EMPTY, and an empty list is a conclusion about the route, not a pause.",
+      "the_reading_that_would_be_wrong": "That there is nowhere to sell. What is empty is the list produced by ONE qualifier, and the third clause of that qualifier — a purchase leaves public proof — was never about selling. It was about being able to MEASURE demand at a venue. itch.io was dropped on that clause alone: we hold an account there, listing costs nothing, and it can be done today. So the honest statement is that no venue satisfies 'sell AND measure', not that no venue satisfies 'sell'.",
+      "what_this_makes_decisive": "codex/INBOX.md 2026-08-12.who-asks-for-a-brandable-clicker-kit, still in flight. With every venue candidate closed, the open question is no longer WHICH venue but whether buyers for this product form exist at all. If that task returns zero buyer-side asks in twelve months, the answer is about the product, and ten laps of venue hunting were the wrong hunt."
+    },
+    {
+      "id": "no_public_buyer_asks_for_this_product_form",
+      "claim": "In twelve months of public, buyer-side posts, ZERO people asked for what this product is: a brandable/white-label idle-clicker template as plain HTML5/JavaScript. Not 'few'. Zero.",
+      "evidence": "codex/outbox/2026-08-12.who-asks-for-a-brandable-clicker-kit.md, delivered 2026-08-12T08:08:56Z. Surfaces searched and named: Reddit overall plus r/gamedev and r/incremental_games, itch.io product pages, comment threads, communities and bundles, GitHub issues and discussions. The task stated in advance that 0 was a correct answer and that loosening the condition to avoid it would cost months; the answer returned 0, said explicitly that it had NOT loosened anything, and separated the sellers it did find ('売りたい人の広告であり、欲しいと公に書いた人の証拠ではありません') from buyers rather than counting them. Engine-specific asks were bucketed separately and also came to zero for Unity, Godot and Construct.",
+      "measured_at": "2026-08-12",
+      "recheck_after": "2026-11-12",
+      "blocks": [
+        "every_venue_candidate_for_the_current_product_form"
+      ],
+      "eta_effect_if_lifted": "Not applicable in that direction. What it changes now is which term is binding: it moves the binding term from VENUE to OFFER FORM, and it is the second independent measurement to do so.",
+      "the_one_signal_that_was_not_zero": {
+        "what": "A single buyer, on itch.io, under a $3.99 GDevelop-only idle clicker template, around 2025-10-02.",
+        "verbatim": [
+          "are you able to add a block or roll mechanic and remove the top player listing in a seperate version to buy?",
+          "disagree, but can you at least add potions/spells and inventory to this? Would buy it immediately or if you can customize for a fair price we can chat on email.",
+          "your method of contact on discord is super inefficient. I can't even message you and have to ask for a friend request"
+        ],
+        "why_it_was_excluded_from_the_count": "The product is GDevelop-only, so it is not evidence of demand for plain HTML5/JS. The lane was right to exclude it.",
+        "why_it_matters_anyway": "It is the only person in twelve months who said they would pay, and what they wanted to pay for was NOT the template. It was CUSTOMISATION of a template, plus a contact channel that worked. They said 'Would buy it immediately' about a modified version and complained that reaching the seller was 'super inefficient'."
+      },
+      "the_second_measurement_that_agrees": "codex/outbox/2026-08-10.b said the same thing from the opposite direction and is quoted in codex/INBOX.md's own header: at our scale or below, paid conversion exists (5 cases) but every one was high-ticket or subscription with a human step in the close, and 単発・低単価・セルフサービスのダウンロード was zero at every scale. Two independent lane answers, seven weeks of laps apart, both say the binding term is the offer form and not the distribution.",
+      "what_this_makes_wrong": "The ten-plus laps spent ranking venues. Every one of them assumed the product was fine and the distribution was the problem. The three venues that met the qualifier are now all closed (CodeCanyon shut to new authors, itch.io no public purchase proof, Construct refused in writing by its founder on 2026-08-12) and this row says the list being empty was not bad luck.",
+      "what_it_does_not_license": "Jumping to 'sell customisation instead'. That is ONE reading of one data point, and this row is deliberately not written as a decision. The decision belongs to a lap with a fresh context and a zero-base round, not to the lap that happened to be holding the answer when it arrived at 3% remaining."
     }
   ]
 }
