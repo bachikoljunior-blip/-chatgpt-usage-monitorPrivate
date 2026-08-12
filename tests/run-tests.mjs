@@ -5684,6 +5684,94 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   );
 }
 
+// --- a dead workflow is not a dead lane -------------------------------------
+//
+// The finding above says a second producer exists. It did not say whether that
+// producer depends on anything this repository runs, and on 2026-08-12 a lap
+// paid for the gap: Actions stopped executing at 00:39Z, the lap read the lane
+// as down with it, and stopped with the abundant pool untouched — while the
+// second path answered a task at 02:09Z that had been queued at 01:37Z, ninety
+// minutes into the outage.
+//
+// scripts/lane-liveness.mjs derives reachability from what was DELIVERED into
+// codex/outbox rather than from whether a workflow ran. These assertions pin
+// the two ways that reading can rot: classifying the producers wrongly, and
+// going red merely because nobody asked the lane anything.
+{
+  const { classify, summarise, verdict, readDeliveries } = await import("../scripts/lane-liveness.mjs");
+
+  assert(classify("chatgpt-usage-monitor[bot]") === "actions", "a bot committer is no longer read as the Actions path");
+  assert(classify("Claude") === "lap", "a lap commit is no longer told apart from a lane delivery");
+  assert(classify("bachikoljunior-blip") === "direct", "the second producer is no longer read as the direct path");
+
+  // The log parser has to survive both separators being present in a path.
+  const REC = "\u0001";
+  const FLD = "\u0002";
+  const log = [
+    `${REC}bot[bot]${FLD}2026-08-01T00:00:00+00:00`,
+    "codex/outbox/a.md",
+    "",
+    `${REC}somebody${FLD}2026-08-02T00:00:00+09:00`,
+    "codex/outbox/b.md",
+  ].join("\n");
+  const parsed = readDeliveries(log);
+  assert(parsed.length === 2, `expected 2 deliveries from the fixture log, got ${parsed.length}`);
+
+  const now = Date.parse("2026-08-02T01:00:00Z");
+  const s = summarise(parsed, now);
+  assert(
+    s.direct_path_outlives_actions_path === true,
+    "a direct delivery newer than the newest Actions delivery no longer reports the path as independent — this is the whole finding",
+  );
+
+  // Silence with an empty queue is not a fault. If this ever goes red on its
+  // own, the check becomes noise and gets muted, and the reading is lost.
+  assert(
+    verdict({ summary: s, queueHasLiveTask: false }).ok,
+    "lane-liveness goes red when nothing is queued; a quiet lane with no work is not a failure",
+  );
+  assert(
+    verdict({ summary: summarise(parsed, Date.parse("2026-09-01T00:00:00Z")), queueHasLiveTask: true }).ok === false,
+    "lane-liveness stays green with work queued and no delivery for a month",
+  );
+
+  // NaN is not null. A delivery whose date will not parse must be red, not
+  // silently green: NaN > staleHours is false and the check would pass forever.
+  assert(
+    verdict({
+      summary: { ...s, hours_since_any: Number.NaN },
+      queueHasLiveTask: true,
+    }).ok === false,
+    "an unparseable delivery date leaves lane-liveness green, so one bad commit date mutes the check permanently",
+  );
+
+  // The two paths stamp different offsets, so 'newest' must compare instants.
+  const offsetLog = [
+    `${REC}bot[bot]${FLD}2026-08-11T20:00:00+00:00`,
+    "codex/outbox/late-utc.md",
+    "",
+    `${REC}somebody${FLD}2026-08-12T00:00:00+09:00`,
+    "codex/outbox/earlier-jst.md",
+  ].join("\n");
+  assert(
+    summarise(readDeliveries(offsetLog), Date.parse("2026-08-12T06:00:00Z"))
+      .direct_path_outlives_actions_path === false,
+    "a JST-stamped delivery eleven hours EARLIER than the newest UTC one is being read as later — the ISO strings are being compared instead of the instants",
+  );
+
+  const pulseYml = readFileSync(new URL("../.github/workflows/pulse.yml", import.meta.url), "utf8");
+  assert(
+    pulseYml.includes("scripts/lane-liveness.mjs"),
+    "pulse.yml no longer runs the lane liveness check, so 'the workflow is down therefore the lane is down' has nothing watching it",
+  );
+
+  const laneState = JSON.parse(readFileSync(new URL("../state/codex-lane.json", import.meta.url), "utf8"));
+  assert(
+    laneState.delivery_path_independence?.measured_at,
+    "state/codex-lane.json no longer records the measurement that separates the lane from GitHub Actions",
+  );
+}
+
 console.log("All usage monitor tests passed.");
 
 function run(command, args, extraEnv = {}, { allowFailure = false } = {}) {

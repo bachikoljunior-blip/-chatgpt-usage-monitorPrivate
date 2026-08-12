@@ -1418,6 +1418,22 @@
       },
       "improves": false,
       "outcome": null
+    },
+    {
+      "at": "2026-08-12T06:58:55.806Z",
+      "candidate": "the_lane_builds_the_payload",
+      "kind": "route_change",
+      "mechanism": "The Claude pool is at 3% with 2.6 days to reset, so this side is dark until 2026-08-14T22:00Z. ETA is inf on every channel because no channel has a measured revenue rate, and every route to a first sale now waits on facts obtainable only outside this environment. This lap MEASURED that the ChatGPT lane's delivery path is independent of GitHub Actions: task 2026-08-12.construct-store-accepts-engine-agnostic was appended to codex/INBOX.md at 01:37:09Z and answered into codex/outbox at 02:09:27Z, while all 30 most recent Actions runs (00:39Z-06:44Z) failed in under 5s. The previous handoff concluded the opposite and stopped. The change is to stop gating outside-world work on Actions and load a standing queue that the live path drains through the blackout, plus a checker that derives lane liveness from outbox delivery rather than from workflow runs so the premise is measured each lap instead of assumed. Days do not move this lap and no claim is made that they do; what moves is the number of outside facts that arrive in the next 60 hours, from 0 to the queue depth.",
+      "before": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "after_claimed": {
+        "idle_eta_days": null,
+        "planned_eta_days": null
+      },
+      "improves": false,
+      "outcome": null
     }
   ]
 }

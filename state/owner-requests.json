@@ -412,7 +412,7 @@
         },
         "step_2": {
           "what": "上限に達している / 残り0分 と書かれていたら、教えてください。上限を上げるかどうかはお任せします。",
-          "why": "上限に達していると、リポジトリの自動実行が全部止まります。止まっているのは使用量の計測だけではなく、ChatGPT に調べものを頼む経路もです。そちらは枠が76%余っていて、いまいちばん使える資源でした。",
+          "why": "上限に達していると、リポジトリの自動実行が全部止まります。止まるのは、使用量の計測、Gumroad の売上取得、itch の数字取得、そして目標までの日数の再計算です。【2026-08-12T07:10Z 訂正】この欄には元々「ChatGPT に調べものを頼む経路も止まっている」と書いてありました。それは誤りでした。ChatGPT 側は別の経路で動いていて、Actions が止まっている間にも回答が1件届いています。ChatGPT に頼む仕事は止まっていません。",
           "nothing_to_decide": "設定を変える必要はまだありません。見て、書いてあることを教えていただければ十分です。"
         },
         "if_it_says_something_else": "残り分数に余裕があるなら原因は別です。その場合はリポジトリの Actions タブ（https://github.com/bachikoljunior-blip/-chatgpt-usage-monitorPrivate/actions）の上に黄色や赤の帯が出ていないか見てください。帯の文言をそのまま教えてください。"
@@ -451,7 +451,9 @@
       "paste_ready": true,
       "cannot_decompose_further": true,
       "source": "eta-loop worker session_015wghe9PXBjBFcFVygpsXEA, 2026-08-12T01:35Z",
-      "why_this_outranks_everything_else_pending": "It is not one instrument. Actions is where the usage meters, the Gumroad sales figure, the itch stats, the ETA recompute and THE CHATGPT LANE all run. The lane is the pool with capacity — codex 76% against Claude 3% — and it reaches the outside world, which this environment cannot. With Actions down, the loop has no fresh numbers to gate on and no way to spend the one resource it has plenty of."
+      "why_this_outranks_everything_else_pending": "CORRECTED 2026-08-12T07:10Z BY THE NEXT LAP. The original text read: 'Actions is where the usage meters, the Gumroad sales figure, the itch stats, the ETA recompute and THE CHATGPT LANE all run. The lane is the pool with capacity ... and it reaches the outside world, which this environment cannot.' The last clause is false and it was the clause doing the persuading. MEASURED: task 2026-08-12.construct-store-accepts-engine-agnostic was queued at 01:37:09Z and answered into codex/outbox at 02:09:27Z, 90 minutes into the outage, with all 30 most recent Actions runs failing in under five seconds. The lane has a second delivery path that does not run here (state/codex-lane.json delivery_path_independence, scripts/lane-liveness.mjs). WHAT STILL STANDS: Actions is where the usage meters, the Gumroad sales figure, the itch stats and the ETA recompute run, and all four are frozen. The pacing gate — the only branch point in the loop — is dividing a reading from 2026-08-11T19:02:36Z. That is enough to keep this request open and it is the honest version of it. What it is NOT is a total block on doing work: the outside-world lane is reachable and has three tasks queued against it.",
+      "corrected_at": "2026-08-12T07:10:00Z",
+      "correction_note": "The request itself is unchanged — same page, same 0 typing, same judgement. What changed is the stated consequence. A request that overstates its own stakes is asking the owner to act on a number that is not real, and this board's whole point is that the owner acts rarely and on measured things."
     }
   ]
 }

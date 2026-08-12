@@ -201,6 +201,14 @@ jobs:
           # could be funded. Red at zero, and red early when the queue will run dry
           # before any lap can refill it.
           node scripts/check-lane-idle.mjs || rc=1
+          # check-lane-idle asks whether the lane has anything to do. This asks
+          # whether the lane is reachable at all, and it asks it of DELIVERY
+          # rather than of workflow runs. On 2026-08-12 Actions stopped executing
+          # and a lap read that as the lane being down — while the second path
+          # answered a task 32 minutes after it was queued, 90 minutes into the
+          # outage. Silent when nothing is queued: a quiet lane with an empty
+          # queue is not a fault.
+          node scripts/lane-liveness.mjs --check || rc=1
           # The lane was asked to BUILD a deliverable rather than research one
           # (codex/INBOX.md 2026-08-10.payload-01), and the six terms of that ask
           # are a contract, not a preference. Silent while the artifact is absent —

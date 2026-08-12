@@ -84,6 +84,7 @@ export const DURABLE_KEYS = [
   "answers_with_no_ledger_run",
   "derived_artifacts",
   "where_the_unledgered_answers_come_from",
+  "delivery_path_independence",
 ];
 
 /**

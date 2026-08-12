@@ -2471,6 +2471,24 @@
         "Same lap, same commit: state/codex-lane.json registered the two unledgered answers and state/constraints.json corrected the r/gamedev row. Both of those clear the two reds that were live, so the suite is green as of this commit. That makes the window LESS likely to contain a failing run, which biases this prediction toward 'untested', not toward 'confirmed'.",
         "Same lap: owner request 2026-08-10.gumroad-replace-the-kit-file withdrawn. Unrelated to this metric."
       ]
+    },
+    {
+      "id": "2026-08-12.b-the-lane-works-through-the-claude-blackout",
+      "registered_at": "2026-08-12T07:10:00Z",
+      "registered_by": "eta-loop worker session_01R2J8ST73vrNhaAFvGBsbuJ",
+      "claim": "The ChatGPT lane does not need GitHub Actions, so loading its queue makes the Claude pool's ~60-hour blackout productive instead of empty. Concretely: at least one of the three tasks queued this lap (2026-08-12.scirra-preflight-public-answer, .who-asks-for-a-brandable-clicker-kit, .itch-paid-asset-discovery) will have its done_marker in codex/outbox/ before the weekly window resets at 2026-08-14T22:00Z, with zero successful runs of .github/workflows/codex-inbox.yml in that window. If Actions comes back first and the answers arrive by the ledgered path, the claim is untested rather than confirmed.",
+      "mechanism": "The only thing that writes a lane task is a lap, and the previous lap wrote one task and then stopped on the belief that the lane was down with Actions. Measured this lap: the direct path delivered 2026-08-12.construct-store-accepts-engine-agnostic at 02:09:27Z, 32 minutes after the task was queued at 01:37:09Z and 90 minutes into an outage in which all 30 most recent Actions runs failed in under 5s. Queue depth is the only term a lap controls that the blackout does not touch: with an empty queue the lane resolves to no work however alive it is.",
+      "metric": "Count of the three named done_markers present in codex/outbox/ on origin/main at judge time, paired with the count of successful codex-inbox.yml runs between 2026-08-12T07:10Z and the judge time (mcp__github__actions_list, conclusion=success). Confirming: markers >= 1 AND successful ledgered runs = 0. Refuting: markers = 0 with Actions still dead. Untested: Actions returns and the answers arrive through it.",
+      "baseline": "0 of 3 markers present at registration. Lane deliveries in the 30 hours before registration: 2 by the direct path (2026-08-12T02:09:27Z, 2026-08-11T20:09:11Z), 1 by the Actions path (2026-08-11T19:46:05Z). Successful Actions runs since 2026-08-12T00:19:32Z: 0 of 30.",
+      "judge_on": "2026-08-15",
+      "judge_deadline": "2026-08-19",
+      "outcome": null,
+      "falsification": "Three tasks sit unanswered past the reset while the direct path is otherwise visibly delivering — that would mean the direct path does not read codex/INBOX.md on its own and the 02:09Z answer was coincidence or was triggered by something outside this repository. Weaker refutation: an answer arrives whose content shows it answered a different question, i.e. the queue is being read but not followed.",
+      "concurrent_changes": [
+        "Same lap, same commit: scripts/lane-liveness.mjs added and wired into pulse.yml. It only measures; it cannot cause a delivery. Note that pulse.yml itself cannot run while Actions is down, so during the window this check exists only for laps to run by hand.",
+        "Same lap: the queue went from 0 to 3 live tasks. This is the change being predicted, not a confound.",
+        "Outside this lap: owner request 2026-08-12.github-actions-stopped-running is open. If the owner acts on it and Actions returns mid-window, the result is 'untested' by the metric above and must be recorded that way rather than as a confirmation."
+      ]
     }
   ]
 }

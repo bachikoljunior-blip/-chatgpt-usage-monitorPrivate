@@ -168,6 +168,16 @@
       "what_is_newly_visible_here": "Two of the three tasks this lane was queued with on 2026-08-11 were answered by the unledgered path within an hour of each other, consuming both queue slots. The consumer effect recorded for 2026-08-11.incremental-paid-offer-forms is not a one-off; it is now the majority path for this queue.",
       "what_it_does_not_mean": "That the queue should stop being filled. An answer that arrives is worth more than a slot that stays open; what it costs is the pairing evidence for the Spark question.",
       "committed_by": "bachikoljunior-blip (git identity on commit a041916; the authoring MODEL is not established)"
+    },
+    {
+      "task_id": "2026-08-12.construct-store-accepts-engine-agnostic",
+      "acknowledged_at": "2026-08-12T07:05:00Z",
+      "author": null,
+      "why_no_run": "codex/outbox/2026-08-12.construct-store-accepts-engine-agnostic.md arrived as commit fd89885, authored and committed by bachikoljunior-blip at 2026-08-12T11:09:27+09:00. No ledger row, and there could not be one: .github/workflows/codex-inbox.yml writes the ledger and Actions has not executed a single successful run since 2026-08-12T00:19:32Z.",
+      "what_is_therefore_unknown": "Which model wrote it, and which weekly window it spent. It cannot be paired against a lane run for the Spark question.",
+      "what_is_newly_visible_here": "THIS IS THE ANSWER THAT PROVES THE LANE IS NOT DOWNSTREAM OF ACTIONS. Queued at 01:37:09Z, delivered at 02:09:27Z, with every Actions run in that window failing in under five seconds. Registered in delivery_path_independence. The previous two rows called the unledgered path a cost to the Spark pairing evidence; this one shows it is also the only path that survived, which is the opposite sign and the more important one.",
+      "what_it_does_not_mean": "That the ledger should stop being kept. When Actions returns, a ledgered run is still the only thing that can settle which pool a named run spends.",
+      "committed_by": "bachikoljunior-blip (git identity on commit fd89885; the authoring MODEL is not established)"
     }
   ],
   "derived_artifacts": [
@@ -322,5 +332,15 @@
       "at": "2026-08-10T06:15:49.487Z"
     }
   ],
-  "note": "Written by every run of .github/workflows/codex-inbox.yml, including the runs that skip because the task already carries its done marker. state/automations.json points codex-loop's liveness here for that reason."
+  "note": "Written by every run of .github/workflows/codex-inbox.yml, including the runs that skip because the task already carries its done marker. state/automations.json points codex-loop's liveness here for that reason.",
+  "delivery_path_independence": {
+    "measured_at": "2026-08-12T07:05:00Z",
+    "measured_by": "eta-loop worker session_01R2J8ST73vrNhaAFvGBsbuJ",
+    "question": "where_the_unledgered_answers_come_from established WHO the second producer is and left open 'whether it reads codex/INBOX.md on a schedule or on demand'. It did not ask whether the second path depends on anything this repository runs. The 2026-08-12 Actions outage answered that for free, and the previous lap answered it the other way and stopped.",
+    "finding": "THE LANE DOES NOT DEPEND ON GITHUB ACTIONS. Task 2026-08-12.construct-store-accepts-engine-agnostic was appended to codex/INBOX.md in commit 9597416 at 2026-08-12T01:37:09Z. Its answer landed in codex/outbox as commit fd89885 at 2026-08-12T02:09:27Z (11:09:27+09:00), 32 minutes later. Every one of the 30 most recent Actions runs — 2026-08-12T00:40:35Z through 06:44:32Z, six distinct workflows — concluded failure in under five seconds with no retrievable log. Zero successes in that page. So no lane firing this repository owns could have produced the answer.",
+    "what_it_refutes": "The previous handoff's the_one_thing_if_you_read_nothing_else: 'THE LANE IS PART OF THIS: codex 76% against Claude 3%, and it is the only route to the outside world this environment has.' The first clause is false. The lane kept running through the outage. The cost of believing it was 3% of a weekly pool held back while 76% and 100% sat reachable and unasked, and a lap that ended with an empty queue.",
+    "what_it_still_does_not_say": "Which product the second path is, whether it polls on a schedule or is triggered, and which weekly window it spends. The 32-minute latency is consistent with a poll of about that period and with an on-demand trigger, and does not separate them. Independence from Actions is what is measured; do not read a cadence into it.",
+    "how_this_stays_true": "scripts/lane-liveness.mjs derives reachability from what was delivered into codex/outbox, split by committer identity, and pulse.yml runs it hourly with --check. tests/run-tests.mjs pins the classifier, the independence flag, and the fact that pulse.yml still calls it. If the direct path ever stops outliving the Actions path, the flag goes false on its own — it is derived every run, not written here.",
+    "the_reading_that_must_not_come_back": "A workflow run is ONE path's evidence. The lane is the union of its paths. Never read a red workflow list as a dead lane; read codex/outbox."
+  }
 }
