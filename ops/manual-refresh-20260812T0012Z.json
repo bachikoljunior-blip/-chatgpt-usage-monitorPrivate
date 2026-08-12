@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "purpose": "Trigger the existing pull-request usage collectors because the scheduled snapshots exceeded their freshness window.",
+  "requested_at_utc": "2026-08-12T00:12:00Z",
+  "expected_outputs": [
+    "state/usage.json",
+    "state/claude-usage.json"
+  ],
+  "secrets_included": false,
+  "external_cost_yen": 0
+}
