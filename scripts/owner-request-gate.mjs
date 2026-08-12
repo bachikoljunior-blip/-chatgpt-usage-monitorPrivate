@@ -263,6 +263,18 @@ const PREDICATES = {
   is_true: (v) => v === true,
   non_null: (v) => v !== null && v !== undefined,
   eq: (v, want) => v === want,
+  // Added 2026-08-12. Every predicate above is about a VALUE, and the request
+  // filed that day is about a CLOCK: GitHub Actions stopped executing and the
+  // success test is "any collector wrote something after 00:39Z". eq on the
+  // stored timestamp cannot say that — the value it must beat is unknown when the
+  // request is written — and non_null reads satisfied on the frozen copy, which is
+  // the exact false green this file exists to prevent. Both sides must parse as
+  // dates or the answer is false, not a thrown comparison against NaN.
+  newer_than: (v, want) => {
+    const got = Date.parse(v);
+    const floor = Date.parse(want);
+    return Number.isFinite(got) && Number.isFinite(floor) && got > floor;
+  },
 };
 
 // A clause reads one path in one state document. `docs` maps state path -> parsed

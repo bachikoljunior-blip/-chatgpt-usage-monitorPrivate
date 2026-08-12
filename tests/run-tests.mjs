@@ -4844,6 +4844,33 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
     ).verdict === "satisfied",
     "one broken clause suppressed a clause that passed",
   );
+  // newer_than, added 2026-08-12 for the request that asks whether GitHub Actions
+  // started executing again. The whole point is that the file ALREADY EXISTS and
+  // already carries a timestamp — the frozen one — so the two predicates that were
+  // available read the outage as success. These three cases are that distinction.
+  const FRESH = "state/fresh.json";
+  const freshDoc = (ts) => ({ [FRESH]: { fetched_at: ts } });
+  const freshTest = {
+    any_of: [{ state_file: FRESH, path: "fetched_at", predicate: "newer_than", value: "2026-08-12T00:39:00Z" }],
+  };
+  assert(
+    evaluateSuccessTest(freshTest, freshDoc("2026-08-12T01:00:00Z")).verdict === "satisfied",
+    "a timestamp past the floor did not read as satisfied",
+  );
+  assert(
+    evaluateSuccessTest(freshTest, freshDoc("2026-08-11T19:02:36.886Z")).verdict === "not_yet",
+    "THE FROZEN COPY READ AS SUCCESS — this is the exact false green newer_than exists to stop",
+  );
+  // Equal is not newer. A collector that rewrote the same instant did not run again.
+  assert(
+    evaluateSuccessTest(freshTest, freshDoc("2026-08-12T00:39:00Z")).verdict === "not_yet",
+    "a timestamp equal to the floor counted as progress past it",
+  );
+  // An unparseable value must be false, not a NaN comparison that throws or passes.
+  assert(
+    evaluateSuccessTest(freshTest, freshDoc("soon")).verdict === "not_yet",
+    "a non-date value was not rejected by newer_than",
+  );
   assert(
     evaluateSuccessTest(undefined, {}).verdict === "undeclared",
     "a request with no machine-readable test did not read as undeclared",

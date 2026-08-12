@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-09T16:15:00Z",
+  "fetched_at": "2026-08-12T01:35:00Z",
   "why_this_file_exists": "RUNBOOK 6 gates an owner request on five conditions, and the fourth is that the request is prepared to the point where the owner only has to paste. Until now there was nowhere to put that. So the gate could never be satisfied, only asserted — which is the same failure this project keeps finding: a rule written in prose with no file under it and no machine reading it. compute-eta.mjs reads this file and attaches a pending request to the candidate it unblocks, so the picker sees that the preparation is already done instead of preparing it again.",
   "how_to_use_this": "One entry per request. status pending means it is prepared and waiting on the owner. Nothing here should ever say 'please investigate' or 'please decide' — if a lap could not finish the preparation, the entry does not belong here yet.",
   "requests": [
@@ -394,6 +394,64 @@
         "what_would_settle_it_without_the_owner": "Two routes, neither taken this lap. (1) Gumroad's own free test purchase — the seller buys their own product with a test card and reads the buyer view; free, official, but it is a browser session on the owner's account, so it costs the owner more than the deletion it would avoid. (2) Reading the open source at antiwork/gumroad for whether the download page and the bulk ZIP enumerate product files or rich_content embeds. Cheap, costs no owner action, and needs no login. Queued as 2026-08-11.gumroad-download-all-source.",
         "read_at": "2026-08-11T19:20:00Z"
       }
+    },
+    {
+      "id": "2026-08-12.github-actions-stopped-running",
+      "created_at": "2026-08-12T01:35:00Z",
+      "status": "pending",
+      "candidate_id": null,
+      "owner_actions": 1,
+      "estimated_owner_minutes": 2,
+      "owner_typing_and_judgement_count": "0 typing. 1 judgement, and only if the page does not say what this expects: whether to raise the limit, and by how much.",
+      "one_line": "GitHub の Actions が動かなくなりました。00:39Z 以降、このリポジトリの全ワークフローが数秒で失敗し、ログが1行も残っていません。https://github.com/settings/billing を開いて、Actions の残り分数か spending limit の表示を見てください。",
+      "why_now_and_not_before": "It started at 2026-08-12T00:39Z. The run at 00:19:57Z still succeeded and took 25 seconds; every run from 00:39Z takes 3 to 6 seconds and produces no log to download.",
+      "the_ask": {
+        "step_1": {
+          "what": "https://github.com/settings/billing を開く（GitHub にログインした状態で）",
+          "look_for": "「Actions」の項目。今月の使用分数と、上限（spending limit）が出ています。"
+        },
+        "step_2": {
+          "what": "上限に達している / 残り0分 と書かれていたら、教えてください。上限を上げるかどうかはお任せします。",
+          "why": "上限に達していると、リポジトリの自動実行が全部止まります。止まっているのは使用量の計測だけではなく、ChatGPT に調べものを頼む経路もです。そちらは枠が76%余っていて、いまいちばん使える資源でした。",
+          "nothing_to_decide": "設定を変える必要はまだありません。見て、書いてあることを教えていただければ十分です。"
+        },
+        "if_it_says_something_else": "残り分数に余裕があるなら原因は別です。その場合はリポジトリの Actions タブ（https://github.com/bachikoljunior-blip/-chatgpt-usage-monitorPrivate/actions）の上に黄色や赤の帯が出ていないか見てください。帯の文言をそのまま教えてください。"
+      },
+      "what_this_lap_could_not_do_and_why": "Everything a lap can reach was tried and the failure does not move. Two workflows were dispatched by hand and failed the same way in 5 seconds. The one repository-side cause that was real — tests/run-tests.mjs red above the collect step — was found and fixed in commit 1393f1f, and the suite is green on origin/main; the runs still fail identically. No log is retrievable for any run after 00:39Z, so there is nothing left to read from here. Billing and account settings are not reachable from a session token.",
+      "the_evidence": {
+        "boundary": "Last run that executed: ChatGPT usage monitor, pull_request, 2026-08-12T00:19:32Z, conclusion success, 25 seconds. First of the dead ones: Gumroad sales monitor, schedule, 00:39:19Z, failure, 3 seconds.",
+        "breadth": "Six different workflows are affected: Claude usage monitor, ChatGPT usage monitor, Gumroad sales monitor, itch.io stats monitor, Run the ChatGPT inbox, Pulse. They share no secret, no step and no script. What they share is the runner.",
+        "no_logs": "get_job_logs returns HTTP 404 for every job after 00:39Z and returns real content for the 00:01:34Z run. A job with no log is a job that never started.",
+        "leading_candidate_and_it_is_a_guess": "The Actions spending limit on a private repository. The arithmetic fits and is worth writing down rather than asserting: six workflows at roughly hourly, at 0.5 to 1.5 minutes each, is on the order of 100 to 150 billable minutes a day. GitHub's included private-repo allowance is 2,000 minutes a month on Free and 3,000 on Pro, which is 14 to 21 days at that rate. Today is the 12th. This is a fit, not a measurement — the billing page is the measurement, which is why the ask is to read it rather than to change it."
+      },
+      "success_test": "A scheduled run of any workflow in this repository completes with a downloadable log, and state/claude-usage.json or state/usage.json gains a fetched_at later than 2026-08-12T00:39Z.",
+      "success_test_machine": {
+        "note": "Two clauses because two different workflows would have to come back, and either one answers the question. The floor is the last minute any job in this repository executed: the 00:19:32Z run finished at 00:19:57Z, and everything from 00:39:19Z produced no log at all. A collector writing anything stamped after that means a runner started.",
+        "why_not_non_null": "Both files exist and both carry a fetched_at right now — the frozen one. non_null would read satisfied while nothing is running, which is the false green this whole board exists to prevent.",
+        "any_of": [
+          {
+            "state_file": "state/claude-usage.json",
+            "path": "fetched_at",
+            "predicate": "newer_than",
+            "value": "2026-08-12T00:39:00Z"
+          },
+          {
+            "state_file": "state/usage.json",
+            "path": "fetched_at",
+            "predicate": "newer_than",
+            "value": "2026-08-12T00:39:00Z"
+          }
+        ]
+      },
+      "not_success": "A workflow being re-dispatched and failing in seconds again. That is the current state and it is what this request exists to change.",
+      "judge_by": "2026-08-14",
+      "minimised": "Reduced from 'fix the billing' to 'read one page and say what it says'. The fix depends on what it says and may be nothing — if the limit resets on its own at the start of the billing period, the correct action is to wait, and that is a decision the numbers on that page make for us.",
+      "automation_attempted": "Yes. Two workflow_dispatch calls (claude-usage-monitor at 00:54:01Z and 01:17:09Z, usage-monitor at 00:54:11Z), a push-triggered run at 01:09Z and another at 01:22Z. All failed in 3 to 6 seconds. The MCP GitHub tools available to this session expose Actions runs, jobs, logs and check runs; none of them expose billing.",
+      "automation_cost_exceeds_manual_cost": "There is no automation cost to compare. A session token cannot read or change an account's billing settings at any price.",
+      "paste_ready": true,
+      "cannot_decompose_further": true,
+      "source": "eta-loop worker session_015wghe9PXBjBFcFVygpsXEA, 2026-08-12T01:35Z",
+      "why_this_outranks_everything_else_pending": "It is not one instrument. Actions is where the usage meters, the Gumroad sales figure, the itch stats, the ETA recompute and THE CHATGPT LANE all run. The lane is the pool with capacity — codex 76% against Claude 3% — and it reaches the outside world, which this environment cannot. With Actions down, the loop has no fresh numbers to gate on and no way to spend the one resource it has plenty of."
     }
   ]
 }
