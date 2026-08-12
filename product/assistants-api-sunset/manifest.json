@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "file_name": "Assistants_API_Sunset_Migration_Kit_v1.zip",
+  "encoding_path": "product/assistants-api-sunset/Assistants_API_Sunset_Migration_Kit_v1.zip.b64",
+  "decoded_bytes": 8798,
+  "decoded_sha256": "6b06498da0c61654d84662aaac593f7ed1dee1007f6e2beec3ce2a32daab7c4b",
+  "source_repository": "bachikoljunior-blip/note",
+  "source_ref": "232abd7bc573164d505b3dbb7ab38f1e6c8ea124",
+  "source_directory": "products/assistants_sunset",
+  "deterministic_zip_timestamp": "2020-01-01T00:00:00Z",
+  "price_tiers_usd": {
+    "solo": 29,
+    "team": 149,
+    "organization": 399
+  },
+  "buyer_download_only": true,
+  "seller_iphone_handoff_pack_included": false
+}
