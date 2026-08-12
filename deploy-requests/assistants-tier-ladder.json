@@ -1,1 +1,5 @@
-{"execute":true,"confirmation":"CREATE_AND_ENABLE_ASSISTANTS_TIER_LADDER","artifact_sha256":"6b06498da0c61654d84662aaac593f7ed1dee1007f6e2beec3ce2a32daab7c4b"}
+{
+  "artifact_sha256": "6b06498da0c61654d84662aaac593f7ed1dee1007f6e2beec3ce2a32daab7c4b",
+  "confirmation": "CREATE_AND_ENABLE_ASSISTANTS_TIER_LADDER",
+  "execute": true
+}
