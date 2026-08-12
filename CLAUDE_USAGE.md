@@ -1,13 +1,9 @@
 # Claude subscription usage
 
-- Status: **ok**
-- Updated: `2026-08-11T19:02:36.886Z`
-- Recommended mode: **reserve**
+- Status: **error**
+- Updated: `2026-08-12T09:07:34.471Z`
+- Recommended mode: **conserve**
 
-| Limit | Window | Used | Remaining | Reset (UTC) |
-|---|---:|---:|---:|---|
-| Current session | 5h | 2% | 98% | 2026-08-11T23:50:00.167Z |
-| Current week (all models) | 1w | 97% | 3% | 2026-08-14T22:00:00.167Z |
-| Extra usage | — | 0% | — | — |
+Automatic collection needs attention. Machine-readable code: `reauthentication_required`.
 
-The window with the least remaining quota is used to choose normal, conserve, or reserve mode.
+The stored token expired or was revoked. Replace the `CLAUDE_CODE_OAUTH_TOKEN` secret.

@@ -1,101 +1,14 @@
 {
   "schema_version": 1,
-  "status": "ok",
+  "status": "error",
   "source": "anthropic-oauth-usage",
   "subscription": "claude",
-  "fetched_at": "2026-08-11T19:02:36.886Z",
-  "fresh_until": "2026-08-11T21:02:36.886Z",
-  "quota_windows": [
-    {
-      "window_id": "five_hour",
-      "window_name": "Current session",
-      "used_percent": 2,
-      "remaining_percent": 98,
-      "window_duration_minutes": 300,
-      "resets_at_iso": "2026-08-11T23:50:00.167Z"
-    },
-    {
-      "window_id": "seven_day",
-      "window_name": "Current week (all models)",
-      "used_percent": 97,
-      "remaining_percent": 3,
-      "window_duration_minutes": 10080,
-      "resets_at_iso": "2026-08-14T22:00:00.167Z"
-    }
-  ],
-  "governing_window": {
-    "window_id": "seven_day",
-    "window_name": "Current week (all models)",
-    "used_percent": 97,
-    "remaining_percent": 3,
-    "window_duration_minutes": 10080,
-    "resets_at_iso": "2026-08-14T22:00:00.167Z"
+  "fetched_at": "2026-08-12T09:07:34.471Z",
+  "fresh_until": "2026-08-12T11:07:34.471Z",
+  "error": {
+    "code": "reauthentication_required"
   },
-  "extra_usage_present": true,
-  "extra_usage_used_percent": 0,
-  "field_probe": {
-    "note": "unread fields from the usage response, numbers only. Present to answer whether any field resolves finer than the integer utilization percentages.",
-    "top_level": {
-      "numeric_fields": {},
-      "other_field_names": [
-        "seven_day_oauth_apps",
-        "seven_day_cowork",
-        "seven_day_omelette",
-        "tangelo",
-        "iguana_necktie",
-        "omelette_promotional",
-        "nimbus_quill",
-        "cinder_cove",
-        "amber_ladder",
-        "extra_usage",
-        "limits",
-        "spend",
-        "member_dashboard_available"
-      ],
-      "other_field_types": {
-        "seven_day_oauth_apps": "null",
-        "seven_day_cowork": "null",
-        "seven_day_omelette": "null",
-        "tangelo": "null",
-        "iguana_necktie": "null",
-        "omelette_promotional": "null",
-        "nimbus_quill": "object",
-        "cinder_cove": "null",
-        "amber_ladder": "null",
-        "extra_usage": "object",
-        "limits": "array",
-        "spend": "object",
-        "member_dashboard_available": "boolean"
-      }
-    },
-    "windows": {
-      "five_hour": {
-        "numeric_fields": {},
-        "other_field_names": [
-          "limit_dollars",
-          "used_dollars",
-          "remaining_dollars"
-        ],
-        "other_field_types": {
-          "limit_dollars": "null",
-          "used_dollars": "null",
-          "remaining_dollars": "null"
-        }
-      },
-      "seven_day": {
-        "numeric_fields": {},
-        "other_field_names": [
-          "limit_dollars",
-          "used_dollars",
-          "remaining_dollars"
-        ],
-        "other_field_types": {
-          "limit_dollars": "null",
-          "used_dollars": "null",
-          "remaining_dollars": "null"
-        }
-      }
-    }
-  },
-  "recommended_mode": "reserve"
+  "quota_windows": [],
+  "governing_window": null,
+  "recommended_mode": "conserve"
 }
