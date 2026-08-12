@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-12T13:12:56.953Z",
+  "fetched_at": "2026-08-12T13:13:37.797Z",
   "probe": "POST /v2/files/presign, POST /v2/files/complete and GET /v2/files/presign, each read against a POST to a path that was never defined, in the same session",
   "question": "state/gumroad-file-replacement.json concluded none_over_api from 12 probes. The public source names POST /v2/files/presign and POST /v2/files/complete, and neither path is in those 12. Do they answer?",
   "source_of_the_paths": "antiwork/gumroad, app/controllers/api/v2/links_controller.rb, private method upload_field_guidance, read 2026-08-10. The same file accepts rich_content on both create and update, which is a delivery route that needs no bytes at all.",
