@@ -3,8 +3,8 @@
   "status": "error",
   "source": "anthropic-oauth-usage",
   "subscription": "claude",
-  "fetched_at": "2026-08-12T13:09:55.860Z",
-  "fresh_until": "2026-08-12T15:09:55.860Z",
+  "fetched_at": "2026-08-12T13:10:35.989Z",
+  "fresh_until": "2026-08-12T15:10:35.989Z",
   "error": {
     "code": "reauthentication_required"
   },
