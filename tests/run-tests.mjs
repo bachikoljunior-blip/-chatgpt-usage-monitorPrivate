@@ -5851,6 +5851,61 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   );
 }
 
+// --- the Actions allowance, and the cut that is only this repository's share --
+//
+// MEASURED 2026-08-12 from the owner's billing page: Actions minutes 2,000 used
+// / 2,000 included, bar full, billable $0 because the Free plan's $0 spending
+// limit refuses jobs rather than billing them. That is the whole outage. Six
+// hourly crons in this repository were 144 scheduled runs a day and GitHub bills
+// every job rounded up to a whole minute.
+//
+// This lives in tests rather than only in pulse.yml deliberately: pulse.yml
+// cannot run while the allowance is exhausted, and a check that only lives
+// inside the thing that is broken is not a check.
+{
+  const { runsPerDay, scanWorkflows, verdict } = await import("../scripts/check-actions-budget.mjs");
+
+  assert(runsPerDay("22 * * * *").runs === 24, "an hourly cron is no longer counted as 24 runs a day");
+  assert(runsPerDay("22 */3 * * *").runs === 8, "an every-3h cron is no longer counted as 8 runs a day");
+  assert(runsPerDay("37 */12 * * *").runs === 2, "an every-12h cron is no longer counted as 2 runs a day");
+  assert(runsPerDay("0 3 * * *").runs === 1, "a daily cron is no longer counted as 1 run a day");
+
+  // An uncounted cron is spend nobody sees, which is how twelve days went. It
+  // must be a failure, never a silent zero.
+  assert(runsPerDay("*/5 * * * *").runs === null, "a per-minute cron is being counted rather than refused");
+  assert(runsPerDay("0 * * * 1").runs === null, "a day-of-week restricted cron is being counted rather than refused");
+  assert(
+    verdict([{ workflow: "x.yml", cron: "*/5 * * * *", runs: null, why: "n" }], { scheduled_runs_per_day_max: 30 }).ok === false,
+    "a cron that could not be counted still passes the budget verdict",
+  );
+
+  // Restoring any hourly cron must trip it immediately — that is the whole point
+  // of the ceiling being 30 and not 200.
+  const hourlySix = Array.from({ length: 6 }, (_, i) => ({ name: `w${i}.yml`, body: `  - cron: "${i} * * * *"\n` }));
+  assert(
+    verdict(scanWorkflows(hourlySix), { scheduled_runs_per_day_max: 30 }).ok === false,
+    "six hourly crons — the exact configuration that exhausted the allowance — fits inside the budget",
+  );
+
+  const budget = JSON.parse(readFileSync(new URL("../state/actions-budget.json", import.meta.url), "utf8"));
+  const wfDir2 = new URL("../.github/workflows/", import.meta.url);
+  const live = scanWorkflows(
+    readdirSync(wfDir2)
+      .filter((n) => n.endsWith(".yml") || n.endsWith(".yaml"))
+      .map((name) => ({ name, body: readFileSync(new URL(name, wfDir2), "utf8") })),
+  );
+  const v = verdict(live, budget);
+  assert(v.ok, `this repository is over its own Actions budget: ${v.reason}`);
+
+  // The file must keep saying what it cannot do. This repository is ~22% of the
+  // account's usage; zeroing it moves exhaustion from day 12 to day 15. If that
+  // sentence goes missing, a green check here reads as "the outage is handled".
+  assert(
+    /not the (account )?fix|does not fix|22%/i.test(budget.what_this_does_not_fix),
+    "state/actions-budget.json no longer says that cutting this repository is not the account-level fix",
+  );
+}
+
 console.log("All usage monitor tests passed.");
 
 function run(command, args, extraEnv = {}, { allowFailure = false } = {}) {

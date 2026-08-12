@@ -255,7 +255,7 @@
       "samples": 0,
       "last_seen": null,
       "workflow": "codex-inbox.yml",
-      "cron": "41 * * * *",
+      "cron": "41 */6 * * *",
       "liveness": {
         "state_file": "state/codex-lane.json",
         "note": "Moved off state/answers/latest.json when the cron went hourly. That file only moves when a question is actually put to the model, and a healthy hourly lane skips most of its runs because the task already carries its done marker — so keyed on the answer, an idle lane and a stopped lane look the same. scripts/record-lane-run.mjs stamps checked_at on every run including the skips, which is the mark that dates the SCHEDULE rather than the product.",

@@ -684,6 +684,23 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
       throw new Error("an inbound observation records no numeric hits_on_our_surface");
     }
   }
+} else if (Number.isFinite(state.scheduled_runs_per_day_max)) {
+  // state/actions-budget.json. The reading behind it came from a screenshot, so
+  // the fields that matter are the ones a later lap would otherwise have to take
+  // on trust: when it was observed, and the honest statement that cutting this
+  // repository does not fix the account. A budget file that loses its own
+  // limitation becomes a green light.
+  for (const field of ["observed_at", "what_this_does_not_fix", "how_this_stays_true"]) {
+    if (typeof state[field] !== "string" || !state[field]) {
+      throw new Error(`actions budget has no ${field}`);
+    }
+  }
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(state.observed_at)) {
+    throw new Error("actions budget has no valid observed_at timestamp");
+  }
+  if (!(state.scheduled_runs_per_day_max > 0)) {
+    throw new Error("actions budget has a non-positive scheduled_runs_per_day_max");
+  }
 } else if (state.source === "list_sessions external_metadata.rate_limit_info") {
   // The backup meter (scripts/record-rate-limit.mjs). It exists because the
   // collector's writer is a GitHub workflow and workflows can stop. The single

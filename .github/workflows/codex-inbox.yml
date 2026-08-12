@@ -33,7 +33,7 @@ on:
     # Hourly is affordable because the skip is cheap: inbox-task.mjs decides
     # before any model runs, and a task that already carries its done marker
     # costs a checkout and a node process. It does not re-run a finished survey.
-    - cron: "41 * * * *"
+    - cron: "41 */6 * * *"
   workflow_dispatch:
     inputs:
       force:

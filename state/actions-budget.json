@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "source": "owner screenshot of https://github.com/settings/billing, Usage by products -> Actions tab",
+  "observed_at": "2026-08-12T07:55:00Z",
+  "observed_by": "owner, relayed to eta-loop worker session_01R2J8ST73vrNhaAFvGBsbuJ",
+  "the_reading": {
+    "actions_minutes": "2,000 min used / 2,000 min included — the bar is full and red",
+    "actions_storage": "0 GB used / 0.5 GB included",
+    "billable_usage": "$0 — $37.02 consumed usage, $37.02 discounts",
+    "included_usage_limits_reset_in": "20 days (so approximately 2026-09-01)",
+    "plan": "GitHub Free, $0.00/month; Copilot Free, $0.00/month"
+  },
+  "what_it_settles": "THE OUTAGE IS EXHAUSTED ALLOWANCE, NOT A FAULT. The account used exactly its 2,000 included Actions minutes. Under the Free plan's $0 default spending limit, further usage is refused rather than billed, which is why every workflow fails in 3-6 seconds with no downloadable log and why billable usage reads $0. No workflow in this repository is broken and re-dispatching one cannot help.",
+  "when_it_comes_back": "On its own, in about 20 days, when the included allowance resets. Sooner only if the account raises its Actions budget, which costs money.",
+  "the_arithmetic_the_owner_needs": {
+    "account_rate": "2,000 minutes consumed in 12 days = about 167 minutes a day.",
+    "to_fit_a_month": "30 days inside 2,000 minutes needs about 67 minutes a day — a 60% cut account-wide.",
+    "cost_of_not_cutting": "About 5,000 minutes a month at the current rate, 3,000 of them billable, at roughly $0.008 a minute for a Linux 2-core runner: on the order of $24 a month. That is an owner decision about money and this repository does not make it.",
+    "the_free_alternative": "Actions minutes are free and unlimited on PUBLIC repositories — the billing page says so in the discount line. This repository cannot be public: it stores the encrypted Codex credential vault at state/auth.vault. Whether the other consumers can be is not knowable from here."
+  },
+  "this_repository_is_a_minority_of_it": {
+    "share": "$8.03 of $37.02 consumed, about 22%, which is roughly 434 of the 2,000 minutes, or 36 minutes a day.",
+    "the_others": "survival $11.07, Gptgame $9.26, note $4.65, J $2.08, all other repositories $2.82. survival and Gptgame are each larger than this one.",
+    "the_honest_limit": "If this repository's Actions usage went to ZERO, the account would exhaust 2,000 minutes on day 15 instead of day 12. Cutting here is this repository paying its share. It is not the fix, and a green check-actions-budget must never be read as one."
+  },
+  "scheduled_runs_per_day_max": 30,
+  "why_that_number": "The schedule below totals 24 a day, from 144 before this cut. The ceiling is set at 30 to leave room for one more collector without a lap having to reason about the budget from scratch, and low enough that restoring any hourly cron trips it immediately.",
+  "what_changed_2026_08_12": {
+    "before": "Six hourly crons: usage-monitor :07, claude-usage-monitor :22, gumroad-monitor :37, codex-inbox :41, itch-monitor :42, pulse :52. 144 scheduled runs a day.",
+    "after": "claude-usage-monitor every 3h (8/day), pulse every 6h (4/day), usage-monitor every 6h (4/day), codex-inbox every 6h (4/day), gumroad-monitor every 12h (2/day), itch-monitor every 12h (2/day). 24 scheduled runs a day.",
+    "why_each": {
+      "claude-usage-monitor": "The pacing gate's only input, and the gate is what stops the loop overspending. Kept the finest of the six at every 3 hours, which is still two readings per 6-hourly lap.",
+      "pulse": "Matched to the lap cadence it serves. Recomputing the ETA and the heartbeats more often than a lap can read them bought nothing.",
+      "usage-monitor": "The Codex pool moves slowly and is at 76%. Every 6 hours is finer than any decision made against it.",
+      "codex-inbox": "CUT HARDEST RELATIVE TO ITS VALUE, and it is not a loss. The lane's second delivery path does not use Actions at all and answered a task 7 minutes after it was queued on 2026-08-12 (state/codex-lane.json delivery_path_independence). The Actions firing is now the redundant path for latency; what it still uniquely provides is the LEDGER row that settles which weekly pool a named run spends, and every 6 hours preserves that.",
+      "gumroad-monitor": "Zero sales in eight months. An hourly check of a number that has never changed was the clearest waste in the list.",
+      "itch-monitor": "Same shape, same reason."
+    },
+    "what_this_does_not_change": "Nothing about what any workflow does, only how often it is scheduled. workflow_dispatch still works on all of them, so a lap that needs a fresh reading now can still ask for one."
+  },
+  "what_this_does_not_fix": "This repository is ~22% of the account's Actions usage. Cutting it moves the account's exhaustion day from 12 to about 15. The rest is in repositories this one cannot edit, and the decision that actually closes the gap is the owner's: raise the budget, make the heavy repositories public, or slow the other loops.",
+  "how_this_stays_true": "scripts/check-actions-budget.mjs counts the scheduled runs per day across .github/workflows and fails over budget or on any cron it cannot count. tests/run-tests.mjs runs it, because pulse.yml cannot run while the allowance is exhausted — a check that only lives in the thing that is broken is not a check."
+}

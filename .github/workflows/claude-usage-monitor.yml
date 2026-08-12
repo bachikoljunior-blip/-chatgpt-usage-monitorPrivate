@@ -2,7 +2,7 @@ name: Claude usage monitor
 
 on:
   schedule:
-    - cron: "22 * * * *"
+    - cron: "22 */3 * * *"
   workflow_dispatch:
   pull_request:
     branches: [main]

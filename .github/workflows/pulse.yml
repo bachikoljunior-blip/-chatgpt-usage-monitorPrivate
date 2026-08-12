@@ -10,7 +10,7 @@ name: Pulse (ETA and heartbeats)
 
 on:
   schedule:
-    - cron: "52 * * * *"
+    - cron: "52 */6 * * *"
   workflow_dispatch:
   push:
     branches: [main]

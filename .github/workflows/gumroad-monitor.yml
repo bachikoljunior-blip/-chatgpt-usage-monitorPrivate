@@ -2,7 +2,7 @@ name: Gumroad sales monitor
 
 on:
   schedule:
-    - cron: "37 * * * *"
+    - cron: "37 */12 * * *"
   workflow_dispatch:
     inputs:
       probe_create:
