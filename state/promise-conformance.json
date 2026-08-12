@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-12T01:22:14.299Z",
+  "fetched_at": "2026-08-12T10:24:07.265Z",
   "rung": "promise_conformance",
   "offer_id": "idle_clicker_kit",
   "listing": {
@@ -10,7 +10,27 @@
     "description": "<p><strong>放置クリッカーを1本、自分の作品として出すための土台一式です。</strong>ゲーム本体（HTML / CSS / JavaScript）、設定の誤りを指摘する検査、実ブラウザでの自動検査20項目、リスキン例3種が入っています。購入後すぐ手元で動かして中身を確かめられます。</p><p><strong>触るのは <code>brand.config.json</code> だけです。</strong>題名・配色・数えるものの名前・増やすもの8種・強化6種・到達メッセージ・誘導ボタン・フッターまで、すべてそこから決まります。ゲームロジックに手を入れずに別の作品になります。</p><p><strong>数値バランスは調整済みです。</strong>値段と毎秒の増加量は釣り合いを取った既定値が入っているので、名前と配色を変えた時点で遊べる状態になります。放置ゲームで一番時間を取られるところを飛ばせます。</p><h3>入っているもの</h3><ul>\n<li>ゲーム本体一式（HTML / CSS / JavaScript）</li>\n<li>\n<code>brand.config.json</code> — 書き換えるのはここだけ</li>\n<li>\n<code>generator.html</code> — フォームを埋めると設定ファイルが出てくるページ</li>\n<li>リスキン例3種（珈琲店・サロン・配信者）— 設定だけで見た目と文言がどこまで変わるかの実例</li>\n<li>\n<code>validate_config.py</code> — 設定の誤りを日本語で指摘する検査</li>\n<li>\n<code>test_engine.py</code> — 実ブラウザで20項目を自動検査（開発用）</li>\n<li>日本語 README とライセンス</li>\n</ul><h3>技術的なこと</h3><ul>\n<li>\n<strong>ビルド不要。</strong>フォルダを置くだけです。Node も PHP も要りません。あなたのビルド手順やフレームワークに合わせる必要がありません</li>\n<li>\n<strong>外部ライブラリなし・通信なし。</strong>あなたが設定したリンク以外へは何も送りません</li>\n<li>セーブは端末内（localStorage）。サーバーもデータベースも要りません</li>\n<li>スマホ縦画面前提。片手・タップだけで遊べます</li>\n<li>GitHub Pages / Netlify / Cloudflare Pages / 自前のサーバー、どこでも動きます</li>\n</ul><h3>ライセンス（商用可）</h3><ul>\n<li>あなたの作品・自社サイトなど、公開先1つで使えます。商用可・改変自由</li>\n<li>クライアントの案件へ納品する場合は、別途ご相談ください</li>\n<li>キット自体を素材・テンプレート商品として再販・再配布することはできません</li>\n</ul><h3>動作確認</h3><p>Chromium で20項目を自動検査しています（起動・タップ加算・購入で自動収入が発生する・放置で増える・再読込で進行が残る・設定差し替えで題名と配色と通貨名が変わる・壊れた設定では止まって理由を出す、ほか）。検査スクリプトも同梱しているので、改造したあとも同じ検査を回せます。</p><p>効果音・BGM・画像素材は入っていません。表示は絵文字とCSSだけで作っています。README・設定検査の出力・ライセンスは日本語です。</p>",
     "price_cents": 2500,
     "published": true,
-    "variants": [],
+    "variants": [
+      {
+        "title": "Version",
+        "options": [
+          {
+            "name": "通常ライセンス / Standard (1 site)",
+            "price_difference": 0,
+            "is_pay_what_you_want": false,
+            "recurrence_prices": null,
+            "url": null
+          },
+          {
+            "name": "拡張ライセンス / Extended (unlimited client work)",
+            "price_difference": 32400,
+            "is_pay_what_you_want": false,
+            "recurrence_prices": null,
+            "url": null
+          }
+        ]
+      }
+    ],
     "short_url": "https://bachiko4.gumroad.com/l/fbozt"
   },
   "listing_sha256": "07da08fecdad643dbdd0da3ceaff10d3106b19825cac42c552101813e03358b7",
@@ -120,7 +140,7 @@
       "quote": "あなたの作品・自社サイトなど、公開先1つで使えます。商用可・改変自由 / クライアントの案件へ納品する場合は、別途ご相談ください",
       "still_on_page": true,
       "verdict": "conforms",
-      "observation": "LICENSE.txt tiers: 1, listing variants: 0"
+      "observation": "LICENSE.txt tiers: 1, listing variants: 1"
     },
     {
       "id": "japanese_readme_and_license",

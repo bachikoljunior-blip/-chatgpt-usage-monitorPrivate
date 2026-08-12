@@ -1,274 +1,161 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-11T23:21:07.932Z",
+  "fetched_at": "2026-08-12T10:24:04.628Z",
   "source": "GET /v2/products/:id files[].url — the seller's own attachment, no owner action",
   "note": "The signed download URL is deliberately absent: it carries a verify token and an expiry. The manifest is what a later run compares against.",
   "product_id_shape": "string",
   "extracted_into_repo_tree": false,
-  "file_count": 24,
-  "promised_artifacts_present": true,
-  "promised_artifacts_missing": [],
+  "file_count": 13,
+  "promised_artifacts_present": false,
+  "promised_artifacts_missing": [
+    "brand.config.json",
+    "generator.html",
+    "validate_config.py",
+    "test_engine.py"
+  ],
   "manifest": [
     {
-      "path": "brandable-idle-clicker/assets/engine.js",
-      "bytes": 16479,
-      "sha256": "952bc554692b2f268a148223f8e112e2e12aab217fe9a06d5203c2e2c20a3ce2"
+      "path": "Assistants_API_Sunset_Migration_Kit_v1.zip",
+      "bytes": 8611,
+      "sha256": "4023a637828ddc07faac4ab615fd7e19dc80ec4c1e5f0d036b6454954776d049"
     },
     {
-      "path": "brandable-idle-clicker/assets/engine.js",
-      "bytes": 16479,
-      "sha256": "952bc554692b2f268a148223f8e112e2e12aab217fe9a06d5203c2e2c20a3ce2"
+      "path": "brandable/extended_version.txt",
+      "bytes": 503,
+      "sha256": "259e0735ffc415d444d34f05f9fa06231e2da2279730a2ec09b9dec5ae07edbd"
     },
     {
-      "path": "brandable-idle-clicker/assets/style.css",
-      "bytes": 5214,
-      "sha256": "9cac1bebdc1ba744274caeadc96fb603cff8758e64dbcf1a68c554f70837d515"
+      "path": "brandable/standard_version.txt",
+      "bytes": 301,
+      "sha256": "6e5aaaa5873a9e001dd546d70b3ead86b2659af2813fe1c387f48e9ead70f27f"
     },
     {
-      "path": "brandable-idle-clicker/assets/style.css",
-      "bytes": 5214,
-      "sha256": "9cac1bebdc1ba744274caeadc96fb603cff8758e64dbcf1a68c554f70837d515"
+      "path": "brandable/unit_economics.txt",
+      "bytes": 596,
+      "sha256": "a6f54cc89553c3640d19e16c9012eeabcc4a0a38fbd591c7009b4e68535b5797"
     },
     {
-      "path": "brandable-idle-clicker/brand.config.json",
-      "bytes": 4385,
-      "sha256": "0186af34572fc45dae7e6c3cd3f95042c4598f287e5d15b997908d8406e3ca71"
+      "path": "copy/description.md",
+      "bytes": 923,
+      "sha256": "4dd7915c60c0b3c6d1be002e44ce83156c3893322dae4c6592eb8674b8fd5a38"
     },
     {
-      "path": "brandable-idle-clicker/brand.config.json",
-      "bytes": 4385,
-      "sha256": "2f3192262584cc71685f25386c38662a0a94b07a122b3079eac4fd85b4262b18"
+      "path": "copy/refund_fine_print.txt",
+      "bytes": 200,
+      "sha256": "631f9b22143f515abadff2fb7678a03b0832a9b168303ae1b02a23a3231ad2ae"
     },
     {
-      "path": "brandable-idle-clicker/examples/cafe.json",
-      "bytes": 4799,
-      "sha256": "1bcb3b1f3709969ce555d6d48b112b16c27ecf77a8b7e3c24e59cf6de2b4f87f"
+      "path": "copy/summary.txt",
+      "bytes": 147,
+      "sha256": "743145c16ef93700ff7e44d999f992e181f84b656258dafbaeda5961bd7acbed"
     },
     {
-      "path": "brandable-idle-clicker/examples/cafe.json",
-      "bytes": 4799,
-      "sha256": "1bcb3b1f3709969ce555d6d48b112b16c27ecf77a8b7e3c24e59cf6de2b4f87f"
+      "path": "copy/tags.txt",
+      "bytes": 74,
+      "sha256": "d578901b498c34b92cbec51831052f49d59478196d8163bbe8566f475edce6c7"
     },
     {
-      "path": "brandable-idle-clicker/examples/creator.json",
-      "bytes": 4917,
-      "sha256": "4aa1f0462d9ff4687cc6762fdd0e5e4e65be584a02744ad20561b237b78aa7ff"
+      "path": "copy/title.txt",
+      "bytes": 36,
+      "sha256": "3f0d9bed5355c189e069f60a52a90d6ee3b96d2a5a53600ea149936179ac57bc"
     },
     {
-      "path": "brandable-idle-clicker/examples/creator.json",
-      "bytes": 4917,
-      "sha256": "4aa1f0462d9ff4687cc6762fdd0e5e4e65be584a02744ad20561b237b78aa7ff"
+      "path": "cover/cover.svg",
+      "bytes": 1752,
+      "sha256": "253d6a9cf72b0665448592eab26d2366ea00895ff5a488087cc6802453ea29bb"
     },
     {
-      "path": "brandable-idle-clicker/examples/salon.json",
-      "bytes": 4858,
-      "sha256": "da01f63418bf3ef3043b3c09d8e70b05bad54986c83444a5a06cd3744e970471"
+      "path": "manifest.json",
+      "bytes": 2680,
+      "sha256": "3b7d5463c47e4eafced30a1d2a6266e1e8037d1bf31df1ae572ae6e0e580757f"
     },
     {
-      "path": "brandable-idle-clicker/examples/salon.json",
-      "bytes": 4858,
-      "sha256": "da01f63418bf3ef3043b3c09d8e70b05bad54986c83444a5a06cd3744e970471"
+      "path": "README_iPhone.txt",
+      "bytes": 567,
+      "sha256": "8657e72d671b6fc56a8ce5b6a75405da525f2782a78351e03e1fe8fb97bd8952"
     },
     {
-      "path": "brandable-idle-clicker/generator.html",
-      "bytes": 15143,
-      "sha256": "02355c2a587d6ecdf8e3200973a806b900c5922bfa91cda6b5dc6454b68df1f4"
-    },
-    {
-      "path": "brandable-idle-clicker/generator.html",
-      "bytes": 15143,
-      "sha256": "02355c2a587d6ecdf8e3200973a806b900c5922bfa91cda6b5dc6454b68df1f4"
-    },
-    {
-      "path": "brandable-idle-clicker/index.html",
-      "bytes": 1746,
-      "sha256": "d92a1d9359ff203d865af989fe52ddbf426bba54a1ccade4ad2ec62f4abff43c"
-    },
-    {
-      "path": "brandable-idle-clicker/index.html",
-      "bytes": 1746,
-      "sha256": "d92a1d9359ff203d865af989fe52ddbf426bba54a1ccade4ad2ec62f4abff43c"
-    },
-    {
-      "path": "brandable-idle-clicker/LICENSE.txt",
-      "bytes": 3151,
-      "sha256": "72ce347d472081f92b45969c57acc43aef0145e2d9cd8dfca9fe16dc5943cb00"
-    },
-    {
-      "path": "brandable-idle-clicker/LICENSE.txt",
-      "bytes": 3401,
-      "sha256": "6415c95aef18d8bcf0541fe3a60185fa0dd60fd2dda287b3bdb347477683b7b8"
-    },
-    {
-      "path": "brandable-idle-clicker/README.md",
-      "bytes": 6623,
-      "sha256": "e3bdcb788b23d0593087a11c0b2b8760f2e0aef1be88ad7b57dc6d8d214bcfe5"
-    },
-    {
-      "path": "brandable-idle-clicker/README.md",
-      "bytes": 6548,
-      "sha256": "353ad8b330ec5678fef1e940c52436c6f2409281288bfcfd340dc0c9bbb0a376"
-    },
-    {
-      "path": "brandable-idle-clicker/test_engine.py",
-      "bytes": 9296,
-      "sha256": "9f4c33436c9cb8cc5738a1d57800dad81b3bd83551f408c8ccc6a92336188059"
-    },
-    {
-      "path": "brandable-idle-clicker/test_engine.py",
-      "bytes": 9296,
-      "sha256": "9f4c33436c9cb8cc5738a1d57800dad81b3bd83551f408c8ccc6a92336188059"
-    },
-    {
-      "path": "brandable-idle-clicker/validate_config.py",
-      "bytes": 6114,
-      "sha256": "94c5b177f1a4951b1206dd9127bd373826c4a61772c531893f99ce226510f3b4"
-    },
-    {
-      "path": "brandable-idle-clicker/validate_config.py",
-      "bytes": 6114,
-      "sha256": "94c5b177f1a4951b1206dd9127bd373826c4a61772c531893f99ce226510f3b4"
+      "path": "START_HERE.html",
+      "bytes": 5230,
+      "sha256": "dd10f23d03dc2c78ee22c8d9163e38c5a61b49eb432a04509c646aeb7bed6b06"
     }
   ],
-  "attachment_count": 2,
+  "attachment_count": 1,
   "rich_content_embed_ids": [
-    "oDGDSIBw4Fnqo5UqC-jVDQ=="
+    "C9zbmjys2VtiNXi8aypzbw=="
   ],
   "attachments": [
     {
-      "id": "m1ytUCFUjeH_G4mQIFHOMA==",
-      "name": "Brandable_Idle_Clicker_Kit_v1.0",
-      "embedded_in_rich_content": false,
-      "file_count": 12,
-      "manifest": [
-        {
-          "path": "brandable-idle-clicker/assets/engine.js",
-          "bytes": 16479,
-          "sha256": "952bc554692b2f268a148223f8e112e2e12aab217fe9a06d5203c2e2c20a3ce2"
-        },
-        {
-          "path": "brandable-idle-clicker/assets/style.css",
-          "bytes": 5214,
-          "sha256": "9cac1bebdc1ba744274caeadc96fb603cff8758e64dbcf1a68c554f70837d515"
-        },
-        {
-          "path": "brandable-idle-clicker/brand.config.json",
-          "bytes": 4385,
-          "sha256": "0186af34572fc45dae7e6c3cd3f95042c4598f287e5d15b997908d8406e3ca71"
-        },
-        {
-          "path": "brandable-idle-clicker/examples/cafe.json",
-          "bytes": 4799,
-          "sha256": "1bcb3b1f3709969ce555d6d48b112b16c27ecf77a8b7e3c24e59cf6de2b4f87f"
-        },
-        {
-          "path": "brandable-idle-clicker/examples/creator.json",
-          "bytes": 4917,
-          "sha256": "4aa1f0462d9ff4687cc6762fdd0e5e4e65be584a02744ad20561b237b78aa7ff"
-        },
-        {
-          "path": "brandable-idle-clicker/examples/salon.json",
-          "bytes": 4858,
-          "sha256": "da01f63418bf3ef3043b3c09d8e70b05bad54986c83444a5a06cd3744e970471"
-        },
-        {
-          "path": "brandable-idle-clicker/generator.html",
-          "bytes": 15143,
-          "sha256": "02355c2a587d6ecdf8e3200973a806b900c5922bfa91cda6b5dc6454b68df1f4"
-        },
-        {
-          "path": "brandable-idle-clicker/index.html",
-          "bytes": 1746,
-          "sha256": "d92a1d9359ff203d865af989fe52ddbf426bba54a1ccade4ad2ec62f4abff43c"
-        },
-        {
-          "path": "brandable-idle-clicker/LICENSE.txt",
-          "bytes": 3151,
-          "sha256": "72ce347d472081f92b45969c57acc43aef0145e2d9cd8dfca9fe16dc5943cb00"
-        },
-        {
-          "path": "brandable-idle-clicker/README.md",
-          "bytes": 6623,
-          "sha256": "e3bdcb788b23d0593087a11c0b2b8760f2e0aef1be88ad7b57dc6d8d214bcfe5"
-        },
-        {
-          "path": "brandable-idle-clicker/test_engine.py",
-          "bytes": 9296,
-          "sha256": "9f4c33436c9cb8cc5738a1d57800dad81b3bd83551f408c8ccc6a92336188059"
-        },
-        {
-          "path": "brandable-idle-clicker/validate_config.py",
-          "bytes": 6114,
-          "sha256": "94c5b177f1a4951b1206dd9127bd373826c4a61772c531893f99ce226510f3b4"
-        }
-      ]
-    },
-    {
-      "id": "oDGDSIBw4Fnqo5UqC-jVDQ==",
-      "name": "brandable-idle-clicker",
+      "id": "C9zbmjys2VtiNXi8aypzbw==",
+      "name": "Assistants_API_Sunset_Gumroad_iPhone_Pack_v1",
       "embedded_in_rich_content": true,
-      "file_count": 12,
+      "file_count": 13,
       "manifest": [
         {
-          "path": "brandable-idle-clicker/assets/engine.js",
-          "bytes": 16479,
-          "sha256": "952bc554692b2f268a148223f8e112e2e12aab217fe9a06d5203c2e2c20a3ce2"
+          "path": "Assistants_API_Sunset_Migration_Kit_v1.zip",
+          "bytes": 8611,
+          "sha256": "4023a637828ddc07faac4ab615fd7e19dc80ec4c1e5f0d036b6454954776d049"
         },
         {
-          "path": "brandable-idle-clicker/assets/style.css",
-          "bytes": 5214,
-          "sha256": "9cac1bebdc1ba744274caeadc96fb603cff8758e64dbcf1a68c554f70837d515"
+          "path": "brandable/extended_version.txt",
+          "bytes": 503,
+          "sha256": "259e0735ffc415d444d34f05f9fa06231e2da2279730a2ec09b9dec5ae07edbd"
         },
         {
-          "path": "brandable-idle-clicker/brand.config.json",
-          "bytes": 4385,
-          "sha256": "2f3192262584cc71685f25386c38662a0a94b07a122b3079eac4fd85b4262b18"
+          "path": "brandable/standard_version.txt",
+          "bytes": 301,
+          "sha256": "6e5aaaa5873a9e001dd546d70b3ead86b2659af2813fe1c387f48e9ead70f27f"
         },
         {
-          "path": "brandable-idle-clicker/examples/cafe.json",
-          "bytes": 4799,
-          "sha256": "1bcb3b1f3709969ce555d6d48b112b16c27ecf77a8b7e3c24e59cf6de2b4f87f"
+          "path": "brandable/unit_economics.txt",
+          "bytes": 596,
+          "sha256": "a6f54cc89553c3640d19e16c9012eeabcc4a0a38fbd591c7009b4e68535b5797"
         },
         {
-          "path": "brandable-idle-clicker/examples/creator.json",
-          "bytes": 4917,
-          "sha256": "4aa1f0462d9ff4687cc6762fdd0e5e4e65be584a02744ad20561b237b78aa7ff"
+          "path": "copy/description.md",
+          "bytes": 923,
+          "sha256": "4dd7915c60c0b3c6d1be002e44ce83156c3893322dae4c6592eb8674b8fd5a38"
         },
         {
-          "path": "brandable-idle-clicker/examples/salon.json",
-          "bytes": 4858,
-          "sha256": "da01f63418bf3ef3043b3c09d8e70b05bad54986c83444a5a06cd3744e970471"
+          "path": "copy/refund_fine_print.txt",
+          "bytes": 200,
+          "sha256": "631f9b22143f515abadff2fb7678a03b0832a9b168303ae1b02a23a3231ad2ae"
         },
         {
-          "path": "brandable-idle-clicker/generator.html",
-          "bytes": 15143,
-          "sha256": "02355c2a587d6ecdf8e3200973a806b900c5922bfa91cda6b5dc6454b68df1f4"
+          "path": "copy/summary.txt",
+          "bytes": 147,
+          "sha256": "743145c16ef93700ff7e44d999f992e181f84b656258dafbaeda5961bd7acbed"
         },
         {
-          "path": "brandable-idle-clicker/index.html",
-          "bytes": 1746,
-          "sha256": "d92a1d9359ff203d865af989fe52ddbf426bba54a1ccade4ad2ec62f4abff43c"
+          "path": "copy/tags.txt",
+          "bytes": 74,
+          "sha256": "d578901b498c34b92cbec51831052f49d59478196d8163bbe8566f475edce6c7"
         },
         {
-          "path": "brandable-idle-clicker/LICENSE.txt",
-          "bytes": 3401,
-          "sha256": "6415c95aef18d8bcf0541fe3a60185fa0dd60fd2dda287b3bdb347477683b7b8"
+          "path": "copy/title.txt",
+          "bytes": 36,
+          "sha256": "3f0d9bed5355c189e069f60a52a90d6ee3b96d2a5a53600ea149936179ac57bc"
         },
         {
-          "path": "brandable-idle-clicker/README.md",
-          "bytes": 6548,
-          "sha256": "353ad8b330ec5678fef1e940c52436c6f2409281288bfcfd340dc0c9bbb0a376"
+          "path": "cover/cover.svg",
+          "bytes": 1752,
+          "sha256": "253d6a9cf72b0665448592eab26d2366ea00895ff5a488087cc6802453ea29bb"
         },
         {
-          "path": "brandable-idle-clicker/test_engine.py",
-          "bytes": 9296,
-          "sha256": "9f4c33436c9cb8cc5738a1d57800dad81b3bd83551f408c8ccc6a92336188059"
+          "path": "manifest.json",
+          "bytes": 2680,
+          "sha256": "3b7d5463c47e4eafced30a1d2a6266e1e8037d1bf31df1ae572ae6e0e580757f"
         },
         {
-          "path": "brandable-idle-clicker/validate_config.py",
-          "bytes": 6114,
-          "sha256": "94c5b177f1a4951b1206dd9127bd373826c4a61772c531893f99ce226510f3b4"
+          "path": "README_iPhone.txt",
+          "bytes": 567,
+          "sha256": "8657e72d671b6fc56a8ce5b6a75405da525f2782a78351e03e1fe8fb97bd8952"
+        },
+        {
+          "path": "START_HERE.html",
+          "bytes": 5230,
+          "sha256": "dd10f23d03dc2c78ee22c8d9163e38c5a61b49eb432a04509c646aeb7bed6b06"
         }
       ]
     }
