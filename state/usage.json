@@ -2,8 +2,8 @@
   "schema_version": 1,
   "status": "ok",
   "source": "codex-app-server",
-  "fetched_at": "2026-08-12T17:31:04.736Z",
-  "fresh_until": "2026-08-12T19:31:04.736Z",
+  "fetched_at": "2026-08-12T19:14:45.082Z",
+  "fresh_until": "2026-08-12T21:14:45.082Z",
   "plan_type": "pro",
   "quota_windows": [
     {
@@ -24,8 +24,8 @@
       "used_percent": 0,
       "remaining_percent": 100,
       "window_duration_minutes": 10080,
-      "resets_at": 1787160665,
-      "resets_at_iso": "2026-08-19T17:31:05.000Z",
+      "resets_at": 1787166886,
+      "resets_at_iso": "2026-08-19T19:14:46.000Z",
       "reached_type": null
     }
   ],
@@ -42,7 +42,7 @@
   },
   "available_reset_credits": 0,
   "token_usage_summary": {
-    "lifetime_tokens": 4058648673,
+    "lifetime_tokens": 4218200919,
     "peak_daily_tokens": 833349372,
     "longest_running_turn_seconds": 16405,
     "current_streak_days": 7,
@@ -111,7 +111,7 @@
     },
     {
       "start_date": "2026-08-12",
-      "tokens": 274254873
+      "tokens": 433807119
     }
   ],
   "recommended_mode": "normal"
