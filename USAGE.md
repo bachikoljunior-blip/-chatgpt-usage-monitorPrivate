@@ -1,13 +1,13 @@
 # ChatGPT / Codex usage
 
 - Status: **ok**
-- Updated: `2026-08-12T13:12:51.229Z`
+- Updated: `2026-08-12T13:13:14.295Z`
 - Recommended mode: **normal**
 - Plan: **pro**
 
 | Limit | Window | Used | Remaining | Reset (UTC) |
 |---|---:|---:|---:|---|
-| GPT-5.3-Codex-Spark (primary) | 1w | 0% | 100% | 2026-08-19T13:12:51.000Z |
 | codex (primary) | 1w | 44% | 56% | 2026-08-17T23:59:18.000Z |
+| GPT-5.3-Codex-Spark (primary) | 1w | 0% | 100% | 2026-08-19T13:13:15.000Z |
 
 The longest quota window is used to choose normal, conserve, or reserve mode.
