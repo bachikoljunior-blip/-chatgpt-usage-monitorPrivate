@@ -50,7 +50,8 @@
     "pulse.yml still has an unreachable exit 1 after exit in the reporting step.",
     "THE BLIND-LEAK CHECK STILL SCOPES ON produces: measurement. Ten handoffs.",
     "SHOWN IS STILL UNMEASURED. Zero posts made, month nine.",
-    "youtube-loop-fresh is still never_seen while holding the largest single reservation."
+    "youtube-loop-fresh is still never_seen while holding the largest single reservation.",
+    "THE HEARTBEAT REGISTRY STILL CARRIES THE PRE-CUT CADENCES, so check-heartbeats reports gumroad-monitor (165m, cadence 60m) and codex-loop (719m, cadence 90m) as OVERDUE when both are behaving exactly as state/actions-budget.json now schedules them (12h and 6h). Observed 2026-08-12T13:10Z, not fixed — this lap had made its one change. A check that cries overdue on a deliberate change trains laps to skim it, which is the failure mode the distribution-class reranking already demonstrated."
   ],
   "predecessor_session_id": "session_01H2477LCU2T1DfDZi8xWM23",
   "predecessor_note_for_the_successor": "Archive me only when get_session reports SESSION_STATUS_IDLE. Mechanics that cost time this lap: pacing/product-loop/check-predictions/check-zerobase/owner-request-gate/lane-liveness/show-usage all read ORIGIN/MAIN, so your edits are invisible to them until pushed — owner-request-gate will keep calling a request pending after you have closed it locally. record-lap refuses both phases while the collector errors; that is correct, do not write a 0. Heredocs work for file bodies, not for commit messages — write the message to a file and pass -F. Bot collectors commit to main every few minutes now that Actions is alive, so expect a rejected push and just fetch/rebase/retry.",
