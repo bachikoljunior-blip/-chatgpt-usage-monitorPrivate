@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-11T23:21:10.467Z",
+  "fetched_at": "2026-08-12T01:22:14.299Z",
   "rung": "promise_conformance",
   "offer_id": "idle_clicker_kit",
   "listing": {
@@ -19,10 +19,9 @@
   "play_measured_at": "2026-08-10T11:30:11.907Z",
   "promises_checked": 16,
   "tally": {
-    "conforms": 12,
+    "conforms": 14,
     "blocked": 1,
-    "partial": 1,
-    "fails": 2
+    "partial": 1
   },
   "results": [
     {
@@ -113,15 +112,15 @@
       "id": "balance_is_pre_tuned",
       "quote": "数値バランスは調整済みです。値段と毎秒の増加量は釣り合いを取った既定値が入っているので、名前と配色を変えた時点で遊べる状態になります",
       "still_on_page": true,
-      "verdict": "fails",
-      "observation": "TUNED IN THE TREE AND SHIPPED TWICE. The shipped tree measures 6 taps to the first purchase, then 100s idle to a second kind of producer (browser run: 6 taps to the first purchase, opening rate \"毎秒 0円 ／ 1タップ 1円\"), and the attachment the download page embeds carries that same config — but the product ALSO still carries the superseded archive, whose brand.config.json is the untuned one. state/product-source.json attachments[] holds both digests. Which numbers a buyer opens with depends on which archive they unzip, so the promise is not kept by the fix being present; it is broken by the old file still being attached. The fix is removal, not another upload."
+      "verdict": "conforms",
+      "observation": "first affordable purchase at 6 taps, opening rate \"毎秒 0円 ／ 1タップ 1円\"; and past it, 6 taps to the first purchase, then 100s idle to a second kind of producer."
     },
     {
       "id": "license_tier_is_determinate",
       "quote": "あなたの作品・自社サイトなど、公開先1つで使えます。商用可・改変自由 / クライアントの案件へ納品する場合は、別途ご相談ください",
       "still_on_page": true,
-      "verdict": "fails",
-      "observation": "TWO LICENCES ARE ATTACHED TO ONE PRODUCT. product/brandable-idle-clicker/LICENSE.txt is determinate and it IS the copy inside the archive the rich_content page embeds — that half is delivered, contrary to what this row said for eight handoffs. But state/product-source.json attachments[] shows the superseded archive is still attached, carrying the 「ライセンスは2種類あります。購入時に選んだ種別が適用されます。」 opening. Determinacy is a property of what the buyer holds, not of the best file among several. The remedy is to detach the superseded archive; no upload and no edit to the sales page is involved."
+      "verdict": "conforms",
+      "observation": "LICENSE.txt tiers: 1, listing variants: 0"
     },
     {
       "id": "japanese_readme_and_license",

@@ -7499,19 +7499,53 @@ function assert(condition, message) {
   const NEW = "6415c9";
   const OLD = "72ce34";
 
-  // The regression itself. Two attachments disagree; the local tree matches the
-  // embedded one. "same" here is the bug — it buys a green by looking away from
-  // an attachment that is still on the product.
+  // REVERSED 2026-08-12, AND THE REVERSAL IS THE POINT OF THIS COMMENT.
+  //
+  // These two cases asserted the opposite until today: a stale non-embedded
+  // attachment disagreeing with the embedded one had to read
+  // split_across_attachments, and the comment here said "'same' here is the bug —
+  // it buys a green by looking away from an attachment that is still on the
+  // product." That rested on an assumption nobody had checked: that a buyer can
+  // open any attachment on the product.
+  //
+  // codex/outbox/2026-08-11.gumroad-download-all-source.md checked it against the
+  // vendor's own source at a named commit. UrlRedirect#alive_product_files returns
+  // only the files embedded in rich_content once any embed exists, and both the
+  // buyer's content screen and the group "Download all" ZIP are built from that
+  // list. The stale archive is on the seller's file list and on no buyer's screen.
+  //
+  // So the old assertion was measuring the seller's shelf and calling it delivery.
+  // The promise is about what a buyer HOLDS. Flipping this turns two promise rows
+  // from FAILS to conforming and withdraws owner request
+  // 2026-08-10.gumroad-replace-the-kit-file at zero owner actions — which is a
+  // large thing to buy with an inference, so it is written down as one: this rests
+  // on published source, not on a test purchase. A purchase whose download screen
+  // or ZIP contains the superseded archive puts these two assertions back.
   assert(
     classifyDelivered({ attachments: [att("stale", OLD, false), att("live", NEW, true)] }, "LICENSE.txt", NEW) ===
-      "split_across_attachments",
-    "a product shipping two different LICENSE.txt files was reported as delivering one",
+      "same",
+    "a non-embedded attachment, which no buyer can reach, still counted against delivery",
   );
   // Order must not matter: the union bug was an ordering accident.
   assert(
     classifyDelivered({ attachments: [att("live", NEW, true), att("stale", OLD, false)] }, "LICENSE.txt", NEW) ===
+      "same",
+    "the reachability filter depended on attachment order",
+  );
+  // The half that must NOT move. Two attachments that are BOTH embedded and
+  // disagree are two files a buyer really does hold, and that is still indeterminate.
+  assert(
+    classifyDelivered({ attachments: [att("stale", OLD, true), att("live", NEW, true)] }, "LICENSE.txt", NEW) ===
       "split_across_attachments",
-    "the disagreement was visible in only one attachment order",
+    "two embedded attachments disagreeing were collapsed to a verdict — this is the case the filter must never reach",
+  );
+  // And when NOTHING is embedded, the vendor's own fallback is every attachment,
+  // so this must fall back too. Otherwise "mark nothing embedded" becomes a way to
+  // make any disagreement disappear.
+  assert(
+    classifyDelivered({ attachments: [att("stale", OLD, false), att("live", NEW, false)] }, "LICENSE.txt", NEW) ===
+      "split_across_attachments",
+    "with no embedded attachment the reachable set was not the whole product, which is not what the vendor does",
   );
   // One attachment, agreeing: the ordinary delivered case still reads same.
   assert(

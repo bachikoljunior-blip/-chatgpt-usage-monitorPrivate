@@ -152,7 +152,28 @@ export function classifyDelivered(source, relPath, localSha) {
   const attachments = Array.isArray(source?.attachments) ? source.attachments : null;
   const rowIn = (att) => (att.manifest || []).find((m) => String(m.path || "").endsWith(relPath));
   if (attachments && attachments.length) {
-    const carrying = attachments.filter((a) => rowIn(a)?.sha256);
+    // ATTACHED IS NOT DELIVERED. 2026-08-12. Everything above this line assumed the
+    // buyer can open any attachment on the product, and on that assumption two
+    // promises read FAILS for eight handoffs and an owner request asked for a manual
+    // deletion. codex/outbox/2026-08-11.gumroad-download-all-source.md read the
+    // vendor source (antiwork/gumroad @ 5af71646) and the assumption is wrong:
+    // UrlRedirect#alive_product_files returns ONLY the files whose ids appear as
+    // fileEmbed/fileEmbedGroup nodes in rich_content, and falls back to every
+    // attachment only when there are no embeds at all. The buyer's content screen
+    // and the group "Download all" ZIP are both built from that list.
+    //
+    // So the reachable set is mirrored from that branch, not invented here. The
+    // promise is about what a buyer HOLDS; a superseded archive nobody can reach is
+    // a defect on the seller's file list and reaches no reader.
+    //
+    // Deliberately not a way to buy a green: if no attachment is marked embedded —
+    // older manifests, or a product with no rich_content — this falls back to every
+    // attachment, which is the same branch the vendor takes and the stricter answer.
+    // What it must never do is let ONE embedded attachment silence the others; that
+    // is why the filter is on embeddedness and not on agreement.
+    const embedded = attachments.filter((a) => a.embedded_in_rich_content === true);
+    const reachable = embedded.length ? embedded : attachments;
+    const carrying = reachable.filter((a) => rowIn(a)?.sha256);
     if (!carrying.length) return "unknown";
     const digests = new Set(carrying.map((a) => rowIn(a).sha256));
     if (digests.size > 1) return "split_across_attachments";
