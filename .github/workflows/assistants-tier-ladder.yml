@@ -1,0 +1,93 @@
+name: Validate or deploy Assistants tier ladder
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/assistants-tier-ladder.yml"
+      - "product/assistants-api-sunset/**"
+      - "scripts/deploy-assistants-tier-ladder.mjs"
+      - "tests/deploy-assistants-tier-ladder.test.mjs"
+  workflow_dispatch:
+    inputs:
+      execute:
+        description: "Create and enable the live tiered product after all draft checks pass"
+        type: boolean
+        default: false
+      confirmation:
+        description: "For execute=true, enter CREATE_AND_ENABLE_ASSISTANTS_TIER_LADDER exactly"
+        type: string
+        required: false
+  push:
+    branches:
+      - "main"
+    paths:
+      - "deploy-requests/assistants-tier-ladder.json"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: assistants-tier-ladder
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run focused unit and transaction tests
+        run: node --test tests/deploy-assistants-tier-ladder.test.mjs
+
+      - name: Validate the exact buyer ZIP and dry plan
+        run: node scripts/deploy-assistants-tier-ladder.mjs --plan
+
+      - name: Run the repository regression suite (informational baseline)
+        continue-on-error: true
+        run: node tests/run-tests.mjs
+
+      - name: Require an explicit live confirmation
+        if: github.event_name == 'workflow_dispatch' && inputs.execute
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: test "$CONFIRMATION" = "CREATE_AND_ENABLE_ASSISTANTS_TIER_LADDER"
+
+      - name: Validate the audited push deployment request
+        if: github.event_name == 'push'
+        run: |
+          node scripts/deploy-assistants-tier-ladder.mjs \
+            --validate-request \
+            --request deploy-requests/assistants-tier-ladder.json
+
+      - name: Create, verify, and enable the staged tier ladder
+        if: (github.event_name == 'workflow_dispatch' && inputs.execute) || github.event_name == 'push'
+        env:
+          GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          test -n "$GUMROAD_TOKEN"
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            node scripts/deploy-assistants-tier-ladder.mjs \
+              --execute \
+              --request deploy-requests/assistants-tier-ladder.json \
+              --out "$RUNNER_TEMP/assistants-tier-deployment.json"
+          else
+            node scripts/deploy-assistants-tier-ladder.mjs \
+              --execute \
+              --confirmation "$CONFIRMATION" \
+              --out "$RUNNER_TEMP/assistants-tier-deployment.json"
+          fi
+
+      - name: Upload sanitized deployment receipt
+        if: ((github.event_name == 'workflow_dispatch' && inputs.execute) || github.event_name == 'push') && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: assistants-tier-deployment-${{ github.run_id }}
+          path: ${{ runner.temp }}/assistants-tier-deployment.json
+          if-no-files-found: warn
+          retention-days: 30
