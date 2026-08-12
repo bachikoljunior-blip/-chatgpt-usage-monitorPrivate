@@ -2,7 +2,7 @@ name: Gumroad sales monitor
 
 on:
   schedule:
-    - cron: "*/5 * * * *" # TEMP tier-deployment trigger; restore after terminal verification
+    - cron: "37 */12 * * *"
   workflow_dispatch:
     inputs:
       probe_create:
@@ -84,11 +84,9 @@ jobs:
 
       - name: Detect an audited tier-deployment request commit
         id: tier_request
-        if: github.event_name == 'push' || github.event_name == 'schedule'
+        if: github.event_name == 'push'
         run: |
-          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          elif git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep -Fxq "deploy-requests/assistants-tier-ladder.json"; then
+          if git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep -Fxq "deploy-requests/assistants-tier-ladder.json"; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "changed=false" >> "$GITHUB_OUTPUT"
