@@ -489,6 +489,43 @@
       },
       "what_the_lap_did_without_waiting": "Two things, both correct under either reading. (1) The consumption rate that produced this was cut where this repository controls it — see state/actions-budget.json. (2) The failure the frozen meter causes on 2026-08-14T22:00Z was found and fixed: pacing.mjs would have exited 10 on window_expired at every firing from the reset until a collector ran again, which is a total stop of the loop for as long as Actions is down.",
       "why_still_pending_after_the_owner_answered": "The owner did the ask and the ask was useful. This stays pending because its success_test is 'a workflow completes with a log and a usage fetched_at advances past 2026-08-12T00:39Z', and that has not happened. Marking it done on the strength of a reading would be marking a request satisfied by being answered rather than by working, which is the exact false green success_test_machine exists to stop."
+    },
+    {
+      "id": "2026-08-12.email-scirra-about-plain-html-js",
+      "created_at": "2026-08-12T07:45:00Z",
+      "status": "pending",
+      "candidate_id": null,
+      "owner_actions": 1,
+      "estimated_owner_minutes": 1,
+      "owner_typing_and_judgement_count": "0 typing — address, subject and body are below verbatim and contain nothing to fill in. 0 judgement. Send it and forward whatever comes back.",
+      "one_line": "support@construct.net に下の英文をそのまま送ってください。宛先・件名・本文は完成していて、書き足すところはありません。返事が来たらそのまま教えてください。",
+      "why_now_and_not_before": "The address and the message did not exist until 2026-08-12T07:14Z. The lane produced both in the answer to 2026-08-12.scirra-preflight-public-answer, which also established that no public answer to this question exists: Scirra staff answered a related question in 2014, before the current store, and the current terms, FAQ and seller pages do not say whether a package with no .c3p is eligible.",
+      "the_ask": {
+        "to": "support@construct.net",
+        "subject": "Asset Store eligibility for an HTML/CSS/JavaScript clicker kit",
+        "body": "Hello Construct Support,\n\nI would like to confirm whether the Construct Asset Store accepts a brandable idle clicker kit supplied as original HTML, CSS and JavaScript source files.\n\nThe package does not include any .c3p, .c3addon or .capx file. It cannot be opened in Construct 3 and is an independent web product.\n\nCould you please confirm only:\n\n1. Whether this product would be accepted for sale in the Asset Store.\n2. If accepted, which store category I should use.\n\nThank you.",
+        "nothing_to_decide": "Do not change anything on the store, do not create a seller account, and do not pay the $20. This is a question, not a purchase. The right move depends on the answer and may be to walk away."
+      },
+      "why_this_is_worth_an_owner_action": "Construct Asset Store is the last venue standing out of the three that met the test 'people search there, they can check out there, and a purchase leaves public proof'. CodeCanyon has our exact product form selling with public sales counts but its new-author door is closed. itch.io publishes no per-product sales count. Construct is open, $20 one-time, 30% cut — and every confirmed example there ships a Construct project file while what we sell is plain HTML/JS. This one reply decides whether the venue exists for us at all, and it decides it before any money or listing work is spent.",
+      "automation_attempted": "Yes, and it is why the message exists rather than the request. The lane was asked first whether the answer was already public, precisely so an owner action would not be spent on something readable. It was not public. The lane cannot send mail: it runs read-only and browses. This session cannot reach external sites. Sending is the only step no automation here can take.",
+      "automation_cost_exceeds_manual_cost": "There is no automation to compare. A mail path would mean provisioning credentials for an outbound mail service to send one message.",
+      "paste_ready": true,
+      "cannot_decompose_further": true,
+      "minimised": "The body is 96 words and asks two questions, not five. The eight open conditions the Construct research listed were cut to the one that decides eligibility, because the other seven only matter if the answer to this one is yes.",
+      "source": "eta-loop worker session_01R2J8ST73vrNhaAFvGBsbuJ, 2026-08-12T07:45Z",
+      "success_test": "A reply from Scirra saying whether a package with no .c3p is eligible, and if so under which category — recorded in state/constraints.json against the Construct row.",
+      "success_test_machine": {
+        "note": "The reply is prose from a third party, so no predicate can read it directly. What CAN be machine-read is whether a lap wrote the answer down: the constraint row's measured_at moves off its current value once someone records the reply. This is a proxy and is named as one.",
+        "any_of": [
+          {
+            "state_file": "state/constraints.json",
+            "path": "construct_store_accepts_engine_agnostic.measured_at",
+            "predicate": "non_null"
+          }
+        ]
+      },
+      "not_success": "An auto-acknowledgement from a ticket system. That is receipt, not an answer, and recording it as one would put a false 'measured' on the row that decides whether to spend the $20.",
+      "judge_by": "2026-08-26"
     }
   ]
 }
