@@ -50,6 +50,7 @@ on:
     paths:
       - "scripts/read-gumroad.mjs"
       - ".github/workflows/gumroad-monitor.yml"
+      - "deploy-requests/assistants-tier-ladder.json"
 
 permissions:
   contents: write
@@ -61,7 +62,7 @@ concurrency:
 jobs:
   collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v4
@@ -80,6 +81,45 @@ jobs:
             echo "GUMROAD_TOKEN is missing from repository secrets" >&2
             exit 1
           fi
+
+      - name: Detect an audited tier-deployment request commit
+        id: tier_request
+        if: github.event_name == 'push'
+        run: |
+          if git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep -Fxq "deploy-requests/assistants-tier-ladder.json"; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Validate the exact tier-deployment request and transaction lane
+        if: steps.tier_request.outputs.changed == 'true'
+        run: |
+          node --test tests/deploy-assistants-tier-ladder.test.mjs
+          node scripts/deploy-assistants-tier-ladder.mjs --plan
+          node scripts/deploy-assistants-tier-ladder.mjs \
+            --validate-request \
+            --request deploy-requests/assistants-tier-ladder.json
+
+      - name: Create, verify, and enable the staged tier ladder
+        id: tier_deploy
+        if: steps.tier_request.outputs.changed == 'true'
+        env:
+          GUMROAD_TOKEN: ${{ secrets.GUMROAD_TOKEN }}
+        run: |
+          node scripts/deploy-assistants-tier-ladder.mjs \
+            --execute \
+            --request deploy-requests/assistants-tier-ladder.json \
+            --out "$RUNNER_TEMP/assistants-tier-deployment.json"
+
+      - name: Upload the sanitized tier-deployment receipt
+        if: always() && steps.tier_request.outputs.changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: assistants-tier-deployment-${{ github.run_id }}
+          path: ${{ runner.temp }}/assistants-tier-deployment.json
+          if-no-files-found: warn
+          retention-days: 30
 
       - name: Collect sanitized sales state
         id: collect
