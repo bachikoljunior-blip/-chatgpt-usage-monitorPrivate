@@ -209,7 +209,7 @@
       "venue_survey": {
         "measured_at": "2026-08-09T15:07:00Z",
         "source": "codex/outbox/2026-08-09.o.md — three venues, promotion rules QUOTED rather than summarised, eligibility asked for as a number or an explicit none, and a live dated slot asked for as evidence the venue is not dormant.",
-        "venues_postable_today_from_a_standing_start": 1,
+        "venues_postable_today_from_a_standing_start": 2,
         "venues_surveyed": 4,
         "the_count_was_corrected_by_the_check_that_was_built_for_exactly_this": {
           "at": "2026-08-10T00:2xZ",
@@ -285,7 +285,7 @@
             "paid_promotion_note": "Settled by this row's own rule_quoted, first clause, with nothing added: 'promoting paid assets (even on sale or in a giveaway) is forbidden on r/gamedev'. The only thing this account is paid for is the USD 25 kit (state/gumroad.json, product_count 1). So the act that would turn a successful post here into revenue is forbidden in the same sentence that permits the post. The row was never wrong — it was asked whether we may post, and we may. Found 2026-08-09 by asking what column the row lacks, the same way audience_language was found one lap earlier, and the answer was sitting inside rule_quoted the whole time: six sessions read that sentence for what it permits and none read it for what it forbids us to do afterwards. NOTE WHAT THIS DOES NOT SAY. It does not refute the venue and must not shut this row: a free unwalled post here is still permitted, still cheap, and still the only door whose blocker is one owner action. What it settles is that clearing that blocker buys a post and not a buyer, so it cannot be the route's revenue step and must stop being ranked as though it were.",
             "audience_language_note": "r/gamedev is an English-language subreddit: its rules, its sidebar and its posts are in English. The artifact this route would post declares lang=\"ja\" and its entire UI is Japanese. That breaks no rule here — the rule is about payment and signup walls — so it does not shut this row. It decides whether the one post this route exists to make lands on readers who can read it. Found by opening assets/free-demo/index.html on 2026-08-09; four laps had treated the artifact as satisfying this venue without anyone checking what language it was in.",
             "live_slot_evidence": null,
-            "postable_today": false,
+            "postable_today": true,
             "postable_today_corrected_2026-08-09T21:40Z": "The owner-answer commit 1846cfc set account.exists to false and said in its own message that the row becomes FALSE, but left this field at null. The mismatch check caught it — 'postable_today says null but the evidence says false' — so venue-readiness.mjs and therefore tests/run-tests.mjs and pulse.yml were red on origin/main between 21:18Z and this fix. Worth recording rather than quietly correcting: that commit reported verifying the CLI output, and the label did change from [UNKNOWN/unknown] to [none/shut] exactly as it says. What it did not read was the PROBLEM line underneath and the exit code. A verification that stops at the line you expected to change is not a verification; the whole reason this check exists is that hand-written verdicts drift from the evidence beneath them, and it drifted inside the same commit that supplied the evidence.",
             "postable_when": [
               {
@@ -344,6 +344,11 @@
               "surrogate": "407K subscribers on the board itself, and 0.84 posts/day so a post stays visible far longer than on itch. Subscribers is a ceiling on an audience, not a delivery figure, and substituting one for the other is the error this whole field was added to stop.",
               "read_from": "https://www.reddit.com/r/gamedev/new/",
               "what_it_replaced": "Nobody has counted how many people a post here reaches. Declared rather than omitted, because an omitted field and an unmeasured one are indistinguishable — the same reason every row carries an `account` field with a nullable exists."
+            },
+            "postable_today_corrected_2026_08_12": {
+              "at": "2026-08-12T00:19:27.625Z",
+              "why": "account.eligible_from is 2026-08-12 and both machine-readable blockers are now true, so the derived postability is true. This corrects the stale hand-written boolean; it does not create a revenue path because paid_promotion_permitted remains false.",
+              "revenue_effect": "none: the venue permits the free demo but explicitly forbids promoting the paid product"
             }
           },
           {
@@ -596,6 +601,13 @@
           "from": "codex/outbox/incremental-eligibility.md and codex/outbox/account-standing.md, both returned before 2026-08-10T21:00Z and both unfiled until now",
           "effect_on_the_derived_term": "venue_unsettled drops from 2 to 1 (GameDev.net remains, and its unknown is a venue that publishes nothing rather than a question nobody asked). The elected route's prerequisite term is derived by scripts/venue-readiness.mjs from these rows, so this is where the change is visible to the ranking rather than only to a reader.",
           "why_it_took_three_laps": "Nothing watches codex/outbox/ for answers that have returned and not been filed. Each lap read state/continue.json, saw the note, and spent its one lane elsewhere. The cost is not that the answers were lost — it is that the route printed ROUTE OWES A DECISION for three laps while the material to decide it was already in the repository."
+        },
+        "postable_count_corrected_2026_08_12": {
+          "at": "2026-08-12T00:19:27.625Z",
+          "from": 1,
+          "to": 2,
+          "derived_by": "scripts/venue-readiness.mjs",
+          "caveat": "The added open venue has no permitted paid-promotion path, so this is a permission change, not revenue."
         }
       },
       "reprices_candidates": [
