@@ -5772,6 +5772,85 @@ assert(probeUsageFields(null, ["five_hour"]) === null, "probe accepted a null pa
   );
 }
 
+// --- the backup meter, and the stop it was written to prevent ----------------
+//
+// state/claude-usage.json is written by a GitHub workflow and nothing else. On
+// 2026-08-12 Actions stopped account-wide, the owner's billing page confirmed a
+// GitHub Free plan, and the frozen file described a weekly window resetting
+// 2026-08-14T22:00Z. pacing.mjs refuses to divide an expired window and did it
+// by exiting 10 — so from that instant every firing would have done nothing,
+// for as long as Actions stayed down, beginning at the moment the weekly pool
+// refilled to 100%. A10 for every loop on the account, caused by a safety check
+// behaving exactly as written.
+//
+// The fallback must keep the loop alive WITHOUT ever licensing more spending:
+// list_sessions rate_limit_info carries no percentage. These assert both halves.
+{
+  const { backupMeterVerdict, isPermitted, buildRecord } = await import("../scripts/record-rate-limit.mjs");
+
+  const now = Date.parse("2026-08-15T00:00:00Z");
+  const fresh = {
+    resets_at_iso: "2026-08-21T22:00:00.000Z",
+    observed_at: "2026-08-14T23:00:00Z",
+    scheduler_status: "allowed_warning",
+    permitted: true,
+  };
+  const base = { nowMs: now, staleHours: 6, primaryResetsAtIso: "2026-08-14T22:00:00.000Z" };
+
+  assert(
+    backupMeterVerdict({ ...base, backup: fresh }).ok,
+    "the loop still stops dead when the primary window expires and a fresh permitted backup reading exists — this is the 2026-08-14T22:00Z failure the fallback exists to prevent",
+  );
+  assert(
+    backupMeterVerdict({ ...base, backup: null }).reason === "window_expired",
+    "with no backup reading at all the gate must keep its original refusal",
+  );
+  assert(
+    backupMeterVerdict({ ...base, backup: { ...fresh, permitted: false, scheduler_status: "rejected" } })
+      .reason === "backup_meter_refuses",
+    "a scheduler that is refusing work is being read as permission",
+  );
+  assert(
+    backupMeterVerdict({ ...base, backup: { ...fresh, observed_at: "2026-08-14T00:00:00Z" } })
+      .reason === "backup_meter_stale",
+    "a backup reading older than the spawner's own cadence still stands in for the collector",
+  );
+  assert(
+    backupMeterVerdict({ ...base, backup: { ...fresh, resets_at_iso: "2026-08-14T22:00:00.000Z" } })
+      .reason === "backup_meter_expired",
+    "a backup reading whose own window has also passed is being treated as current",
+  );
+
+  // An unknown status word is not permission. The scheduler is upstream and can
+  // add words; defaulting to 'allowed' would hand the benefit of the doubt to
+  // the one direction that can overspend a pool.
+  assert(!isPermitted("some_new_word"), "an unrecognised scheduler status is being read as permission");
+  assert(!isPermitted(undefined), "a missing scheduler status is being read as permission");
+
+  // The file must never carry a percentage: there is none in the source, so any
+  // number shaped like one was invented, and the gate reads this file to decide
+  // spending. verify-sanitized-state enforces it; this pins the writer too.
+  const rec = buildRecord({
+    type: "seven_day",
+    resetsAtEpoch: 1786744800,
+    status: "allowed_warning",
+    observedBy: "session_test",
+    observedAt: "2026-08-12T06:52:07Z",
+  });
+  assert(
+    Object.keys(rec).every((k) => !/percent/i.test(k)),
+    "the backup meter record grew a percentage-shaped field; list_sessions has no percentage and one must not be invented",
+  );
+  assert(rec.resets_at_iso === "2026-08-14T22:00:00.000Z", "the epoch the scheduler reports is no longer converted correctly");
+
+  // And the gate has to actually consult it.
+  const pacing = readFileSync(new URL("../scripts/pacing.mjs", import.meta.url), "utf8");
+  assert(
+    pacing.includes("backupMeterVerdict"),
+    "pacing.mjs no longer consults the backup meter, so an expired primary window is a total stop again",
+  );
+}
+
 console.log("All usage monitor tests passed.");
 
 function run(command, args, extraEnv = {}, { allowFailure = false } = {}) {

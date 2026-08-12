@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "status": "ok",
+  "source": "list_sessions external_metadata.rate_limit_info",
+  "observed_at": "2026-08-12T06:52:07Z",
+  "observed_by": "session_01R2J8ST73vrNhaAFvGBsbuJ",
+  "seen_on_session": "session_01R2J8ST73vrNhaAFvGBsbuJ",
+  "rate_limit_type": "seven_day",
+  "resets_at_epoch": 1786744800,
+  "resets_at_iso": "2026-08-14T22:00:00.000Z",
+  "scheduler_status": "allowed_warning",
+  "permitted": true,
+  "what_this_can_answer": "Which window the account is currently in, when that window resets, and whether the scheduler is still letting sessions start.",
+  "what_this_cannot_answer": "How much of the window is left. There is no percentage in this source and none must be invented from the status word.",
+  "how_it_is_read": "scripts/pacing.mjs, and only when state/claude-usage.json reports a window that has already reset. It never overrides a live collector reading."
+}

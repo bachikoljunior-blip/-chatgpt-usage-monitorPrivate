@@ -40,6 +40,7 @@
 
 import { readStateJson } from "./state-source.mjs";
 import { unverifiedReservations } from "./check-heartbeats.mjs";
+import { backupMeterVerdict } from "./record-rate-limit.mjs";
 
 const flags = new Map(
   process.argv
@@ -88,6 +89,10 @@ const fallbackPerRun = Number.isFinite(derivedBound) && derivedBound > 0
 // current. pulse.yml now regenerates it hourly; this is what makes a stopped
 // refresher visible rather than silently authoritative.
 const DERIVED_COST_STALE_HOURS = 6;
+// How old a backup rate-limit reading may be before it stops standing in for the
+// collector. Six hours is the spawner's own cadence, so a reading is fresh if a
+// lap took it on its own firing and stale if a whole firing went by without one.
+const BACKUP_METER_STALE_HOURS = 6;
 const derivedCostAgeHours = derivedCost?.fetched_at
   ? Number(((now - Date.parse(derivedCost.fetched_at)) / 3_600_000).toFixed(2))
   : null;
@@ -121,7 +126,65 @@ if (!week) fail("no_window", "usage state carried no weekly window");
 const resetsAt = Date.parse(week.resets_at_iso ?? "");
 if (!Number.isFinite(resetsAt)) fail("no_reset", "weekly window has no parseable reset time");
 if (resetsAt <= now.getTime()) {
-  fail("window_expired", `weekly window reset at ${week.resets_at_iso}; refresh before pacing`);
+  // THE COLLECTOR'S WINDOW HAS ALREADY RESET, so its used_percent describes a
+  // window nobody is in any more. Refusing to divide it is right. Exiting 10 is
+  // NOT, when nothing in reach can refresh the file.
+  //
+  // Measured 2026-08-12: GitHub Actions stopped executing account-wide, the only
+  // writer of state/claude-usage.json is a workflow, and the owner's billing page
+  // shows a GitHub Free plan whose allowance does not refill until the next
+  // billing month. The frozen file reports a window resetting 2026-08-14T22:00Z.
+  // Without the branch below, every firing from that instant onward would have
+  // exited 10 on the fossil and done nothing — for as long as Actions stayed
+  // down, and starting at the exact moment the weekly pool refilled to 100%.
+  //
+  // The backup meter is the scheduler's own rate_limit_info, which rides on
+  // session rows rather than on a workflow (scripts/record-rate-limit.mjs). It
+  // carries no percentage, so it is NEVER allowed to license more spending. All
+  // it can do is keep the loop alive at a floor of one lap per firing while the
+  // primary meter is unreachable.
+  const backup = (await readStateJson("state/rate-limit-observed.json")).value;
+  const bv = backupMeterVerdict({
+    backup,
+    nowMs: now.getTime(),
+    staleHours: BACKUP_METER_STALE_HOURS,
+    primaryResetsAtIso: week.resets_at_iso,
+  });
+  if (!bv.ok) fail(bv.reason, bv.detail);
+  const backupAgeHours = bv.ageHours;
+
+  const out = {
+    decision: "continue",
+    reason: "backup_meter_floor",
+    detail:
+      `state/claude-usage.json describes a window that reset at ${week.resets_at_iso}. ` +
+      `The scheduler reports ${backup.scheduler_status} with the current window resetting ${backup.resets_at_iso}. ` +
+      `There is no percentage in that source, so this lap is capped at one derived lap cost (${fallbackPerRun.toFixed(4)}%) ` +
+      `and NOT at anything the expired file says. Refresh the collector as soon as it can run.`,
+    checked_at: now.toISOString(),
+    source: usageVia,
+    lap_budget_percent: fallbackPerRun,
+    backup_meter: {
+      observed_at: backup.observed_at,
+      observed_by: backup.observed_by,
+      scheduler_status: backup.scheduler_status,
+      resets_at: backup.resets_at_iso,
+      carries_a_percentage: false,
+    },
+    handoff: "wait_for_next_firing",
+    why_no_successor:
+      "One lap per firing IS the cap while the primary meter is dead. Spawning a successor removes the interval and the floor with it.",
+  };
+  console.log(
+    asJson
+      ? JSON.stringify(out, null, 2)
+      : `decision: continue (backup_meter_floor)\n` +
+          `  PRIMARY METER EXPIRED — state/claude-usage.json describes a window that reset at ${week.resets_at_iso}\n` +
+          `  backup: scheduler says ${backup.scheduler_status}, current window resets ${backup.resets_at_iso} (observed ${backupAgeHours.toFixed(1)}h ago by ${backup.observed_by})\n` +
+          `  NO PERCENTAGE EXISTS IN THE BACKUP SOURCE. this lap may spend: ${fallbackPerRun.toFixed(4)}% (one derived lap cost, floor only)\n` +
+          `  handoff: wait_for_next_firing · do not spawn a successor — one lap per firing is the entire cap`,
+  );
+  process.exit(0);
 }
 
 const remaining = Number(week.remaining_percent);

@@ -453,7 +453,42 @@
       "source": "eta-loop worker session_015wghe9PXBjBFcFVygpsXEA, 2026-08-12T01:35Z",
       "why_this_outranks_everything_else_pending": "CORRECTED 2026-08-12T07:10Z BY THE NEXT LAP. The original text read: 'Actions is where the usage meters, the Gumroad sales figure, the itch stats, the ETA recompute and THE CHATGPT LANE all run. The lane is the pool with capacity ... and it reaches the outside world, which this environment cannot.' The last clause is false and it was the clause doing the persuading. MEASURED: task 2026-08-12.construct-store-accepts-engine-agnostic was queued at 01:37:09Z and answered into codex/outbox at 02:09:27Z, 90 minutes into the outage, with all 30 most recent Actions runs failing in under five seconds. The lane has a second delivery path that does not run here (state/codex-lane.json delivery_path_independence, scripts/lane-liveness.mjs). WHAT STILL STANDS: Actions is where the usage meters, the Gumroad sales figure, the itch stats and the ETA recompute run, and all four are frozen. The pacing gate — the only branch point in the loop — is dividing a reading from 2026-08-11T19:02:36Z. That is enough to keep this request open and it is the honest version of it. What it is NOT is a total block on doing work: the outside-world lane is reachable and has three tasks queued against it.",
       "corrected_at": "2026-08-12T07:10:00Z",
-      "correction_note": "The request itself is unchanged — same page, same 0 typing, same judgement. What changed is the stated consequence. A request that overstates its own stakes is asking the owner to act on a number that is not real, and this board's whole point is that the owner acts rarely and on measured things."
+      "correction_note": "The request itself is unchanged — same page, same 0 typing, same judgement. What changed is the stated consequence. A request that overstates its own stakes is asking the owner to act on a number that is not real, and this board's whole point is that the owner acts rarely and on measured things.",
+      "owner_answered_at": "2026-08-12T07:30:00Z",
+      "owner_answer": {
+        "how": "Four screenshots of https://github.com/settings/billing, supplied by the owner in chat. Read off the images; no API confirmed any of it, because a session token cannot reach billing.",
+        "what_the_page_says": {
+          "plan": "GitHub Free, $0.00 per month. Copilot Free, $0.00 per month.",
+          "current_metered_usage": "$37.91 gross metered usage for August 1 - August 30, 2026",
+          "current_included_usage": "$37.91 — included usage discounts for the same period",
+          "next_payment_due": "— (blank)",
+          "copilot_tab": "Copilot usage $0, Additional usage $0, based on 0 additional AI credits beyond included usage",
+          "usage_by_repository_top_five": {
+            "survival": "$11.07",
+            "Gptgame": "$9.26",
+            "-chatgpt-usage-monitorPrivate": "$8.03",
+            "note": "$4.65",
+            "J": "$2.08",
+            "all_other_repositories": "$2.82"
+          }
+        },
+        "what_this_settles": "THE PLAN IS FREE. The previous lap's arithmetic offered 2,000 minutes on Free or 3,000 on Pro and could not choose; the page chooses. It also settles that nothing is being billed: metered $37.91 is entirely covered by included discounts, additional usage is $0, and next payment due is blank. On a Free plan the Actions spending limit is $0 by default, and under a $0 limit exhausted allowance does not become 'additional usage' — it becomes refused jobs. Refused jobs are what a 3-second failure with no downloadable log looks like.",
+        "what_this_does_NOT_settle_and_it_is_one_tap_away": "Whether the Actions allowance is actually exhausted. The screenshot of 'Usage by products' has the COPILOT tab selected; the tab immediately to its right is ACTIONS, and that is the one carrying minutes used against minutes included. Everything above is consistent with exhaustion and also consistent with 'not yet exhausted, something else is wrong'. The inference is strong — Free plan, private repositories, six hourly workflows, every job refused in seconds from a single instant, no logs — but it is an inference.",
+        "the_arithmetic_that_now_has_its_missing_input": "This repository schedules six hourly workflows: usage-monitor :07, claude-usage-monitor :22, gumroad-monitor :37, codex-inbox :41, itch-monitor :42, pulse :52. GitHub bills each job rounded UP to a whole minute, so a 25-second collector costs a minute. Six per hour is 144 billable minutes a day from this repository alone, about 4,300 a month, against 2,000 included for the whole account. The billing page shows this repository at $8.03 of $37.91, so it is not even the largest consumer — survival and Gptgame are bigger. The account is running well over its allowance every month, and the 12th is simply where it ran out."
+      },
+      "follow_up": {
+        "id": "2026-08-12.github-actions-the-actions-tab",
+        "created_at": "2026-08-12T07:30:00Z",
+        "owner_actions": 1,
+        "estimated_owner_minutes": 1,
+        "owner_typing_and_judgement_count": "0 typing. 0 judgement. One tap on a tab that is already on the screen.",
+        "one_line": "同じページの「Usage by products」で、いま選ばれているのは Copilot タブです。その右隣の「Actions」タブを1回押して、出てくる数字を教えてください。使った分数と、含まれている分数が出ます。",
+        "why_this_one_tap": "It is the only reading that separates 'the free Actions minutes ran out' from 'something else broke at 00:39Z'. The two have different remedies — one waits for September or needs a payment method, the other is a GitHub fault to report — and acting on the wrong one wastes the only weeks left this month.",
+        "paste_ready": true,
+        "cannot_decompose_further": true
+      },
+      "what_the_lap_did_without_waiting": "Two things, both correct under either reading. (1) The consumption rate that produced this was cut where this repository controls it — see state/actions-budget.json. (2) The failure the frozen meter causes on 2026-08-14T22:00Z was found and fixed: pacing.mjs would have exited 10 on window_expired at every firing from the reset until a collector ran again, which is a total stop of the loop for as long as Actions is down.",
+      "why_still_pending_after_the_owner_answered": "The owner did the ask and the ask was useful. This stays pending because its success_test is 'a workflow completes with a log and a usage fetched_at advances past 2026-08-12T00:39Z', and that has not happened. Marking it done on the strength of a reading would be marking a request satisfied by being answered rather than by working, which is the exact false green success_test_machine exists to stop."
     }
   ]
 }

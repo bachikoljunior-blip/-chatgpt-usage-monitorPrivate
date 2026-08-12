@@ -59,6 +59,24 @@ git fetch origin main
 node scripts/pacing.mjs --id=<自分のid>
 ```
 
+**MCP が使える回は、ゲートより先に予備の計器を書き直すこと。**
+
+```bash
+# list_sessions の任意の行にある external_metadata.rate_limit_info を写す
+node scripts/record-rate-limit.mjs --type=<rateLimitType> --resets-at=<resetsAt> \
+  --status=<status> --observed-by=<自分のセッションid>
+```
+
+収集係を動かせるのは GitHub Actions だけで、**Actions は止まることがあります。**
+止まったまま `state/claude-usage.json` の窓がリセット時刻を過ぎると、
+`pacing.mjs` はその窓で割ることを拒否します。**それは正しい。**
+問題は拒否の仕方が exit 10 だったことで、**そこから先の発火は全部、何もせずに終わります**
+——収集係が復活するまでずっと、しかも枠が満タンに戻った瞬間から。
+予備の計器は**割合を持ちません**。持てるのは「いまどの窓にいるか」と
+「まだ許可されているか」だけで、`pacing.mjs` はそれを**下限**にしか使いません
+（1発火につき1周ぶん）。**割合が無い計器を割合として読まないこと。**
+書かなかった回は6時間で期限切れになり、ゲートは `backup_meter_stale` で止まります。
+
 **`<自分のid>` は、この周を起こしたトリガーの id です。** ここに固有名を書かないのは、
 2026-08-09 にそれで実際に間違えたからです。手順1の例が `--id=revenue-loop` のままで、
 **その revenue-loop はオーナーが 2026-08-08 に停止済み**でした。結果、eta-loop の周が

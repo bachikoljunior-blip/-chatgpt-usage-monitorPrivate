@@ -684,6 +684,35 @@ if (state.total_sales_count !== undefined || state.product_count !== undefined) 
       throw new Error("an inbound observation records no numeric hits_on_our_surface");
     }
   }
+} else if (state.source === "list_sessions external_metadata.rate_limit_info") {
+  // The backup meter (scripts/record-rate-limit.mjs). It exists because the
+  // collector's writer is a GitHub workflow and workflows can stop. The single
+  // most important property of this file is what it does NOT contain: there is
+  // no percentage in list_sessions rate_limit_info, so anything numeric that
+  // looks like a remaining/used percentage here would have been invented. The
+  // gate reads this file when the primary meter has expired, and a fabricated
+  // percentage there would license spending against a quota nobody measured.
+  for (const field of ["observed_at", "observed_by", "resets_at_iso", "scheduler_status"]) {
+    if (typeof state[field] !== "string" || !state[field]) {
+      throw new Error(`rate-limit observation has no ${field}`);
+    }
+  }
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(state.observed_at)) {
+    throw new Error("rate-limit observation has no valid observed_at timestamp");
+  }
+  if (!Number.isFinite(Date.parse(state.resets_at_iso))) {
+    throw new Error("rate-limit observation has an unparseable resets_at_iso");
+  }
+  if (typeof state.permitted !== "boolean") {
+    throw new Error("rate-limit observation does not say whether the scheduler permitted work");
+  }
+  for (const key of Object.keys(state)) {
+    if (/percent/i.test(key)) {
+      throw new Error(
+        `rate-limit observation carries ${key}: this source has no percentage and one must never be invented here`,
+      );
+    }
+  }
 } else {
   if (!["ok", "error"].includes(state.status)) {
     throw new Error("usage state has an invalid schema");
