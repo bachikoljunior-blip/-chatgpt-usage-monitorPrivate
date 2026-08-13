@@ -2,21 +2,10 @@
   "schema_version": 1,
   "status": "ok",
   "source": "codex-app-server",
-  "fetched_at": "2026-08-13T02:38:19.147Z",
-  "fresh_until": "2026-08-13T04:38:19.147Z",
+  "fetched_at": "2026-08-13T06:53:11.861Z",
+  "fresh_until": "2026-08-13T08:53:11.861Z",
   "plan_type": "pro",
   "quota_windows": [
-    {
-      "limit_id": "codex",
-      "limit_name": null,
-      "slot": "primary",
-      "used_percent": 63,
-      "remaining_percent": 37,
-      "window_duration_minutes": 10080,
-      "resets_at": 1787011158,
-      "resets_at_iso": "2026-08-17T23:59:18.000Z",
-      "reached_type": null
-    },
     {
       "limit_id": "codex_bengalfox",
       "limit_name": "GPT-5.3-Codex-Spark",
@@ -24,25 +13,36 @@
       "used_percent": 0,
       "remaining_percent": 100,
       "window_duration_minutes": 10080,
-      "resets_at": 1787193500,
-      "resets_at_iso": "2026-08-20T02:38:20.000Z",
+      "resets_at": 1787208792,
+      "resets_at_iso": "2026-08-20T06:53:12.000Z",
+      "reached_type": null
+    },
+    {
+      "limit_id": "codex",
+      "limit_name": null,
+      "slot": "primary",
+      "used_percent": 16,
+      "remaining_percent": 84,
+      "window_duration_minutes": 10080,
+      "resets_at": 1787197066,
+      "resets_at_iso": "2026-08-20T03:37:46.000Z",
       "reached_type": null
     }
   ],
   "governing_window": {
-    "limit_id": "codex",
-    "limit_name": null,
+    "limit_id": "codex_bengalfox",
+    "limit_name": "GPT-5.3-Codex-Spark",
     "slot": "primary",
-    "used_percent": 63,
-    "remaining_percent": 37,
+    "used_percent": 0,
+    "remaining_percent": 100,
     "window_duration_minutes": 10080,
-    "resets_at": 1787011158,
-    "resets_at_iso": "2026-08-17T23:59:18.000Z",
+    "resets_at": 1787208792,
+    "resets_at_iso": "2026-08-20T06:53:12.000Z",
     "reached_type": null
   },
   "available_reset_credits": 0,
   "token_usage_summary": {
-    "lifetime_tokens": 4268752438,
+    "lifetime_tokens": 4285010782,
     "peak_daily_tokens": 833349372,
     "longest_running_turn_seconds": 16405,
     "current_streak_days": 7,
@@ -111,7 +111,7 @@
     },
     {
       "start_date": "2026-08-12",
-      "tokens": 484358638
+      "tokens": 500616982
     }
   ],
   "recommended_mode": "normal"
