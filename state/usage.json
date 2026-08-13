@@ -2,21 +2,10 @@
   "schema_version": 1,
   "status": "ok",
   "source": "codex-app-server",
-  "fetched_at": "2026-08-13T13:37:20.731Z",
-  "fresh_until": "2026-08-13T15:37:20.731Z",
+  "fetched_at": "2026-08-13T19:15:20.664Z",
+  "fresh_until": "2026-08-13T21:15:20.664Z",
   "plan_type": "pro",
   "quota_windows": [
-    {
-      "limit_id": "codex",
-      "limit_name": null,
-      "slot": "primary",
-      "used_percent": 71,
-      "remaining_percent": 29,
-      "window_duration_minutes": 10080,
-      "resets_at": 1787197065,
-      "resets_at_iso": "2026-08-20T03:37:45.000Z",
-      "reached_type": null
-    },
     {
       "limit_id": "codex_bengalfox",
       "limit_name": "GPT-5.3-Codex-Spark",
@@ -24,29 +13,40 @@
       "used_percent": 0,
       "remaining_percent": 100,
       "window_duration_minutes": 10080,
-      "resets_at": 1787233041,
-      "resets_at_iso": "2026-08-20T13:37:21.000Z",
+      "resets_at": 1787253321,
+      "resets_at_iso": "2026-08-20T19:15:21.000Z",
       "reached_type": null
+    },
+    {
+      "limit_id": "codex",
+      "limit_name": null,
+      "slot": "primary",
+      "used_percent": 100,
+      "remaining_percent": 0,
+      "window_duration_minutes": 10080,
+      "resets_at": 1787197066,
+      "resets_at_iso": "2026-08-20T03:37:46.000Z",
+      "reached_type": "rate_limit_reached"
     }
   ],
   "governing_window": {
-    "limit_id": "codex",
-    "limit_name": null,
+    "limit_id": "codex_bengalfox",
+    "limit_name": "GPT-5.3-Codex-Spark",
     "slot": "primary",
-    "used_percent": 71,
-    "remaining_percent": 29,
+    "used_percent": 0,
+    "remaining_percent": 100,
     "window_duration_minutes": 10080,
-    "resets_at": 1787197065,
-    "resets_at_iso": "2026-08-20T03:37:45.000Z",
+    "resets_at": 1787253321,
+    "resets_at_iso": "2026-08-20T19:15:21.000Z",
     "reached_type": null
   },
   "available_reset_credits": 0,
   "token_usage_summary": {
-    "lifetime_tokens": 4285010782,
-    "peak_daily_tokens": 833349372,
+    "lifetime_tokens": 5757330901,
+    "peak_daily_tokens": 1472320119,
     "longest_running_turn_seconds": 16405,
-    "current_streak_days": 7,
-    "longest_streak_days": 7
+    "current_streak_days": 8,
+    "longest_streak_days": 8
   },
   "daily_usage_buckets": [
     {
@@ -112,6 +112,10 @@
     {
       "start_date": "2026-08-12",
       "tokens": 500616982
+    },
+    {
+      "start_date": "2026-08-13",
+      "tokens": 1472320119
     }
   ],
   "recommended_mode": "normal"
