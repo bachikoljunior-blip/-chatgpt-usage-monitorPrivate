@@ -1,7 +1,7 @@
 # Claude subscription usage
 
 - Status: **error**
-- Updated: `2026-08-14T21:43:20.182Z`
+- Updated: `2026-08-14T22:10:34.050Z`
 - Recommended mode: **conserve**
 
 Automatic collection needs attention. Machine-readable code: `reauthentication_required`.
