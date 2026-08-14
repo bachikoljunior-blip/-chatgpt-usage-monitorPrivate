@@ -13,27 +13,28 @@ name: Run the ChatGPT inbox
 # it goes stale the moment the repository moves and then hands out lies.
 
 on:
-  schedule:
-    # Hourly, minute 41 — clear of usage-monitor at :07 and claude-usage-monitor
-    # at :22, both of which share this workflow's concurrency group.
-    #
-    # It was daily until 2026-08-09, on the reasoning that surveys of the outside
-    # world do not change hour to hour. True, and beside the point: what changes
-    # hour to hour is the QUESTION. A lap that needs an outside answer writes it
-    # into codex/INBOX.md and then cannot proceed until this workflow runs, so a
-    # daily cron prices every external question at up to a day of latency on the
-    # one lane that can see outside at all.
-    #
-    # The measurement that settled it: all ten runs in this workflow's entire
-    # history were workflow_dispatch. The daily cron had delivered zero answers.
-    # Every answer the loop ever got came from a lap that happened to have MCP
-    # tools available, and RUNBOOK step 0 records that MCP presence varies run to
-    # run — so the lane's throughput was a coin flip dressed as a schedule.
-    #
-    # Hourly is affordable because the skip is cheap: inbox-task.mjs decides
-    # before any model runs, and a task that already carries its done marker
-    # costs a checkout and a node process. It does not re-run a finished survey.
-    - cron: "41 */6 * * *"
+  # [STOPPED 2026-08-14 by owner instruction 「完全に止めて」] uncomment to resume
+  # schedule:
+  # # Hourly, minute 41 — clear of usage-monitor at :07 and claude-usage-monitor
+  # # at :22, both of which share this workflow's concurrency group.
+  # #
+  # # It was daily until 2026-08-09, on the reasoning that surveys of the outside
+  # # world do not change hour to hour. True, and beside the point: what changes
+  # # hour to hour is the QUESTION. A lap that needs an outside answer writes it
+  # # into codex/INBOX.md and then cannot proceed until this workflow runs, so a
+  # # daily cron prices every external question at up to a day of latency on the
+  # # one lane that can see outside at all.
+  # #
+  # # The measurement that settled it: all ten runs in this workflow's entire
+  # # history were workflow_dispatch. The daily cron had delivered zero answers.
+  # # Every answer the loop ever got came from a lap that happened to have MCP
+  # # tools available, and RUNBOOK step 0 records that MCP presence varies run to
+  # # run — so the lane's throughput was a coin flip dressed as a schedule.
+  # #
+  # # Hourly is affordable because the skip is cheap: inbox-task.mjs decides
+  # # before any model runs, and a task that already carries its done marker
+  # # costs a checkout and a node process. It does not re-run a finished survey.
+  # - cron: "41 */6 * * *"
   workflow_dispatch:
     inputs:
       force:

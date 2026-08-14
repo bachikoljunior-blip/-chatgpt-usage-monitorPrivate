@@ -1,8 +1,9 @@
 name: ChatGPT usage monitor
 
 on:
-  schedule:
-    - cron: "7 */6 * * *"
+  # [STOPPED 2026-08-14 by owner instruction 「完全に止めて」] uncomment to resume
+  # schedule:
+  # - cron: "7 */6 * * *"
   workflow_dispatch:
   pull_request:
     branches: [main]

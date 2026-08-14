@@ -9,8 +9,9 @@ name: Pulse (ETA and heartbeats)
 # lap, which is exactly when a stop-detector matters.
 
 on:
-  schedule:
-    - cron: "52 */6 * * *"
+  # [STOPPED 2026-08-14 by owner instruction 「完全に止めて」] uncomment to resume
+  # schedule:
+  # - cron: "52 */6 * * *"
   workflow_dispatch:
   push:
     branches: [main]

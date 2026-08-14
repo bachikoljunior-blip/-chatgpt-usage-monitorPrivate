@@ -1,8 +1,9 @@
 name: Gumroad sales monitor
 
 on:
-  schedule:
-    - cron: "37 */12 * * *"
+  # [STOPPED 2026-08-14 by owner instruction 「完全に止めて」] uncomment to resume
+  # schedule:
+  # - cron: "37 */12 * * *"
   workflow_dispatch:
     inputs:
       probe_create:
