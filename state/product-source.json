@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-13T14:01:53.865Z",
+  "fetched_at": "2026-08-14T03:09:18.791Z",
   "source": "GET /v2/products/:id files[].url — the seller's own attachment, no owner action",
   "note": "The signed download URL is deliberately absent: it carries a verify token and an expiry. The manifest is what a later run compares against.",
   "product_id_shape": "string",
