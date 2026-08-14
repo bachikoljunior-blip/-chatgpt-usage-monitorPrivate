@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "ok",
-  "fetched_at": "2026-08-13T14:05:06.323Z",
+  "fetched_at": "2026-08-14T03:10:31.182Z",
   "revenue_is_a_lower_bound": true,
   "revenue_derivation": "purchases_count x min_price_cents, summed over games. itch.io serves no earnings field on this endpoint and permits paying above the minimum, so this under-reports whenever a buyer pays more. Never present it as measured revenue.",
   "readings": [
@@ -77,6 +77,13 @@
     },
     {
       "at": "2026-08-13T14:05:06.323Z",
+      "total_sales_count": 0,
+      "total_sales_usd_cents": 0,
+      "views": 2,
+      "downloads": 0
+    },
+    {
+      "at": "2026-08-14T03:10:31.182Z",
       "total_sales_count": 0,
       "total_sales_usd_cents": 0,
       "views": 2,
